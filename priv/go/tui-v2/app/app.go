@@ -961,6 +961,7 @@ func (m Model) handleIdleKey(k tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				m.toasts.Add("Copied to clipboard", toast.ToastInfo)
 				return m, m.tickCmd()
 			}
+			return m, nil // don't type 'y'/'c' into input when nothing to copy
 		}
 	}
 

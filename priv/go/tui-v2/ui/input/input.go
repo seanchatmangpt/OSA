@@ -89,7 +89,7 @@ func (m *Model) SetWidth(w int) {
 }
 
 // Focus grants keyboard focus to the textarea and returns the init command.
-func (m Model) Focus() tea.Cmd { return m.ta.Focus() }
+func (m *Model) Focus() tea.Cmd { return m.ta.Focus() }
 
 // Blur removes keyboard focus from the textarea.
 func (m *Model) Blur() { m.ta.Blur() }
@@ -179,6 +179,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		if popupCmd != nil {
 			// Completions consumed the event (selection or dismiss).
 			return m, popupCmd
+		}
+		// Completions handled cursor movement (Up/Down) — don't double-process.
+		if _, isKey := msg.(tea.KeyPressMsg); isKey {
+			return m, nil
 		}
 	}
 
