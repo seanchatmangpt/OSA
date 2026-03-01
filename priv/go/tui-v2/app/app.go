@@ -182,7 +182,8 @@ func New(c *client.Client) Model {
 }
 
 // SetRefreshToken stores the refresh token for automatic re-authentication.
-func (m *Model) SetRefreshToken(t string) { m.refreshToken = t }
+func (m *Model) SetRefreshToken(t string)  { m.refreshToken = t }
+func (m *Model) SetForceOnboarding(v bool) { m.forceOnboarding = v }
 
 // -- Init ---------------------------------------------------------------------
 

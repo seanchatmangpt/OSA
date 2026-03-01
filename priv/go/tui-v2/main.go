@@ -20,6 +20,7 @@ var version = "dev"
 func main() {
 	profileFlag := flag.String("profile", "", "Named profile for state isolation (~/.osa/profiles/<name>)")
 	devFlag := flag.Bool("dev", false, "Dev mode (alias for --profile dev, port 19001)")
+	setupFlag := flag.Bool("setup", false, "Open setup wizard on launch (re-configure provider, agent, etc.)")
 	noColor := flag.Bool("no-color", false, "Disable ANSI colors")
 	showVersion := flag.Bool("version", false, "Show version and exit")
 	flag.BoolVar(showVersion, "V", false, "Show version and exit")
@@ -92,6 +93,9 @@ func main() {
 	m := app.New(c)
 	if refreshToken != "" {
 		m.SetRefreshToken(refreshToken)
+	}
+	if *setupFlag {
+		m.SetForceOnboarding(true)
 	}
 
 	// In bubbletea v2, WithAltScreen and WithMouseCellMotion are no longer
