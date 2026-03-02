@@ -162,7 +162,8 @@ commands, or system state.
 
 - Use **file_read** — NOT shell_execute with cat/head/tail
 - Use **file_edit** for surgical changes — NOT shell_execute with sed/awk. NEVER file_write for small edits.
-- Use **file_glob** — NOT shell_execute with find/ls for file search
+- Use **mcts_index** — for finding relevant files in a large/unfamiliar codebase. Faster and smarter than file_glob loops.
+- Use **file_glob** — for specific pattern-based file search when you know what you're looking for.
 - Use **file_grep** — NOT shell_execute with grep/rg for content search
 - Use **dir_list** — NOT shell_execute with ls for directory listing
 - Use **web_fetch** — NOT shell_execute with curl for fetching URLs
