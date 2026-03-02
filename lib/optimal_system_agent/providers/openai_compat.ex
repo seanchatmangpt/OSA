@@ -155,58 +155,37 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     cond do
       # Format 1: <function name="tool_name" parameters={...}></function>
       String.contains?(content, "<function") ->
-        ~r/<function\s+name="([^"]+)"\s+parameters=(\{.*?\})>\s*<\/function>/s
-        |> Regex.scan(content)
-        |> Enum.map(fn [_full, name, args_str] ->
-          args =
-            case Jason.decode(args_str) do
-              {:ok, parsed} -> parsed
-              _ -> %{}
-            end
-
-          %{
-            id: generate_id(),
-            name: name |> String.split(~r/\s+/) |> List.first(),
-            arguments: args
-          }
-        end)
+        extract_xml_function_calls(content)
 
       # Format 2: <function_call>{"name": "...", "arguments": {...}}</function_call>
       String.contains?(content, "<function_call>") ->
-        ~r/<function_call>\s*(\{.*?\})\s*<\/function_call>/s
-        |> Regex.scan(content)
-        |> Enum.flat_map(fn [_full, json_str] ->
-          case Jason.decode(json_str) do
-            {:ok, %{"name" => name, "arguments" => args}} when is_map(args) ->
-              [%{id: generate_id(), name: name |> String.split(~r/\s+/) |> List.first(), arguments: args}]
+        ~r/<function_call>\s*/s
+        |> Regex.split(content, include_captures: false)
+        |> Enum.drop(1)
+        |> Enum.flat_map(fn chunk ->
+          case extract_balanced_json(chunk) do
+            {:ok, json_str} ->
+              case Jason.decode(json_str) do
+                {:ok, %{"name" => name, "arguments" => args}} when is_map(args) ->
+                  [%{id: generate_id(), name: normalize_tool_name(name), arguments: args}]
 
-            {:ok, %{"name" => name, "arguments" => args}} when is_binary(args) ->
-              case Jason.decode(args) do
-                {:ok, parsed} ->
-                  [%{id: generate_id(), name: name |> String.split(~r/\s+/) |> List.first(), arguments: parsed}]
+                {:ok, %{"name" => name, "arguments" => args}} when is_binary(args) ->
+                  parsed = case Jason.decode(args) do
+                    {:ok, a} -> a
+                    _ -> %{}
+                  end
+                  [%{id: generate_id(), name: normalize_tool_name(name), arguments: parsed}]
 
-                _ ->
-                  [%{id: generate_id(), name: name |> String.split(~r/\s+/) |> List.first(), arguments: %{}}]
+                _ -> []
               end
 
-            _ ->
-              []
+            _ -> []
           end
         end)
 
       # Format 3: raw JSON tool call object {"name": "...", "arguments": {...}}
       String.contains?(content, "\"name\"") and String.contains?(content, "\"arguments\"") ->
-        ~r/\{\s*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:\s*\{.*?\}\s*\}/s
-        |> Regex.scan(content)
-        |> Enum.flat_map(fn [json_str] ->
-          case Jason.decode(json_str) do
-            {:ok, %{"name" => name, "arguments" => args}} when is_map(args) ->
-              [%{id: generate_id(), name: name |> String.split(~r/\s+/) |> List.first(), arguments: args}]
-
-            _ ->
-              []
-          end
-        end)
+        extract_json_tool_calls(content)
 
       true ->
         []
@@ -214,6 +193,136 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
   end
 
   def parse_tool_calls_from_content(_), do: []
+
+  # Extract <function name="..." parameters={...}></function> tags with proper
+  # balanced-brace JSON parsing (fixes non-greedy regex failure on nested JSON).
+  @xml_fn_pattern ~r/<function\s+name="([^"]+)"\s+parameters=/
+
+  defp extract_xml_function_calls(content) do
+    @xml_fn_pattern
+    |> Regex.scan(content, return: :index)
+    |> Enum.flat_map(fn [{match_start, match_len}, {name_start, name_len}] ->
+      name = binary_part(content, name_start, name_len)
+      json_offset = match_start + match_len
+      rest = binary_part(content, json_offset, byte_size(content) - json_offset)
+
+      case extract_balanced_json(rest) do
+        {:ok, args_str} ->
+          args = case Jason.decode(args_str) do
+            {:ok, parsed} -> parsed
+            _ -> %{}
+          end
+          [%{id: generate_id(), name: normalize_tool_name(name), arguments: args}]
+
+        _ -> []
+      end
+    end)
+  end
+
+  # Extract all JSON tool call objects from free-form text (Format 3).
+  defp extract_json_tool_calls(content) do
+    content
+    |> scan_json_objects()
+    |> Enum.flat_map(fn json_str ->
+      case Jason.decode(json_str) do
+        {:ok, %{"name" => name, "arguments" => args}} when is_map(args) ->
+          [%{id: generate_id(), name: normalize_tool_name(name), arguments: args}]
+        _ -> []
+      end
+    end)
+  end
+
+  # Scan a string for all top-level JSON objects, returning them as strings.
+  defp scan_json_objects(str), do: scan_json_objects(str, [])
+
+  defp scan_json_objects("", acc), do: Enum.reverse(acc)
+
+  defp scan_json_objects(str, acc) do
+    case :binary.match(str, "{") do
+      :nomatch ->
+        Enum.reverse(acc)
+
+      {pos, 1} ->
+        substr = binary_part(str, pos, byte_size(str) - pos)
+
+        case extract_balanced_json(substr) do
+          {:ok, json_str} ->
+            rest_pos = pos + byte_size(json_str)
+            rest = binary_part(str, rest_pos, byte_size(str) - rest_pos)
+            scan_json_objects(rest, [json_str | acc])
+
+          _ ->
+            rest = binary_part(str, pos + 1, byte_size(str) - pos - 1)
+            scan_json_objects(rest, acc)
+        end
+    end
+  end
+
+  # Extract a balanced JSON object starting at the first `{` in the string.
+  # Handles nested objects and quoted strings (including escaped quotes).
+  # Returns {:ok, json_string} or :error.
+  defp extract_balanced_json(str) do
+    case :binary.match(str, "{") do
+      :nomatch -> :error
+      {start, 1} ->
+        substr = binary_part(str, start, byte_size(str) - start)
+        case scan_balanced(substr, 0, 0) do
+          {:ok, len} -> {:ok, binary_part(substr, 0, len)}
+          :error -> :error
+        end
+    end
+  end
+
+  defp scan_balanced(str, depth, pos)
+
+  defp scan_balanced("", depth, _pos) when depth > 0, do: :error
+  defp scan_balanced("", 0, pos), do: {:ok, pos}
+
+  # Enter a quoted string — skip until closing unescaped quote
+  defp scan_balanced(<<"\"", rest::binary>>, depth, pos) do
+    case skip_json_string(rest, pos + 1) do
+      {:ok, new_pos} -> scan_balanced(binary_part(rest, new_pos - pos - 1, byte_size(rest) - (new_pos - pos - 1)), depth, new_pos)
+      :error -> :error
+    end
+  end
+
+  defp scan_balanced(<<"{", rest::binary>>, depth, pos) do
+    scan_balanced(rest, depth + 1, pos + 1)
+  end
+
+  defp scan_balanced(<<"}", _rest::binary>>, 1, pos) do
+    {:ok, pos + 1}
+  end
+
+  defp scan_balanced(<<"}", rest::binary>>, depth, pos) when depth > 1 do
+    scan_balanced(rest, depth - 1, pos + 1)
+  end
+
+  defp scan_balanced(<<_byte, rest::binary>>, depth, pos) do
+    scan_balanced(rest, depth, pos + 1)
+  end
+
+  # Skip over a JSON string (already consumed the opening `"`).
+  # Returns {:ok, position_after_closing_quote} or :error.
+  defp skip_json_string(str, pos)
+
+  defp skip_json_string("", _pos), do: :error
+
+  defp skip_json_string(<<"\\", _escaped, rest::binary>>, pos) do
+    skip_json_string(rest, pos + 2)
+  end
+
+  defp skip_json_string(<<"\"", _rest::binary>>, pos) do
+    {:ok, pos + 1}
+  end
+
+  defp skip_json_string(<<_byte, rest::binary>>, pos) do
+    skip_json_string(rest, pos + 1)
+  end
+
+  defp normalize_tool_name(name) when is_binary(name) do
+    name |> String.split(~r/[\s({]/) |> List.first() |> String.trim()
+  end
 
   # --- Private helpers ---
 

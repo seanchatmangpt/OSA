@@ -101,6 +101,16 @@ defmodule OptimalSystemAgent.Agent.Loop do
     # 0. Clear per-message caches (git info runs once per message, not per iteration)
     Process.delete(:osa_git_info_cache)
 
+    # 0.5. Application-layer prompt injection guard — block before LLM ever sees it.
+    # This catches weak local models (Ollama) that ignore system prompt instructions.
+    if prompt_injection?(message) do
+      refusal = "I can't help with that."
+      Memory.append(state.session_id, %{role: "user", content: message, channel: state.channel})
+      Memory.append(state.session_id, %{role: "assistant", content: refusal, channel: state.channel})
+      state = %{state | status: :idle}
+      {:reply, {:ok, refusal}, state}
+    else
+
     # 1. Classify the signal — deterministic fast path (<1ms), async LLM enrichment in background
     signal = Classifier.classify_fast(message, state.channel)
     Classifier.classify_async(message, state.channel, state.session_id)
@@ -230,6 +240,7 @@ defmodule OptimalSystemAgent.Agent.Loop do
           {:reply, {:ok, response}, state}
         end
     end
+    end  # closes prompt_injection? else branch
   end
 
   @impl true
@@ -672,4 +683,25 @@ defmodule OptimalSystemAgent.Agent.Loop do
   defp noise_acknowledgment(:low_weight), do: "Got it."
   defp noise_acknowledgment(:llm_classified), do: "Noted."
   defp noise_acknowledgment(_), do: "\u{1F44D}"
+
+  # Application-layer guardrail against system prompt extraction attempts.
+  # Catches common injection patterns before the LLM processes them,
+  # protecting weaker local models (Ollama) that may not follow system instructions.
+  @injection_patterns [
+    ~r/what\s+(is|are|was)\s+(your\s+)?(system\s+prompt|instructions?|rules?|configuration|directives?)/i,
+    ~r/(show|print|display|reveal|repeat|output|tell me|give me)\s+(your\s+)?(system\s+prompt|instructions?|full\s+prompt|prompt|initial\s+prompt)/i,
+    ~r/ignore\s+(all\s+)?(previous|prior|above)\s+(instructions?|prompt|context|rules?)/i,
+    ~r/repeat\s+everything\s+(above|before|prior)/i,
+    ~r/what\s+(were\s+)?(you\s+)?(told|instructed|programmed|trained|configured)\s+to/i,
+    ~r/(jailbreak|DAN|do anything now|developer\s+mode|prompt\s+injection)/i,
+    ~r/disregard\s+(your\s+)?(previous\s+)?(instructions?|guidelines?|rules?)/i,
+    ~r/forget\s+(everything|all)\s+(you\s+)?(were\s+)?(told|instructed|programmed)/i
+  ]
+
+  defp prompt_injection?(message) when is_binary(message) do
+    trimmed = String.trim(message)
+    Enum.any?(@injection_patterns, &Regex.match?(&1, trimmed))
+  end
+
+  defp prompt_injection?(_), do: false
 end
