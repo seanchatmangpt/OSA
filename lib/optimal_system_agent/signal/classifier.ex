@@ -495,8 +495,10 @@ defmodule OptimalSystemAgent.Signal.Classifier do
   - Uniqueness (not a greeting or small talk)
   """
   def calculate_weight(msg) do
-    base = 0.5
-    length_bonus = min(String.length(msg) / 500.0, 0.2)
+    len = String.length(msg)
+    # Base scales with message length — single words start near 0, not 0.5
+    base = min(len / 20.0, 0.5)
+    length_bonus = min(len / 500.0, 0.2)
     question_bonus = if String.contains?(msg, "?"), do: 0.15, else: 0.0
 
     urgency_bonus =
@@ -505,9 +507,13 @@ defmodule OptimalSystemAgent.Signal.Classifier do
 
     noise_penalty =
       if matches_word?(String.downcase(msg), ~w(hello thanks lol haha)) or
-           matches_any_word_strict?(String.downcase(msg), ~w(hi ok hey sure)), do: -0.3, else: 0.0
+           matches_any_word_strict?(String.downcase(msg), ~w(hi ok hey sure k y n yep nope np gg)), do: -0.3, else: 0.0
 
-    (base + length_bonus + question_bonus + urgency_bonus + noise_penalty)
+    # Emoji-only messages are noise
+    emoji_only_penalty =
+      if Regex.match?(~r/\A[\p{So}\p{Sk}\s]+\z/u, msg), do: -0.5, else: 0.0
+
+    (base + length_bonus + question_bonus + urgency_bonus + noise_penalty + emoji_only_penalty)
     |> max(0.0)
     |> min(1.0)
   end

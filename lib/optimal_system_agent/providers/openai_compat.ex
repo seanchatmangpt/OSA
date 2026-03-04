@@ -76,7 +76,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       case Req.post(url, json: body, headers: headers, receive_timeout: timeout) do
         {:ok, %{status: 200, body: %{"choices" => [%{"message" => msg} | _]} = resp}} ->
           content = Text.strip_thinking_tokens(msg["content"] || "")
-          tool_calls = parse_tool_calls(msg)
+          tool_calls = parse_tool_calls(msg, model)
           usage = parse_usage(resp)
           {:ok, %{content: content, tool_calls: tool_calls, usage: usage}}
 
@@ -280,7 +280,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
 
         %{
           id: tc.id || generate_id(),
-          name: tc.name |> String.split(~r/\s+/) |> List.first(),
+          name: normalize_tool_name(tc.name),
           arguments: args
         }
       end)
@@ -368,7 +368,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
 
       %{
         id: call["id"] || generate_id(),
-        name: call["function"]["name"] |> to_string() |> String.split(~r/\s+/) |> List.first(),
+        name: call["function"]["name"] |> to_string() |> normalize_tool_name(),
         arguments: args
       }
     end)
@@ -578,7 +578,10 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     case Keyword.get(opts, :tools) do
       nil -> body
       [] -> body
-      tools -> Map.put(body, :tools, format_tools(tools))
+      tools ->
+        body
+        |> Map.put(:tools, format_tools(tools))
+        |> Map.put(:tool_choice, "auto")
     end
   end
 

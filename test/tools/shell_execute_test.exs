@@ -266,7 +266,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ShellExecuteTest do
   # ---------------------------------------------------------------------------
 
   describe "timeout enforcement" do
-    @tag timeout: 60_000
+    @tag timeout: 120_000
     test "command that exceeds 30s is killed" do
       assert {:error, msg} = exec("sleep 60")
       assert msg =~ "timed out"

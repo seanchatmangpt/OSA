@@ -126,8 +126,30 @@ defmodule OptimalSystemAgent.Channels.CLI do
       cmd = String.trim_leading(input, "/")
       handle_command(cmd, session_id)
     else
-      send_to_agent(input, session_id)
-      session_id
+      # Noise gating — filter low-weight signals before hitting the LLM
+      signal = OptimalSystemAgent.Signal.Classifier.classify_fast(input)
+
+      if signal.weight < 0.15 do
+        # Acknowledge noise without burning API credits
+        ack = noise_acknowledgment(input)
+        IO.puts("\n#{@white}  #{ack}#{@reset}\n")
+        session_id
+      else
+        send_to_agent(input, session_id)
+        session_id
+      end
+    end
+  end
+
+  defp noise_acknowledgment(input) do
+    lower = String.downcase(String.trim(input))
+
+    cond do
+      lower in ~w(hi hey hello yo) -> "Hey!"
+      lower in ~w(thanks thx thank) or String.starts_with?(lower, "thank") -> "Sure thing."
+      lower in ~w(ok okay k sure yep np nope y n) -> "Got it."
+      lower in ~w(lol haha lmao) -> ":)"
+      true -> "Got it."
     end
   end
 
