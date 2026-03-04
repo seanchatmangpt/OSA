@@ -177,6 +177,7 @@ defmodule OptimalSystemAgent.Agent.Context do
 
   defp gather_dynamic_blocks(state) do
     [
+      {tool_process_block(), 1, "tool_process"},
       {runtime_block(state), 1, "runtime"},
       {environment_block(state), 1, "environment"},
       {plan_mode_block(state), 1, "plan_mode"},
@@ -478,7 +479,6 @@ defmodule OptimalSystemAgent.Agent.Context do
 
   defp plan_mode_block(_), do: nil
 
-  @doc false
   defp tool_process_block do
     cwd = File.cwd!()
 
@@ -550,7 +550,6 @@ defmodule OptimalSystemAgent.Agent.Context do
     """
   end
 
-  @doc false
   defp environment_block(_state) do
     cwd = File.cwd!()
     git_info = cached_git_info()
