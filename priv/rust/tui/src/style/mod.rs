@@ -136,6 +136,21 @@ impl Theme {
         Style::default().fg(self.colors.secondary)
     }
 
+    /// Signal mode pill — colored background badge for Signal Theory display.
+    pub fn signal_pill(&self) -> Style {
+        Style::default()
+            .fg(Color::Black)
+            .bg(self.colors.secondary)
+            .add_modifier(Modifier::BOLD)
+    }
+
+    /// Signal genre label — lighter complement to the pill.
+    pub fn signal_genre(&self) -> Style {
+        Style::default()
+            .fg(self.colors.secondary)
+            .add_modifier(Modifier::BOLD)
+    }
+
     pub fn context_bar(&self) -> Style {
         Style::default().fg(self.colors.primary)
     }
@@ -537,13 +552,14 @@ use std::sync::RwLock;
 static CURRENT_THEME: RwLock<Option<Theme>> = RwLock::new(None);
 
 pub fn set_theme(theme: Theme) {
-    *CURRENT_THEME.write().unwrap() = Some(theme);
+    // Recover from a poisoned lock rather than propagating a panic.
+    *CURRENT_THEME.write().unwrap_or_else(|e| e.into_inner()) = Some(theme);
 }
 
 pub fn theme() -> Theme {
     CURRENT_THEME
         .read()
-        .unwrap()
+        .unwrap_or_else(|e| e.into_inner())
         .clone()
         .unwrap_or_else(|| themes::dark())
 }

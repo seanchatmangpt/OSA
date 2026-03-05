@@ -177,8 +177,10 @@ config :optimal_system_agent,
       (if System.get_env("OSA_REQUIRE_AUTH") == "true" do
          raise "OSA_SHARED_SECRET must be set when OSA_REQUIRE_AUTH=true"
        else
-         # Don't override test.exs or config.exs secrets; nil means dev mode (open access)
-         Application.get_env(:optimal_system_agent, :shared_secret)
+         # nil in dev mode — Auth module generates an ephemeral JWT signing
+         # secret via generated_dev_secret(), and AuthRoutes.verify_login_secret/1
+         # allows login without a secret when this is nil.
+         nil
        end),
   require_auth: System.get_env("OSA_REQUIRE_AUTH", "false") == "true",
 
