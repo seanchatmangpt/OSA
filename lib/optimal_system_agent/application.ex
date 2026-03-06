@@ -149,6 +149,10 @@ defmodule OptimalSystemAgent.Application do
           OptimalSystemAgent.Tools.Registry.register_mcp_tools()
         end)
 
+        # Wire autonomous bus bridges after all GenServers are up.
+        # Gaps closed: Bus→Trigger dispatch, ProactiveMonitor alerts, Learning skill generation.
+        OptimalSystemAgent.Agent.AutonomyWiring.setup()
+
         {:ok, pid}
 
       error ->

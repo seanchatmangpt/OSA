@@ -688,7 +688,7 @@ defmodule OptimalSystemAgent.Agent.Roster do
   # 17 roles: 8 original swarm roles + 9 agent-dispatch roles.
   # Orchestrator, Swarm.Worker, and Swarm.Planner all delegate here.
 
-  @max_agents 10
+  @max_agents 25
 
   @role_prompts %{
     # ── Wave 0: Explorer (always runs first) ────────────────────────

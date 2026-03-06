@@ -674,7 +674,8 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "github" => OptimalSystemAgent.Tools.Builtins.Github,
       "multi_file_edit" => OptimalSystemAgent.Tools.Builtins.MultiFileEdit,
       "semantic_search" => OptimalSystemAgent.Tools.Builtins.SemanticSearch,
-      "codebase_explore" => OptimalSystemAgent.Tools.Builtins.CodebaseExplore
+      "codebase_explore" => OptimalSystemAgent.Tools.Builtins.CodebaseExplore,
+      "schedule_task" => OptimalSystemAgent.Tools.Builtins.ScheduleTask
     }
   end
 

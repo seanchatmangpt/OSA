@@ -269,6 +269,15 @@ defmodule OptimalSystemAgent.Agent.Hooks do
         event: :session_end,
         priority: 90,
         handler: &session_cleanup/1
+      },
+
+      # Post-response dispatch — detect bug/error signals in agent responses and
+      # auto-dispatch a debugger agent when confidence is high (post_response, priority 60)
+      %{
+        name: "post_response_dispatch",
+        event: :post_response,
+        priority: 60,
+        handler: &post_response_dispatch/1
       }
     ]
 
@@ -444,6 +453,35 @@ defmodule OptimalSystemAgent.Agent.Hooks do
   end
 
   defp session_cleanup(payload), do: {:ok, payload}
+
+  # Post-response dispatch — detect error/bug signals and self-dispatch a debugger agent.
+  # Only fires when confidence is high (2+ signals) to avoid noisy false positives.
+  @error_signals ~w(error exception bug crash failed failure stacktrace undefined traceback
+                    compilation_error syntax_error nil_reference keyerror attributeerror
+                    typeerror nameerror runtimeerror assertionerror)
+
+  defp post_response_dispatch(%{response: response, session_id: sid} = payload)
+       when is_binary(response) and byte_size(response) > 0 do
+    lower = String.downcase(response)
+
+    hit_count = Enum.count(@error_signals, &String.contains?(lower, &1))
+
+    if hit_count >= 2 do
+      debugger_sid = "debug_#{sid}_#{:erlang.unique_integer([:positive])}"
+      snippet = String.slice(response, 0, 300)
+      task = "Debug the following issue detected in agent response:\n\n#{snippet}"
+
+      Task.start(fn ->
+        OptimalSystemAgent.Agent.Loop.process_message(debugger_sid, task, [])
+      end)
+
+      Logger.info("[Hooks] post_response_dispatch: #{hit_count} error signals — dispatched debugger (session #{debugger_sid})")
+    end
+
+    {:ok, payload}
+  end
+
+  defp post_response_dispatch(payload), do: {:ok, payload}
 
   # MCP cache — pre_tool_use: inject cached schema if fresh (< 1 hour)
   defp mcp_cache_pre(%{tool_name: tool_name} = payload) when is_binary(tool_name) do
