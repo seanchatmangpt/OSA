@@ -10,6 +10,8 @@ defmodule OptimalSystemAgent.CommandCenter do
   alias OptimalSystemAgent.Agent.Roster
   alias OptimalSystemAgent.Agent.Tier
   alias OptimalSystemAgent.Agent.Orchestrator.Patterns
+  alias OptimalSystemAgent.Telemetry.Metrics
+  alias OptimalSystemAgent.Agent.Tasks
 
   @doc "Full dashboard summary: agents, tiers, patterns, running count."
   @spec dashboard_summary() :: map()
@@ -51,9 +53,18 @@ defmodule OptimalSystemAgent.CommandCenter do
     end
   end
 
-  @doc "List currently running agents. Placeholder — returns [] until wired to orchestrator."
+  @doc "List currently running (leased) agent tasks."
   @spec running_agents() :: [map()]
-  def running_agents, do: []
+  def running_agents do
+    try do
+      Tasks.list_tasks([])
+      |> Enum.filter(fn task -> Map.get(task, :status) == :leased end)
+    rescue
+      _ -> []
+    catch
+      :exit, _ -> []
+    end
+  end
 
   @doc "Breakdown of agents per tier with tier config."
   @spec tier_breakdown() :: map()
@@ -73,14 +84,15 @@ defmodule OptimalSystemAgent.CommandCenter do
     end)
   end
 
-  @doc "Metrics summary. Placeholder with zeros until wired to telemetry."
+  @doc "Metrics summary sourced from Telemetry.Metrics."
   @spec metrics_summary() :: map()
   def metrics_summary do
-    %{
-      total_tasks_completed: 0,
-      total_tokens_used: 0,
-      active_sessions: 0,
-      uptime_seconds: 0
-    }
+    try do
+      Metrics.get_analytics_summary()
+    rescue
+      _ -> %{sessions_today: 0, total_messages: 0, tokens_used: 0, top_tools: [], provider_calls: %{}}
+    catch
+      :exit, _ -> %{sessions_today: 0, total_messages: 0, tokens_used: 0, top_tools: [], provider_calls: %{}}
+    end
   end
 end
