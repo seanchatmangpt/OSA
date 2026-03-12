@@ -2,7 +2,7 @@ defmodule OptimalSystemAgent.Agent.Roster do
   @moduledoc """
   Master registry of all agent definitions.
 
-  Each agent has: name, tier, model preference, skills, triggers, prompt,
+  Each agent has: name, tier, model preference, skills, triggers, module,
   territory (what files/domains it owns), and escalation paths.
 
   The orchestrator queries the roster to select agents for sub-tasks.
@@ -17,6 +17,8 @@ defmodule OptimalSystemAgent.Agent.Roster do
   Based on: OSA Agent v3.3 agent ecosystem + agent-dispatch 9-role system
   """
 
+  require Logger
+
   @type tier :: :elite | :specialist | :utility
   @type agent_def :: %{
           name: String.t(),
@@ -27,7 +29,7 @@ defmodule OptimalSystemAgent.Agent.Roster do
           triggers: [String.t()],
           territory: [String.t()],
           escalate_to: String.t() | nil,
-          prompt: String.t()
+          module: module()
         }
 
   # ── Agent Definitions ──────────────────────────────────────────────
@@ -444,7 +446,9 @@ defmodule OptimalSystemAgent.Agent.Roster do
       nil -> nil
       %{module: mod} -> mod.system_prompt()
       # SDK/dynamic agents that pre-date this change may carry :prompt directly.
-      agent -> Map.get(agent, :prompt)
+      agent ->
+        Logger.warning("[Roster] agent #{inspect(Map.get(agent, :name))} has no :module key, falling back to :prompt")
+        Map.get(agent, :prompt)
     end
   end
 
