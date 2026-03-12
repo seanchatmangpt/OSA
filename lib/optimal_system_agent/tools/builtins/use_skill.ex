@@ -63,22 +63,33 @@ defmodule OptimalSystemAgent.Tools.Builtins.UseSkill do
   # ── Private ──────────────────────────────────────────────────────────
 
   defp run_skill(%{path: path} = skill, task) when is_binary(path) do
-    case File.read(path) do
-      {:ok, content} ->
-        instructions = extract_body(content)
-        prompt = build_prompt(skill.name, instructions, task)
+    if safe_path?(path) do
+      case File.read(path) do
+        {:ok, content} ->
+          instructions = extract_body(content)
+          prompt = build_prompt(skill.name, instructions, task)
 
-        Logger.info("[UseSkill] Invoking skill '#{skill.name}' for task: #{String.slice(task, 0, 80)}")
+          Logger.info("[UseSkill] Invoking skill '#{skill.name}' for task: #{String.slice(task, 0, 80)}")
 
-        run_with_llm(prompt, skill)
+          run_with_llm(prompt, skill)
 
-      {:error, reason} ->
-        {:error, "Could not read skill file at #{path}: #{inspect(reason)}"}
+        {:error, reason} ->
+          {:error, "Could not read skill file at #{path}: #{inspect(reason)}"}
+      end
+    else
+      {:error, "path outside skills directory"}
     end
   end
 
   defp run_skill(skill, _task) do
     {:error, "Skill '#{skill.name}' has no file path — cannot load instructions."}
+  end
+
+  defp safe_path?(path) do
+    expanded = Path.expand(path)
+    skills_base = Path.expand("~/.osa/skills")
+    priv_base = Application.app_dir(:optimal_system_agent, "priv/skills")
+    String.starts_with?(expanded, skills_base) or String.starts_with?(expanded, priv_base)
   end
 
   # Strip the YAML frontmatter, return just the instruction body.
