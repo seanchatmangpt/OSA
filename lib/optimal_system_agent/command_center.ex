@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.CommandCenter do
   patterns are available, and (eventually) what's running right now.
   """
 
+  require Logger
+
   alias OptimalSystemAgent.Agent.Roster
   alias OptimalSystemAgent.Agent.Tier
   alias OptimalSystemAgent.Agent.Orchestrator.Patterns
@@ -60,9 +62,13 @@ defmodule OptimalSystemAgent.CommandCenter do
       Tasks.list_tasks([])
       |> Enum.filter(fn task -> Map.get(task, :status) == :leased end)
     rescue
-      _ -> []
+      e ->
+        Logger.warning("[CommandCenter] running_agents failed: #{inspect(e)}")
+        []
     catch
-      :exit, _ -> []
+      :exit, reason ->
+        Logger.warning("[CommandCenter] running_agents exit: #{inspect(reason)}")
+        []
     end
   end
 
@@ -87,12 +93,39 @@ defmodule OptimalSystemAgent.CommandCenter do
   @doc "Metrics summary sourced from Telemetry.Metrics."
   @spec metrics_summary() :: map()
   def metrics_summary do
+    fallback = %{
+      sessions_today: 0,
+      total_messages: 0,
+      tokens_used: 0,
+      top_tools: [],
+      provider_calls: %{},
+      # backward-compat keys
+      total_tokens_used: 0,
+      active_sessions: 0,
+      total_tasks_completed: 0,
+      uptime_seconds: 0
+    }
+
     try do
-      Metrics.get_analytics_summary()
+      summary = Metrics.get_analytics_summary()
+
+      started_at =
+        Application.get_env(:optimal_system_agent, :started_at, System.os_time(:second))
+
+      Map.merge(summary, %{
+        total_tokens_used: summary[:tokens_used] || 0,
+        active_sessions: summary[:sessions_today] || 0,
+        total_tasks_completed: 0,
+        uptime_seconds: System.os_time(:second) - started_at
+      })
     rescue
-      _ -> %{sessions_today: 0, total_messages: 0, tokens_used: 0, top_tools: [], provider_calls: %{}}
+      e ->
+        Logger.warning("[CommandCenter] metrics_summary failed: #{inspect(e)}")
+        fallback
     catch
-      :exit, _ -> %{sessions_today: 0, total_messages: 0, tokens_used: 0, top_tools: [], provider_calls: %{}}
+      :exit, reason ->
+        Logger.warning("[CommandCenter] metrics_summary exit: #{inspect(reason)}")
+        fallback
     end
   end
 end
