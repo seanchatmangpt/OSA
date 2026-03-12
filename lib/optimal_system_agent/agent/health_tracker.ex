@@ -48,8 +48,64 @@ defmodule OptimalSystemAgent.Agent.HealthTracker do
   @doc "Record a successful call with an optional duration."
   @spec record_call(String.t(), number() | nil) :: :ok
   def record_call(agent_name, duration_ms \\ nil) do
-    now = System.os_time(:second)
+    GenServer.cast(__MODULE__, {:record_call, agent_name, duration_ms})
+  end
 
+  @doc "Record an error event for a named agent."
+  @spec record_error(String.t()) :: :ok
+  def record_error(agent_name) do
+    GenServer.cast(__MODULE__, {:record_error, agent_name})
+  end
+
+  # ── GenServer callbacks ───────────────────────────────────────────────
+
+  @impl true
+  def init(:ok) do
+    if :ets.whereis(@table) == :undefined do
+      :ets.new(@table, [:named_table, :protected, :set, read_concurrency: true])
+    end
+
+    Phoenix.PubSub.subscribe(OptimalSystemAgent.PubSub, "osa:events")
+    Logger.debug("[Agent.HealthTracker] started")
+    {:ok, :no_state}
+  end
+
+  @impl true
+  def handle_cast({:record_call, agent_name, duration_ms}, state) do
+    do_record_call(agent_name, duration_ms)
+    {:noreply, state}
+  end
+
+  def handle_cast({:record_error, agent_name}, state) do
+    do_record_error(agent_name)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info({:osa_event, event}, state) do
+    agent_name = extract_agent_name(event)
+    event_type = Map.get(event, :type)
+
+    cond do
+      event_type in @call_event_types ->
+        do_record_call(agent_name, Map.get(event, :duration_ms))
+
+      event_type in @error_event_types ->
+        do_record_error(agent_name)
+
+      true ->
+        :ok
+    end
+
+    {:noreply, state}
+  end
+
+  def handle_info(_msg, state), do: {:noreply, state}
+
+  # ── Private ──────────────────────────────────────────────────────────
+
+  defp do_record_call(agent_name, duration_ms) do
+    now = System.os_time(:second)
     default = %{total_calls: 0, error_count: 0, total_latency_ms: 0, last_active: now}
 
     entry =
@@ -72,11 +128,8 @@ defmodule OptimalSystemAgent.Agent.HealthTracker do
     :ok
   end
 
-  @doc "Record an error event for a named agent."
-  @spec record_error(String.t()) :: :ok
-  def record_error(agent_name) do
+  defp do_record_error(agent_name) do
     now = System.os_time(:second)
-
     default = %{total_calls: 0, error_count: 0, total_latency_ms: 0, last_active: now}
 
     entry =
@@ -85,45 +138,16 @@ defmodule OptimalSystemAgent.Agent.HealthTracker do
         [{_, e}] -> e
       end
 
-    :ets.insert(@table, {agent_name, Map.update!(entry, :error_count, &(&1 + 1))})
+    updated = Map.update!(entry, :error_count, &(&1 + 1))
+    :ets.insert(@table, {agent_name, updated})
     :ok
   end
 
-  # ── GenServer callbacks ───────────────────────────────────────────────
-
-  @impl true
-  def init(:ok) do
-    :ets.new(@table, [:named_table, :public, :set, read_concurrency: true])
-    Phoenix.PubSub.subscribe(OptimalSystemAgent.PubSub, "osa:events")
-    Logger.debug("[Agent.HealthTracker] started")
-    {:ok, :no_state}
-  end
-
-  @impl true
-  def handle_info({:osa_event, event}, state) do
-    agent_name = extract_agent_name(event)
-    event_type = Map.get(event, :type)
-
-    cond do
-      event_type in @call_event_types ->
-        record_call(agent_name, Map.get(event, :duration_ms))
-
-      event_type in @error_event_types ->
-        record_error(agent_name)
-
-      true ->
-        :ok
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info(_msg, state), do: {:noreply, state}
-
-  # ── Private ──────────────────────────────────────────────────────────
-
   defp extract_agent_name(event) do
-    (Map.get(event, :agent) || Map.get(event, :agent_name) || "unknown")
+    data = Map.get(event, :data, %{}) || %{}
+
+    (Map.get(data, :agent) || Map.get(data, :agent_name) ||
+       Map.get(event, :subject) || "unknown")
     |> to_string()
   end
 
