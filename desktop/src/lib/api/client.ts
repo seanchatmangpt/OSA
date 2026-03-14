@@ -35,6 +35,9 @@ import type {
   SkillCategoryCount,
   SkillDetail,
   SkillSearchResult,
+  HierarchyNode,
+  HierarchyUpdateRequest,
+  Approval,
 } from "./types";
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -704,6 +707,60 @@ export const budgets = {
       `/budgets/${encodeURIComponent(agentName)}/reset`,
       { method: "POST" },
     ),
+};
+
+// ── Agent Hierarchy ──────────────────────────────────────────────────────────
+
+export const hierarchy = {
+  getTree: () => request<HierarchyNode[]>("/agents/hierarchy"),
+  update: (agentName: string, body: HierarchyUpdateRequest) =>
+    request<{ status: string }>(
+      `/agents/hierarchy/${encodeURIComponent(agentName)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(body),
+      },
+    ),
+  seed: () =>
+    request<{ status: string; count: number }>("/agents/hierarchy/seed", {
+      method: "POST",
+    }),
+  delegate: (agentName: string, to: string, task: string) =>
+    request<{ from: string; to: string; task: string }>(
+      `/agents/hierarchy/${encodeURIComponent(agentName)}/delegate`,
+      { method: "POST", body: JSON.stringify({ to, task }) },
+    ),
+};
+
+// ── Approvals ────────────────────────────────────────────────────────────────
+
+export const approvals = {
+  list: (params?: {
+    status?: string;
+    type?: string;
+    page?: number;
+    per_page?: number;
+  }) => {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.type) qs.set("type", params.type);
+    if (params?.page) qs.set("page", String(params.page));
+    if (params?.per_page) qs.set("per_page", String(params.per_page));
+    const q = qs.toString();
+    return request<{
+      approvals: Approval[];
+      total: number;
+      page: number;
+      per_page: number;
+    }>(`/approvals${q ? `?${q}` : ""}`);
+  },
+  pending: () =>
+    request<{ count: number; approvals: Approval[] }>("/approvals/pending"),
+  resolve: (id: number, decision: string, notes: string, resolvedBy: string) =>
+    request<Approval>(`/approvals/${id}/${decision}`, {
+      method: "POST",
+      body: JSON.stringify({ notes, resolved_by: resolvedBy }),
+    }),
 };
 
 // ── Config Revisions ─────────────────────────────────────────────────────────

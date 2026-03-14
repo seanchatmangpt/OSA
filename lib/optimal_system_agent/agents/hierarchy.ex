@@ -18,14 +18,11 @@ defmodule OptimalSystemAgent.Agents.Hierarchy do
     timestamps()
   end
 
-  # ---------------------------------------------------------------------------
-  # Public API
-  # ---------------------------------------------------------------------------
-
   @spec get_tree() :: [map()]
   def get_tree do
     rows = Repo.all(from a in __MODULE__, order_by: [asc: a.org_order, asc: a.agent_name])
-    build_tree(rows, nil)
+    by_parent = Enum.group_by(rows, & &1.reports_to)
+    build_tree(by_parent, nil)
   end
 
   @spec get_reports(String.t()) :: [t()]
@@ -41,17 +38,24 @@ defmodule OptimalSystemAgent.Agents.Hierarchy do
     end
   end
 
-  @spec move_agent(String.t(), String.t() | nil) :: {:ok, integer()} | {:error, atom()}
+  @spec move_agent(String.t(), String.t() | nil) :: {:ok, t()} | {:error, atom()}
   def move_agent(agent_name, new_reports_to) do
-    with :ok <- check_cycle(agent_name, new_reports_to) do
-      count =
-        Repo.update_all(
-          from(a in __MODULE__, where: a.agent_name == ^agent_name),
-          set: [reports_to: new_reports_to]
-        )
-        |> elem(0)
+    case Repo.get_by(__MODULE__, agent_name: agent_name) do
+      nil ->
+        {:error, :not_found}
 
-      {:ok, count}
+      agent ->
+        with :ok <- check_cycle(agent_name, new_reports_to) do
+          agent |> change(reports_to: new_reports_to) |> Repo.update()
+        end
+    end
+  end
+
+  @spec set_title(String.t(), String.t() | nil) :: {:ok, t()} | {:error, :not_found}
+  def set_title(agent_name, title) do
+    case Repo.get_by(__MODULE__, agent_name: agent_name) do
+      nil -> {:error, :not_found}
+      agent -> agent |> change(title: title) |> Repo.update()
     end
   end
 
@@ -65,24 +69,21 @@ defmodule OptimalSystemAgent.Agents.Hierarchy do
 
   def set_role(_agent_name, _role), do: {:error, :invalid_role}
 
-  @spec delegate(String.t(), String.t(), String.t()) ::
-          {:ok, map()} | {:error, atom()}
+  @spec delegate(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, atom()}
   def delegate(from_agent, to_agent, task) do
-    reports = get_reports(from_agent)
+    from = Repo.get_by(__MODULE__, agent_name: from_agent)
+    target = Repo.get_by(__MODULE__, agent_name: to_agent)
 
-    case Enum.find(reports, &(&1.agent_name == to_agent)) do
-      nil ->
+    cond do
+      is_nil(from) or is_nil(target) ->
+        {:error, :not_found}
+
+      target.reports_to == from_agent or to_agent in decode_delegates(from) ->
+        {:ok, %{from: from_agent, to: to_agent, task: task,
+                delegated_at: DateTime.utc_now(), delegate_role: target.org_role}}
+
+      true ->
         {:error, :not_a_direct_report}
-
-      agent ->
-        {:ok,
-         %{
-           from: from_agent,
-           to: to_agent,
-           task: task,
-           delegated_at: DateTime.utc_now(),
-           delegate_role: agent.org_role
-         }}
     end
   end
 
@@ -99,20 +100,15 @@ defmodule OptimalSystemAgent.Agents.Hierarchy do
     {:ok, count}
   end
 
-  # ---------------------------------------------------------------------------
-  # Private helpers
-  # ---------------------------------------------------------------------------
-
-  defp build_tree(rows, parent) do
-    rows
-    |> Enum.filter(&(&1.reports_to == parent))
+  defp build_tree(by_parent, parent) do
+    (Map.get(by_parent, parent) || [])
     |> Enum.map(fn row ->
       %{
         agent_name: row.agent_name,
         reports_to: row.reports_to,
         org_role: row.org_role,
         title: row.title,
-        children: build_tree(rows, row.agent_name)
+        children: build_tree(by_parent, row.agent_name)
       }
     end)
   end
@@ -136,6 +132,15 @@ defmodule OptimalSystemAgent.Agents.Hierarchy do
       %{reports_to: next} -> check_cycle(agent_name, next)
     end
   end
+
+  defp decode_delegates(%__MODULE__{can_delegate_to: json}) when is_binary(json) do
+    case Jason.decode(json) do
+      {:ok, list} when is_list(list) -> list
+      _ -> []
+    end
+  end
+
+  defp decode_delegates(_), do: []
 
   defp now do
     NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)

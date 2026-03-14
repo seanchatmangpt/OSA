@@ -1,20 +1,11 @@
 <script lang="ts">
-  interface KanbanTask {
-    id: number;
-    task_id: string;
-    status: string;
-    priority: string;
-    assignee_agent: string | null;
-    payload: Record<string, unknown>;
-    created_at: string;
-  }
+  import type { KanbanTask } from '$lib/api/types';
 
   interface Props {
     task: KanbanTask;
-    onPriorityChange?: (taskId: number, priority: string) => void;
   }
 
-  let { task, onPriorityChange: _onPriorityChange }: Props = $props();
+  let { task }: Props = $props();
 
   const priorityColor: Record<string, string> = {
     low: 'var(--accent-success)',
@@ -52,11 +43,8 @@
     {/if}
     <svg
       class="drag-handle"
-      width="10"
-      height="14"
-      viewBox="0 0 10 14"
-      fill="currentColor"
-      aria-hidden="true"
+      width="10" height="14" viewBox="0 0 10 14"
+      fill="currentColor" aria-hidden="true"
     >
       <circle cx="2.5" cy="2.5" r="1.5"/>
       <circle cx="7.5" cy="2.5" r="1.5"/>
@@ -90,9 +78,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
-  .kanban-card:active {
-    cursor: grabbing;
-  }
+  .kanban-card:active { cursor: grabbing; }
 
   .card-left {
     display: flex;
@@ -107,7 +93,6 @@
     height: 7px;
     border-radius: var(--radius-full);
     flex-shrink: 0;
-    box-shadow: 0 0 4px currentColor;
   }
 
   .task-id {

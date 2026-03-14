@@ -1,23 +1,13 @@
 <script lang="ts">
+  import type { KanbanTask } from '$lib/api/types';
   import KanbanCard from './KanbanCard.svelte';
-
-  interface KanbanTask {
-    id: number;
-    task_id: string;
-    status: string;
-    priority: string;
-    assignee_agent: string | null;
-    payload: Record<string, unknown>;
-    created_at: string;
-  }
 
   interface Props {
     tasks: KanbanTask[];
     onStatusChange?: (taskId: number, newStatus: string) => void;
-    onPriorityChange?: (taskId: number, newPriority: string) => void;
   }
 
-  let { tasks, onStatusChange, onPriorityChange }: Props = $props();
+  let { tasks, onStatusChange }: Props = $props();
 
   const columns: { id: string; label: string }[] = [
     { id: 'backlog',     label: 'Backlog' },
@@ -39,7 +29,7 @@
     dragOverColumn = columnId;
   }
 
-  function handleDragLeave(e: DragEvent, _columnId: string) {
+  function handleDragLeave(e: DragEvent) {
     const related = e.relatedTarget as Node | null;
     const el = (e.currentTarget as HTMLElement);
     if (!el.contains(related)) dragOverColumn = null;
@@ -65,7 +55,7 @@
       class="kanban-column"
       class:kanban-column--over={dragOverColumn === col.id}
       ondragover={(e) => handleDragOver(e, col.id)}
-      ondragleave={(e) => handleDragLeave(e, col.id)}
+      ondragleave={handleDragLeave}
       ondrop={(e) => handleDrop(e, col.id)}
       ondragend={handleDragEnd}
       role="group"
@@ -80,7 +70,7 @@
 
       <div class="column-cards">
         {#each columnTasks(col.id) as task (task.id)}
-          <KanbanCard {task} {onPriorityChange} />
+          <KanbanCard {task} />
         {/each}
 
         {#if columnTasks(col.id).length === 0}

@@ -13,57 +13,58 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.TaskKanbanRoutes do
   plug :match
   plug :dispatch
 
-  @valid_statuses ~w(pending leased running completed failed cancelled)
-
-  # ── POST /:id/checkout — atomic checkout ─────────────────────────────
+  @valid_statuses ~w(backlog todo in_progress in_review done blocked cancelled)
 
   post "/:id/checkout" do
-    with %{"agent_name" => agent_name} when is_binary(agent_name) and agent_name != "" <-
+    with {:ok, task_id} <- parse_id(id),
+         %{"agent_name" => agent_name} when is_binary(agent_name) and agent_name != "" <-
            conn.body_params do
       {count, _} =
         Repo.update_all(
           from(t in "task_queue",
-            where: t.id == ^id and t.status == "pending" and is_nil(t.checkout_lock)
+            where: t.id == ^task_id and t.status == "todo" and is_nil(t.checkout_lock)
           ),
           set: [
             assignee_agent: agent_name,
-            status: "leased",
+            status: "in_progress",
             checkout_lock: DateTime.utc_now()
           ]
         )
 
       case count do
         0 -> json_error(conn, 409, "already_assigned", "Task is not available for checkout")
-        1 -> json(conn, 200, %{checked_out: true})
+        _ -> json(conn, 200, %{checked_out: true})
       end
     else
+      {:error, :bad_id} -> json_error(conn, 400, "invalid_request", "Invalid task ID")
       _ -> json_error(conn, 400, "invalid_request", "Missing required field: agent_name")
     end
   end
 
-  # ── POST /:id/release — release checkout lock ─────────────────────────
-
   post "/:id/release" do
-    {count, _} =
-      Repo.update_all(
-        from(t in "task_queue", where: t.id == ^id),
-        set: [checkout_lock: nil, status: "pending", assignee_agent: nil]
-      )
+    with {:ok, task_id} <- parse_id(id) do
+      {count, _} =
+        Repo.update_all(
+          from(t in "task_queue", where: t.id == ^task_id),
+          set: [checkout_lock: nil, status: "todo", assignee_agent: nil]
+        )
 
-    case count do
-      0 -> json_error(conn, 404, "not_found", "Task not found")
-      _ -> json(conn, 200, %{released: true})
+      case count do
+        0 -> json_error(conn, 404, "not_found", "Task not found")
+        _ -> json(conn, 200, %{released: true})
+      end
+    else
+      {:error, :bad_id} -> json_error(conn, 400, "invalid_request", "Invalid task ID")
     end
   end
 
-  # ── PUT /:id/status — update task status ─────────────────────────────
-
   put "/:id/status" do
-    with %{"status" => status} when is_binary(status) <- conn.body_params,
+    with {:ok, task_id} <- parse_id(id),
+         %{"status" => status} when is_binary(status) <- conn.body_params,
          true <- status in @valid_statuses do
       {count, _} =
         Repo.update_all(
-          from(t in "task_queue", where: t.id == ^id),
+          from(t in "task_queue", where: t.id == ^task_id),
           set: [status: status]
         )
 
@@ -72,21 +73,21 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.TaskKanbanRoutes do
         _ -> json(conn, 200, %{status: status})
       end
     else
+      {:error, :bad_id} -> json_error(conn, 400, "invalid_request", "Invalid task ID")
       false -> json_error(conn, 400, "invalid_status", "Status must be one of: #{Enum.join(@valid_statuses, ", ")}")
       _ -> json_error(conn, 400, "invalid_request", "Missing required field: status")
     end
   end
 
-  # ── PUT /:id/priority — update task priority ─────────────────────────
-
   put "/:id/priority" do
     valid = ~w(low medium high critical)
 
-    with %{"priority" => priority} when is_binary(priority) <- conn.body_params,
+    with {:ok, task_id} <- parse_id(id),
+         %{"priority" => priority} when is_binary(priority) <- conn.body_params,
          true <- priority in valid do
       {count, _} =
         Repo.update_all(
-          from(t in "task_queue", where: t.id == ^id),
+          from(t in "task_queue", where: t.id == ^task_id),
           set: [priority: priority]
         )
 
@@ -95,19 +96,19 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.TaskKanbanRoutes do
         _ -> json(conn, 200, %{priority: priority})
       end
     else
+      {:error, :bad_id} -> json_error(conn, 400, "invalid_request", "Invalid task ID")
       false -> json_error(conn, 400, "invalid_priority", "Priority must be one of: low, medium, high, critical")
       _ -> json_error(conn, 400, "invalid_request", "Missing required field: priority")
     end
   end
 
-  # ── PUT /:id/assign — assign task to agent ───────────────────────────
-
   put "/:id/assign" do
-    with %{"agent_name" => agent_name} when is_binary(agent_name) and agent_name != "" <-
+    with {:ok, task_id} <- parse_id(id),
+         %{"agent_name" => agent_name} when is_binary(agent_name) and agent_name != "" <-
            conn.body_params do
       {count, _} =
         Repo.update_all(
-          from(t in "task_queue", where: t.id == ^id),
+          from(t in "task_queue", where: t.id == ^task_id),
           set: [assignee_agent: agent_name]
         )
 
@@ -116,6 +117,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.TaskKanbanRoutes do
         _ -> json(conn, 200, %{assigned_to: agent_name})
       end
     else
+      {:error, :bad_id} -> json_error(conn, 400, "invalid_request", "Invalid task ID")
       _ -> json_error(conn, 400, "invalid_request", "Missing required field: agent_name")
     end
   end
@@ -123,4 +125,13 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.TaskKanbanRoutes do
   match _ do
     json_error(conn, 404, "not_found", "Endpoint not found")
   end
+
+  defp parse_id(id) when is_binary(id) do
+    case Integer.parse(id) do
+      {n, ""} -> {:ok, n}
+      _ -> {:error, :bad_id}
+    end
+  end
+
+  defp parse_id(id) when is_integer(id), do: {:ok, id}
 end

@@ -12,23 +12,17 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ApprovalRoutes do
   plug :match
   plug :dispatch
 
-  # ── GET / — list all approvals ────────────────────────────────────────
-
   get "/" do
     conn = Plug.Conn.fetch_query_params(conn)
     {page, per_page} = pagination_params(conn)
 
     filters =
-      %{}
-      |> maybe_put_map("status", conn.query_params["status"])
-      |> maybe_put_map("type", conn.query_params["type"])
-      |> Map.merge(%{page: page, per_page: per_page})
+      %{page: page, per_page: per_page}
+      |> put_if_present(:status, conn.query_params["status"])
+      |> put_if_present(:type, conn.query_params["type"])
 
-    result = Approvals.list_all(filters)
-    json(conn, 200, result)
+    json(conn, 200, Approvals.list_all(filters))
   end
-
-  # ── GET /pending — pending approvals with count ───────────────────────
 
   get "/pending" do
     json(conn, 200, %{
@@ -36,8 +30,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ApprovalRoutes do
       approvals: Approvals.list_pending()
     })
   end
-
-  # ── POST / — create approval ──────────────────────────────────────────
 
   post "/" do
     required = ~w(type title description requested_by)
@@ -54,26 +46,21 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ApprovalRoutes do
 
       case Approvals.create(attrs) do
         {:ok, approval} -> json(conn, 201, approval)
-        {:error, changeset} -> json_error(conn, 422, "validation_error", format_changeset_errors(changeset))
+        {:error, %Ecto.Changeset{} = cs} -> json_error(conn, 422, "validation_error", changeset_errors(cs))
+        {:error, reason} -> json_error(conn, 422, "validation_error", to_string(reason))
       end
     else
       _ -> json_error(conn, 400, "invalid_request", "Missing required fields: type, title, description, requested_by")
     end
   end
 
-  # ── POST /:id/approve ─────────────────────────────────────────────────
-
   post "/:id/approve" do
     resolve_approval(conn, id, "approved")
   end
 
-  # ── POST /:id/reject ──────────────────────────────────────────────────
-
   post "/:id/reject" do
     resolve_approval(conn, id, "rejected")
   end
-
-  # ── POST /:id/request-revision ────────────────────────────────────────
 
   post "/:id/request-revision" do
     resolve_approval(conn, id, "revision_requested")
@@ -82,8 +69,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ApprovalRoutes do
   match _ do
     json_error(conn, 404, "not_found", "Endpoint not found")
   end
-
-  # ── Helpers ───────────────────────────────────────────────────────────
 
   defp resolve_approval(conn, id, decision) do
     notes = conn.body_params["notes"]
@@ -96,10 +81,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ApprovalRoutes do
     end
   end
 
-  defp maybe_put_map(map, _key, nil), do: map
-  defp maybe_put_map(map, _key, ""), do: map
-  defp maybe_put_map(map, key, value), do: Map.put(map, key, value)
-
-  defp format_changeset_errors(%Ecto.Changeset{} = cs), do: changeset_errors(cs)
-  defp format_changeset_errors(reason), do: to_string(reason)
+  defp put_if_present(map, _key, nil), do: map
+  defp put_if_present(map, _key, ""), do: map
+  defp put_if_present(map, key, value), do: Map.put(map, key, value)
 end

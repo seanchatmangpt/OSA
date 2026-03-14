@@ -168,6 +168,48 @@ export interface Agent {
   error?: string;
 }
 
+// ── Agent Hierarchy ──────────────────────────────────────────────────────────
+
+export type OrgRole = "ceo" | "director" | "lead" | "engineer" | "specialist";
+
+export interface HierarchyNode {
+  agent_name: string;
+  reports_to: string | null;
+  org_role: OrgRole;
+  title: string | null;
+  org_order: number;
+  children: HierarchyNode[];
+}
+
+export interface HierarchyUpdateRequest {
+  reports_to?: string | null;
+  org_role?: OrgRole;
+  title?: string | null;
+}
+
+// ── Kanban ────────────────────────────────────────────────────────────────────
+
+export type KanbanStatus =
+  | "backlog"
+  | "todo"
+  | "in_progress"
+  | "in_review"
+  | "done"
+  | "blocked"
+  | "cancelled";
+
+export type TaskPriority = "low" | "medium" | "high" | "critical";
+
+export interface KanbanTask {
+  id: number;
+  task_id: string;
+  status: KanbanStatus;
+  priority: TaskPriority;
+  assignee_agent: string | null;
+  payload: Record<string, unknown>;
+  created_at: string;
+}
+
 // ── Models ────────────────────────────────────────────────────────────────────
 
 export type ModelProvider =

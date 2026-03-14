@@ -58,32 +58,10 @@
     notesMap = { ...notesMap, [id]: val };
   }
 
-  async function handleApprove(a: Approval) {
+  async function handleResolve(a: Approval, action: 'approve' | 'reject' | 'request-revision') {
     pendingActions = new Set([...pendingActions, a.id]);
     try {
-      await approvalsStore.approve(a.id, getNotes(a.id));
-    } finally {
-      const next = new Set(pendingActions);
-      next.delete(a.id);
-      pendingActions = next;
-    }
-  }
-
-  async function handleReject(a: Approval) {
-    pendingActions = new Set([...pendingActions, a.id]);
-    try {
-      await approvalsStore.reject(a.id, getNotes(a.id));
-    } finally {
-      const next = new Set(pendingActions);
-      next.delete(a.id);
-      pendingActions = next;
-    }
-  }
-
-  async function handleRevision(a: Approval) {
-    pendingActions = new Set([...pendingActions, a.id]);
-    try {
-      await approvalsStore.requestRevision(a.id, getNotes(a.id));
+      await approvalsStore.resolve(a.id, action, getNotes(a.id));
     } finally {
       const next = new Set(pendingActions);
       next.delete(a.id);
@@ -232,7 +210,7 @@
                 <div class="action-btns">
                   <button
                     class="action-btn action-btn--approve"
-                    onclick={() => handleApprove(approval)}
+                    onclick={() => handleResolve(approval, 'approve')}
                     disabled={pendingActions.has(approval.id)}
                     aria-label="Approve: {approval.title}"
                   >
@@ -240,7 +218,7 @@
                   </button>
                   <button
                     class="action-btn action-btn--revision"
-                    onclick={() => handleRevision(approval)}
+                    onclick={() => handleResolve(approval, 'request-revision')}
                     disabled={pendingActions.has(approval.id)}
                     aria-label="Request revision for: {approval.title}"
                   >
@@ -248,7 +226,7 @@
                   </button>
                   <button
                     class="action-btn action-btn--reject"
-                    onclick={() => handleReject(approval)}
+                    onclick={() => handleResolve(approval, 'reject')}
                     disabled={pendingActions.has(approval.id)}
                     aria-label="Reject: {approval.title}"
                   >

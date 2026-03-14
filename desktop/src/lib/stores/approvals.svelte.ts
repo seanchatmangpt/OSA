@@ -1,4 +1,5 @@
 import type { Approval } from "$lib/api/types";
+import { approvals as approvalsApi } from "$lib/api/client";
 
 class ApprovalsStore {
   approvals = $state<Approval[]>([]);
@@ -17,9 +18,7 @@ class ApprovalsStore {
     this.loading = true;
     this.error = null;
     try {
-      const res = await fetch("http://127.0.0.1:9089/api/v1/approvals");
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
+      const data = await approvalsApi.list();
       this.approvals = data.approvals ?? [];
     } catch (err) {
       this.error =
@@ -29,34 +28,25 @@ class ApprovalsStore {
     }
   }
 
-  async approve(id: number, notes: string): Promise<void> {
-    await fetch(`http://127.0.0.1:9089/api/v1/approvals/${id}/approve`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes, resolved_by: "operator" }),
-    });
+  async resolve(
+    id: number,
+    decision: "approve" | "reject" | "request-revision",
+    notes: string,
+  ): Promise<void> {
+    await approvalsApi.resolve(id, decision, notes, "operator");
     await this.fetchApprovals();
+  }
+
+  async approve(id: number, notes: string): Promise<void> {
+    return this.resolve(id, "approve", notes);
   }
 
   async reject(id: number, notes: string): Promise<void> {
-    await fetch(`http://127.0.0.1:9089/api/v1/approvals/${id}/reject`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes, resolved_by: "operator" }),
-    });
-    await this.fetchApprovals();
+    return this.resolve(id, "reject", notes);
   }
 
   async requestRevision(id: number, notes: string): Promise<void> {
-    await fetch(
-      `http://127.0.0.1:9089/api/v1/approvals/${id}/request-revision`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes, resolved_by: "operator" }),
-      },
-    );
-    await this.fetchApprovals();
+    return this.resolve(id, "request-revision", notes);
   }
 }
 
