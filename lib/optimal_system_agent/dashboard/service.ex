@@ -126,8 +126,10 @@ defmodule OptimalSystemAgent.Dashboard.Service do
   end
 
   defp check_provider_status do
-    agents = Roster.all()
-    if map_size(agents) > 0, do: "connected", else: "connected"
+    case map_size(Roster.all()) do
+      0 -> "disconnected"
+      _ -> "connected"
+    end
   rescue
     _ -> "disconnected"
   catch

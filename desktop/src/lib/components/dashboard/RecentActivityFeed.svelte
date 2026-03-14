@@ -1,19 +1,12 @@
 <script lang="ts">
   import type { DashboardActivity } from "$api/types";
+  import { relativeTime } from "$lib/utils/time";
 
   interface Props {
     activities: DashboardActivity[];
   }
 
   let { activities }: Props = $props();
-
-  function relativeTime(ts: string): string {
-    const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-  }
 
   function levelClass(level: string): string {
     if (level === "error") return "raf-error";

@@ -1,9 +1,8 @@
 // src/lib/stores/dashboard.svelte.ts
 // Dashboard state with periodic refresh.
 
-import { BASE_URL, API_PREFIX, getToken } from "$api/client";
+import { dashboard } from "$api/client";
 import type {
-  DashboardData,
   DashboardKpis,
   DashboardAgent,
   DashboardActivity,
@@ -28,19 +27,6 @@ const EMPTY_HEALTH: DashboardSystemHealth = {
   memory_mb: 0,
 };
 
-async function fetchDashboard(): Promise<DashboardData> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  const token = getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
-  const res = await globalThis.fetch(`${BASE_URL}${API_PREFIX}/dashboard`, {
-    headers,
-  });
-
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return (await res.json()) as DashboardData;
-}
-
 class DashboardStore {
   kpis = $state<DashboardKpis>(EMPTY_KPIS);
   activeAgents = $state<DashboardAgent[]>([]);
@@ -54,7 +40,7 @@ class DashboardStore {
 
   async load(): Promise<void> {
     try {
-      const data = await fetchDashboard();
+      const data = await dashboard.get();
       this.kpis = data.kpis;
       this.activeAgents = data.active_agents;
       this.recentActivity = data.recent_activity;

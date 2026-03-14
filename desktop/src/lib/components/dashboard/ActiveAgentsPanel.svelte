@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DashboardAgent } from "$api/types";
+  import { relativeTime } from "$lib/utils/time";
 
   interface Props {
     agents: DashboardAgent[];
@@ -12,14 +13,6 @@
     if (status === "running") return "aap-running";
     if (status === "paused") return "aap-paused";
     return "aap-idle";
-  }
-
-  function relativeTime(ts?: string): string {
-    if (!ts) return "";
-    const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    return `${Math.floor(diff / 3600)}h ago`;
   }
 </script>
 
