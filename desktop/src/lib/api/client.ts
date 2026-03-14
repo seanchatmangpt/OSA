@@ -472,15 +472,15 @@ export const projects = {
     });
     return data.goal;
   },
-  updateGoal: async (projectId: number, goalId: number, body: Partial<CreateGoalPayload>): Promise<Goal> => {
-    const data = await request<{ goal: Goal }>(`/projects/${projectId}/goals/${goalId}`, {
-      method: "PATCH",
+  updateGoal: async (_projectId: number, goalId: number, body: Partial<CreateGoalPayload>): Promise<Goal> => {
+    const data = await request<{ goal: Goal }>(`/goals/${goalId}`, {
+      method: "PUT",
       body: JSON.stringify(body),
     });
     return data.goal;
   },
-  deleteGoal: (projectId: number, goalId: number) =>
-    request<void>(`/projects/${projectId}/goals/${goalId}`, { method: "DELETE" }),
+  deleteGoal: (_projectId: number, goalId: number) =>
+    request<void>(`/goals/${goalId}`, { method: "DELETE" }),
   tasks: async (id: number): Promise<ProjectTask[]> => {
     const data = await request<{ tasks: ProjectTask[] }>(`/projects/${id}/tasks`);
     return data.tasks ?? [];

@@ -19,6 +19,7 @@
   let showGoalForm  = $state(false);
   let newGoalTitle  = $state('');
   let goalFormError = $state('');
+  let goalParentId  = $state<number | null>(null);
 
   const goals       = $derived(projectsStore.goals);
   const isActive    = $derived(project.status === 'active');
@@ -39,21 +40,30 @@
     if (e.key === 'Escape') { editName = project.name; editingName = false; }
   }
 
+  function resetGoalForm() {
+    newGoalTitle = '';
+    goalFormError = '';
+    goalParentId = null;
+    showGoalForm = false;
+  }
+
   async function handleAddGoal() {
     const trimmed = newGoalTitle.trim();
     if (!trimmed) { goalFormError = 'Goal title is required.'; return; }
-    await projectsStore.createGoal(project.id, { title: trimmed });
-    newGoalTitle = '';
-    goalFormError = '';
-    showGoalForm = false;
+    await projectsStore.createGoal(project.id, {
+      title: trimmed,
+      parent_id: goalParentId ?? undefined,
+    });
+    resetGoalForm();
   }
 
   function handleGoalFormKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') handleAddGoal();
-    if (e.key === 'Escape') { showGoalForm = false; newGoalTitle = ''; goalFormError = ''; }
+    if (e.key === 'Escape') resetGoalForm();
   }
 
-  function handleAddChildGoal(_parentId: number) {
+  function handleAddChildGoal(parentId: number) {
+    goalParentId = parentId;
     showGoalForm = true;
   }
 </script>
@@ -174,7 +184,7 @@
             <span id="goal-form-err" class="goal-form-error" role="alert">{goalFormError}</span>
           {/if}
           <div class="goal-form-actions">
-            <button class="goal-form-cancel" onclick={() => { showGoalForm = false; newGoalTitle = ''; goalFormError = ''; }}>
+            <button class="goal-form-cancel" onclick={resetGoalForm}>
               Cancel
             </button>
             <button class="goal-form-submit" onclick={handleAddGoal}>

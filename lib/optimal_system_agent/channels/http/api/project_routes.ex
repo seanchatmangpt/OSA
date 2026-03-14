@@ -50,7 +50,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
           json(conn, 201, %{project: serialize_project(project)})
 
         {:error, %Ecto.Changeset{} = cs} ->
-          json_error(conn, 422, "validation_error", inspect(changeset_errors(cs)))
+          json_error(conn, 422, "validation_error", changeset_errors(cs))
 
         {:error, reason} ->
           Logger.error("[ProjectRoutes] create_project failed: #{inspect(reason)}")
@@ -91,7 +91,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
           json(conn, 200, %{project: serialize_project(updated)})
 
         {:error, %Ecto.Changeset{} = cs} ->
-          json_error(conn, 422, "validation_error", inspect(changeset_errors(cs)))
+          json_error(conn, 422, "validation_error", changeset_errors(cs))
 
         {:error, reason} ->
           Logger.error("[ProjectRoutes] update_project failed: #{inspect(reason)}")
@@ -142,7 +142,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
     with {:ok, id} <- parse_id(conn.params["id"]),
          {:ok, _project} <- Projects.get_project(id) do
       tasks = Projects.list_project_tasks(id)
-      json(conn, 200, %{tasks: tasks, count: length(tasks)})
+      json(conn, 200, %{tasks: Enum.map(tasks, &serialize_project_task/1), count: length(tasks)})
     else
       :invalid_id ->
         json_error(conn, 400, "invalid_id", "Project ID must be an integer")
@@ -166,7 +166,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
 
       case Projects.link_task(id, task_id, goal_id: goal_id) do
         {:ok, link} ->
-          json(conn, 201, %{link: link, project_id: id, task_id: task_id})
+          json(conn, 201, %{link: serialize_project_task(link), project_id: id, task_id: task_id})
 
         {:error, :not_found} ->
           json_error(conn, 404, "not_found", "Task not found")
@@ -194,7 +194,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
     with {:ok, id} <- parse_id(conn.params["id"]),
          {:ok, _project} <- Projects.get_project(id) do
       tree = Projects.goal_tree(id)
-      json(conn, 200, %{goals: tree})
+      json(conn, 200, %{goals: serialize_tree(tree)})
     else
       :invalid_id ->
         json_error(conn, 400, "invalid_id", "Project ID must be an integer")
@@ -227,7 +227,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
           json(conn, 201, %{goal: serialize_goal(goal)})
 
         {:error, %Ecto.Changeset{} = cs} ->
-          json_error(conn, 422, "validation_error", inspect(changeset_errors(cs)))
+          json_error(conn, 422, "validation_error", changeset_errors(cs))
 
         {:error, reason} ->
           Logger.error("[ProjectRoutes] create_goal failed: #{inspect(reason)}")
@@ -297,5 +297,23 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProjectRoutes do
       inserted_at: goal.inserted_at,
       updated_at: goal.updated_at
     }
+  end
+
+  defp serialize_project_task(pt) do
+    %{
+      id: pt.id,
+      project_id: pt.project_id,
+      task_id: pt.task_id,
+      goal_id: pt.goal_id,
+      goal: if(Ecto.assoc_loaded?(pt.goal) and pt.goal, do: serialize_goal(pt.goal)),
+      inserted_at: pt.inserted_at,
+      updated_at: pt.updated_at
+    }
+  end
+
+  defp serialize_tree(nodes) do
+    Enum.map(nodes, fn %{goal: goal, children: children} ->
+      %{goal: serialize_goal(goal), children: serialize_tree(children)}
+    end)
   end
 end

@@ -28,7 +28,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.GoalRoutes do
           json(conn, 200, %{goal: serialize_goal(updated)})
 
         {:error, %Ecto.Changeset{} = cs} ->
-          json_error(conn, 422, "validation_error", inspect(changeset_errors(cs)))
+          json_error(conn, 422, "validation_error", changeset_errors(cs))
 
         {:error, reason} ->
           Logger.error("[GoalRoutes] update_goal failed: #{inspect(reason)}")
