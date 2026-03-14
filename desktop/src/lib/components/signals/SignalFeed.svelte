@@ -11,6 +11,12 @@
 
   let feedEl: HTMLDivElement | undefined = $state();
   let userScrolled = $state(false);
+  let tick = $state(0);
+
+  $effect(() => {
+    const id = setInterval(() => { tick++; }, 30_000);
+    return () => clearInterval(id);
+  });
 
   function handleScroll(): void {
     if (!feedEl) return;
@@ -52,84 +58,22 @@
       </div>
     {:else}
       {#each signals as signal (signal.id)}
-        <SignalCard {signal} />
+        <SignalCard {signal} {tick} />
       {/each}
     {/if}
   </div>
 </div>
 
 <style>
-  .feed-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-  }
-
-  .feed-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 0 8px;
-    flex-shrink: 0;
-  }
-
-  .feed-title {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-
-  .feed-status {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .pulse-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent-success);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .offline-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
-
-  .status-text {
-    font-size: 0.65rem;
-    color: var(--text-tertiary);
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .feed-list {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
-  }
-
-  .feed-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 0;
-  }
-
-  .empty-text {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
+  .feed-container { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+  .feed-header { display: flex; justify-content: space-between; align-items: center; padding: 0 0 8px; flex-shrink: 0; }
+  .feed-title { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); }
+  .feed-status { display: flex; align-items: center; gap: 5px; }
+  .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-success); animation: pulse 2s ease-in-out infinite; }
+  .offline-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); }
+  .status-text { font-size: 0.65rem; color: var(--text-tertiary); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .feed-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.08) transparent; }
+  .feed-empty { display: flex; align-items: center; justify-content: center; padding: 48px 0; }
+  .empty-text { font-size: 0.75rem; color: var(--text-muted); }
 </style>

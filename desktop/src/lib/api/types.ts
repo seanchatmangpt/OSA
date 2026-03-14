@@ -332,6 +332,18 @@ export interface SignalFilters {
   weight_max?: number;
 }
 
+export interface SignalNewEvent {
+  type: "signal:new";
+  data: Signal;
+}
+
+export interface SignalStatsUpdateEvent {
+  type: "signal:stats_update";
+  data: SignalStats;
+}
+
+export type SignalSSEEvent = SignalNewEvent | SignalStatsUpdateEvent;
+
 export interface SignalPatterns {
   peak_hours: number[];
   avg_weight: number;

@@ -14,8 +14,8 @@
     signalsStore.fetchSignals();
   }
 
-  function handleFilter(key: string, value: string | undefined): void {
-    signalsStore.setFilter(key as 'mode' | 'type' | 'channel', value);
+  function handleFilter(key: 'mode' | 'type' | 'channel', value: string | undefined): void {
+    signalsStore.setFilter(key, value);
     signalsStore.fetchSignals();
   }
 

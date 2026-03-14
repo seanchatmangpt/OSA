@@ -3,7 +3,7 @@
 
   interface Props {
     filters: SignalFilters;
-    onFilter: (key: keyof SignalFilters, value: string | undefined) => void;
+    onFilter: (key: 'mode' | 'type' | 'channel', value: string | undefined) => void;
     onClear: () => void;
   }
 

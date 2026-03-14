@@ -1,20 +1,22 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
-  import type { Signal } from "$lib/api/types";
+  import type { Signal, SignalTier } from "$lib/api/types";
 
   interface Props {
     signal: Signal;
+    tick: number;
   }
 
-  let { signal }: Props = $props();
+  let { signal, tick }: Props = $props();
 
   let expanded = $state(false);
 
-  function tierClass(tier: string): string {
+  function tierClass(tier: SignalTier): string {
     return `tier-${tier}`;
   }
 
   function relativeTime(iso: string): string {
+    void tick;
     const diff = Date.now() - new Date(iso).getTime();
     const secs = Math.floor(diff / 1000);
     if (secs < 60) return `${secs}s ago`;
@@ -33,7 +35,6 @@
 >
   <div class="card-main">
     <span class="weight-badge {tierClass(signal.tier)}">{signal.weight.toFixed(2)}</span>
-
     <div class="card-body">
       <p class="card-preview">{signal.input_preview}</p>
       <div class="card-meta">
@@ -44,7 +45,6 @@
         <span class="meta-text">{signal.agent_name}</span>
       </div>
     </div>
-
     <span class="card-time">{relativeTime(signal.inserted_at)}</span>
   </div>
 
@@ -109,27 +109,24 @@
   }
 
   .tier-haiku {
-    background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
-    border: 1px solid rgba(34, 197, 94, 0.25);
+    background: color-mix(in srgb, var(--tier-haiku) 15%, transparent);
+    color: var(--tier-haiku);
+    border: 1px solid color-mix(in srgb, var(--tier-haiku) 25%, transparent);
   }
 
   .tier-sonnet {
-    background: rgba(245, 158, 11, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.25);
+    background: color-mix(in srgb, var(--tier-sonnet) 15%, transparent);
+    color: var(--tier-sonnet);
+    border: 1px solid color-mix(in srgb, var(--tier-sonnet) 25%, transparent);
   }
 
   .tier-opus {
-    background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: color-mix(in srgb, var(--tier-opus) 15%, transparent);
+    color: var(--tier-opus);
+    border: 1px solid color-mix(in srgb, var(--tier-opus) 25%, transparent);
   }
 
-  .card-body {
-    flex: 1;
-    min-width: 0;
-  }
+  .card-body { flex: 1; min-width: 0; }
 
   .card-preview {
     font-size: 0.8rem;
@@ -158,15 +155,8 @@
     color: rgba(96, 165, 250, 0.9);
   }
 
-  .meta-sep {
-    color: var(--text-muted);
-    font-size: 0.6rem;
-  }
-
-  .meta-text {
-    font-size: 0.65rem;
-    color: var(--text-tertiary);
-  }
+  .meta-sep { color: var(--text-muted); font-size: 0.6rem; }
+  .meta-text { font-size: 0.65rem; color: var(--text-tertiary); }
 
   .card-time {
     flex-shrink: 0;
@@ -191,14 +181,8 @@
     font-size: 0.65rem;
   }
 
-  .detail-label {
-    color: var(--text-tertiary);
-  }
-
-  .detail-value {
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-  }
+  .detail-label { color: var(--text-tertiary); }
+  .detail-value { color: var(--text-secondary); font-family: var(--font-mono); }
 
   .detail-json {
     margin-top: 4px;

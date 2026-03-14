@@ -3,6 +3,7 @@ import type {
   SignalStats,
   SignalFilters,
   SignalPatterns,
+  SignalSSEEvent,
 } from "$lib/api/types";
 import { BASE_URL, API_PREFIX, getToken } from "$lib/api/client";
 import { connectSSE } from "$lib/api/sse";
@@ -79,7 +80,7 @@ class SignalsStore {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       this.stats = (await res.json()) as SignalStats;
     } catch {
-      // Stats are non-critical — silently degrade
+      // Stats are non-critical
     }
   }
 
@@ -100,13 +101,11 @@ class SignalsStore {
 
     this.#sseController = connectSSE("/signals/live", {
       onEvent: (event) => {
-        const raw = event as unknown as { type: string; data?: unknown };
-        if (raw.type === "signal:new") {
-          const signal = raw.data as Signal;
-          this.liveFeed = [signal, ...this.liveFeed].slice(0, MAX_LIVE_ITEMS);
-        }
-        if (raw.type === "signal:stats_update") {
-          this.stats = raw.data as SignalStats;
+        const sse = event as unknown as SignalSSEEvent;
+        if (sse.type === "signal:new") {
+          this.liveFeed = [sse.data, ...this.liveFeed].slice(0, MAX_LIVE_ITEMS);
+        } else if (sse.type === "signal:stats_update") {
+          this.stats = sse.data;
         }
       },
       onConnect: () => {
@@ -128,7 +127,7 @@ class SignalsStore {
     key: keyof SignalFilters,
     value: string | number | undefined,
   ): void {
-    this.filters = { ...this.filters, [key]: value || undefined };
+    this.filters = { ...this.filters, [key]: value !== undefined ? value : undefined };
   }
 
   clearFilters(): void {
