@@ -13,10 +13,11 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
 
   @default_timeout_ms 300_000
   @max_timeout_ms 1_800_000
+  @circuit_breaker_limit 3
 
-  defstruct locks: %{}, runs: %{}
+  defstruct locks: %{}, runs: %{}, failures: %{}
 
-  def start_link(opts) do
+  def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
@@ -32,22 +33,53 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
     GenServer.call(__MODULE__, {:list_runs, task_id, opts})
   end
 
-  @impl true
-  def init(_opts) do
-    {:ok, %__MODULE__{}}
+  def failure_count(task_id) do
+    GenServer.call(__MODULE__, {:failure_count, task_id})
   end
+
+  def reset_failures(task_id) do
+    GenServer.cast(__MODULE__, {:reset_failures, task_id})
+  end
+
+  @impl true
+  def init(_opts), do: {:ok, %__MODULE__{}}
 
   @impl true
   def handle_call({:execute, task, trigger_type}, _from, state) do
     agent_name = task["agent_name"] || task["name"] || "unknown"
+    task_id = task["id"]
 
-    if Map.has_key?(state.locks, agent_name) do
-      {:reply, {:error, :locked}, state}
-    else
-      state = %{state | locks: Map.put(state.locks, agent_name, true)}
-      {result, run, state} = do_execute(task, trigger_type, state)
-      state = %{state | locks: Map.delete(state.locks, agent_name)}
-      {:reply, {result, run}, state}
+    cond do
+      circuit_open?(state, task_id) ->
+        {:reply, {:error, :circuit_open}, state}
+
+      Map.has_key?(state.locks, agent_name) ->
+        {:reply, {:error, :locked}, state}
+
+      true ->
+        state = %{state | locks: Map.put(state.locks, agent_name, true)}
+        run = build_run(task, trigger_type)
+        state = %{state | runs: Map.put(state.runs, run.id, run)}
+
+        emit_event(:system_event, %{
+          event: :task_run_started,
+          task_id: task_id,
+          run_id: run.id,
+          agent_name: agent_name,
+          trigger_type: trigger_type
+        })
+
+        case check_budget() do
+          :ok ->
+            {result, run} = execute_task(task, run)
+            state = record_result(state, agent_name, task_id, run)
+            {:reply, {result, run}, state}
+
+          {:error, :budget_exceeded} ->
+            run = finish_run(run, "failed", "Budget exceeded")
+            state = record_result(state, agent_name, task_id, run)
+            {:reply, {:error, :budget_exceeded}, state}
+        end
     end
   end
 
@@ -72,20 +104,90 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
     {:reply, runs, state}
   end
 
-  defp do_execute(task, trigger_type, state) do
-    run_id = generate_run_id()
-    task_id = task["id"]
-    agent_name = task["agent_name"] || task["name"] || "unknown"
-    timeout_ms = min(task["timeout_ms"] || @default_timeout_ms, @max_timeout_ms)
-    now = DateTime.utc_now()
+  @impl true
+  def handle_call({:failure_count, task_id}, _from, state) do
+    {:reply, Map.get(state.failures, task_id, 0), state}
+  end
 
-    run = %{
-      id: run_id,
-      scheduled_task_id: task_id,
-      agent_name: agent_name,
+  @impl true
+  def handle_cast({:reset_failures, task_id}, state) do
+    {:noreply, %{state | failures: Map.delete(state.failures, task_id)}}
+  end
+
+  # ── Execution ────────────────────────────────────────────────────
+
+  defp execute_task(task, run) do
+    timeout_ms = min(task["timeout_ms"] || @default_timeout_ms, @max_timeout_ms)
+    prompt = task["prompt"] || task["job"] || task["name"]
+    session_id = "scheduled_#{task["id"]}_#{System.unique_integer([:positive])}"
+
+    exec_task = Task.async(fn -> JobExecutor.execute_task(prompt, session_id) end)
+
+    case Task.yield(exec_task, timeout_ms) || Task.shutdown(exec_task, :brutal_kill) do
+      {:ok, {:ok, output}} ->
+        run = finish_run(run, "succeeded", nil, truncate_output(output))
+
+        emit_event(:system_event, %{
+          event: :task_run_completed,
+          run_id: run.id,
+          status: "succeeded",
+          duration_ms: run.duration_ms,
+          token_usage: run.token_usage
+        })
+
+        {:ok, run}
+
+      {:ok, {:error, reason}} ->
+        run = finish_run(run, "failed", to_string(reason))
+        emit_run_failed(run)
+        {:error, run}
+
+      nil ->
+        run = finish_run(run, "timed_out", "Timed out after #{timeout_ms}ms")
+        emit_run_failed(run)
+        {:error, run}
+    end
+  rescue
+    e ->
+      run = finish_run(run, "failed", Exception.message(e))
+      emit_run_failed(run)
+      {:error, run}
+  end
+
+  defp record_result(state, agent_name, task_id, run) do
+    state = %{state |
+      locks: Map.delete(state.locks, agent_name),
+      runs: Map.put(state.runs, run.id, run)
+    }
+
+    persist_run(run)
+    track_failure(state, task_id, run.status)
+  end
+
+  defp track_failure(state, task_id, "succeeded") do
+    %{state | failures: Map.delete(state.failures, task_id)}
+  end
+
+  defp track_failure(state, task_id, _failed_status) do
+    count = Map.get(state.failures, task_id, 0) + 1
+
+    if count >= @circuit_breaker_limit do
+      Logger.warning("[HeartbeatExecutor] Circuit breaker opened for #{task_id} after #{count} failures")
+    end
+
+    %{state | failures: Map.put(state.failures, task_id, count)}
+  end
+
+  # ── Run Lifecycle ────────────────────────────────────────────────
+
+  defp build_run(task, trigger_type) do
+    %{
+      id: generate_run_id(),
+      scheduled_task_id: task["id"],
+      agent_name: task["agent_name"] || task["name"] || "unknown",
       status: "running",
       trigger_type: to_string(trigger_type),
-      started_at: now,
+      started_at: DateTime.utc_now(),
       completed_at: nil,
       duration_ms: nil,
       exit_code: nil,
@@ -96,103 +198,26 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
       error_message: nil,
       metadata: %{}
     }
-
-    emit_event(:system_event, %{
-      event: :task_run_started,
-      task_id: task_id,
-      run_id: run_id,
-      agent_name: agent_name,
-      trigger_type: trigger_type
-    })
-
-    case check_budget() do
-      :ok ->
-        {result, run} = execute_with_timeout(task, run, timeout_ms)
-        state = %{state | runs: Map.put(state.runs, run_id, run)}
-        persist_run(run)
-        {result, run, state}
-
-      {:error, :budget_exceeded} ->
-        run = %{run |
-          status: "failed",
-          completed_at: DateTime.utc_now(),
-          duration_ms: 0,
-          error_message: "Budget exceeded"
-        }
-        state = %{state | runs: Map.put(state.runs, run_id, run)}
-        persist_run(run)
-        emit_run_failed(run)
-        {{:error, :budget_exceeded}, run, state}
-    end
   end
 
-  defp execute_with_timeout(task, run, timeout_ms) do
-    prompt = task["prompt"] || task["job"] || task["name"]
-    session_id = "scheduled_#{task["id"]}_#{System.unique_integer([:positive])}"
+  defp finish_run(run, status, error_message, stdout \\ nil) do
+    now = DateTime.utc_now()
 
-    parent = self()
-    ref = make_ref()
-
-    pid = spawn(fn ->
-      result = JobExecutor.execute_task(prompt, session_id)
-      send(parent, {ref, result})
-    end)
-
-    receive do
-      {^ref, {:ok, output}} ->
-        now = DateTime.utc_now()
-        duration = DateTime.diff(now, run.started_at, :millisecond)
-
-        run = %{run |
-          status: "succeeded",
-          completed_at: now,
-          duration_ms: duration,
-          stdout: truncate_output(output),
-          exit_code: 0
-        }
-
-        emit_event(:system_event, %{
-          event: :task_run_completed,
-          run_id: run.id,
-          status: "succeeded",
-          duration_ms: duration,
-          token_usage: run.token_usage
-        })
-
-        {:ok, run}
-
-      {^ref, {:error, reason}} ->
-        now = DateTime.utc_now()
-        duration = DateTime.diff(now, run.started_at, :millisecond)
-
-        run = %{run |
-          status: "failed",
-          completed_at: now,
-          duration_ms: duration,
-          error_message: to_string(reason),
-          exit_code: 1
-        }
-
-        emit_run_failed(run)
-        {:error, run}
-    after
-      timeout_ms ->
-        Process.exit(pid, :kill)
-
-        now = DateTime.utc_now()
-        duration = DateTime.diff(now, run.started_at, :millisecond)
-
-        run = %{run |
-          status: "timed_out",
-          completed_at: now,
-          duration_ms: duration,
-          error_message: "Timed out after #{timeout_ms}ms"
-        }
-
-        emit_run_failed(run)
-        {:error, run}
-    end
+    %{run |
+      status: status,
+      completed_at: now,
+      duration_ms: DateTime.diff(now, run.started_at, :millisecond),
+      error_message: error_message,
+      stdout: stdout,
+      exit_code: if(status == "succeeded", do: 0, else: 1)
+    }
   end
+
+  defp circuit_open?(state, task_id) do
+    Map.get(state.failures, task_id, 0) >= @circuit_breaker_limit
+  end
+
+  # ── Budget ───────────────────────────────────────────────────────
 
   defp check_budget do
     if Code.ensure_loaded?(OptimalSystemAgent.Agent.Treasury) and
@@ -211,32 +236,34 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
     :exit, _ -> :ok
   end
 
+  # ── Persistence ──────────────────────────────────────────────────
+
   defp persist_run(run) do
-    try do
-      Repo.insert_all("scheduled_runs", [
-        %{
-          scheduled_task_id: run.scheduled_task_id,
-          agent_name: run.agent_name,
-          status: run.status,
-          trigger_type: run.trigger_type,
-          started_at: run.started_at,
-          completed_at: run.completed_at,
-          duration_ms: run.duration_ms,
-          exit_code: run.exit_code,
-          stdout: run.stdout,
-          stderr: run.stderr,
-          token_usage: Jason.encode!(run.token_usage),
-          session_state: Jason.encode!(run.session_state),
-          error_message: run.error_message,
-          metadata: Jason.encode!(run.metadata),
-          inserted_at: DateTime.utc_now(),
-          updated_at: DateTime.utc_now()
-        }
-      ])
-    rescue
-      e -> Logger.warning("[HeartbeatExecutor] Failed to persist run: #{Exception.message(e)}")
-    end
+    Repo.insert_all("scheduled_runs", [
+      %{
+        scheduled_task_id: run.scheduled_task_id,
+        agent_name: run.agent_name,
+        status: run.status,
+        trigger_type: run.trigger_type,
+        started_at: run.started_at,
+        completed_at: run.completed_at,
+        duration_ms: run.duration_ms,
+        exit_code: run.exit_code,
+        stdout: run.stdout,
+        stderr: run.stderr,
+        token_usage: Jason.encode!(run.token_usage),
+        session_state: Jason.encode!(run.session_state),
+        error_message: run.error_message,
+        metadata: Jason.encode!(run.metadata),
+        inserted_at: DateTime.utc_now(),
+        updated_at: DateTime.utc_now()
+      }
+    ])
+  rescue
+    e -> Logger.warning("[HeartbeatExecutor] Failed to persist run: #{Exception.message(e)}")
   end
+
+  # ── Events ───────────────────────────────────────────────────────
 
   defp emit_run_failed(run) do
     emit_event(:system_event, %{
@@ -247,14 +274,14 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
   end
 
   defp emit_event(type, payload) do
-    try do
-      Bus.emit(type, payload)
-    rescue
-      _ -> :ok
-    catch
-      :exit, _ -> :ok
-    end
+    Bus.emit(type, payload)
+  rescue
+    _ -> :ok
+  catch
+    :exit, _ -> :ok
   end
+
+  # ── Helpers ──────────────────────────────────────────────────────
 
   defp truncate_output(nil), do: nil
   defp truncate_output(output) when byte_size(output) > 10_240 do

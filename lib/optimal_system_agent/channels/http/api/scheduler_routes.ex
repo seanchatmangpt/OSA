@@ -106,6 +106,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SchedulerRoutes do
             {:error, :locked} ->
               json_error(conn, 409, "locked", "Task is already running")
 
+            {:error, :circuit_open} ->
+              json_error(conn, 503, "circuit_open", "Task disabled after repeated failures")
+
             {:error, :budget_exceeded} ->
               json_error(conn, 402, "budget_exceeded", "Budget limit exceeded")
 
@@ -155,6 +158,27 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SchedulerRoutes do
       e -> json_error(conn, 500, "scheduler_error", Exception.message(e))
     catch
       :exit, _ -> json_error(conn, 503, "scheduler_unavailable", "Scheduler is not running")
+    end
+  end
+
+  # ── GET /:id/runs/:run_id/stream — SSE stream of running task output ─
+
+  get "/:id/runs/:run_id/stream" do
+    run = HeartbeatExecutor.get_run(run_id)
+
+    if is_nil(run) do
+      json_error(conn, 404, "not_found", "Run not found")
+    else
+      conn =
+        conn
+        |> put_resp_content_type("text/event-stream")
+        |> put_resp_header("cache-control", "no-cache")
+        |> put_resp_header("connection", "keep-alive")
+        |> put_resp_header("x-accel-buffering", "no")
+        |> send_chunked(200)
+
+      {:ok, conn} = chunk(conn, "event: connected\ndata: #{Jason.encode!(%{run_id: run_id})}\n\n")
+      sse_run_loop(conn, run_id)
     end
   end
 
@@ -298,6 +322,29 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SchedulerRoutes do
 
   defp format_datetime(nil), do: nil
   defp format_datetime(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
+
+  defp sse_run_loop(conn, run_id) do
+    receive do
+    after
+      2_000 ->
+        case HeartbeatExecutor.get_run(run_id) do
+          nil ->
+            chunk(conn, "event: error\ndata: #{Jason.encode!(%{error: "run_not_found"})}\n\n")
+            conn
+
+          %{status: status} when status in ["succeeded", "failed", "timed_out", "cancelled"] ->
+            run = HeartbeatExecutor.get_run(run_id)
+            chunk(conn, "event: completed\ndata: #{Jason.encode!(format_run(run))}\n\n")
+            conn
+
+          run ->
+            case chunk(conn, "event: status\ndata: #{Jason.encode!(%{status: run.status})}\n\n") do
+              {:ok, conn} -> sse_run_loop(conn, run_id)
+              {:error, _} -> conn
+            end
+        end
+    end
+  end
 
   defp build_updated_job(id, updates, existing) do
     %{
