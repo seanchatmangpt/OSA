@@ -497,7 +497,11 @@ defmodule OptimalSystemAgent.Agent.Loop do
       rescue
         e ->
           Logger.error("[loop] CRASH in run_loop: #{Exception.message(e)}\n#{Exception.format_stacktrace(__STACKTRACE__)}")
-          {"Sorry, an internal error occurred.", state}
+          {"I hit an error processing that request. Check the logs for details.", state}
+      catch
+        :exit, reason ->
+          Logger.error("[loop] EXIT in run_loop: #{inspect(reason)}")
+          {"I hit a timeout or process error. This usually means the LLM connection dropped — try again.", state}
       end
 
       response = maybe_scrub_prompt_leak(response)
