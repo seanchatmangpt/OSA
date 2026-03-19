@@ -6,6 +6,8 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.MacOS do
   Full adapter implementation (all 10 callbacks) comes in Phase 7.
   """
 
+  @behaviour OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapter
+
   @doc """
   Escape a string for safe embedding inside AppleScript double-quoted strings.
   Backslashes first, then double quotes.

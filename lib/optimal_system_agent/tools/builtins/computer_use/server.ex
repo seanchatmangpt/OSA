@@ -143,6 +143,15 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Server do
     {format_result(result, "Dragged from (#{x},#{y}) to (#{tx},#{ty})"), bump_step(state)}
   end
 
+  defp dispatch("drag", %{"x" => x, "y" => y, "target_x" => tx, "target_y" => ty}, state) do
+    result = state.adapter.drag(x, y, tx, ty)
+    {format_result(result, "Dragged from (#{x},#{y}) to (#{tx},#{ty})"), bump_step(state)}
+  end
+
+  defp dispatch("drag", %{"x" => _, "y" => _}, state) do
+    {{:error, "drag requires target coordinates: either region.x/region.y or target_x/target_y"}, state}
+  end
+
   defp dispatch("get_tree", params, state) do
     alias OptimalSystemAgent.Tools.Builtins.ComputerUse.Accessibility
 
@@ -185,26 +194,6 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Server do
       nil -> {:error, "Unknown element ref: #{ref}"}
       element -> {:ok, element}
     end
-  end
-
-  defp format_tree(elements) do
-    {lines, refs} =
-      elements
-      |> Enum.with_index()
-      |> Enum.map_reduce(%{}, fn {elem, idx}, refs ->
-        ref = "e#{idx}"
-        role = elem[:role] || elem["role"] || "unknown"
-        name = elem[:name] || elem["name"] || ""
-        x = elem[:x] || elem["x"] || 0
-        y = elem[:y] || elem["y"] || 0
-
-        line = "[#{ref}] #{role} \"#{name}\" (#{x},#{y})"
-        ref_data = %{x: x, y: y, role: role, name: name}
-        {line, Map.put(refs, ref, ref_data)}
-      end)
-
-    tree_text = Enum.join(lines, "\n")
-    {tree_text, refs}
   end
 
   # ── Helpers ─────────────────────────────────────────────────────────

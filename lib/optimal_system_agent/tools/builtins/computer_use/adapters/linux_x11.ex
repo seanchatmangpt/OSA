@@ -120,11 +120,20 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11 do
 
   @doc "Generate screenshot command tuple {binary, args}."
   def screenshot_cmd(%{path: path, region: %{"x" => x, "y" => y, "width" => w, "height" => h}}) do
-    {"maim", ["-g", "#{w}x#{h}+#{x}+#{y}", path]}
+    if has_maim?() do
+      {"maim", ["-g", "#{w}x#{h}+#{x}+#{y}", path]}
+    else
+      # scrot doesn't support region capture directly — take full screen
+      {"scrot", [path]}
+    end
   end
 
   def screenshot_cmd(%{path: path}) do
-    {"maim", [path]}
+    if has_maim?() do
+      {"maim", [path]}
+    else
+      {"scrot", [path]}
+    end
   end
 
   @doc "Generate click command tuple."
@@ -187,12 +196,6 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11 do
     else
       combo
     end
-  end
-
-  @doc "POSIX single-quote escape: wraps in single quotes, escapes internal single quotes."
-  def shell_escape(text) do
-    escaped = String.replace(text, "'", "'\\''")
-    "'#{escaped}'"
   end
 
   # ── Private ──────────────────────────────────────────────────────────

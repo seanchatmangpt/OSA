@@ -9,7 +9,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse do
 
   @behaviour OptimalSystemAgent.Tools.Behaviour
 
-  alias OptimalSystemAgent.Tools.Builtins.ComputerUse.{Adapter, Accessibility, Server, Keyframe}
+  alias OptimalSystemAgent.Tools.Builtins.ComputerUse.{Adapter, Server, Keyframe}
 
   @valid_actions ~w(screenshot click double_click type key scroll move_mouse drag get_tree)
   @valid_scroll_directions ~w(up down left right)
@@ -239,20 +239,22 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse do
 
   defp start_server(session_id) do
     platform = Adapter.detect_platform()
-    {:ok, adapter} = Adapter.adapter_for(platform)
 
-    {:ok, pid} = Server.start_link(
-      adapter: adapter,
-      platform: platform,
-      session_id: session_id
-    )
+    case Adapter.adapter_for(platform) do
+      {:ok, adapter} ->
+        {:ok, pid} = Server.start_link(
+          adapter: adapter,
+          platform: platform,
+          session_id: session_id
+        )
 
-    :ets.insert(@server_table, {session_id, pid})
+        :ets.insert(@server_table, {session_id, pid})
+        Keyframe.init_journal(session_id)
+        pid
 
-    # Initialize keyframe journal for this session
-    Keyframe.init_journal(session_id)
-
-    pid
+      {:error, reason} ->
+        raise "Cannot start computer_use: #{reason}"
+    end
   end
 
   defp ensure_server_table do
@@ -305,16 +307,24 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse do
   defp maybe_focus_window(""), do: :ok
 
   defp maybe_focus_window(window_name) when is_binary(window_name) do
-    case System.cmd("xdotool", ["search", "--name", window_name], stderr_to_stdout: true) do
-      {output, 0} ->
-        case output |> String.split("\n", trim: true) |> List.first() do
-          nil -> :ok
-          wid ->
-            System.cmd("xdotool", ["windowactivate", "--sync", String.trim(wid)], stderr_to_stdout: true)
-            Process.sleep(200)
+    # Window focus is only supported on Linux X11 via xdotool
+    case Adapter.detect_platform() do
+      :linux_x11 ->
+        case System.cmd("xdotool", ["search", "--name", window_name], stderr_to_stdout: true) do
+          {output, 0} ->
+            case output |> String.split("\n", trim: true) |> List.first() do
+              nil -> :ok
+              wid ->
+                System.cmd("xdotool", ["windowactivate", "--sync", String.trim(wid)], stderr_to_stdout: true)
+                Process.sleep(200)
+            end
+
+          _ ->
+            :ok
         end
 
       _ ->
+        # Other platforms: window focus not yet supported, skip silently
         :ok
     end
   rescue

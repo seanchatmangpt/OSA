@@ -40,6 +40,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapter do
   def adapter_for(:macos), do: {:ok, Adapters.MacOS}
   def adapter_for(:linux_x11), do: {:ok, Adapters.LinuxX11}
   def adapter_for(:linux_wayland), do: {:error, "Wayland adapter not yet implemented"}
+  def adapter_for(:unknown),
+    do:
+      {:error,
+       "No display server detected (no DISPLAY or WAYLAND_DISPLAY). Computer use requires a desktop environment."}
+
   def adapter_for(platform), do: {:error, "Unknown platform: #{platform}"}
 
   # ── Private ──────────────────────────────────────────────────────────
@@ -53,7 +58,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapter do
         cond do
           System.get_env("WAYLAND_DISPLAY") not in [nil, ""] -> :linux_wayland
           System.get_env("DISPLAY") not in [nil, ""] -> :linux_x11
-          true -> :linux_x11
+          true -> :unknown  # headless — no display server
         end
 
       _ ->

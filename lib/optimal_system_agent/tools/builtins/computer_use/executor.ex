@@ -13,6 +13,15 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
   alias OptimalSystemAgent.Tools.Builtins.ComputerUse.{Planner, Keyframe}
 
   @max_steps 15
+
+  # Fix 1 (P0 SECURITY): Strict allowlist for launch_app — never pass LLM-generated
+  # strings directly to System.cmd. Only these known-safe binaries are permitted.
+  @allowed_apps ~w(firefox chromium chromium-browser google-chrome google-chrome-stable
+    nautilus thunar nemo pcmanfm gnome-terminal xterm konsole alacritty kitty
+    gnome-text-editor gedit kate mousepad nano vim code subl
+    libreoffice evince eog gimp inkscape vlc mpv totem rhythmbox
+    gnome-calculator gnome-system-monitor htop)
+
   @cu_tool %{
     type: "function",
     function: %{
@@ -143,9 +152,18 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
 
     case llm_call(messages) do
       {:ok, tool_calls} when tool_calls != [] ->
-        # Extract actions from tool calls, tagging with tool name
+        # Fix 5 (P1): Handle both string and map arguments — some providers return
+        # pre-parsed JSON maps; also guard against truncated/malformed JSON.
         actions = Enum.map(tool_calls, fn tc ->
-          args = tc["function"]["arguments"] |> Jason.decode!()
+          args = case tc["function"]["arguments"] do
+            a when is_binary(a) ->
+              case Jason.decode(a) do
+                {:ok, parsed} -> parsed
+                {:error, _} -> %{"action" => "screenshot"}
+              end
+            a when is_map(a) -> a
+            _ -> %{"action" => "screenshot"}
+          end
           tool_name = tc["function"]["name"]
           if tool_name != "computer_use", do: Map.put(args, "_tool", tool_name), else: args
         end)
@@ -179,16 +197,22 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
     end
   end
 
+  # Fix 1 (P0 SECURITY): Validate app name against allowlist before exec.
   defp execute_action(%{"_tool" => "launch_app", "app" => app} = params) do
-    args = params["args"] || ""
-    cmd_args = if args != "", do: String.split(args), else: []
+    if app in @allowed_apps do
+      args = params["args"] || ""
+      cmd_args = if args != "", do: String.split(args), else: []
 
-    # Launch in background, wait for window to appear
-    spawn(fn ->
-      System.cmd("nohup", [app | cmd_args], stderr_to_stdout: true, env: [{"DISPLAY", System.get_env("DISPLAY") || ":0"}])
-    end)
-    Process.sleep(2000)
-    "Launched #{app} #{args}"
+      # Launch in background, wait for window to appear
+      spawn(fn ->
+        System.cmd("nohup", [app | cmd_args], stderr_to_stdout: true, env: [{"DISPLAY", System.get_env("DISPLAY") || ":0"}])
+      end)
+      Process.sleep(2000)
+      "Launched #{app} #{args}"
+    else
+      Logger.warning("[ComputerUse.Executor] Rejected launch_app for disallowed app: #{inspect(app)}")
+      "Error: '#{app}' is not in the allowed application list"
+    end
   rescue
     e -> "Error launching #{app}: #{Exception.message(e)}"
   end
@@ -202,11 +226,30 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
     end
   end
 
-  # ── Verify: check if we should continue or replan ────────────────
+  # ── Verify: re-perceive and check if screen state changed ─────────
 
+  # Fix 4 (P1): Replace no-op stub with a real re-perceive check.
+  # After executing an action, fetch the accessibility tree again. If it changed,
+  # the action had an observable effect — continue. If not, signal failure so the
+  # planner can replan rather than silently repeating a broken step.
   defp do_verify(planner) do
-    # Already handled in do_execute via verify_success
-    {:continue, planner, 0}
+    case ComputerUse.execute(%{"action" => "get_tree"}) do
+      {:ok, new_tree} ->
+        if new_tree != planner.current_tree do
+          planner = %{planner | current_tree: new_tree}
+          planner = Planner.verify_success(planner)
+          {:continue, planner, 0}
+        else
+          # Tree unchanged — action may have failed, ask planner to replan
+          planner = Planner.verify_failure(planner, "Screen state unchanged after action")
+          {:continue, planner, 0}
+        end
+
+      {:error, _} ->
+        # Cannot verify — assume success and continue
+        planner = Planner.verify_success(planner)
+        {:continue, planner, 0}
+    end
   end
 
   # ── LLM Call (lightweight, single tool) ──────────────────────────
@@ -221,7 +264,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
       messages: messages,
       tools: [@cu_tool, @launch_tool],
       tool_choice: "auto",
-      max_tokens: 150
+      max_tokens: 1024  # Fix 2 (P0): 150 caused JSON truncation on tool call responses
     })
 
     headers = [
@@ -267,16 +310,49 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
     "Completed in #{steps} step(s). Last: #{last_result}"
   end
 
+  # Fix 3 (P1): Route to the configured provider instead of always hitting Ollama.
+
   defp cu_api_url do
-    url = Application.get_env(:optimal_system_agent, :ollama_url) || "https://ollama.com"
-    "#{url}/v1/chat/completions"
+    provider = Application.get_env(:optimal_system_agent, :default_provider, "ollama")
+    case to_string(provider) do
+      p when p in ["ollama", "ollama_cloud"] ->
+        url = Application.get_env(:optimal_system_agent, :ollama_url) || "http://localhost:11434"
+        "#{url}/v1/chat/completions"
+      "anthropic" ->
+        "https://api.anthropic.com/v1/messages"
+      p when p in ["openai", "openrouter"] ->
+        url = Application.get_env(:optimal_system_agent, :openai_base_url) || "https://api.openai.com"
+        "#{url}/v1/chat/completions"
+      _ ->
+        url = Application.get_env(:optimal_system_agent, :ollama_url) || "http://localhost:11434"
+        "#{url}/v1/chat/completions"
+    end
   end
 
   defp cu_api_key do
-    Application.get_env(:optimal_system_agent, :ollama_api_key) || ""
+    provider = Application.get_env(:optimal_system_agent, :default_provider, "ollama")
+    case to_string(provider) do
+      p when p in ["ollama", "ollama_cloud"] ->
+        Application.get_env(:optimal_system_agent, :ollama_api_key) || ""
+      "anthropic" ->
+        Application.get_env(:optimal_system_agent, :anthropic_api_key) || ""
+      p when p in ["openai", "openrouter"] ->
+        Application.get_env(:optimal_system_agent, :openai_api_key) ||
+        Application.get_env(:optimal_system_agent, :openrouter_api_key) || ""
+      _ ->
+        Application.get_env(:optimal_system_agent, :ollama_api_key) || ""
+    end
   end
 
   defp cu_model do
-    Application.get_env(:optimal_system_agent, :ollama_model) || "nemotron-3-super:cloud"
+    provider = Application.get_env(:optimal_system_agent, :default_provider, "ollama")
+    case to_string(provider) do
+      p when p in ["ollama", "ollama_cloud"] ->
+        Application.get_env(:optimal_system_agent, :ollama_model) || "llama3.2:latest"
+      "anthropic" ->
+        Application.get_env(:optimal_system_agent, :anthropic_model) || "claude-sonnet-4-20250514"
+      _ ->
+        Application.get_env(:optimal_system_agent, :default_model) || "llama3.2:latest"
+    end
   end
 end
