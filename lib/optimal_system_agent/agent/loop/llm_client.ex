@@ -111,8 +111,10 @@ defmodule OptimalSystemAgent.Agent.Loop.LLMClient do
           # Stream completed normally — clean up watchdog
           Process.unlink(watchdog)
           Process.exit(watchdog, :normal)
-          # Wait for the task to finish (it should be done already)
-          Task.await(stream_task, 5_000)
+          # Wait for the task to finish (it should be done already).
+          # Use shutdown instead of await — await raises an uncatchable :exit
+          # on timeout which crashes the agent loop.
+          Task.shutdown(stream_task, 5_000)
           {:ok, stream_result}
 
         {:llm_idle_timeout, elapsed_ms} ->

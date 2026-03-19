@@ -368,6 +368,11 @@ if [ ! -d "$ROOT/_build" ]; then
   (cd "$ROOT" && mix compile 2>&1 | tail -5)
 fi
 
+# Auto-enable computer_use on Linux X11
+if [ "$(uname -s)" = "Linux" ] && [ -n "${DISPLAY:-}" ]; then
+  export OSA_COMPUTER_USE="${OSA_COMPUTER_USE:-true}"
+fi
+
 # Determine port (strip --dev from args passed to TUI)
 PORT="${OSA_PORT:-8089}"
 TUI_ARGS=()

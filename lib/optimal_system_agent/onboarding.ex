@@ -362,6 +362,9 @@ defmodule OptimalSystemAgent.Onboarding do
         if user_name, do: System.put_env("OSA_USER_NAME", user_name)
         if agent_name, do: System.put_env("OSA_AGENT_NAME", agent_name)
 
+        # Auto-enable computer_use on Linux X11
+        enable_computer_use_if_linux(env_path)
+
         # Seed workspace templates (only files that don't exist)
         seed_workspace()
 
@@ -679,6 +682,29 @@ defmodule OptimalSystemAgent.Onboarding do
       OptimalSystemAgent.Channels.Manager.start_configured_channels()
     rescue
       _ -> :ok
+    end
+  end
+
+  # ── Private: Computer Use Auto-Enable ────────────────────────────────
+
+  defp enable_computer_use_if_linux(env_path) do
+    case :os.type() do
+      {:unix, :linux} ->
+        # Check for X11 display
+        if System.get_env("DISPLAY") do
+          # Append to .env if not already there
+          existing = File.read!(env_path)
+
+          unless String.contains?(existing, "OSA_COMPUTER_USE") do
+            File.write!(env_path, existing <> "\n# Computer Use (auto-detected Linux X11)\nOSA_COMPUTER_USE=true\n")
+            System.put_env("OSA_COMPUTER_USE", "true")
+            Application.put_env(:optimal_system_agent, :computer_use_enabled, true)
+            Logger.info("[Onboarding] Auto-enabled computer_use (Linux X11 detected)")
+          end
+        end
+
+      _ ->
+        :ok
     end
   end
 

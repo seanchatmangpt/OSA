@@ -225,6 +225,32 @@ if [ ! -f "$SRC_DIR/priv/rust/tui/target/release/osagent" ]; then
   echo -e "${RED}TUI build failed. The backend still works — run: mix osa.chat${NC}"
 fi
 
+# ── Step 5b: Computer Use deps (Linux X11) ─────────────────────────
+
+if [ "$OS" = "linux" ] && [ -n "${DISPLAY:-}" ]; then
+  echo -e "${BLUE}[5b/6]${NC} Installing Computer Use deps (X11 desktop control)..."
+  case "$PKG" in
+    apt)
+      $SUDO apt-get install -y -qq xdotool maim python3-gi gir1.2-atspi-2.0 2>/dev/null || true
+      ;;
+    dnf|yum)
+      pkg_install xdotool maim python3-gobject 2>/dev/null || true
+      ;;
+    pacman)
+      pkg_install xdotool maim python-gobject at-spi2-core 2>/dev/null || true
+      ;;
+  esac
+
+  # Auto-enable computer_use in .env if it exists
+  OSA_ENV="$INSTALL_DIR/.env"
+  if [ -f "$OSA_ENV" ] && ! grep -q "OSA_COMPUTER_USE" "$OSA_ENV"; then
+    echo "" >> "$OSA_ENV"
+    echo "# Computer Use (auto-detected Linux X11)" >> "$OSA_ENV"
+    echo "OSA_COMPUTER_USE=true" >> "$OSA_ENV"
+  fi
+  echo -e "${GREEN}  Computer Use ready${NC}"
+fi
+
 # ── Step 6: Symlink `osa` to PATH ──────────────────────────────────
 
 echo -e "${BLUE}[6/6]${NC} Adding ${BOLD}osa${NC} to your PATH..."
