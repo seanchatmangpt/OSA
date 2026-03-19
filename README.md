@@ -204,7 +204,7 @@ OSA_AGENT_NAME=OSA
 ```
 ┌─────────────────────────────────────────────────────┐
 │                     Channels                         │
-│  CLI │ TUI │ HTTP │ Telegram │ Discord │ Slack       │
+│  TUI │ Desktop GUI │ HTTP │ Telegram │ Discord │ Slack│
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────┐
@@ -272,7 +272,7 @@ priv/
   skills/           # Built-in skills
   swarms/           # Swarm pattern presets
 
-desktop/            # Tauri 2 + SvelteKit 5 (experimental)
+desktop/            # Command Center — Tauri 2 + SvelteKit 5 desktop GUI
 ```
 
 ---
