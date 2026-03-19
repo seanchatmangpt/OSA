@@ -2,164 +2,285 @@
 set -euo pipefail
 
 # ── OSA Installer ───────────────────────────────────────────────────
-# Downloads the pre-built osagent binary. No Erlang/Elixir needed.
+# One command to install OSA from source on a fresh machine.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Miosa-osa/OSA/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/Miosa-osa/OSA/main/install.sh | bash
+#
+# What it does:
+#   1. Installs Elixir, Erlang, Rust if missing
+#   2. Clones the repo to ~/.osa/src
+#   3. Builds the Elixir backend + Rust TUI
+#   4. Symlinks `osa` to your PATH
+#   5. You type `osa` — setup wizard runs on first launch
 # ────────────────────────────────────────────────────────────────────
 
 REPO="Miosa-osa/OSA"
 INSTALL_DIR="${OSA_HOME:-$HOME/.osa}"
-BIN_DIR="$INSTALL_DIR/bin"
-APP_DIR="$INSTALL_DIR/app"
+SRC_DIR="$INSTALL_DIR/src"
+BIN_LINK="/usr/local/bin/osa"
 
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
+YELLOW='\033[0;33m'
 DIM='\033[2m'
+BOLD='\033[1m'
 NC='\033[0m'
+
+# sudo helper
+if [ "$(id -u)" -eq 0 ]; then
+  SUDO=""
+else
+  SUDO="sudo"
+fi
 
 echo -e "${PURPLE}"
 echo "  ╔══════════════════════════════════════════════════╗"
-echo "  ║          osagent — binary installer              ║"
-echo "  ║  Signal Theory optimized proactive AI agent      ║"
+echo "  ║            OSA — the Optimal System Agent        ║"
+echo "  ║     One AI agent that lives in your OS.          ║"
 echo "  ╚══════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
 # ── Detect platform ─────────────────────────────────────────────────
 
-detect_platform() {
-  local os arch
-
-  case "$(uname -s)" in
-    Darwin) os="darwin" ;;
-    Linux)  os="linux" ;;
-    *)
-      echo -e "${RED}Unsupported OS: $(uname -s)${NC}"
-      echo "  osagent supports macOS and Linux."
-      exit 1
-      ;;
-  esac
-
-  case "$(uname -m)" in
-    arm64|aarch64) arch="arm64" ;;
-    x86_64|amd64)  arch="amd64" ;;
-    *)
-      echo -e "${RED}Unsupported architecture: $(uname -m)${NC}"
-      exit 1
-      ;;
-  esac
-
-  echo "${os}-${arch}"
-}
-
-# ── Fetch latest release ───────────────────────────────────────────
-
-fetch_latest_version() {
-  local url="https://api.github.com/repos/${REPO}/releases/latest"
-
-  if command -v curl &>/dev/null; then
-    curl -fsSL "$url" | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/'
-  elif command -v wget &>/dev/null; then
-    wget -qO- "$url" | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/'
-  else
-    echo -e "${RED}curl or wget required${NC}" >&2
+case "$(uname -s)" in
+  Darwin) OS="macos" ;;
+  Linux)  OS="linux" ;;
+  *)
+    echo -e "${RED}Unsupported OS: $(uname -s)${NC}"
+    echo "  OSA supports macOS and Linux."
     exit 1
+    ;;
+esac
+
+case "$(uname -m)" in
+  arm64|aarch64) ARCH="arm64" ;;
+  x86_64|amd64)  ARCH="amd64" ;;
+  *)
+    echo -e "${RED}Unsupported architecture: $(uname -m)${NC}"
+    exit 1
+    ;;
+esac
+
+echo -e "${DIM}Platform: ${OS}/${ARCH}${NC}"
+
+# ── Package manager detection ───────────────────────────────────────
+
+detect_pkg() {
+  if   command -v brew    >/dev/null 2>&1; then echo "brew"
+  elif command -v apt-get >/dev/null 2>&1; then echo "apt"
+  elif command -v dnf     >/dev/null 2>&1; then echo "dnf"
+  elif command -v pacman  >/dev/null 2>&1; then echo "pacman"
+  elif command -v apk     >/dev/null 2>&1; then echo "apk"
+  elif command -v zypper  >/dev/null 2>&1; then echo "zypper"
+  elif command -v yum     >/dev/null 2>&1; then echo "yum"
+  else echo "unknown"
   fi
 }
 
-# ── Download and install ───────────────────────────────────────────
+PKG=$(detect_pkg)
 
-PLATFORM=$(detect_platform)
-echo -e "${BLUE}Platform: ${PLATFORM}${NC}"
-
-echo -e "${BLUE}Fetching latest release...${NC}"
-VERSION=$(fetch_latest_version)
-
-if [ -z "$VERSION" ]; then
-  echo -e "${RED}Could not determine latest version.${NC}"
-  echo "  Check https://github.com/${REPO}/releases"
-  exit 1
-fi
-
-echo -e "${GREEN}Version: v${VERSION}${NC}"
-
-TARBALL="osagent-${VERSION}-${PLATFORM}.tar.gz"
-URL="https://github.com/${REPO}/releases/download/v${VERSION}/${TARBALL}"
-
-echo -e "${BLUE}Downloading ${TARBALL}...${NC}"
-
-mkdir -p "$APP_DIR" "$BIN_DIR"
-
-TMPDIR=$(mktemp -d)
-trap 'rm -rf "$TMPDIR"' EXIT
-
-if command -v curl &>/dev/null; then
-  curl -fsSL -o "$TMPDIR/$TARBALL" "$URL"
-else
-  wget -q -O "$TMPDIR/$TARBALL" "$URL"
-fi
-
-echo -e "${BLUE}Installing to ${APP_DIR}...${NC}"
-
-# Clean previous install
-rm -rf "$APP_DIR"
-mkdir -p "$APP_DIR"
-
-tar -xzf "$TMPDIR/$TARBALL" -C "$APP_DIR"
-
-# Symlink the osagent wrapper into bin/
-ln -sf "$APP_DIR/bin/osagent" "$BIN_DIR/osagent"
-
-echo -e "${GREEN}Installed osagent v${VERSION}${NC}"
-
-# ── Update PATH ────────────────────────────────────────────────────
-
-add_to_path() {
-  local rc_file="$1"
-  local line="export PATH=\"$BIN_DIR:\$PATH\""
-
-  if [ -f "$rc_file" ] && grep -qF "$BIN_DIR" "$rc_file"; then
-    return 0
-  fi
-
-  echo "" >> "$rc_file"
-  echo "# osagent" >> "$rc_file"
-  echo "$line" >> "$rc_file"
-  echo -e "${DIM}  Added $BIN_DIR to PATH in $(basename "$rc_file")${NC}"
+pkg_install() {
+  case "$PKG" in
+    brew)   brew install "$@" ;;
+    apt)    $SUDO apt-get update -qq && $SUDO apt-get install -y -qq "$@" ;;
+    dnf)    $SUDO dnf install -y -q "$@" ;;
+    yum)    $SUDO yum install -y -q "$@" ;;
+    pacman) $SUDO pacman -Sy --noconfirm "$@" ;;
+    apk)    $SUDO apk add --no-cache "$@" ;;
+    zypper) $SUDO zypper install -y "$@" ;;
+    *)      echo -e "${RED}No supported package manager found.${NC}"; return 1 ;;
+  esac
 }
 
-if ! echo "$PATH" | grep -qF "$BIN_DIR"; then
-  case "$SHELL" in
-    */zsh)  add_to_path "$HOME/.zshrc" ;;
-    */bash)
-      if [ -f "$HOME/.bash_profile" ]; then
-        add_to_path "$HOME/.bash_profile"
-      else
-        add_to_path "$HOME/.bashrc"
+# ── Step 1: Install git if missing ──────────────────────────────────
+
+if ! command -v git >/dev/null 2>&1; then
+  echo -e "${BLUE}[1/6]${NC} Installing git..."
+  pkg_install git
+fi
+
+# ── Step 2: Install Erlang + Elixir ─────────────────────────────────
+
+check_elixir_version() {
+  local ver major minor
+  ver=$(elixir --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  [ -z "$ver" ] && return 1
+  major=$(echo "$ver" | cut -d. -f1)
+  minor=$(echo "$ver" | cut -d. -f2)
+  [ "${major:-0}" -gt 1 ] && return 0
+  [ "${major:-0}" -eq 1 ] && [ "${minor:-0}" -ge 17 ] && return 0
+  return 1
+}
+
+if ! command -v mix >/dev/null 2>&1 || ! check_elixir_version; then
+  echo -e "${BLUE}[2/6]${NC} Installing Erlang + Elixir..."
+  case "$OS" in
+    macos)
+      if ! command -v brew >/dev/null 2>&1; then
+        echo -e "${DIM}  Installing Homebrew first...${NC}"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if [ -f "/opt/homebrew/bin/brew" ]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [ -f "/usr/local/bin/brew" ]; then
+          eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        PKG="brew"
+      fi
+      brew install erlang elixir
+      ;;
+    linux)
+      case "$PKG" in
+        apt)    pkg_install erlang elixir ;;
+        dnf)    pkg_install erlang elixir ;;
+        pacman) pkg_install erlang elixir ;;
+        apk)    pkg_install erlang elixir ;;
+        *)      pkg_install erlang elixir ;;
+      esac
+      # Verify version — install prebuilt if system package is too old
+      if ! check_elixir_version; then
+        local elixir_ver="1.18.3"
+        local otp_major
+        otp_major=$(erl -eval 'io:format("~s", [erlang:system_info(otp_release)]), halt().' -noshell 2>/dev/null || echo "27")
+        local url="https://github.com/elixir-lang/elixir/releases/download/v${elixir_ver}/elixir-otp-${otp_major}.zip"
+        echo -e "${DIM}  System Elixir too old — installing v${elixir_ver} from prebuilt...${NC}"
+        local dest="/usr/local/lib/elixir"
+        $SUDO mkdir -p "$dest"
+        command -v unzip >/dev/null 2>&1 || pkg_install unzip
+        curl -fsSLo /tmp/elixir.zip "$url"
+        $SUDO unzip -qo /tmp/elixir.zip -d "$dest"
+        rm -f /tmp/elixir.zip
+        for bin in elixir mix iex elixirc; do
+          $SUDO ln -sf "$dest/bin/$bin" /usr/local/bin/"$bin"
+        done
       fi
       ;;
-    *)      add_to_path "$HOME/.profile" ;;
   esac
-
-  export PATH="$BIN_DIR:$PATH"
+  echo -e "${GREEN}  Elixir ready${NC}"
+else
+  echo -e "${BLUE}[2/6]${NC} Elixir $(elixir --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1) ${GREEN}found${NC}"
 fi
 
-# ── Run setup ──────────────────────────────────────────────────────
+# ── Step 3: Install Rust ────────────────────────────────────────────
+
+if ! command -v cargo >/dev/null 2>&1; then
+  echo -e "${BLUE}[3/6]${NC} Installing Rust..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --quiet
+  . "${HOME}/.cargo/env" 2>/dev/null || true
+  export PATH="${HOME}/.cargo/bin:$PATH"
+  echo -e "${GREEN}  Rust ready${NC}"
+else
+  echo -e "${BLUE}[3/6]${NC} Rust $(rustc --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') ${GREEN}found${NC}"
+fi
+
+# ── Step 4: Clone repo ──────────────────────────────────────────────
+
+if [ -d "$SRC_DIR/.git" ]; then
+  echo -e "${BLUE}[4/6]${NC} Updating existing install..."
+  (cd "$SRC_DIR" && git pull --ff-only origin main 2>&1 | tail -3)
+else
+  echo -e "${BLUE}[4/6]${NC} Cloning OSA..."
+  mkdir -p "$INSTALL_DIR"
+  git clone --depth 1 "https://github.com/${REPO}.git" "$SRC_DIR"
+fi
+
+# ── Step 5: Build ───────────────────────────────────────────────────
+
+echo -e "${BLUE}[5/6]${NC} Building Elixir backend..."
+cd "$SRC_DIR"
+mix local.hex --force --if-missing >/dev/null 2>&1 || true
+mix local.rebar --force --if-missing >/dev/null 2>&1 || true
+mix deps.get --quiet 2>&1 | tail -3
+mix compile 2>&1 | tail -5
+mix ecto.setup 2>/dev/null || mix ecto.create 2>/dev/null || true
+
+echo -e "${BLUE}[5/6]${NC} Building Rust TUI..."
+
+# Install Linux native build deps if needed
+if [ "$OS" = "linux" ]; then
+  case "$PKG" in
+    apt)
+      local needed=()
+      command -v pkg-config >/dev/null 2>&1 || needed+=(pkg-config)
+      command -v gcc >/dev/null 2>&1        || needed+=(build-essential)
+      [ -f /usr/lib/*/libssl.so ] 2>/dev/null || needed+=(libssl-dev)
+      [ -f /usr/lib/*/libxcb.so ] 2>/dev/null || needed+=(libxcb1-dev)
+      [ -f /usr/lib/*/libasound.so ] 2>/dev/null || needed+=(libasound2-dev)
+      if [ ${#needed[@]} -gt 0 ]; then
+        echo -e "${DIM}  Installing build deps: ${needed[*]}${NC}"
+        $SUDO apt-get install -y -qq "${needed[@]}" 2>/dev/null || true
+      fi
+      ;;
+    dnf|yum)  pkg_install gcc gcc-c++ make pkg-config openssl-devel 2>/dev/null || true ;;
+    pacman)   pkg_install base-devel pkg-config openssl 2>/dev/null || true ;;
+  esac
+fi
+
+(cd "$SRC_DIR/priv/rust/tui" && cargo build --release 2>&1 | grep -E "Compiling|Finished|error" | tail -10)
+
+if [ ! -f "$SRC_DIR/priv/rust/tui/target/release/osagent" ]; then
+  echo -e "${RED}TUI build failed. The backend still works — run: mix osa.chat${NC}"
+fi
+
+# ── Step 6: Symlink `osa` to PATH ──────────────────────────────────
+
+echo -e "${BLUE}[6/6]${NC} Adding ${BOLD}osa${NC} to your PATH..."
+
+# Try /usr/local/bin first (most universal), fall back to ~/.local/bin
+if [ -w /usr/local/bin ] || [ -w "$(dirname /usr/local/bin)" ]; then
+  ln -sf "$SRC_DIR/bin/osa" /usr/local/bin/osa
+  echo -e "${DIM}  Linked: /usr/local/bin/osa${NC}"
+elif [ -n "$SUDO" ]; then
+  $SUDO ln -sf "$SRC_DIR/bin/osa" /usr/local/bin/osa
+  echo -e "${DIM}  Linked: /usr/local/bin/osa (via sudo)${NC}"
+else
+  # Fall back to ~/.local/bin
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$SRC_DIR/bin/osa" "$HOME/.local/bin/osa"
+
+  # Ensure ~/.local/bin is on PATH
+  if ! echo "$PATH" | grep -qF "$HOME/.local/bin"; then
+    case "$SHELL" in
+      */zsh)  RC_FILE="$HOME/.zshrc" ;;
+      */bash) RC_FILE="${HOME}/.bash_profile"; [ -f "$RC_FILE" ] || RC_FILE="$HOME/.bashrc" ;;
+      *)      RC_FILE="$HOME/.profile" ;;
+    esac
+    if [ -n "$RC_FILE" ] && ! grep -qF '.local/bin' "$RC_FILE" 2>/dev/null; then
+      echo '' >> "$RC_FILE"
+      echo '# OSA' >> "$RC_FILE"
+      echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
+      echo -e "${DIM}  Added ~/.local/bin to PATH in $(basename "$RC_FILE")${NC}"
+    fi
+    export PATH="$HOME/.local/bin:$PATH"
+  fi
+  echo -e "${DIM}  Linked: ~/.local/bin/osa${NC}"
+fi
+
+# ── Done ────────────────────────────────────────────────────────────
 
 echo ""
 echo -e "${GREEN}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║          Installation Complete!                  ║${NC}"
+echo -e "${GREEN}║            Installation Complete!                ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "  Run:  ${BLUE}osagent${NC}           Start chatting"
-echo -e "        ${BLUE}osagent setup${NC}     Configure provider + API keys"
-echo -e "        ${BLUE}osagent version${NC}   Show version"
+echo -e "  Type ${BOLD}osa${NC} to start."
+echo ""
+echo -e "  ${DIM}First run launches a setup wizard — pick your LLM"
+echo -e "  provider, enter your API key, name yourself and"
+echo -e "  your agent. Takes about 60 seconds.${NC}"
+echo ""
+echo -e "  ${BOLD}Commands:${NC}"
+echo -e "    ${BLUE}osa${NC}              Launch (backend + Rust TUI)"
+echo -e "    ${BLUE}osa serve${NC}        Backend only (headless API)"
+echo -e "    ${BLUE}osa setup${NC}        Re-run the setup wizard"
+echo -e "    ${BLUE}osa update${NC}       Pull latest + rebuild"
+echo -e "    ${BLUE}osa doctor${NC}       Health checks"
 echo ""
 
-if [ -t 0 ]; then
-  echo -e "${PURPLE}Running setup wizard...${NC}"
-  "$BIN_DIR/osagent" setup
+# If this is a fresh install in an interactive terminal, hint to restart shell
+if ! command -v osa >/dev/null 2>&1; then
+  echo -e "  ${YELLOW}Restart your terminal (or run: source ~/.zshrc) then type: osa${NC}"
 fi

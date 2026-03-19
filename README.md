@@ -122,7 +122,7 @@ LOW      (remaining): Workflow context, environmental info
 | Channel | Status | Notes |
 |---------|--------|-------|
 | **Rust TUI** | Primary | Full terminal UI — onboarding wizard, model picker, sessions, command palette. Just type `osa`. |
-| **Rust Desktop GUI** | Experimental | Tauri 2 + SvelteKit 5 native app (`desktop/`) |
+| **Desktop GUI** | Active | Command Center — Tauri 2 + SvelteKit 5 native app (`desktop/`) |
 | **HTTP/REST** | Active | API on port 8089, SSE streaming, JWT auth |
 | **Telegram** | Active | Long-polling, typing indicators, markdown conversion |
 | **Discord** | Active | Webhook mode, token validation |
@@ -132,38 +132,19 @@ LOW      (remaining): Workflow context, environmental info
 
 ## Install
 
-### One-liner (binary)
+One command. Fresh machine. Everything handled.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Miosa-osa/OSA/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Miosa-osa/OSA/main/install.sh | bash
 ```
 
-Installs `osagent` to `~/.osa/bin/` and adds it to your PATH. No Erlang or Rust required.
-
-### From Source
-
-```bash
-git clone https://github.com/Miosa-osa/OSA.git
-cd OSA
-mix deps.get && mix ecto.setup
-```
-
-Then add `osa` to your PATH so you can run it from anywhere:
-
-```bash
-# Add to ~/.zshrc or ~/.bashrc:
-export PATH="/path/to/OSA/bin:$PATH"
-```
-
-Now just type:
+This installs Elixir, Erlang, and Rust if missing, clones the repo, builds the backend and the Rust TUI, and symlinks `osa` to your PATH. When it's done:
 
 ```bash
 osa
 ```
 
-That's it. The `osa` command starts the Elixir backend, waits for it to be healthy, and launches the **Rust TUI** — all in one shot. When you quit the TUI, the backend shuts down automatically.
-
-Requires Elixir 1.17+, Erlang/OTP 27+, Rust/Cargo (auto-installed on first run if missing).
+That's it. The `osa` command starts the Elixir backend, waits for it to be healthy, and launches the **Rust TUI** — all in one shot. First run launches a 7-step setup wizard. When you quit the TUI, the backend shuts down automatically.
 
 ### Docker
 
