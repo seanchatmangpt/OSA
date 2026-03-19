@@ -121,8 +121,8 @@ LOW      (remaining): Workflow context, environmental info
 
 | Channel | Status | Notes |
 |---------|--------|-------|
-| **CLI** | Active | Built-in terminal |
-| **Rust TUI** | Active | Full UI — onboarding, model picker, sessions, command palette |
+| **Rust TUI** | Primary | Full terminal UI — onboarding wizard, model picker, sessions, command palette. Just type `osa`. |
+| **Rust Desktop GUI** | Experimental | Tauri 2 + SvelteKit 5 native app (`desktop/`) |
 | **HTTP/REST** | Active | API on port 8089, SSE streaming, JWT auth |
 | **Telegram** | Active | Long-polling, typing indicators, markdown conversion |
 | **Discord** | Active | Webhook mode, token validation |
@@ -132,24 +132,38 @@ LOW      (remaining): Workflow context, environmental info
 
 ## Install
 
+### One-liner (binary)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Miosa-osa/OSA/main/install.sh | sh
+```
+
+Installs `osagent` to `~/.osa/bin/` and adds it to your PATH. No Erlang or Rust required.
+
 ### From Source
 
 ```bash
 git clone https://github.com/Miosa-osa/OSA.git
 cd OSA
-mix deps.get
-mix ecto.setup
-mix osa.serve
+mix deps.get && mix ecto.setup
 ```
 
-**TUI (separate terminal):**
+Then add `osa` to your PATH so you can run it from anywhere:
 
 ```bash
-cd priv/rust/tui
-cargo run
+# Add to ~/.zshrc or ~/.bashrc:
+export PATH="/path/to/OSA/bin:$PATH"
 ```
 
-Requires Elixir 1.17+, Erlang/OTP 27+, Rust/Cargo (for TUI).
+Now just type:
+
+```bash
+osa
+```
+
+That's it. The `osa` command starts the Elixir backend, waits for it to be healthy, and launches the **Rust TUI** — all in one shot. When you quit the TUI, the backend shuts down automatically.
+
+Requires Elixir 1.17+, Erlang/OTP 27+, Rust/Cargo (auto-installed on first run if missing).
 
 ### Docker
 
@@ -161,12 +175,14 @@ docker compose up -d
 
 ## Quick Start
 
-| Command | What it does |
-|---------|-------------|
-| `mix osa.serve` | Start the backend API server |
-| `mix osa.chat` | Backend + built-in CLI (no TUI) |
-| `cd priv/rust/tui && cargo run` | Rust TUI (connects to running backend) |
-| `cd desktop && npm run tauri:dev` | Desktop GUI (experimental) |
+```bash
+osa              # Start everything — backend + Rust TUI
+osa serve        # Backend only (headless HTTP API on :8089)
+osa setup        # Re-run the setup wizard
+osa update       # Pull latest, recompile, rebuild TUI
+osa doctor       # Run health checks
+osa version      # Print version
+```
 
 **First time?** The TUI launches a 7-step setup wizard — pick your provider, enter keys, name yourself and your agent. Config saves to `~/.osa/.env` and never asks again.
 
