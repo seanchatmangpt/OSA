@@ -55,6 +55,15 @@ TODO.md
 .env
 run.bat
 
+# Loose agent completion files (generated during dev)
+agent-*-completion.md
+
+# Test prompts (internal testing)
+test-prompts/
+
+# Workspace scratch files
+workspace/
+
 # Internal audit/dev docs (not for public repo)
 tasks/
 docs/LAYER_*

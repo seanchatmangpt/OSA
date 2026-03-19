@@ -1,50 +1,54 @@
-# OSAorigin
+# OSA — Optimal System Agent
 
-A stripped-to-core rebuild of [OSA](https://github.com/Miosa-osa/OSA) — same stack, bare foundation.
+> One AI agent that lives in your OS. Local-first. Open source.
 
-OSA accumulated features faster than it verified them. This repo inverts that approach: start from a working messaging layer and add one layer at a time, confirming each is properly wired before moving forward.
-
----
-
-## What Is This
-
-OSAorigin is a local AI agent runtime built on Elixir/OTP. It runs a ReAct loop (Reason → Act → Observe) using a local or cloud LLM, executes file and shell tools, and exposes itself over CLI and HTTP. A Tauri 2 + SvelteKit 5 desktop app connects over HTTP/SSE for visual testing.
-
-The backend is intentionally minimal. Features stripped from the original OSA are listed below with the phase they belong to. Each phase will be added and verified before the next one starts.
+OSA is an AI agent runtime built on Elixir/OTP. It runs a ReAct loop (Reason → Act → Observe) with any LLM provider, executes tools on your system, learns your preferences, and connects across terminal, Telegram, Discord, and Slack.
 
 ---
 
-## Current State (Phase 0 — Bare Messaging)
+## What's Working
 
-**What is in:**
+### Core
+- **ReAct agent loop** — bounded iteration GenServer with streaming output
+- **25 built-in tools** — file ops, shell, git, web search/fetch, memory, delegation, code symbols, computer use
+- **Multi-provider LLM** — Ollama (local + cloud), Anthropic, OpenAI, OpenRouter, MIOSA, custom OpenAI-compatible endpoints
+- **Rust TUI** — full terminal interface with onboarding wizard, model picker, session browser, command palette, plan review
+- **Onboarding persistence** — 7-step setup wizard saves config to `~/.osa/.env`, never asks again
+- **Identity system** — collects user name + agent name during setup, pre-populates `USER.md` and `IDENTITY.md`
 
-- ReAct agent loop as a GenServer with bounded iterations (default: 20)
-- Ollama provider — local (`localhost:11434`) and Ollama Cloud
-- Core tools: `file_read`, `file_write`, `file_edit`, `dir_list`, `file_grep`, `file_glob`, `shell_execute`, `task_write`, `ask_user`
-- CLI channel for terminal interaction
-- HTTP channel (Bandit + Plug, port 8089) for desktop and API access
-- Server-Sent Events (SSE) for streaming to the desktop
-- Phoenix PubSub event bus (standalone, no Phoenix framework)
-- SQLite3 persistence via Ecto
-- System prompt loading from `~/.osa/` (IDENTITY.md, SOUL.md, SYSTEM.md)
-- Signal classification (Mode + Weight only)
-- Noise filter (short-circuits low-signal messages before the agent loop)
-- Desktop GUI (Tauri 2 + SvelteKit 5) — kept intact for visual testing
+### Agent Intelligence
+- **Soul system** — `IDENTITY.md`, `USER.md`, `SOUL.md` loaded at boot and interpolated into every LLM call
+- **Memory** — long-term (SQLite + ETS with relevance scoring), episodic (per-session event tracking)
+- **Skills** — markdown skill files with YAML frontmatter, hot-reload, auto-generation from learned patterns
+- **Signal classification** — 5-tuple signal theory (Mode, Genre, Type, Format, Structure)
+- **Noise filter** — short-circuits low-signal messages before the agent loop
 
-**What is stripped (future phases):**
+### Infrastructure
+- **HTTP API** — Bandit + Plug on port 4000, SSE streaming, JWT auth
+- **Event bus** — goldrush-based with PubSub fan-out, dead letter queue, circuit breakers
+- **Scheduler** — `HEARTBEAT.md` checklist, `CRONS.json` cron jobs, `TRIGGERS.json` event triggers
+- **Budget tracking** — per-provider token cost tracking
+- **Channels** — Telegram (long-polling), Discord (webhook), Slack (webhook + HMAC verification)
 
-| Phase | Capability |
-|-------|-----------|
-| 1 | Memory system (`memory_save`, `memory_recall`, session search, episodic memory) |
-| 2 | Advanced tools (`web_fetch`, `web_search`, git, GitHub, diff, `multi_file_edit`) |
-| 3 | Full signal classification (5-tuple, genre routing, strategy selection) |
-| 4 | Sub-agents and orchestrator |
-| 5 | MCP protocol |
-| 6 | Swarm patterns (parallel, pipeline, debate, review loop) |
-| 7 | Channel adapters (Telegram, Discord, Slack, WhatsApp, etc.) |
-| 8 | Sandbox (Docker isolation), Computer Use, browser control |
-| 9 | Learning engine, conversation tracking, communication coach |
-| 10 | Multi-tenant platform, fleet management, governance, treasury |
+### Teams & Swarms
+- **Team coordination** — ETS-backed shared task list, mailbox, scratchpad, iteration budgets
+- **Swarm patterns** — parallel, pipeline, debate, review loop — all spawn real subagent Loops
+- **Delegation** — `delegate` tool spawns subagents via the orchestrator
+
+### Desktop (Experimental)
+- **Tauri 2 + SvelteKit 5** desktop app for visual testing
+
+---
+
+## What's In Progress
+
+| Area | Status | Notes |
+|------|--------|-------|
+| Events/Signal tests | Aligning | `Events.Event` rewritten, ~53 test failures need updating |
+| Agent strategy tests | Evaluating | ~112 test failures across `agent/` — mixed causes |
+| Swarm HTTP routing | Partial | `/swarm/launch` doesn't dispatch to `Swarm.Patterns` directly yet — works via agent `delegate` tool |
+| Permission system | Wiring | TUI shows Allow/Deny dialogs but backend endpoint not yet implemented |
+| Sandbox (Wasm) | Not started | Module doesn't exist yet |
 
 ---
 
@@ -52,128 +56,112 @@ The backend is intentionally minimal. Features stripped from the original OSA ar
 
 | Layer | Technology |
 |-------|-----------|
-| Backend runtime | Elixir 1.17+ / OTP 27+ |
-| Desktop shell | Tauri 2 + SvelteKit 5 + Svelte 5 |
-| Database | SQLite3 via Ecto (`~/.osa/osa.db`) |
-| HTTP server | Bandit 1.6 + Plug |
-| HTTP client | Req 0.5 |
-| Event bus | Phoenix PubSub (standalone) |
-| Terminal (desktop) | xterm.js |
-| JSON | Jason |
-| Schema validation | ex_json_schema |
+| Runtime | Elixir 1.17+ / OTP 27+ |
+| TUI | Rust (ratatui + crossterm) |
+| Desktop | Tauri 2 + SvelteKit 5 |
+| Database | SQLite3 via Ecto |
+| HTTP | Bandit + Plug |
+| Events | goldrush + Phoenix PubSub |
+| Streaming | Server-Sent Events (SSE) |
 
 ---
 
 ## Quick Start
 
-**Prerequisites:**
-
-- Elixir 1.17+ and OTP 27+
-- Ollama running locally (`ollama serve`) with at least one model pulled
-- Node.js 20+ and Rust (for desktop only)
-
-**Backend (CLI):**
+**Prerequisites:** Elixir 1.17+, OTP 27+, Rust toolchain (for TUI)
 
 ```bash
+# Backend
 mix deps.get
 mix ecto.setup
-mix chat
+mix osa.serve
+
+# TUI (separate terminal)
+cd priv/rust/tui
+cargo run
 ```
 
-**Desktop:**
-
-```bash
-cd desktop
-npm install
-npm run tauri:dev
-```
-
-The desktop app connects to the backend HTTP channel on port 8089. Start the backend first.
+On first run, the TUI launches a setup wizard to pick your LLM provider, enter API keys, and configure your identity.
 
 ---
 
 ## Configuration
 
-Default provider is Ollama local at `localhost:11434`. The active model is set in `config/config.exs`:
+All config lives in `~/.osa/.env`, generated by the setup wizard. Edit it directly or re-run setup.
 
-```elixir
-config :optimal_system_agent,
-  default_provider: :ollama,
-  ollama_url: "http://localhost:11434",
-  ollama_model: "your-model-name"
+```bash
+# Example ~/.osa/.env
+OSA_DEFAULT_PROVIDER=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=nemotron-3-super
+OSA_USER_NAME=Roberto
+OSA_AGENT_NAME=OSA
 ```
 
-Run `osagent setup` (release build only) for interactive configuration.
+**Supported providers:**
 
-**Environment variables:**
+| Provider | Env Variable | Notes |
+|----------|-------------|-------|
+| Ollama Local | — | No key needed, runs on your machine |
+| Ollama Cloud | `OLLAMA_API_KEY` | Fast, no GPU needed |
+| MIOSA | `MIOSA_API_KEY` | Fully managed Optimal agent |
+| Anthropic | `ANTHROPIC_API_KEY` | Claude models |
+| OpenAI | `OPENAI_API_KEY` | GPT models |
+| OpenRouter | `OPENROUTER_API_KEY` | 200+ models, one key |
+| Custom | `OPENAI_API_KEY` + `OPENAI_BASE_URL` | Any OpenAI-compatible endpoint |
 
-| Variable | Purpose |
-|----------|---------|
-| `OLLAMA_API_KEY` | Ollama Cloud authentication |
-| `ANTHROPIC_API_KEY` | Anthropic API (Phase 0: not yet wired in) |
-| `OPENAI_API_KEY` | OpenAI-compatible endpoint (Phase 0: not yet wired in) |
-| `OPENROUTER_API_KEY` | OpenRouter (Phase 0: not yet wired in) |
-| `OSA_SANDBOX_ENABLED` | Enable Docker sandbox isolation (default: `false`) |
+**Workspace directory:** `~/.osa/`
 
-**User config directory:** `~/.osa/`
-
-Place `IDENTITY.md`, `SOUL.md`, and `SYSTEM.md` in `~/.osa/` to customize the agent's system prompt.
+```
+~/.osa/
+├── .env            # Provider config (generated by wizard)
+├── IDENTITY.md     # Agent personality
+├── USER.md         # User profile
+├── SOUL.md         # Agent soul/values
+├── HEARTBEAT.md    # Scheduled checklist
+├── BOOTSTRAP.md    # First-conversation script (auto-deleted)
+├── skills/         # Custom skill definitions
+├── CRONS.json      # Cron jobs
+└── TRIGGERS.json   # Event-driven triggers
+```
 
 ---
 
 ## Project Structure
 
 ```
-lib/
-  optimal_system_agent/
-    agent/          # ReAct loop, GenServer, provider clients
-    channels/       # CLI and HTTP channel adapters
-    tools/          # Core tool implementations
-    store/          # Ecto repo, migrations, schemas
-config/
-  config.exs        # Main configuration
-  dev.exs
-  prod.exs
-  test.exs
-desktop/            # Tauri 2 + SvelteKit 5 app
+lib/optimal_system_agent/
+  agent/            # ReAct loop, context, memory, strategies, guardrails
+  channels/         # CLI, HTTP API, Telegram, Discord, Slack
+  events/           # Bus, PubSub bridge, DLQ, failure modes
+  providers/        # Ollama, Anthropic, OpenAI-compat, provider router
+  tools/            # 25 built-in tools, registry, schema validation
+  memory/           # Store (SQLite + ETS), SICA patterns, skill generator
+  swarm/            # Parallel, pipeline, debate, review loop patterns
+  budget/           # Per-provider token cost tracking
+  signal/           # Signal classification, noise filter
+  store/            # Ecto repo, schemas, migrations
+  supervisors/      # OTP supervision trees
+
 priv/
-  repo/migrations/  # Ecto migrations
+  rust/tui/         # Rust TUI (ratatui)
+  prompts/          # System prompt templates
+  agents/           # Agent role definitions
+  skills/           # Built-in skills
+  swarms/           # Swarm pattern presets
+
+desktop/            # Tauri 2 + SvelteKit 5 (experimental)
 ```
 
 ---
 
-## Running Tests
+## Tests
 
 ```bash
-mix test
+mix test                    # Full suite (1730 tests)
+mix test test/tools/        # Tool tests only
+mix test test/providers/    # Provider tests only
 ```
-
----
-
-## Building a Release
-
-```bash
-mix release
-./_build/prod/rel/osagent/bin/osagent
-```
-
-Subcommands: `chat` (default), `setup`, `serve`, `doctor`, `version`.
-
----
-
-## Relation to OSA
-
-This repository is a clean-room rebuild. The original OSA project lives at [github.com/Miosa-osa/OSA](https://github.com/Miosa-osa/OSA). OSAorigin shares the same stack and organization but starts from a verified foundation rather than inheriting accumulated complexity.
-
-Design references:
-- beamclaw's session/loop fault-tolerance pattern (Erlang gen_statem)
-- Hermes Agent's self-improving skill system concept
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -181,4 +169,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Apache-2.0. See [LICENSE](LICENSE).
 
-**Organization:** [miosa-osa](https://github.com/Miosa-osa)
+**Organization:** [Miosa-osa](https://github.com/Miosa-osa) | **MIOSA:** [miosa.ai](https://miosa.ai)
