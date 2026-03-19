@@ -1,0 +1,72 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/tmp/
+erl_crash.dump
+*.ez
+optimal_system_agent-*.tar
+.env
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+/priv/static/assets/
+
+# Compiled sidecar binaries (built locally or via mix osa.setup)
+priv/go/tokenizer/osa-tokenizer
+priv/go/git/osa-git
+priv/go/sysmon/osa-sysmon
+*.beam
+
+# Rust NIF build artifacts
+native/osa_nif/target/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# macOS/iCloud duplicate artifacts
+*" 2"*
+*" 3"*
+
+# Go TUI compiled binary
+priv/go/tui/osa
+
+# Local OSA config/data
+.osa/
+
+# Crash dumps
+rebar3.crashdump
+erl_crash.dump
+
+# Agent-generated sandbox files (created during testing)
+todo-app/
+app.js
+index.html
+styles.css
+fibonacci.py
+reverse_string.py
+.DS_Store
+TODO.md
+
+# Scratch/research directories
+.doc-research/
+.env
+run.bat
+
+# Internal audit/dev docs (not for public repo)
+tasks/
+docs/LAYER_*
+docs/ONION_*
+docs/MIGRATION_*
+docs/CLI_WIZARD_BUILD_PLAN.md
+docs/ONBOARDING_DESIGN.md
+docs/TOOL_PARITY.md
+docs/TUI_REWRITE_SPEC.md
+docs/TEST_PROMPTS.md
+docs/ROADMAP.md
+docs/CHANGELOG_FIXES.md
+docs/archive/competitors/
+docs/archive/research-legacy/
+docs/reference/OPENCLAW_*

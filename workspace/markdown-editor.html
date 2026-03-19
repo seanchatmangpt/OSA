@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Markdown Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f6f8fa;
+            color: #24292f;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .theme-dark {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .theme-dark .editor, .theme-dark .preview {
+            background-color: #161b22;
+            border-color: #30363d;
+        }
+
+        .theme-dark .toolbar button {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border-color: #30363d;
+        }
+
+        .theme-dark .toolbar button:hover {
+            background-color: #30363d;
+        }
+
+        .theme-dark .stats {
+            background-color: #161b22;
+            border-top-color: #30363d;
+            color: #8b949e;
+        }
+
+        .theme-dark ::selection {
+            background-color: #264f78;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+            flex-grow: 1;
+        }
+
+        .editor-container, .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #d0d7de;
+            overflow: hidden;
+        }
+
+        .theme-dark .editor-container, .theme-dark .preview-container {
+            border-right-color: #30363d;
+        }
+
+        .preview-container {
+            border-left: none;
+            border-right: none;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #fff;
+            border-bottom: 1px solid #d0d7de;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .theme-dark .toolbar {
+            background-color: #161b22;
+            border-bottom-color: #30363d;
+        }
+
+        .toolbar button {
+            padding: 6px 10px;
+            background-color: #fff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar button:hover {
+            background-color: #f6f8fa;
+        }
+
+        .toolbar button.active {
+            background-color: #0366d6;
+            color: white;
+            border-color: #0366d6;
+        }
+
+        .theme-dark .toolbar button.active {
+            background-color: #238636;
+        }
+
+        .toolbar select, .toolbar input {
+            padding: 6px 10px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .theme-dark .toolbar select, .theme-dark .toolbar input {
+            background-color: #21262d;
+            border-color: #30363d;
+            color: #c9d1d9;
+        }
+
+        .editor, .preview {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .editor {
+            border-right: 1px solid #d0d7de;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            min-width: 0;
+        }
+
+        .theme-dark .editor {
+            border-right-color: #30363d;
+        }
+
+        .preview {
+            border-left: none;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        .preview h1, .preview h2, .preview h3, .preview h4, .preview h5, .preview h6 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
+        .preview h1 {
+            font-size: 2em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .preview h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .preview h3 {
+            font-size: 1.25em;
+        }
+
+        .preview p {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .preview pre {
+            background-color: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .theme-dark .preview pre {
+            background-color: #161b22;
+        }
+
+        .preview code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 85%;
+        }
+
+        .preview pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 100%;
+        }
+
+        .preview blockquote {
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid #dfe2e5;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .theme-dark .preview blockquote {
+            color: #8b949e;
+            border-left-color: #30363d;
+        }
+
+        .preview table {
+            border-spacing: 0;
+            border-collapse: collapse;
+            margin-top: 0;
+            margin-bottom: 16px;
+            width: 100%;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .preview table th,
+        .preview table td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+
+        .preview table tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+
+        .preview table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+
+        .theme-dark .preview table tr:nth-child(2n) {
+            background-color: #161b22;
+        }
+
+        .preview table th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+        }
+
+        .theme-dark .preview table th {
+            background-color: #161b22;
+        }
+
+        .preview ul, .preview ol {
+            padding-left: 2em;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .preview li {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .preview li.task-list-item {
+            list-style-type: none;
+        }
+
+        .preview li.task-list-item input[type="checkbox"] {
+            margin: 0 0.2em 0.25em -1.6em;
+            vertical-align: middle;
+        }
+
+        .preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .preview hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #eaecef;
+            border: 0;
+        }
+
+        .theme-dark .preview hr {
+            background-color: #30363d;
+        }
+
+        .preview a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        .preview a:hover {
+            text-decoration: underline;
+        }
+
+        .theme-dark .preview a {
+            color: #58a6ff;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #fff;
+            border-top: 1px solid #d0d7de;
+            font-size: 14px;
+            color: #656d76;
+        }
+
+        .theme-dark .stats {
+            background-color: #161b22;
+            border-top-color: #30363d;
+            color: #8b949e;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(27,31,35,0.1);
+        }
+
+        .theme-dark .theme-toggle:hover {
+            background-color: rgba(225,228,232,0.1);
+        }
+
+        ::selection {
+            background-color: #b3d7ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="toolbar">
+            <button id="boldBtn" title="Bold (Ctrl+B)">**</button>
+            <button id="italicBtn" title="Italic (Ctrl+I)">*</button>
+            <button id="headingBtn" title="Heading">H</button>
+            <button id="linkBtn" title="Link (Ctrl+K)">🔗</button>
+            <button id="codeBtn" title="Code Block (Ctrl+Shift+C)"></button>
+            <button id="listBtn" title="List">📋</button>
+            <button id="taskBtn" title="Task List">☐</button>
+            <button id="tableBtn" title="Table">📊</button>
+            <button id="imageBtn" title="Image">🖼️</button>
+            <select id="fontSizeSelect">
+                <option value="12">12px</option>
+                <option value="14" selected>14px</option>
+                <option value="16">16px</option>
+                <option value="18">18px</option>
+                <option value="20">20px</option>
+            </select>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌓</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="editor-container">
+            <textarea id="editor" placeholder="Start writing markdown here..."></textarea>
+        </div>
+        <div class="preview-container">
+            <div id="preview"></div>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <div id="wordCount">0 words</div>
+        <div id="readingTime">0 min read</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.getElementById('editor');
+            const preview = document.getElementById('preview');
+            const wordCount = document.getElementById('wordCount');
+            const readingTime = document.getElementById('readingTime');
+            const themeToggle = document.getElementById('themeToggle');
+            const fontSizeSelect = document.getElementById('fontSizeSelect');
+            
+            // Toolbar buttons
+            const boldBtn = document.getElementById('boldBtn');
+            const italicBtn = document.getElementById('italicBtn');
+            const headingBtn = document.getElementById('headingBtn');
+            const linkBtn = document.getElementById('linkBtn');
+            const codeBtn = document.getElementById('codeBtn');
+            const listBtn = document.getElementById('listBtn');
+            const taskBtn = document.getElementById('taskBtn');
+            const tableBtn = document.getElementById('tableBtn');
+            const imageBtn = document.getElementById('imageBtn');
+
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('theme-dark');
+            }
+
+            // Update font size
+            fontSizeSelect.addEventListener('change', (e) => {
+                editor.style.fontSize = e.target.value + 'px';
+                localStorage.setItem('fontSize', e.target.value);
+            });
+            
+            // Load saved font size
+            const savedFontSize = localStorage.getItem('fontSize') || '14';
+            editor.style.fontSize = savedFontSize + 'px';
+            fontSizeSelect.value = savedFontSize;
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('theme-dark');
+                const isDark = document.body.classList.contains('theme-dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeToggle.title = isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+            });
+
+            // Toolbar functionality
+            boldBtn.addEventListener('click', () => insertText('**', '**'));
+            italicBtn.addEventListener('click', () => insertText('*', '*'));
+            headingBtn.addEventListener('click', () => insertText('# ', '\n'));
+            linkBtn.addEventListener('click', () => {
+                const url = prompt('Enter URL:', 'https://');
+                const text = prompt('Link text:', '');
+                if (url !== null) {
+                    insertText(`[${text}](${url})`, '');
+                }
+            });
+            codeBtn.addEventListener('click', () => insertText('```\n', '\n```'));
+            listBtn.addEventListener('click', () => insertText('- ', '\n'));
+            taskBtn.addEventListener('click', () => insertText('- [ ] ', '\n'));
+            tableBtn.addEventListener('click', () => {
+                insertText('| Header 1 | Header 2 |\n| -------- | -------- |\n| Cell 1   | Cell 2   |\n\n');
+            });
+            imageBtn.addEventListener('click', () => {
+                const url = prompt('Image URL:', 'https://');
+                const alt = prompt('Alternative text:', '');
+                if (url !== null) {
+                    insertText(`![${alt}](${url})`, '');
+                }
+            });
+
+            // Keyboard shortcuts
+            editor.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && !e.shiftKey) {
+                    switch(e.key) {
+                        case 'b':
+                            e.preventDefault();
+                            boldBtn.click();
+                            break;
+                        case 'i':
+                            e.preventDefault();
+                            italicBtn.click();
+                            break;
+                        case 'k':
+                            e.preventDefault();
+                            linkBtn.click();
+                            break;
+                    }
+                }
+                
+                if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+                    e.preventDefault();
+                    codeBtn.click();
+                }
+            });
+
+            // Insert text at cursor position
+            function insertText(prefix, suffix) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const selectedText = editor.value.substring(start, end);
+                
+                editor.value = editor.value.substring(0, start) + 
+                              prefix + selectedText + suffix + 
+                              editor.value.substring(end);
+                
+                // Position cursor appropriately
+                if (selectedText) {
+                    editor.selectionStart = start + prefix.length;
+                    editor.selectionEnd = end + prefix.length;
+                } else {
+                    const cursorPos = start + prefix.length;
+                    editor.selectionStart = cursorPos;
+                    editor.selectionEnd = cursorPos;
+                }
+                
+                editor.focus();
+                updatePreview();
+            }
+
+            // Update preview and stats
+            function updatePreview() {
+                const markdown = editor.value;
+                preview.innerHTML = marked.parse(markdown);
+                
+                // Apply syntax highlighting to code blocks
+                document.querySelectorAll('pre code').forEach((block) => {
+                    highlight.highlightElement(block);
+                });
+                
+                // Update stats
+                const words = markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
+                const readingMinutes = Math.max(1, Math.ceil(words / 200)); // Average 200 WPM
+                
+                wordCount.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+                readingTime.textContent = `${readingMinutes} min read${readingMinutes !== 1 ? 's' : ''}`;
+            }
+
+            // Initial update
+            updatePreview();
+            
+            // Real-time updates
+            editor.addEventListener('input', updatePreview);
+            editor.addEventListener('keyup', updatePreview);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
