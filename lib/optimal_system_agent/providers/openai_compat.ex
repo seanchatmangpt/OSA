@@ -94,6 +94,36 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           Logger.warning("Rate limited by provider (HTTP 429): #{error_msg}")
           {:error, {:rate_limited, retry_after}}
 
+        {:ok, %{status: status, body: %{"error" => %{"code" => "tool_use_failed"} = error} = resp_body}} ->
+          # Some OpenAI-compatible providers return this when the model generates XML-style
+          # tool calls instead of JSON. The failed_generation field contains the XML tool
+          # call that we can parse and recover (e.g., <function=name>...</function>)
+          case Map.get(error, "failed_generation") do
+            nil ->
+              # No failed_generation field, fall through to generic error handling
+              error_msg = extract_error_message(resp_body)
+              {:error, "HTTP #{status}: #{error_msg}"}
+
+            failed_gen ->
+              # Parse the XML tool call using existing infrastructure
+              parsed_calls = parse_tool_calls_from_content(failed_gen)
+
+              if parsed_calls == [] do
+                # Failed to parse, return generic error
+                Logger.warning("[OpenAICompat] Failed to parse tool_use_failed failed_generation")
+                error_msg = extract_error_message(resp_body)
+                {:error, "HTTP #{status}: #{error_msg}"}
+              else
+                # Return structured error with parsed tool calls for recovery
+                Logger.info("[OpenAICompat] Recovered #{length(parsed_calls)} tool calls from failed_generation")
+                {:error, {:tool_call_format_failed, %{
+                  original_error: Map.get(error, "message"),
+                  failed_generation: failed_gen,
+                  recovered_tool_calls: parsed_calls
+                }}}
+              end
+          end
+
         {:ok, %{status: status, body: resp_body}} ->
           error_msg = extract_error_message(resp_body)
           {:error, "HTTP #{status}: #{error_msg}"}
@@ -236,10 +266,15 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           acc
       end
 
-    # Reasoning/thinking content (DeepSeek and some providers)
+    # Reasoning/thinking content (DeepSeek, Groq gpt-oss, and some providers)
+    # Groq gpt-oss models send "reasoning" field with optional "channel" key
     acc =
       case delta do
         %{"reasoning_content" => text} when is_binary(text) and text != "" ->
+          callback.({:thinking_delta, text})
+          acc
+
+        %{"reasoning" => text} when is_binary(text) and text != "" ->
           callback.({:thinking_delta, text})
           acc
 
@@ -627,6 +662,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
         body
         |> Map.put(:tools, format_tools(tools))
         |> Map.put(:tool_choice, "auto")
+        |> Map.put(:parallel_tool_calls, true)
     end
   end
 
@@ -665,7 +701,9 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       String.starts_with?(name, "o4") or
       String.starts_with?(name, "o1") or
       name == "deepseek-reasoner" or
-      String.contains?(name, "kimi")
+      String.contains?(name, "kimi") or
+      # Groq-hosted OpenAI open-source reasoning models (e.g. openai/gpt-oss-20b)
+      String.contains?(name, "gpt-oss")
   end
 
   defp parse_usage(%{"usage" => %{"prompt_tokens" => inp, "completion_tokens" => out}}),
@@ -745,6 +783,14 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
+  @doc """
+  Generate a unique tool call ID.
+
+  Public for use in error recovery when reconstructing assistant messages
+  from failed_generation content.
+  """
+  def generate_tool_call_id, do: OptimalSystemAgent.Utils.ID.generate()
+
   defp generate_id,
-    do: OptimalSystemAgent.Utils.ID.generate()
+    do: generate_tool_call_id()
 end

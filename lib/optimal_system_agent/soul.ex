@@ -76,6 +76,8 @@ defmodule OptimalSystemAgent.Soul do
     # Invalidate cached static base (rebuilt lazily on next static_base/0 call)
     :persistent_term.put({__MODULE__, :static_base}, nil)
     :persistent_term.put({__MODULE__, :static_token_count}, 0)
+    :persistent_term.put({__MODULE__, :static_base_compact}, nil)
+    :persistent_term.put({__MODULE__, :static_base_compact_token_count}, 0)
 
     loaded_count = Enum.count([identity, soul, user], &(&1 != nil))
     agent_count = map_size(agent_souls)
@@ -96,21 +98,119 @@ defmodule OptimalSystemAgent.Soul do
   On first call after boot or reload, reads the SYSTEM.md template,
   interpolates boot-time variables, caches the result, and returns it.
   Subsequent calls return the cached value (~0 cost).
+
+  Use `compact_mode/0` to check if compact mode is enabled.
   """
   @spec static_base() :: String.t()
   def static_base do
-    case :persistent_term.get({__MODULE__, :static_base}, nil) do
-      nil -> interpolate_and_cache()
-      cached -> cached
+    if compact_mode() do
+      static_base_compact()
+    else
+      case :persistent_term.get({__MODULE__, :static_base}, nil) do
+        nil ->
+          provider = Application.get_env(:optimal_system_agent, :default_provider, :ollama)
+          interpolate_and_cache(provider)
+        cached -> cached
+      end
     end
+  end
+
+  @doc """
+  Returns the compact system prompt for cloud providers.
+
+  Uses SYSTEM_COMPACT.md which is ~2k tokens instead of ~16k.
+  Useful for Groq, OpenAI, and other providers with strict guardrails.
+  """
+  @spec static_base_compact() :: String.t()
+  def static_base_compact do
+    case :persistent_term.get({__MODULE__, :static_base_compact}, nil) do
+      nil ->
+        provider = Application.get_env(:optimal_system_agent, :default_provider, :ollama)
+        template = load_compact_template()
+        base = interpolate_compact(template, provider)
+        token_count = estimate_tokens(base)
+        :persistent_term.put({__MODULE__, :static_base_compact}, base)
+        :persistent_term.put({__MODULE__, :static_base_compact_token_count}, token_count)
+        Logger.info("[Soul] Compact base cached: #{token_count} tokens")
+        base
+
+      cached ->
+        cached
+    end
+  end
+
+  @doc """
+  Check if compact mode is enabled.
+
+  Compact mode uses the shorter SYSTEM_COMPACT.md prompt (~2k tokens)
+  instead of the full SYSTEM.md (~16k tokens).
+
+  Controlled by:
+  1. OSA_COMPACT_MODE env var ("true"/"1" enables compact mode)
+  2. Provider auto-detection (groq, openai, openrouter use compact)
+  3. Application config :compact_mode
+  """
+  @spec compact_mode() :: boolean()
+  def compact_mode do
+    # Env var takes highest priority
+    case System.get_env("OSA_COMPACT_MODE") do
+      "true" ->
+        true
+
+      "1" ->
+        true
+
+      "yes" ->
+        true
+
+      _ ->
+        # Check provider-based auto-detection
+        provider = Application.get_env(:optimal_system_agent, :default_provider, :ollama)
+
+        if provider in [:groq, :openai, :openrouter, :anthropic, :deepseek, :openai_compat] do
+          # Cloud providers use compact mode by default
+          # Can override with OSA_FULL_PROMPT=true to use full prompt
+          System.get_env("OSA_FULL_PROMPT") != "true"
+        else
+          # Local providers (ollama, lmstudio) use full prompt
+          false
+        end
+    end
+  end
+
+  @doc """
+  Invalidate all cached prompts and force reload on next access.
+  """
+  @spec invalidate_cache() :: :ok
+  def invalidate_cache do
+    :persistent_term.put({__MODULE__, :static_base}, nil)
+    :persistent_term.put({__MODULE__, :static_base_token_count}, 0)
+    :persistent_term.put({__MODULE__, :static_base_compact}, nil)
+    :persistent_term.put({__MODULE__, :static_base_compact_token_count}, 0)
+    :ok
+  end
+
+  @doc """
+  Invalidate cached prompts when provider changes at runtime.
+
+  Called by the hot-swap API to ensure the correct provider-aware
+  prompt is used after a provider change.
+  """
+  @spec invalidate_cache_for_provider_change() :: :ok
+  def invalidate_cache_for_provider_change do
+    invalidate_cache()
   end
 
   @doc "Returns the token count of the cached static base."
   @spec static_token_count() :: non_neg_integer()
   def static_token_count do
-    # Ensure static base is built
-    _ = static_base()
-    :persistent_term.get({__MODULE__, :static_token_count}, 0)
+    if compact_mode() do
+      _ = static_base_compact()
+      :persistent_term.get({__MODULE__, :static_base_compact_token_count}, 0)
+    else
+      _ = static_base()
+      :persistent_term.get({__MODULE__, :static_token_count}, 0)
+    end
   end
 
   @doc "Get the user profile content (USER.md)."
@@ -156,13 +256,13 @@ defmodule OptimalSystemAgent.Soul do
 
   # ── Static Base Assembly ───────────────────────────────────────────
 
-  defp interpolate_and_cache do
+  defp interpolate_and_cache(provider) do
     template = load_system_template()
 
     # Interpolate boot-time variables
     base =
       template
-      |> interpolate("{{TOOL_DEFINITIONS}}", tools_content())
+      |> interpolate("{{TOOL_DEFINITIONS}}", tools(provider))
       |> interpolate("{{RULES}}", rules_content())
       |> interpolate("{{USER_PROFILE}}", user_content())
       |> interpolate("{{SOUL_CONTENT}}", soul_content())
@@ -185,6 +285,29 @@ defmodule OptimalSystemAgent.Soul do
     end
   end
 
+  defp load_compact_template do
+    # Priority: PromptLoader (handles ~/.osa/prompts/ override + priv/prompts/ bundled)
+    case PromptLoader.get(:SYSTEM_COMPACT) do
+      nil ->
+        # Fallback to full template if compact not available
+        Logger.warning("[Soul] SYSTEM_COMPACT not found, using full SYSTEM.md")
+        load_system_template()
+
+      content ->
+        content
+    end
+  end
+
+  defp interpolate_compact(template, provider) do
+    # Compact template uses the same interpolation variables
+    template
+    |> interpolate("{{TOOL_DEFINITIONS}}", tools(provider))
+    |> interpolate("{{USER_PROFILE}}", user_content())
+    |> interpolate("{{IDENTITY_PROFILE}}", identity_content())
+
+    # Note: compact template doesn't include RULES or SOUL_CONTENT
+  end
+
   @doc false
   def compose_legacy_template do
     # Legacy path removed — SYSTEM.md is the only template.
@@ -205,11 +328,39 @@ defmodule OptimalSystemAgent.Soul do
 
   # ── Boot-Time Content Generators ───────────────────────────────────
 
+  @doc """
+  Provider-aware tool content generator.
+
+  The structured tool schema sent via the API `tools` parameter is sufficient.
+  Including duplicate tool documentation in the system prompt causes some models
+  to fall back to XML-style text output instead of using the structured `tool_calls`
+  field.
+
+  Returns `nil` for all providers - tools are sent via API only.
+  """
+  @spec tools(atom()) :: nil
+  def tools(_provider), do: nil
+
   defp tools_content do
     alias OptimalSystemAgent.Tools.Registry, as: Tools
 
-    skills = try do Tools.list_docs_direct() rescue _ -> [] catch :exit, _ -> [] end
-    tools = try do Tools.list_tools_direct() rescue _ -> [] catch :exit, _ -> [] end
+    skills =
+      try do
+        Tools.list_docs_direct()
+      rescue
+        _ -> []
+      catch
+        :exit, _ -> []
+      end
+
+    tools =
+      try do
+        Tools.list_tools_direct()
+      rescue
+        _ -> []
+      catch
+        :exit, _ -> []
+      end
 
     case skills do
       [] ->
@@ -363,5 +514,4 @@ defmodule OptimalSystemAgent.Soul do
       Logger.warning("[Soul] Failed to load agent souls: #{Exception.message(e)}")
       %{}
   end
-
 end

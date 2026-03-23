@@ -22,6 +22,7 @@ defmodule OptimalSystemAgent.PromptLoader do
 
   @known_keys ~w(
     SYSTEM
+    SYSTEM_COMPACT
     IDENTITY
     SOUL
     compactor_summary

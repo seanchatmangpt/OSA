@@ -286,6 +286,64 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
     end
   end
 
+  # Recover from tool_call_format_failed errors (e.g., provider returning XML-style tool calls)
+  defp handle_result({:error, {:tool_call_format_failed, %{recovered_tool_calls: tool_calls}}}, state, _context) do
+    # Track recovery attempts per session
+    recovery_count = get_in(state, [:metadata, :tool_call_recovery_count]) || 0
+
+    if recovery_count >= 3 do
+      # Too many recovery attempts - give up and return error to user
+      Logger.warning("[ReactLoop] Too many tool call format recovery attempts (session #{state.session_id})")
+      {"I'm having trouble with tool calls. Please try again.", state}
+    else
+      Logger.info("[ReactLoop] Recovering tool calls from format error (attempt #{recovery_count + 1}/3)")
+
+      # Build an assistant message with the recovered tool calls in proper format
+      alias OptimalSystemAgent.Providers.OpenAICompat
+
+      assistant_msg = %{
+        role: "assistant",
+        content: "",
+        tool_calls: Enum.map(tool_calls, fn tc ->
+          %{
+            "id" => tc[:id] || OpenAICompat.generate_tool_call_id(),
+            "type" => "function",
+            "function" => %{
+              "name" => tc[:name],
+              "arguments" => Jason.encode!(tc[:arguments])
+            }
+          }
+        end)
+      }
+
+      # Optionally add system nudge after multiple attempts
+      messages = if recovery_count >= 1 do
+        nudge = %{
+          role: "system",
+          content: "Note: Please use the JSON tool_calls format for function calls, not XML format like <function=name>."
+        }
+        state.messages ++ [nudge, assistant_msg]
+      else
+        state.messages ++ [assistant_msg]
+      end
+
+      # Update state and continue execution
+      new_state = %{state |
+        messages: messages,
+        tool_call_count: state.tool_call_count + length(tool_calls),
+        metadata: Map.put(state.metadata || %{}, :tool_call_recovery_count, recovery_count + 1)
+      }
+
+      run(new_state)
+    end
+  end
+
+  # Fallback: if recovery data is malformed, treat as generic error
+  defp handle_result({:error, {:tool_call_format_failed, _}}, state, _context) do
+    Logger.warning("[ReactLoop] Failed to recover tool calls from format error - malformed recovery data")
+    {"I encountered an error processing your request. Please try again.", state}
+  end
+
   # LLM error — compact and retry or surface error
   defp handle_result({:error, reason}, state, _context) do
     reason_str = if is_binary(reason), do: reason, else: inspect(reason)

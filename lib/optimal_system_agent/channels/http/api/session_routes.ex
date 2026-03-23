@@ -474,6 +474,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
         [{pid, _}] ->
           case GenServer.call(pid, {:swap_provider, provider, model}) do
             :ok ->
+              # Invalidate prompt cache so next call uses provider-aware tool definitions
+              OptimalSystemAgent.Soul.invalidate_cache_for_provider_change()
+
               resp =
                 Jason.encode!(%{
                   status: "ok",

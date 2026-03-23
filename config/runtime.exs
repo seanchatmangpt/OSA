@@ -80,7 +80,9 @@ provider_map = %{
   "cerebras" => :cerebras, "google" => :google, "cohere" => :cohere,
   "perplexity" => :perplexity, "xai" => :xai, "sambanova" => :sambanova,
   "hyperbolic" => :hyperbolic, "lmstudio" => :lmstudio, "llamacpp" => :llamacpp,
-  "miosa" => :miosa
+  "miosa" => :miosa,
+  "zhipu" => :zhipu, "qwen" => :qwen, "moonshot" => :moonshot,
+  "volcengine" => :volcengine, "baichuan" => :baichuan, "replicate" => :replicate
 }
 
 default_provider =
@@ -91,6 +93,7 @@ default_provider =
     System.get_env("OPENAI_API_KEY") -> :openai
     System.get_env("GROQ_API_KEY") -> :groq
     System.get_env("OPENROUTER_API_KEY") -> :openrouter
+    System.get_env("ZHIPU_API_KEY") -> :zhipu
     true -> :ollama
   end
 
@@ -131,6 +134,7 @@ config :optimal_system_agent,
   cohere_model: System.get_env("COHERE_MODEL"),
   qwen_model: System.get_env("QWEN_MODEL"),
   zhipu_model: System.get_env("ZHIPU_MODEL"),
+  zhipu_url: System.get_env("ZHIPU_URL"),
   moonshot_model: System.get_env("MOONSHOT_MODEL"),
   volcengine_model: System.get_env("VOLCENGINE_MODEL"),
   baichuan_model: System.get_env("BAICHUAN_MODEL"),

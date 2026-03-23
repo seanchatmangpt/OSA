@@ -304,6 +304,15 @@ defmodule OptimalSystemAgent.Providers.Registry do
         HealthChecker.record_rate_limited(provider, retry_after)
         try_fallback_chain(provider, messages, opts, "rate-limited (HTTP 429)")
 
+      {:error, {:tool_call_format_failed, _}} ->
+        # This is a model generation error (XML instead of JSON tool calls), not a
+        # provider infrastructure error. The provider is healthy - don't count toward
+        # circuit breaker, record as success instead. ReactLoop will recover the
+        # tool calls and continue execution.
+        HealthChecker.record_success(provider)
+        # Return the error as-is for ReactLoop to handle
+        {:error, {:tool_call_format_failed, %{provider: provider}}}
+
       {:error, reason} = err ->
         HealthChecker.record_failure(provider, reason)
         fallback_chain = Application.get_env(:optimal_system_agent, :fallback_chain, [])

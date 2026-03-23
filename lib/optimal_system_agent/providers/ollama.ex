@@ -473,7 +473,9 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
       tools ->
         if model_supports_tools?(model) do
-          Map.put(body, :tools, format_tools(tools))
+          body
+          |> Map.put(:tools, format_tools(tools))
+          |> Map.put(:tool_choice, "auto")
         else
           Logger.debug("[Ollama] Skipping tools for #{model} (too small / not tool-capable)")
           body
