@@ -24,6 +24,18 @@ defmodule OptimalSystemAgent.Application do
   def start(_type, _args) do
     Application.put_env(:optimal_system_agent, :start_time, System.system_time(:second))
 
+    # Read provider from environment, mirroring http_port/0.
+    # OSA_DEFAULT_PROVIDER in ~/.osa/.env now takes effect at startup
+    # without requiring the SDK wrapper or data_routes API.
+    provider = default_provider()
+
+    Application.put_env(:optimal_system_agent, :default_provider, provider)
+
+    # Map provider-specific env vars ({PROVIDER}_API_KEY, _MODEL, _BASE_URL)
+    # to application env so OpenAICompatProvider and native providers can
+    # read them.
+    load_provider_env(provider)
+
     # ETS table for Loop cancel flags — must exist before any agent session starts.
     # public + set so Loop.cancel/1 and run_loop can read/write concurrently.
     :ets.new(:osa_cancel_flags, [:named_table, :public, :set])
@@ -67,23 +79,22 @@ defmodule OptimalSystemAgent.Application do
 
     children =
       platform_repo_children() ++
-      [
-        # General-purpose Task.Supervisor for fire-and-forget async work
-        # (HTTP message dispatch, background learning, etc.)
-        {Task.Supervisor, name: OptimalSystemAgent.TaskSupervisor},
+        [
+          # General-purpose Task.Supervisor for fire-and-forget async work
+          # (HTTP message dispatch, background learning, etc.)
+          {Task.Supervisor, name: OptimalSystemAgent.TaskSupervisor},
+          OptimalSystemAgent.Supervisors.Infrastructure,
+          OptimalSystemAgent.Supervisors.Sessions,
+          OptimalSystemAgent.Supervisors.AgentServices,
+          OptimalSystemAgent.Supervisors.Extensions,
 
-        OptimalSystemAgent.Supervisors.Infrastructure,
-        OptimalSystemAgent.Supervisors.Sessions,
-        OptimalSystemAgent.Supervisors.AgentServices,
-        OptimalSystemAgent.Supervisors.Extensions,
+          # Deferred channel startup — starts configured channels in handle_continue
+          OptimalSystemAgent.Channels.Starter,
 
-        # Deferred channel startup — starts configured channels in handle_continue
-        OptimalSystemAgent.Channels.Starter,
-
-        # HTTP channel — Plug/Bandit on port 8089 (SDK API surface)
-        # Started LAST so all agent processes are ready before accepting requests
-        {Bandit, plug: OptimalSystemAgent.Channels.HTTP, port: http_port()}
-      ]
+          # HTTP channel — Plug/Bandit on port 8089 (SDK API surface)
+          # Started LAST so all agent processes are ready before accepting requests
+          {Bandit, plug: OptimalSystemAgent.Channels.HTTP, port: http_port()}
+        ]
 
     opts = [strategy: :rest_for_one, name: OptimalSystemAgent.Supervisor]
 
@@ -115,5 +126,35 @@ defmodule OptimalSystemAgent.Application do
       nil -> Application.get_env(:optimal_system_agent, :http_port, 8089)
       port -> String.to_integer(port)
     end
+  end
+
+  defp default_provider do
+    case System.get_env("OSA_DEFAULT_PROVIDER") do
+      nil -> Application.get_env(:optimal_system_agent, :default_provider, :ollama)
+      provider -> String.to_atom(provider)
+    end
+  end
+
+  # Map {PROVIDER}_API_KEY, {PROVIDER}_MODEL, {PROVIDER}_BASE_URL env vars
+  # to application env so OpenAICompatProvider and native providers can read
+  # them. Note: _BASE_URL maps to _url (providers read :{provider}_url).
+  @env_mapping [
+    {"_API_KEY", "_api_key"},
+    {"_MODEL", "_model"},
+    {"_BASE_URL", "_url"}
+  ]
+
+  defp load_provider_env(provider) do
+    prefix = String.upcase(to_string(provider))
+
+    Enum.each(@env_mapping, fn {env_suffix, app_suffix} ->
+      env_var = prefix <> env_suffix
+      app_key = String.to_atom("#{provider}#{app_suffix}")
+
+      case System.get_env(env_var) do
+        nil -> :ok
+        value -> Application.put_env(:optimal_system_agent, app_key, value)
+      end
+    end)
   end
 end
