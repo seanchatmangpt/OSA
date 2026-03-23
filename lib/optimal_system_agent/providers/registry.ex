@@ -6,7 +6,7 @@ defmodule OptimalSystemAgent.Providers.Registry do
   - Local:             ollama
   - OpenAI-compatible: openai, groq, together, fireworks, deepseek,
                        perplexity, mistral, replicate, openrouter,
-                       qwen, moonshot, zhipu, volcengine, baichuan
+                       qwen, moonshot, zai, volcengine, baichuan
   - Native APIs:       anthropic, google, cohere
 
   ## Public API (backward-compatible)
@@ -73,7 +73,7 @@ defmodule OptimalSystemAgent.Providers.Registry do
       # Chinese providers (OpenAI-compatible, consolidated)
       qwen: {:compat, :qwen},
       moonshot: {:compat, :moonshot},
-      zhipu: {:compat, :zhipu},
+      zai: {:compat, :zai},
       volcengine: {:compat, :volcengine},
       baichuan: {:compat, :baichuan}
     },

@@ -81,7 +81,7 @@ provider_map = %{
   "perplexity" => :perplexity, "xai" => :xai, "sambanova" => :sambanova,
   "hyperbolic" => :hyperbolic, "lmstudio" => :lmstudio, "llamacpp" => :llamacpp,
   "miosa" => :miosa,
-  "zhipu" => :zhipu, "qwen" => :qwen, "moonshot" => :moonshot,
+  "zai" => :zai, "qwen" => :qwen, "moonshot" => :moonshot,
   "volcengine" => :volcengine, "baichuan" => :baichuan, "replicate" => :replicate
 }
 
@@ -93,7 +93,7 @@ default_provider =
     System.get_env("OPENAI_API_KEY") -> :openai
     System.get_env("GROQ_API_KEY") -> :groq
     System.get_env("OPENROUTER_API_KEY") -> :openrouter
-    System.get_env("ZHIPU_API_KEY") -> :zhipu
+    System.get_env("ZAI_API_KEY") -> :zai
     true -> :ollama
   end
 
@@ -112,7 +112,7 @@ config :optimal_system_agent,
   perplexity_api_key: System.get_env("PERPLEXITY_API_KEY"),
   cohere_api_key: System.get_env("COHERE_API_KEY"),
   qwen_api_key: System.get_env("QWEN_API_KEY"),
-  zhipu_api_key: System.get_env("ZHIPU_API_KEY"),
+  zai_api_key: System.get_env("ZAI_API_KEY"),
   moonshot_api_key: System.get_env("MOONSHOT_API_KEY"),
   volcengine_api_key: System.get_env("VOLCENGINE_API_KEY"),
   baichuan_api_key: System.get_env("BAICHUAN_API_KEY"),
@@ -133,8 +133,8 @@ config :optimal_system_agent,
   perplexity_model: System.get_env("PERPLEXITY_MODEL"),
   cohere_model: System.get_env("COHERE_MODEL"),
   qwen_model: System.get_env("QWEN_MODEL"),
-  zhipu_model: System.get_env("ZHIPU_MODEL"),
-  zhipu_url: System.get_env("ZHIPU_URL"),
+  zai_model: System.get_env("ZAI_MODEL"),
+  zai_url: System.get_env("ZAI_URL"),
   moonshot_model: System.get_env("MOONSHOT_MODEL"),
   volcengine_model: System.get_env("VOLCENGINE_MODEL"),
   baichuan_model: System.get_env("BAICHUAN_MODEL"),

@@ -206,7 +206,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProviderRoutes do
       "openrouter" -> "OpenRouter"
       "qwen" -> "Qwen"
       "moonshot" -> "Moonshot"
-      "zhipu" -> "Zhipu"
+      "zai" -> "Z.AI"
       "volcengine" -> "Volcengine"
       "baichuan" -> "Baichuan"
       other -> String.capitalize(other)

@@ -95,9 +95,9 @@ defmodule OptimalSystemAgent.Agent.Tier do
       specialist: "qwen3-coder-30b",
       utility: "qwen-plus"
     },
-    zhipu: %{
-      elite: "glm-4.5-air",
-      specialist: "glm-4-plus",
+    zai: %{
+      elite: "glm-5",
+      specialist: "glm-4.6v",
       utility: "glm-4-flash"
     },
     moonshot: %{
