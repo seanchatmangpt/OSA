@@ -1,8 +1,6 @@
 defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
   use ExUnit.Case
 
-  @moduletag :skip
-
   @moduledoc """
   Tests for RDF Generator - Fortune 5 Layer 3: Data Recording
 
