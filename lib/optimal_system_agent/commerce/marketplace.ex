@@ -894,7 +894,7 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   @spec skill_summary(skill()) :: map()
   def skill_summary(skill) do
     average_rating =
-      if skill.rating_count > 0 do
+      if is_integer(skill.rating_count) and skill.rating_count > 0 do
         Float.round(skill.rating_sum / skill.rating_count, 2)
       else
         nil
