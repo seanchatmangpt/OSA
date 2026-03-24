@@ -59,21 +59,25 @@ defmodule OptimalSystemAgent.MCP.StdioTransportRealTest do
     end
 
     test "CRASH: stdio transport handles subprocess crash gracefully" do
-      # Use invalid command that will fail
-      result = OptimalSystemAgent.MCP.Server.start_link(
-        name: "test_stdio_bad",
-        transport: "stdio",
-        command: "nonexistent_command_xyz",
-        args: []
-      )
+      # Use invalid command that will fail.
+      # In OTP 28, GenServer.init returning {:stop, reason} with a non-:normal
+      # reason causes an EXIT signal to be sent to the linked caller.
+      # Trap exits to convert the signal into a message.
+      Process.flag(:trap_exit, true)
 
-      # Should return error or start server in disconnected state
-      assert match?({:ok, _pid}, result) or match?({:error, _}, result)
-
-      case result do
-        {:ok, pid} -> GenServer.stop(pid)
-        _ -> :ok
+      result = try do
+        OptimalSystemAgent.MCP.Server.start_link(
+          name: "test_stdio_bad",
+          transport: "stdio",
+          command: "nonexistent_command_xyz",
+          args: []
+        )
+      catch
+        :exit, _reason -> {:error, :exited}
       end
+
+      # Should return error (server could not start)
+      assert match?({:error, _}, result)
     end
 
     test "CRASH: stdio transport emits [:osa, :mcp, :server_start] telemetry" do
