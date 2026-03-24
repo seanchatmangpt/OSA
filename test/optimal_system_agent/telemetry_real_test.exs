@@ -27,9 +27,9 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     :ok
   end
 
-  describe "Chicago TDD: Provider Telemetry Events" do
+  describe "Provider Telemetry Events" do
     test "CRASH: real Groq chat emits [:osa, :providers, :chat, :complete] telemetry" do
-      # Chicago TDD: Real API call must emit telemetry event
+      # Real API call must emit telemetry event
       events = attach_telemetry([:osa, :providers, :chat, :complete])
 
       {:ok, _result} =
@@ -54,7 +54,7 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
 
     test "CRASH: real Groq chat with invalid key emits [:osa, :providers, :chat, :error] telemetry" do
-      # Chicago TDD: Error path must also emit telemetry
+      # Error path must also emit telemetry
       events = attach_telemetry([:osa, :providers, :chat, :error])
 
       original_key = Application.get_env(:optimal_system_agent, :groq_api_key)
@@ -84,7 +84,7 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
 
     test "CRASH: real Groq chat with tools emits [:osa, :providers, :tool_call, :complete] telemetry" do
-      # Chicago TDD: Tool calls from provider emit separate telemetry
+      # Tool calls from provider emit separate telemetry
       events = attach_telemetry([:osa, :providers, :tool_call, :complete])
 
       tools = [
@@ -124,9 +124,9 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
   end
 
-  describe "Chicago TDD: MCP Tool Call Telemetry" do
+  describe "MCP Tool Call Telemetry" do
     test "CRASH: MCP tool call emits [:osa, :mcp, :tool_call] telemetry event" do
-      # Chicago TDD: Verify MCP telemetry event structure
+      # Verify MCP telemetry event structure
       # Even without a real MCP server running, the cache path emits telemetry
       events = attach_telemetry([:osa, :mcp, :tool_call])
 
@@ -155,7 +155,7 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
 
     test "CRASH: MCP telemetry events have required metadata fields" do
-      # Chicago TDD: Verify all required metadata fields are present
+      # Verify all required metadata fields are present
       ref = attach_telemetry([:osa, :mcp, :tool_call])
 
       # Try multiple MCP operations
@@ -178,9 +178,9 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
   end
 
-  describe "Chicago TDD: A2A Agent Call Telemetry" do
+  describe "A2A Agent Call Telemetry" do
     test "CRASH: A2A task endpoint emits [:osa, :a2a, :agent_call] telemetry" do
-      # Chicago TDD: Verify A2A telemetry event structure
+      # Verify A2A telemetry event structure
       # The A2A routes emit telemetry when processing tasks
       _events = attach_telemetry([:osa, :a2a, :agent_call])
 
@@ -208,7 +208,7 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
 
     test "CRASH: A2A telemetry emits for both success and error paths" do
-      # Chicago TDD: Both success and failure must emit telemetry
+      # Both success and failure must emit telemetry
       source = File.read!("lib/optimal_system_agent/channels/http/api/a2a_routes.ex")
 
       # Count telemetry.execute calls for :ok status
@@ -237,9 +237,9 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
   end
 
-  describe "Chicago TDD: MCP Client Cache Telemetry" do
+  describe "MCP Client Cache Telemetry" do
     test "CRASH: MCP cached tool calls emit telemetry with cached: true" do
-      # Chicago TDD: Cache hits emit telemetry with cached flag
+      # Cache hits emit telemetry with cached flag
       ref = attach_telemetry([:osa, :mcp, :tool_call])
 
       # First call — miss (server doesn't exist, error path)
@@ -258,9 +258,9 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
   end
 
-  describe "Chicago TDD: Telemetry Event Consistency" do
+  describe "Telemetry Event Consistency" do
     test "CRASH: all telemetry events use consistent [:osa, ...] namespace" do
-      # Chicago TDD: Verify consistent event naming across MCP, A2A, and providers
+      # Verify consistent event naming across MCP, A2A, and providers
       mcp_source = File.read!("lib/optimal_system_agent/mcp/client.ex")
       a2a_source = File.read!("lib/optimal_system_agent/channels/http/api/a2a_routes.ex")
       provider_source = File.read!("lib/optimal_system_agent/providers/openai_compat.ex")
@@ -280,7 +280,7 @@ defmodule OptimalSystemAgent.TelemetryRealTest do
     end
 
     test "CRASH: all telemetry events include :duration measurement" do
-      # Chicago TDD: Duration is required for latency monitoring
+      # Duration is required for latency monitoring
       sources = [
         {"MCP client", "lib/optimal_system_agent/mcp/client.ex"},
         {"A2A routes", "lib/optimal_system_agent/channels/http/api/a2a_routes.ex"},

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.ServerTest do
   @moduledoc """
-  Chicago TDD unit tests for Server module.
+  Unit tests for Server module.
 
   Tests multi-agent conversation server.
   """

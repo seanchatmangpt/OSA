@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.NarrativeTest do
   @moduledoc """
-  Chicago TDD unit tests for Narrative module.
+  Unit tests for Narrative module.
 
   Tests timeline narrative generator for decision chains.
   """

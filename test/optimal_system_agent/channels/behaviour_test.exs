@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Channels.BehaviourTest do
   @moduledoc """
-  Chicago TDD unit tests for Channels.Behaviour module.
+  Unit tests for Channels.Behaviour module.
 
   Tests behaviour contract for OSA channel adapters.
   """

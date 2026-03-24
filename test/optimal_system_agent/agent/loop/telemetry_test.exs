@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.TelemetryTest do
   @moduledoc """
-  Chicago TDD unit tests for Telemetry module.
+  Unit tests for Telemetry module.
 
   Tests context pressure telemetry and token estimation.
   """

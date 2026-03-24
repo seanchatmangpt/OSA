@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Store.DecisionEdgeTest do
   @moduledoc """
-  Chicago TDD unit tests for Store.DecisionEdge module.
+  Unit tests for Store.DecisionEdge module.
 
   Tests Ecto schema for decision graph edges.
   Real Ecto changesets, no mocks.

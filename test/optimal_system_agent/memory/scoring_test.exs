@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.ScoringTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.Scoring module.
+  Unit tests for Memory.Scoring module.
 
   Tests relevance scoring and keyword extraction for memory entries.
   Pure functions, no state, no mocks.

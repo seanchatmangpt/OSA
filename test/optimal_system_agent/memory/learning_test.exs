@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.LearningTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.Learning module (SICA learning engine).
+  Unit tests for Memory.Learning module (SICA learning engine).
 
   Tests the SICA (Selection, Interpretation, Construction, Adaptation) learning engine.
   GenServer-based with state management.

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.CLI.PromptTest do
   @moduledoc """
-  Chicago TDD unit tests for CLI.Prompt module.
+  Unit tests for CLI.Prompt module.
 
   Tests interactive terminal prompt functions.
   Pure functions with IO side effects, no mocks.

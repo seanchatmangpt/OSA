@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.LoopTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Loop module.
+  Unit tests for Agent.Loop module.
 
   Tests bounded ReAct agent loop — the core reasoning engine.
   """

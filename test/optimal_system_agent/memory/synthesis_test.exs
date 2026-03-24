@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.SynthesisTest do
   @moduledoc """
-  Chicago TDD tests for Memory.Synthesis.
+  Tests for Memory.Synthesis.
 
   Tests the check_threshold/2 public pure function directly.
   Tests inject/2 and compact/3 through their observable behavior.

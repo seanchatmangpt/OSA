@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.StoreTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.Store module.
+  Unit tests for Memory.Store module.
 
   Tests ETS + SQLite persistence layer for memory entries.
   Real ETS operations, no mocks.

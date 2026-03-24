@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.ConsolidatorTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.Consolidator module.
+  Unit tests for Memory.Consolidator module.
 
   Tests pattern consolidation logic for merging similar memory entries.
   Pure functions, no state, no mocks.

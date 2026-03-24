@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.ContextMesh.SupervisorTest do
   @moduledoc """
-  Chicago TDD unit tests for ContextMesh.Supervisor module.
+  Unit tests for ContextMesh.Supervisor module.
 
   Tests DynamicSupervisor that manages per-team Keeper processes.
   """

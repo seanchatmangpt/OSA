@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Tools.Builtins.A2ACallTest do
   @moduledoc """
-  Chicago TDD tests for A2ACall tool.
+  Tests for A2ACall tool.
 
   Tests the tool's public interface (name, description, parameters, safety)
   and execute/1 function patterns. Does NOT make real HTTP calls.

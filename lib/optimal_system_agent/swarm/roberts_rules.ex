@@ -611,14 +611,14 @@ defmodule OptimalSystemAgent.Swarm.RobertsRules do
     case Providers.chat(messages, format_opts) do
       {:ok, %{content: content}} when is_binary(content) ->
         case Jason.decode(content) do
-          {:ok, parsed} when is_map(parsed) -> {:ok, parsed}
+          {:ok, parsed} when is_map(parsed) and map_size(parsed) > 0 -> {:ok, parsed}
           {:ok, _} -> {:error, :not_a_json_object}
           {:error, _} -> {:error, :json_decode_failed}
         end
 
       {:ok, content} when is_binary(content) ->
         case Jason.decode(content) do
-          {:ok, parsed} when is_map(parsed) -> {:ok, parsed}
+          {:ok, parsed} when is_map(parsed) and map_size(parsed) > 0 -> {:ok, parsed}
           {:ok, _} -> {:error, :not_a_json_object}
           {:error, _} -> {:error, :json_decode_failed}
         end

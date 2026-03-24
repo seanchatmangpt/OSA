@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.ToolFilterTest do
   @moduledoc """
-  Chicago TDD unit tests for the ToolFilter module.
+  Unit tests for the ToolFilter module.
 
   Tests the three-layer tool filtering pipeline:
     1. Signal weight gate  — low-weight inputs (< 0.20) skip tools entirely

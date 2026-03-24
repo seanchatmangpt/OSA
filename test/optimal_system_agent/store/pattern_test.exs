@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Store.PatternTest do
   @moduledoc """
-  Chicago TDD unit tests for Store.Pattern module.
+  Unit tests for Store.Pattern module.
 
   Tests Ecto schema for SICA patterns.
   Real Ecto changesets, no mocks.

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.MergeTest do
   @moduledoc """
-  Chicago TDD unit tests for Merge module.
+  Unit tests for Merge module.
 
   Tests subtree merging for decision graphs.
   """

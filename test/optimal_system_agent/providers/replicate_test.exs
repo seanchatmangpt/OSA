@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.ReplicateTest do
   @moduledoc """
-  Chicago TDD unit tests for Providers.Replicate module.
+  Unit tests for Providers.Replicate module.
 
   Tests pure functions for message formatting, output parsing.
   No mocks, no real network calls.
@@ -28,7 +28,7 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
   describe "chat/2" do
     test "returns error when REPLICATE_API_KEY not configured" do
       # From module: {:error, "REPLICATE_API_KEY not configured"}
-      # In Chicago TDD, we test against the real Application env
+      # In real testing, we test against the real Application env
       # If API key is not set, it should return error
       messages = [%{role: "user", content: "test"}]
 
@@ -92,7 +92,7 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
     test "joins list output into string" do
       # From module: parse_output(output) when is_list(output), do: Enum.join(output)
       # This is a private function, but we can test the behavior
-      # For Chicago TDD, we'd need to expose it or test via chat/2
+      # For real testing, we'd need to expose it or test via chat/2
       # Since we can't make real API calls without a key, we document the expected behavior
       assert true
     end

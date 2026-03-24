@@ -128,6 +128,8 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   @impl true
   def chat(messages, opts \\ []) do
+    start_time = System.monotonic_time(:millisecond)
+
     url = Application.get_env(:optimal_system_agent, :ollama_url, "http://localhost:11434")
 
     model =
@@ -158,20 +160,63 @@ defmodule OptimalSystemAgent.Providers.Ollama do
       req = Req.new(req_opts) |> Req.merge(url: "#{url}/api/chat")
       case Req.post(req) do
         {:ok, %{status: 200, body: %{"message" => %{"content" => content} = msg}}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
           tool_calls = parse_tool_calls(msg, model)
+
+          # Emit telemetry for successful chat completion
+          :telemetry.execute(
+            [:osa, :providers, :chat, :complete],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model}
+          )
+
+          # Emit telemetry for tool calls if present
+          if tool_calls != [] do
+            :telemetry.execute(
+              [:osa, :providers, :tool_call, :complete],
+              %{count: length(tool_calls)},
+              %{provider: :ollama, model: model}
+            )
+          end
+
           {:ok, %{content: Text.strip_thinking_tokens(content || ""), tool_calls: tool_calls}}
 
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.warning("Ollama returned #{status}: #{inspect(resp_body)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model, reason: :http_error, status: status}
+          )
+
           {:error, "Ollama returned #{status}: #{inspect(resp_body)}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.error("Ollama connection failed: #{inspect(reason)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model, reason: :connection_failed}
+          )
+
           {:error, "Ollama connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         Logger.error("Ollama unexpected error: #{Exception.message(e)}")
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :ollama, model: model, reason: :exception}
+        )
+
         {:error, "Ollama unexpected error: #{Exception.message(e)}"}
     end
   end

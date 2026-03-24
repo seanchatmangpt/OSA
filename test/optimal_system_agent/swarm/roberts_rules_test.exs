@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
   @moduledoc """
-  Chicago TDD — Roberts Rules of Order integration tests.
+  Real Roberts Rules of Order integration tests.
 
   NO MOCKS. NO HARDCODING. Every test uses real Groq LLM calls.
 
@@ -35,9 +35,9 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     :ok
   end
 
-  describe "Chicago TDD: Roberts Rules — Structured Output Validation" do
+  describe "Roberts Rules — Structured Output Validation" do
     test "CRASH: call_llm_json returns valid parsed JSON (not free text)" do
-      # Chicago TDD: Verify the structured output mechanism works end-to-end
+      # Verify the structured output mechanism works end-to-end
       # This is the foundation — all Roberts Rules calls go through call_llm_json
       result =
         OptimalSystemAgent.Swarm.RobertsRules.call_llm_json(
@@ -53,7 +53,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: call_llm_json uses tool calling or response_format (no regex parsing)" do
-      # Chicago TDD: Verify the implementation uses structured outputs, not free text
+      # Verify the implementation uses structured outputs, not free text
       # Check that the source code uses tool calling or response_format and Jason.decode
       source = File.read!("lib/optimal_system_agent/swarm/roberts_rules.ex")
 
@@ -86,9 +86,9 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
   end
 
-  describe "Chicago TDD: Roberts Rules — Full Deliberation" do
+  describe "Roberts Rules — Full Deliberation" do
     test "CRASH: full deliberation with real LLM structured calls returns structured result" do
-      # Chicago TDD: Complete parliamentary procedure with real Groq structured calls
+      # Complete parliamentary procedure with real Groq structured calls
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should the team adopt Elixir for the new microservice?",
@@ -126,7 +126,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: deliberation respects quorum requirement" do
-      # Chicago TDD: Quorum must be checked and enforced
+      # Quorum must be checked and enforced
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we use Docker for deployment?",
@@ -146,7 +146,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: each member gets independent LLM vote" do
-      # Chicago TDD: Votes are NOT hardcoded — each member independently decides via LLM
+      # Votes are NOT hardcoded — each member independently decides via LLM
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we implement dark mode in the UI?",
@@ -173,7 +173,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: debate speeches are LLM-generated via structured JSON" do
-      # Chicago TDD: Speeches must come from LLM structured JSON, not templates
+      # Speeches must come from LLM structured JSON, not templates
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we adopt trunk-based development?",
@@ -203,7 +203,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: points of order use LLM structured JSON for ruling" do
-      # Chicago TDD: Points of order are raised and ruled by LLM via structured JSON
+      # Points of order are raised and ruled by LLM via structured JSON
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we migrate to Kubernetes?",
@@ -225,7 +225,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
   end
 
-  describe "Chicago TDD: Roberts Rules — Voting Methods" do
+  describe "Roberts Rules — Voting Methods" do
     test "CRASH: roll call voting records each member's vote individually" do
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
@@ -264,9 +264,9 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
   end
 
-  describe "Chicago TDD: Roberts Rules — Motion Lifecycle" do
+  describe "Roberts Rules — Motion Lifecycle" do
     test "CRASH: motion requires a second before debate" do
-      # Chicago TDD: A motion must be seconded before debate begins
+      # A motion must be seconded before debate begins
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we use TypeScript for the frontend?",
@@ -284,7 +284,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: unseconded motion is rejected" do
-      # Chicago TDD: If no member seconds, the motion fails
+      # If no member seconds, the motion fails
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we rename the main branch?",
@@ -301,9 +301,9 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
   end
 
-  describe "Chicago TDD: Roberts Rules — Edge Cases" do
+  describe "Roberts Rules — Edge Cases" do
     test "CRASH: single member deliberation works" do
-      # Chicago TDD: Edge case — only one member
+      # Edge case — only one member
       result =
         OptimalSystemAgent.Swarm.RobertsRules.deliberate(
           topic: "Should we enable gzip compression?",
@@ -331,7 +331,7 @@ defmodule OptimalSystemAgent.Swarm.RobertsRulesTest do
     end
 
     test "CRASH: large body (7 members) produces complete vote record" do
-      # Chicago TDD: Stress test — 7 members, all must vote
+      # Stress test — 7 members, all must vote
       members = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace"]
 
       result =

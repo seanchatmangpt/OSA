@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Tools.Registry.SearchTest do
   @moduledoc """
-  Chicago TDD unit tests for Tools.Registry.Search module.
+  Unit tests for Tools.Registry.Search module.
 
   Tests tool and skill search, applicability scoring, and fallback suggestion.
   """

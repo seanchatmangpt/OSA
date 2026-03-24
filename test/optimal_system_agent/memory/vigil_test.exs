@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.VIGILTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.VIGIL module.
+  Unit tests for Memory.VIGIL module.
 
   Tests error classification via regex pattern matching.
   Pure functions, no state, no mocks.

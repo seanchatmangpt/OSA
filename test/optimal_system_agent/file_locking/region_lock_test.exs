@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.FileLocking.RegionLockTest do
   @moduledoc """
-  Chicago TDD unit tests for FileLocking.RegionLock module.
+  Unit tests for FileLocking.RegionLock module.
 
   Tests region-level file locking for multi-agent collaboration.
   Real GenServer and ETS operations, no mocks.

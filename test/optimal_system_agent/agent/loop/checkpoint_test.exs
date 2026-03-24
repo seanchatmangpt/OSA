@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.CheckpointTest do
   @moduledoc """
-  Chicago TDD unit tests for the Checkpoint module.
+  Unit tests for the Checkpoint module.
 
   Tests loop state persistence for crash recovery. Checkpoints are
   written as JSON files to a configurable directory so that a

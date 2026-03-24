@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Protocol.CloudEventTest do
   @moduledoc """
-  Chicago TDD unit tests for Protocol.CloudEvent module.
+  Unit tests for Protocol.CloudEvent module.
 
   Tests CloudEvent v1.0.2 envelope encode/decode/conversion.
   Pure functions, no mocks.

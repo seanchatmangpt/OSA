@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.Strategies.RoundRobinTest do
   @moduledoc """
-  Chicago TDD unit tests for RoundRobin strategy module.
+  Unit tests for RoundRobin strategy module.
 
   Tests round-robin turn strategy for conversations.
   """

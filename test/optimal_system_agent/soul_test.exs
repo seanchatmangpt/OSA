@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.SoulTest do
   @moduledoc """
-  Chicago TDD unit tests for Soul module.
+  Unit tests for Soul module.
 
   Tests soul loading, caching, and system prompt serving.
   """

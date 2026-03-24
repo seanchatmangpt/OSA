@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Sandbox.DockerTest do
   @moduledoc """
-  Chicago TDD unit tests for Sandbox.Docker module.
+  Unit tests for Sandbox.Docker module.
 
   Tests Docker sandbox backend for containerized execution.
   Real System.cmd calls to Docker, no mocks.

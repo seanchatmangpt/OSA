@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.ToolExecutorTest do
   @moduledoc """
-  Chicago TDD unit tests for the ToolExecutor module.
+  Unit tests for the ToolExecutor module.
 
   Tests permission tier enforcement, subagent tool allowlists,
   and read-before-write nudge injection. These are pure-logic

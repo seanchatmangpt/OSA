@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agents.RegistryTest do
   @moduledoc """
-  Chicago TDD unit tests for Agents.Registry module.
+  Unit tests for Agents.Registry module.
 
   Tests agent definition registry loading from AGENT.md files.
   Real File operations and persistent_term, no mocks.

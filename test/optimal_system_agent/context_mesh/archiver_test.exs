@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.ContextMesh.ArchiverTest do
   @moduledoc """
-  Chicago TDD unit tests for Archiver module.
+  Unit tests for Archiver module.
 
   Tests periodic archival sweep for expired ContextMesh Keepers.
   """

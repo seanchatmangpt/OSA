@@ -14,7 +14,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: scan with circular symbolic links creates infinite loop" do
-      # Chicago TDD: Scanner should handle circular symlinks gracefully
+      # Scanner should handle circular symlinks gracefully
       crash_dir = "tmp/chicago_crash_test"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -37,7 +37,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: scan with 1MB single-line file breaks regex parsing" do
-      # Chicago TDD: Find regex crash in extract_modules_from_code/1
+      # Find regex crash in extract_modules_from_code/1
       crash_dir = "tmp/chicago_regex_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -57,7 +57,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: scan with deeply nested directory structure breaks path traversal" do
-      # Chicago TDD: Scanner should handle deep paths via depth filter
+      # Scanner should handle deep paths via depth filter
       crash_dir = "tmp/chicago_deep_crash"
 
       File.rm_rf!(crash_dir)
@@ -111,7 +111,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: concurrent scans corrupt ETS tables" do
-      # Chicago TDD: Find race condition in ETS operations
+      # Find race condition in ETS operations
       tasks = Enum.map(1..10, fn _i ->
         Task.async(fn ->
           OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
@@ -131,7 +131,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: scan with 0-byte file breaks file reading" do
-      # Chicago TDD: Find edge case in File.read!/1
+      # Find edge case in File.read!/1
       crash_dir = "tmp/chicago_empty_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -149,7 +149,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: scan with malformed UTF-8 breaks string processing" do
-      # Chicago TDD: Find UTF-8 crash
+      # Find UTF-8 crash
       crash_dir = "tmp/chicago_utf8_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -167,7 +167,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CRASH: extract_modules_from_code crashes on regex with catastrophic backtracking" do
-      # Chicago TDD: Find ReDoS (Regular Expression Denial of Service)
+      # Find ReDoS (Regular Expression Denial of Service)
       # The regex ~r/defmodule\s+([A-Z]\w*)/ is vulnerable to catastrophic backtracking
 
       malicious_code = """
@@ -183,9 +183,9 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
   end
 
-  describe "Chicago TDD: Crash Fortune5 Missing Features with Reality Tests" do
+  describe "Crash Fortune5 Missing Features with Reality Tests" do
     test "RDF generation from real OSA codebase" do
-      # Chicago TDD: RDF generation is Fortune 5 Layer 3
+      # RDF generation is Fortune 5 Layer 3
       # Currently workspace.ttl is not generated during scan.
       # Test that the scan itself doesn't crash on real codebase.
       output_dir = "tmp/chicago_rdf_test"
@@ -202,7 +202,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "SPARQL correlator has CONSTRUCT queries" do
-      # Chicago TDD: SPARQL correlator is Fortune 5 Layer 4
+      # SPARQL correlator is Fortune 5 Layer 4
       # ggen/sparql directory exists with CONSTRUCT queries
       ggen_sparql_dir = Path.join(["ggen", "sparql"])
 
@@ -221,7 +221,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "pre-commit hook exists and is functional" do
-      # Chicago TDD: Pre-commit hook is Fortune 5 Layer 2
+      # Pre-commit hook is Fortune 5 Layer 2
       # Verify the hook exists at the git hooks path
       {git_dir, 0} = System.cmd("git", ["rev-parse", "--git-dir"])
       hook_path = Path.join([String.trim(git_dir), "hooks", "pre-commit"])
@@ -234,9 +234,9 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
   end
 
-  describe "Chicago TDD: Verify Claims with Real Evidence" do
+  describe "Verify Claims with Real Evidence" do
     test "CLAIM: compression ratio - VERIFY with actual measurement" do
-      # Chicago TDD: Don't claim compression without MEASURING it
+      # Don't claim compression without MEASURING it
       codebase_path = "lib"
 
       # Measure ACTUAL raw size (.ex files only — what scanner processes)
@@ -279,7 +279,7 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
     end
 
     test "CLAIM: modules.json has correct structure - VERIFY with real scan" do
-      # Chicago TDD: Don't claim structure without CHECKING it
+      # Don't claim structure without CHECKING it
 
       output_dir = "tmp/chicago_verify_structure"
       File.rm_rf!(output_dir)

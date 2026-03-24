@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.ProgressTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Progress module.
+  Unit tests for Agent.Progress module.
 
   Tests real-time progress tracking for orchestrated tasks.
   """

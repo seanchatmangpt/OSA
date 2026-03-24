@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.CascadeTest do
   @moduledoc """
-  Chicago TDD unit tests for Cascade module.
+  Unit tests for Cascade module.
 
   Tests confidence propagation through the decision graph.
   """

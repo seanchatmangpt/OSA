@@ -6,7 +6,7 @@ defmodule OptimalSystemAgent.Fortune5.SignalTheoryQualityGates do
   Tests that SPR sensor outputs follow Signal Theory S=(M,G,T,F,W) encoding
   and pass quality gates with threshold ≥ 0.7.
 
-  Following NEW Chicago TDD methodology:
+  Following real testing methodology:
     - Step 1: Write failing tests (quality gate enforcement)
     - Step 2: Verify tests fail (quality gates not implemented)
     - Step 3: Implement quality gates

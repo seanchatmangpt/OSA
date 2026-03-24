@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.BudgetTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Budget module.
+  Unit tests for Agent.Budget module.
 
   Tests API cost tracking, budget enforcement, and limit checking.
   """

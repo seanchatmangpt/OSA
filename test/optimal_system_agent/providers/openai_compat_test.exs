@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
   @moduledoc """
-  Chicago TDD unit tests for Providers.OpenAICompat module.
+  Unit tests for Providers.OpenAICompat module.
 
   Tests pure functions for configuration, URL building, response parsing.
   No mocks, no real network calls.

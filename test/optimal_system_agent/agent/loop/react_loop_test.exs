@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
   @moduledoc """
-  Chicago TDD unit tests for ReactLoop module.
+  Unit tests for ReactLoop module.
 
   Tests core ReAct iteration logic for agent loop.
   """

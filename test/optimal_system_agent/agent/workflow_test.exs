@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.WorkflowTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Workflow module.
+  Unit tests for Agent.Workflow module.
 
   Tests workflow tracking for multi-step task awareness.
   """

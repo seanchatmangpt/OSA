@@ -22,7 +22,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: 100 concurrent scans corrupt ETS tables" do
-      # Chicago TDD: Real concurrency - 100 scans at once
+      # Real concurrency - 100 scans at once
       crash_dir = "tmp/concurrent_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -54,7 +54,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Scan during table initialization causes data loss" do
-      # Chicago TDD: Race condition between init and scan
+      # Race condition between init and scan
       # Reset tables
       :ets.delete(:osa_sensors)
       :ets.delete(:osa_scans)
@@ -90,7 +90,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Scan 10,000 files exhausts memory" do
-      # Chicago TDD: Create 10,000 module files and scan
+      # Create 10,000 module files and scan
       # This is a REAL memory exhaustion test, not a mock
 
       crash_dir = "tmp/memory_crash_10k"
@@ -124,7 +124,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Deep recursion in file path traversal blows stack" do
-      # Chicago TDD: Test actual path traversal depth
+      # Test actual path traversal depth
       # Elixir has stack limits for recursive operations
 
       crash_dir = "tmp/stack_crash"
@@ -158,7 +158,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Permission denied on directory scan causes crash" do
-      # Chicago TDD: Test actual permission denied scenario
+      # Test actual permission denied scenario
       # Note: This test may fail on systems with lax permissions
 
       crash_dir = "tmp/perm_crash"
@@ -186,7 +186,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Disk full during write corrupts output" do
-      # Chicago TDD: Simulate disk full (using ulimit or quota)
+      # Simulate disk full (using ulimit or quota)
       # This is hard to test safely, so we test partial writes
 
       crash_dir = "tmp/disk_full_crash"
@@ -217,7 +217,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Corrupted modules.json crashes subsequent scans" do
-      # Chicago TDD: Write invalid JSON to modules.json
+      # Write invalid JSON to modules.json
       output_dir = "tmp/corrupt_json_crash"
       File.rm_rf!(output_dir)
       File.mkdir_p!(output_dir)
@@ -246,7 +246,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Partial write due to process kill creates inconsistent state" do
-      # Chicago TDD: Simulate process interruption
+      # Simulate process interruption
       output_dir = "tmp/partial_write_crash"
       File.rm_rf!(output_dir)
       File.mkdir_p!(output_dir)
@@ -278,7 +278,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Mixed UTF-8/UTF-16 files cause encoding errors" do
-      # Chicago TDD: Test mixed encoding handling
+      # Test mixed encoding handling
       crash_dir = "tmp/encoding_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -298,7 +298,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Right-to-left text in file paths bypasses validation" do
-      # Chicago TDD: Test RTL text and bidirectional overrides
+      # Test RTL text and bidirectional overrides
       crash_dir = "tmp/rtl_crash"
       File.rm_rf!(crash_dir)
       File.mkdir_p!(crash_dir)
@@ -338,7 +338,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Timestamp overflow in year 2038+ causes crashes" do
-      # Chicago TDD: Test far-future timestamps
+      # Test far-future timestamps
       # This tests for Year 2038 problem (Unix timestamp overflow)
 
       crash_dir = "tmp/timestamp_crash"
@@ -362,7 +362,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Negative duration (clock skew) causes panic" do
-      # Chicago TDD: Test clock skew scenario
+      # Test clock skew scenario
       # If system clock changes during scan, duration could be negative
 
       crash_dir = "tmp/clock_skew_crash"
@@ -388,7 +388,7 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
     end
 
     test "CRASH: Scan of network filesystem (NFS/SMB) causes hang" do
-      # Chicago TDD: Test network filesystem behavior
+      # Test network filesystem behavior
       # Network filesystems can have high latency and timeouts
 
       # Can't easily test real NFS without setup

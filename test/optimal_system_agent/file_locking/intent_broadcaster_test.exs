@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
   @moduledoc """
-  Chicago TDD unit tests for FileLocking.IntentBroadcaster module.
+  Unit tests for FileLocking.IntentBroadcaster module.
 
   Tests edit intent broadcasting for multi-agent file collaboration.
   Real ETS operations and Phoenix.PubSub, no mocks.

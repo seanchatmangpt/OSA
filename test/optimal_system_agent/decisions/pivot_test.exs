@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.PivotTest do
   @moduledoc """
-  Chicago TDD unit tests for Pivot module.
+  Unit tests for Pivot module.
 
   Tests atomic pivot chains for decision graph reversals.
   """

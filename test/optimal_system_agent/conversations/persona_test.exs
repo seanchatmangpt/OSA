@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.PersonaTest do
   @moduledoc """
-  Chicago TDD unit tests for Persona module.
+  Unit tests for Persona module.
 
   Tests lightweight agent configuration for conversation participants.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.CLI.DoctorTest do
   @moduledoc """
-  Chicago TDD unit tests for CLI.Doctor module.
+  Unit tests for CLI.Doctor module.
 
   Tests health check functionality.
   Pure functions with side effects (IO), no mocks.

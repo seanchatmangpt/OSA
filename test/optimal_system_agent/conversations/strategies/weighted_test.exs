@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.Strategies.WeightedTest do
   @moduledoc """
-  Chicago TDD unit tests for Weighted strategy module.
+  Unit tests for Weighted strategy module.
 
   Tests relevance-weighted turn strategy for conversations.
   """

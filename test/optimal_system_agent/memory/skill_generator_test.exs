@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.SkillGeneratorTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.SkillGenerator module.
+  Unit tests for Memory.SkillGenerator module.
 
   Tests conversion of memory patterns into executable skills.
   Pure functions with template-based generation.

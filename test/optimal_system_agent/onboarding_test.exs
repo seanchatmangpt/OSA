@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.OnboardingTest do
   @moduledoc """
-  Chicago TDD unit tests for Onboarding module.
+  Unit tests for Onboarding module.
 
   Tests provider detection, workspace seeding, and first-run setup.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Store.SignalTest do
   @moduledoc """
-  Chicago TDD unit tests for Store.Signal module.
+  Unit tests for Store.Signal module.
 
   Tests Ecto schema for Signal Theory encoding.
   Real Ecto changesets, no mocks.

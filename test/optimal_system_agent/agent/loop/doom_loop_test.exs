@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   @moduledoc """
-  Chicago TDD unit tests for the DoomLoop module.
+  Unit tests for the DoomLoop module.
 
   Tests the doom loop detection algorithm: when the same tool+error
   signature repeats 3+ consecutive times, execution halts to avoid

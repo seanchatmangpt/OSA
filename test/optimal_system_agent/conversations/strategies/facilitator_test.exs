@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.Strategies.FacilitatorTest do
   @moduledoc """
-  Chicago TDD unit tests for Facilitator strategy module.
+  Unit tests for Facilitator strategy module.
 
   Tests facilitator-driven turn strategy for conversations.
   """

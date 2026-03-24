@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Channels.HTTP.API.A2ARoutesTest do
   @moduledoc """
-  Chicago TDD tests for A2ARoutes Plug router.
+  Tests for A2ARoutes Plug router.
 
   Uses Plug.Test for HTTP-level testing. Tests route matching,
   response codes, JSON structure, and error handling.

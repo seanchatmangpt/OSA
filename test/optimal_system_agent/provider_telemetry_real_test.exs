@@ -31,7 +31,7 @@ defmodule OptimalSystemAgent.ProviderTelemetryRealTest do
   # Anthropic Provider Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Anthropic Provider — Telemetry Emission" do
+  describe "Anthropic Provider — Telemetry Emission" do
     test "Anthropic: Emits chat complete telemetry event" do
       api_key = Application.get_env(:optimal_system_agent, :anthropic_api_key)
 
@@ -165,7 +165,7 @@ defmodule OptimalSystemAgent.ProviderTelemetryRealTest do
   # Google Provider Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Google Provider — Telemetry Emission" do
+  describe "Google Provider — Telemetry Emission" do
     test "Google: Emits chat complete telemetry event" do
       api_key = Application.get_env(:optimal_system_agent, :google_api_key)
 
@@ -265,7 +265,7 @@ defmodule OptimalSystemAgent.ProviderTelemetryRealTest do
   # Ollama Provider Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Ollama Provider — Telemetry Emission" do
+  describe "Ollama Provider — Telemetry Emission" do
     setup do
       # Check if Ollama is reachable
       url = Application.get_env(:optimal_system_agent, :ollama_url, "http://localhost:11434")
@@ -366,7 +366,7 @@ defmodule OptimalSystemAgent.ProviderTelemetryRealTest do
   # Cohere Provider Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Cohere Provider — Telemetry Emission" do
+  describe "Cohere Provider — Telemetry Emission" do
     test "Cohere: Emits chat complete telemetry event" do
       api_key = Application.get_env(:optimal_system_agent, :cohere_api_key)
 

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.ToolExecutorPermissionTest do
   @moduledoc """
-  Chicago TDD tests for ToolExecutor permission enforcement.
+  Tests for ToolExecutor permission enforcement.
 
   Tests the pure permission functions: permission_tier_allows?/2,
   subagent_tool_allowed?/2, and the execute_tool_call permission-denied

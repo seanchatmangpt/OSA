@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.DebateTest do
   @moduledoc """
-  Chicago TDD unit tests for Debate module.
+  Unit tests for Debate module.
 
   Tests structured debate protocol (propose → critique → revise → vote).
   """

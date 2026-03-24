@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.SignalTest do
   @moduledoc """
-  Chicago TDD unit tests for Signal module.
+  Unit tests for Signal module.
 
   Tests Signal Theory 5-tuple signal encoding S=(M,G,T,F,W).
   """

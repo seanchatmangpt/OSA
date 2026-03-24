@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Memory.ObservationTest do
   @moduledoc """
-  Chicago TDD unit tests for Memory.Observation module.
+  Unit tests for Memory.Observation module.
 
   Tests immutable observation record creation and validation.
   Pure functions, no state, no mocks.

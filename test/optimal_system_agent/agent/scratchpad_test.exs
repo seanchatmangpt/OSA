@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.ScratchpadTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Scratchpad module.
+  Unit tests for Agent.Scratchpad module.
 
   Tests provider-agnostic thinking/scratchpad support.
   """

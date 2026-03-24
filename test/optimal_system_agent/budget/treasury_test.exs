@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Budget.TreasuryTest do
   @moduledoc """
-  Chicago TDD unit tests for Budget.Treasury module.
+  Unit tests for Budget.Treasury module.
 
   Tests treasury GenServer for reserve/release accounting.
   Real GenServer operations, no mocks.

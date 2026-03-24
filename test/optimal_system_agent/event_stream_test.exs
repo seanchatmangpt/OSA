@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.EventStreamTest do
   @moduledoc """
-  Chicago TDD unit tests for EventStream module.
+  Unit tests for EventStream module.
 
   Tests SSE event streaming for Command Center.
   Real ETS operations and Phoenix.PubSub, no mocks.

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.OS.ScannerTest do
   @moduledoc """
-  Chicago TDD unit tests for OS.Scanner module.
+  Unit tests for OS.Scanner module.
 
   Tests filesystem scanner for OS templates.
   Real File operations, no mocks.

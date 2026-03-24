@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Speculative.WorkProductTest do
   @moduledoc """
-  Chicago TDD unit tests for Speculative.WorkProduct module.
+  Unit tests for Speculative.WorkProduct module.
 
   Tests speculative work container with file isolation.
   Real File operations, no mocks.

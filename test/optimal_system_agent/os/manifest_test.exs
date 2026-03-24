@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.OS.ManifestTest do
   @moduledoc """
-  Chicago TDD unit tests for OS.Manifest module.
+  Unit tests for OS.Manifest module.
 
   Tests manifest parser and struct for .osa-manifest.json files.
   Pure functions with File operations, no mocks.

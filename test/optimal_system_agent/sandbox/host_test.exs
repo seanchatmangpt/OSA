@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Sandbox.HostTest do
   @moduledoc """
-  Chicago TDD unit tests for Sandbox.Host module.
+  Unit tests for Sandbox.Host module.
 
   Tests host backend (no sandbox) for command execution.
   Real System.cmd calls, no mocks.

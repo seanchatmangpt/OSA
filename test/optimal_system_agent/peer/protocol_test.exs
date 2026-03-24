@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Peer.ProtocolTest do
   @moduledoc """
-  Chicago TDD tests for Peer.Protocol.
+  Tests for Peer.Protocol.
 
   Tests handoff struct construction, create_handoff/3, receive_handoff/2,
   and format validation. Uses ETS for storage tests (setup/teardown per test).

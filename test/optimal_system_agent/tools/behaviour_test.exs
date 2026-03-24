@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Tools.BehaviourTest do
   @moduledoc """
-  Chicago TDD unit tests for Tools.Behaviour module.
+  Unit tests for Tools.Behaviour module.
 
   Tests behaviour contract for OSA tools.
   """

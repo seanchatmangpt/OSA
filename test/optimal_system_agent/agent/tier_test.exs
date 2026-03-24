@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.TierTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Tier module.
+  Unit tests for Agent.Tier module.
 
   Tests model tier system for agent dispatch across 18 providers.
   """

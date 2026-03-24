@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.MachinesTest do
   @moduledoc """
-  Chicago TDD unit tests for Machines module.
+  Unit tests for Machines module.
 
   Tests composable skill set activation via ~/.osa/config.json.
   """

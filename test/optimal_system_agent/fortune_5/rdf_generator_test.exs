@@ -3,7 +3,7 @@ defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
   @moduledoc """
   Tests for RDF Generator - Fortune 5 Layer 3: Data Recording
 
-  Following NEW Chicago TDD methodology:
+  Following real testing methodology:
     - Step 1: Write failing tests (RDF generation not implemented)
     - Step 2: Verify tests fail
     - Step 3: Implement RDF generation

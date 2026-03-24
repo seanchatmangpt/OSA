@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Sandbox.BehaviourTest do
   @moduledoc """
-  Chicago TDD unit tests for Sandbox.Behaviour module.
+  Unit tests for Sandbox.Behaviour module.
 
   Tests the sandbox behaviour contract specification.
   Pure documentation tests - no actual implementation.

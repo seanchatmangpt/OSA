@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.GoogleTest do
   @moduledoc """
-  Chicago TDD unit tests for Providers.Google module.
+  Unit tests for Providers.Google module.
 
   Tests pure functions for message formatting, tool formatting.
   No mocks, no real network calls.

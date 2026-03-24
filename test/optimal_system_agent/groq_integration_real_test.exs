@@ -29,9 +29,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   # Layer 1: Direct Provider Chat (real HTTP call)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Real Groq API Calls — Provider Layer" do
+  describe "Real Groq API Calls — Provider Layer" do
     test "CRASH: simple chat completion returns valid response" do
-      # Chicago TDD: Hit the REAL Groq API with a simple prompt
+      # Hit the REAL Groq API with a simple prompt
       messages = [
         %{role: "user", content: "Reply with exactly: PONG"}
       ]
@@ -61,7 +61,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: chat with system prompt returns contextually-aware response" do
-      # Chicago TDD: System prompt must influence the response
+      # System prompt must influence the response
       messages = [
         %{role: "system", content: "You are a Fortune 5 signal classifier. Respond ONLY with JSON."},
         %{role: "user", content: "Classify this signal: 'Deploy to production'"}
@@ -85,7 +85,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: chat with tool definitions returns tool calls" do
-      # Chicago TDD: Verify Groq can parse tool definitions and return tool calls
+      # Verify Groq can parse tool definitions and return tool calls
       # Using plain maps with all required fields for Groq API
       tools = [
         %{
@@ -140,7 +140,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: streaming chat returns text deltas" do
-      # Chicago TDD: Verify streaming works end-to-end
+      # Verify streaming works end-to-end
       messages = [
         %{role: "user", content: "Count from 1 to 5, one number per line."}
       ]
@@ -177,7 +177,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: invalid API key returns error not crash" do
-      # Chicago TDD: Bad credentials should return error, not raise
+      # Bad credentials should return error, not raise
       messages = [
         %{role: "user", content: "test"}
       ]
@@ -197,7 +197,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: empty messages list returns error not crash" do
-      # Chicago TDD: Edge case — empty message list
+      # Edge case — empty message list
       result =
         OptimalSystemAgent.Providers.OpenAICompatProvider.chat(
           :groq,
@@ -210,7 +210,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: very long prompt doesn't crash (within context window)" do
-      # Chicago TDD: Large input within context window
+      # Large input within context window
       large_text = String.duplicate("The quick brown fox jumps over the lazy dog. ", 100)
 
       messages = [
@@ -233,9 +233,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   # Layer 2: Provider Registry Routing (real dispatch)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Real Groq API Calls — Provider Registry" do
+  describe "Real Groq API Calls — Provider Registry" do
     test "CRASH: Providers.chat dispatches to Groq and returns response" do
-      # Chicago TDD: Full provider registry → Groq pipeline
+      # Full provider registry → Groq pipeline
       messages = [
         %{role: "user", content: "Say 'provider registry works'"}
       ]
@@ -252,7 +252,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: Providers.chat_stream dispatches to Groq with streaming" do
-      # Chicago TDD: Registry → streaming pipeline
+      # Registry → streaming pipeline
       messages = [
         %{role: "user", content: "Say 'streaming works'"}
       ]
@@ -284,7 +284,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: provider_info returns Groq as configured" do
-      # Chicago TDD: Verify Groq is properly registered and configured
+      # Verify Groq is properly registered and configured
       # provider_info/1 returns {:ok, map} not plain map
       {:ok, info} = OptimalSystemAgent.Providers.Registry.provider_info(:groq)
 
@@ -302,9 +302,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   # Layer 3: Signal Theory + Groq (Fortune 5 Integration)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Real Groq API Calls — Fortune 5 Signal Analysis" do
+  describe "Real Groq API Calls — Fortune 5 Signal Analysis" do
     test "CRASH: scan sensor data → feed to Groq → get analysis" do
-      # Chicago TDD: Full Fortune 5 pipeline — scan codebase, feed to LLM
+      # Full Fortune 5 pipeline — scan codebase, feed to LLM
       # This is what Fortune 5 Layer 4 (Correlation) actually does
 
       # Step 1: Scan the codebase (real files, real ETS)
@@ -362,7 +362,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: Groq analyzes dependency graph from real scan" do
-      # Chicago TDD: Feed real dependency data to Groq for analysis
+      # Feed real dependency data to Groq for analysis
       OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
 
       output_dir = "tmp/chicago_groq_deps"
@@ -401,7 +401,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: Groq analyzes YAWL patterns from real scan" do
-      # Chicago TDD: Feed real YAWL pattern data to Groq
+      # Feed real YAWL pattern data to Groq
       OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
 
       output_dir = "tmp/chicago_groq_yawl"
@@ -444,9 +444,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   # Layer 4: Budget/Cost Tracking (real API calls cost money)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Real Groq API Calls — Budget Verification" do
+  describe "Real Groq API Calls — Budget Verification" do
     test "CRASH: real Groq call generates trackable cost" do
-      # Chicago TDD: Every real API call has a cost — verify budget system tracks it
+      # Every real API call has a cost — verify budget system tracks it
       messages = [
         %{role: "user", content: "Say 'budget test'"}
       ]
@@ -478,9 +478,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   # Layer 5: Multi-turn Conversation (real stateful interaction)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: Real Groq API Calls — Multi-turn" do
+  describe "Real Groq API Calls — Multi-turn" do
     test "CRASH: multi-turn conversation maintains context" do
-      # Chicago TDD: Verify Groq maintains conversation context across turns
+      # Verify Groq maintains conversation context across turns
       messages = [
         %{role: "user", content: "My favorite color is blue. Remember this."},
         %{role: "assistant", content: "Got it. Your favorite color is blue."},
@@ -501,7 +501,7 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
     end
 
     test "CRASH: multi-turn with tool call maintains context" do
-      # Chicago TDD: Tool call in middle of conversation doesn't lose context
+      # Tool call in middle of conversation doesn't lose context
       # Note: Groq requires all fields to have descriptions
       tools = [
         %{
@@ -537,9 +537,9 @@ defmodule OptimalSystemAgent.GroqIntegrationRealTest do
       # Should not crash — tool calls in multi-turn are valid
       case result do
         {:ok, _} -> :ok
-        {:error, _reason} ->
+        {:error, reason} ->
           # This is a gap - Groq API rejecting our tool format
-          flunk("Groq API rejected tool format: #{inspect(_reason)}")
+          flunk("Groq API rejected tool format: #{inspect(reason)}")
       end
     end
   end

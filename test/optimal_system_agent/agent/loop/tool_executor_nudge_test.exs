@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.ToolExecutorNudgeTest do
   @moduledoc """
-  Chicago TDD tests for ToolExecutor inject_read_nudges/2.
+  Tests for ToolExecutor inject_read_nudges/2.
 
   Tests the read-before-write nudge logic without starting GenServers.
   Since inject_read_nudges depends on ETS tables that may not exist in

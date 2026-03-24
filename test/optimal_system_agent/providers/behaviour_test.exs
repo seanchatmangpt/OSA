@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.BehaviourTest do
   @moduledoc """
-  Chicago TDD unit tests for Providers.Behaviour module.
+  Unit tests for Providers.Behaviour module.
 
   Tests the behaviour contract that all LLM providers must implement.
   """

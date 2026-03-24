@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.TurnStrategyTest do
   @moduledoc """
-  Chicago TDD unit tests for TurnStrategy behaviour.
+  Unit tests for TurnStrategy behaviour.
 
   Tests behaviour contract for conversation turn strategies.
   """

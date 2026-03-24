@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.ContextTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Context module.
+  Unit tests for Agent.Context module.
 
   Tests two-tier token-budgeted system prompt assembly.
   """

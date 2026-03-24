@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.SurveyTest do
   @moduledoc """
-  Chicago TDD unit tests for Survey module.
+  Unit tests for Survey module.
 
   Tests interactive survey dialog with ETS-based answer storage.
   """

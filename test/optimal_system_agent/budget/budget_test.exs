@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.BudgetTest do
   @moduledoc """
-  Chicago TDD unit tests for Budget module.
+  Unit tests for Budget module.
 
   Tests budget GenServer for token/cost tracking with limits.
   Real GenServer operations, no mocks.

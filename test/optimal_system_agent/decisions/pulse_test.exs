@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.PulseTest do
   @moduledoc """
-  Chicago TDD unit tests for Pulse module.
+  Unit tests for Pulse module.
 
   Tests decision graph health reports and pulse checks.
   """

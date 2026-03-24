@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Speculative.AssumptionTest do
   @moduledoc """
-  Chicago TDD unit tests for Speculative.Assumption module.
+  Unit tests for Speculative.Assumption module.
 
   Tests assumption tracking for speculative execution.
   Pure functions with DateTime side effects, no mocks.

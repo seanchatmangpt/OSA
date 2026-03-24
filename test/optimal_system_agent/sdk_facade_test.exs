@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.SDKFacadeTest do
   @moduledoc """
-  Chicago TDD tests for the SDK facade module.
+  Tests for the SDK facade module.
 
   Tests pure functions and struct construction from OptimalSystemAgent.SDK
   and its nested submodules (Config, Message, Permission, Tier, Session, etc.).

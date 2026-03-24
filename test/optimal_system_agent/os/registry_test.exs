@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.OS.RegistryTest do
   @moduledoc """
-  Chicago TDD unit tests for OS.Registry module.
+  Unit tests for OS.Registry module.
 
   Tests OS template registry GenServer.
   Real GenServer operations, no mocks.
@@ -68,7 +68,7 @@ defmodule OptimalSystemAgent.OS.RegistryTest do
   describe "connect/1" do
     test "connects OS template by path" do
       # This requires a real OS template path
-      # For Chicago TDD, we test the interface
+      # For real testing, we test the interface
       result = Registry.connect("/nonexistent/path")
       case result do
         {:ok, _} -> assert true

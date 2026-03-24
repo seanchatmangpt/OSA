@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Signal.ClassifierTest do
   @moduledoc """
-  Chicago TDD unit tests for Signal.Classifier module.
+  Unit tests for Signal.Classifier module.
 
   Tests Signal Theory 5-tuple classifier with LLM enrichment.
   """

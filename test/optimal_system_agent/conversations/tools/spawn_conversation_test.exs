@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.Tools.SpawnConversationTest do
   @moduledoc """
-  Chicago TDD unit tests for SpawnConversation tool module.
+  Unit tests for SpawnConversation tool module.
 
   Tests tool that allows agents to spawn structured multi-agent conversations.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Store.TaskTest do
   @moduledoc """
-  Chicago TDD unit tests for Store.Task module.
+  Unit tests for Store.Task module.
 
   Tests Ecto schema for task_queue records.
   Real Ecto changesets, no mocks.

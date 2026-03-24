@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Decisions.GraphTest do
   @moduledoc """
-  Chicago TDD tests for Decisions.Graph.
+  Tests for Decisions.Graph.
 
   Tests node_to_map/1, edge_to_map/1, init_tables/0, and ETS-based
   operations (get_node, get_edges, cache behavior).

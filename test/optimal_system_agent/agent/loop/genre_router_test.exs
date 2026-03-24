@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.GenreRouterTest do
   @moduledoc """
-  Chicago TDD unit tests for GenreRouter module.
+  Unit tests for GenreRouter module.
 
   Tests signal genre routing for agent loop message handling.
   """

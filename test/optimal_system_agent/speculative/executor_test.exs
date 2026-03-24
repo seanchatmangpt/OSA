@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   @moduledoc """
-  Chicago TDD unit tests for Speculative.Executor module.
+  Unit tests for Speculative.Executor module.
 
   Tests speculative execution GenServer for ahead-of-time work.
   Real GenServer operations, no mocks.

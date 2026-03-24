@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Conversations.WeaverTest do
   @moduledoc """
-  Chicago TDD unit tests for Weaver module.
+  Unit tests for Weaver module.
 
   Tests auto-summarizer for completed conversations.
   """

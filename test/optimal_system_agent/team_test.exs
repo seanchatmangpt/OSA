@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.TeamTest do
   @moduledoc """
-  Chicago TDD unit tests for Team module.
+  Unit tests for Team module.
 
   Tests team coordination — shared task list, messaging, and scratchpad.
   """

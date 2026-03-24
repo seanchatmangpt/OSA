@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.CohereTest do
   @moduledoc """
-  Chicago TDD unit tests for Providers.Cohere module.
+  Unit tests for Providers.Cohere module.
 
   Tests pure functions for role normalization, message formatting,
   tool formatting, content extraction.

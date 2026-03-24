@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Tools.CacheTest do
   @moduledoc """
-  Chicago TDD unit tests for Tools.Cache module.
+  Unit tests for Tools.Cache module.
 
   Tests ETS-backed tool result cache with per-entry TTL.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.UtilsTest do
   @moduledoc """
-  Chicago TDD unit tests for Utils module.
+  Unit tests for Utils module.
 
   Tests utility functions across Tokens, Text, and ID submodules.
   Pure functions, no mocks.

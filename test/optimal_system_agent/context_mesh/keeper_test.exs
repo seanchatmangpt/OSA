@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.ContextMesh.KeeperTest do
   @moduledoc """
-  Chicago TDD unit tests for Keeper module.
+  Unit tests for Keeper module.
 
   Tests per-team GenServer that stores conversation context.
   """

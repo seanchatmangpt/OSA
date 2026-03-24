@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.TasksTest do
   @moduledoc """
-  Chicago TDD unit tests for Agent.Tasks module.
+  Unit tests for Agent.Tasks module.
 
   Tests unified task management system with Tracker, Workflow, and Queue.
   """
