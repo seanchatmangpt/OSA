@@ -52,13 +52,16 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
   defp do_chat(base_url, api_key, model, messages, opts) do
     start_time = System.monotonic_time(:millisecond)
 
+    # Inject model into opts so maybe_add_tools can check parallel_tool_calls support
+    opts_with_model = Keyword.put(opts, :model, model)
+
     body =
       %{
         model: model,
         messages: format_messages(messages),
         temperature: Keyword.get(opts, :temperature, 0.7)
       }
-      |> maybe_add_tools(opts)
+      |> maybe_add_tools(opts_with_model)
       |> maybe_add_max_tokens(opts)
       |> maybe_add_reasoning(model, opts)
       |> maybe_add_response_format(opts)
@@ -754,11 +757,24 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       nil -> body
       [] -> body
       tools ->
-        body
+        body = body
         |> Map.put(:tools, format_tools(tools))
         |> Map.put(:tool_choice, "auto")
-        |> Map.put(:parallel_tool_calls, true)
+
+        # Only enable parallel tool calls for models that support it.
+        # openai/gpt-oss-* models do NOT support parallel tool calls.
+        model = Keyword.get(opts, :model, "")
+        if supports_parallel_tool_calls?(model) do
+          Map.put(body, :parallel_tool_calls, true)
+        else
+          body
+        end
     end
+  end
+
+  defp supports_parallel_tool_calls?(model) do
+    name = String.downcase(to_string(model))
+    not String.contains?(name, "gpt-oss")
   end
 
   defp maybe_add_response_format(body, opts) do

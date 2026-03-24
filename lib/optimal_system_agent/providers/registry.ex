@@ -320,18 +320,6 @@ defmodule OptimalSystemAgent.Providers.Registry do
     end
   end
 
-  # Removes providers that were found unreachable at boot time.
-  # Currently only :ollama is subject to a boot-time probe; all other
-  # providers are key-configured and assumed available until a runtime
-  # failure flips the circuit breaker.
-  defp filter_boot_excluded_providers(chain) do
-    if Process.get(:osa_ollama_excluded, false) do
-      Enum.reject(chain, &(&1 == :ollama))
-    else
-      chain
-    end
-  end
-
   defp stream_with_fallback(provider, module, messages, callback, opts) do
     result = with_retry(fn -> try_stream_provider(module, messages, callback, opts) end)
 

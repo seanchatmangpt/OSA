@@ -182,7 +182,7 @@ defmodule OptimalSystemAgent.ChicagoTDDTelemetryTest do
     test "CRASH: A2A task endpoint emits [:osa, :a2a, :agent_call] telemetry" do
       # Chicago TDD: Verify A2A telemetry event structure
       # The A2A routes emit telemetry when processing tasks
-      events = attach_telemetry([:osa, :a2a, :agent_call])
+      _events = attach_telemetry([:osa, :a2a, :agent_call])
 
       # The A2A routes are Plug-based, so we need to verify the telemetry structure
       # by checking that the events module has the correct handler defined

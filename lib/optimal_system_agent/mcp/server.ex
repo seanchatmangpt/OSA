@@ -370,7 +370,23 @@ defmodule OptimalSystemAgent.MCP.Server do
         end
 
       cmd = to_charlist(command)
-      _cmd_args = Enum.map(args, &to_charlist/1)
+      cmd_args = Enum.map(args, &to_charlist/1)
+
+      # Add arguments to port options if present
+      port_opts =
+        if cmd_args != [] do
+          [{:args, cmd_args} | port_opts]
+        else
+          port_opts
+        end
+
+      # Re-apply env option after args (order matters for port_opts)
+      port_opts =
+        if env_list != [] do
+          [{:env, env_list} | port_opts]
+        else
+          port_opts
+        end
 
       try do
         port = Port.open({:spawn_executable, cmd}, port_opts)

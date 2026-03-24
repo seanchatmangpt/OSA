@@ -79,6 +79,28 @@ defmodule OptimalSystemAgent.Tools.Registry do
   end
 
   @doc """
+  Get the schema (parameters) for a specific tool.
+
+  Returns a map with the tool's parameter schema, or {:error, :not_found} if the tool doesn't exist.
+  """
+  def get_tool_schema(tool_name) when is_binary(tool_name) do
+    builtin_tools = :persistent_term.get({__MODULE__, :builtin_tools}, %{})
+
+    case Map.get(builtin_tools, tool_name) do
+      nil ->
+        mcp_tools = :persistent_term.get({__MODULE__, :mcp_tools}, %{})
+
+        case Map.get(mcp_tools, tool_name) do
+          nil -> {:error, :not_found}
+          info -> {:ok, Map.get(info, :input_schema, %{"type" => "object", "properties" => %{}})}
+        end
+
+      mod ->
+        {:ok, mod.parameters()}
+    end
+  end
+
+  @doc """
   Execute a tool by name without going through the GenServer.
 
   Uses :persistent_term for tool lookup. Safe to call from inside GenServer
@@ -474,6 +496,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
   defp load_builtin_tools do
     %{
+      "help" => OptimalSystemAgent.Tools.Builtins.Help,
       "file_read" => OptimalSystemAgent.Tools.Builtins.FileRead,
       "file_write" => OptimalSystemAgent.Tools.Builtins.FileWrite,
       "file_edit" => OptimalSystemAgent.Tools.Builtins.FileEdit,
