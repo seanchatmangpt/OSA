@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Memory.VIGILTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Memory.VIGIL
 

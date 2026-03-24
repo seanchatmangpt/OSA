@@ -7,8 +7,6 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrailTest do
   """
   use ExUnit.Case, async: false
 
-  @moduletag :skip
-
   alias OptimalSystemAgent.Agent.Hooks.AuditTrail
 
   @unique_prefix "audit-test-#{:erlang.unique_integer([:positive])}-"

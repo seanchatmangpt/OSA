@@ -12,7 +12,6 @@ defmodule OptimalSystemAgent.Agent.TaskQueueTest do
   alias OptimalSystemAgent.Agent.TaskQueue
 
   @moduletag :capture_log
-  @moduletag :skip
 
   setup do
     # Ensure TaskQueue is started for tests

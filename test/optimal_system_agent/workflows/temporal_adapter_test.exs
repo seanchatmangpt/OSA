@@ -3,7 +3,6 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapterTest do
   alias OptimalSystemAgent.Workflows.TemporalAdapter
 
   @moduletag :temporal_adapter
-  @moduletag :skip
 
   describe "start_workflow/3" do
     test "requires workflow_id parameter" do

@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Store.DecisionEdgeTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Store.DecisionEdge
 

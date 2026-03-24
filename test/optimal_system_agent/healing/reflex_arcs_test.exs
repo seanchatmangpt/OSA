@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Healing.ReflexArcsTest do
   and cooldown behavior.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Healing.ReflexArcs
 

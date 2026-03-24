@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Tools.Builtins.TaskWriteTest do
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Tools.Builtins.TaskWrite
   alias OptimalSystemAgent.Agent.Tasks

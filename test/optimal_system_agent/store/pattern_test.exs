@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Store.PatternTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Store.Pattern
 

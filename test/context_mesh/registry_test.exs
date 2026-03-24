@@ -10,7 +10,6 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
   alias OptimalSystemAgent.ContextMesh.Registry
 
   @moduletag :capture_log
-  @moduletag :skip
 
   setup do
     # Initialize ETS table for tests

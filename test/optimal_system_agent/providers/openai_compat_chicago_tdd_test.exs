@@ -24,41 +24,39 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
 
   use ExUnit.Case, async: false
 
-  @moduletag :skip
-
   alias OptimalSystemAgent.Providers.OpenAICompat
 
   describe "Provider — Function Existence" do
     test "CRASH: chat/5 function exists" do
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
 
     test "CRASH: chat_stream/6 function exists" do
-      assert function_exported?(OpenAICompat, :chat_stream, 6)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat_stream, 6)
     end
 
     test "CRASH: format_messages/1 function exists" do
-      assert function_exported?(OpenAICompat, :format_messages, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :format_messages, 1)
     end
 
     test "CRASH: format_tools/1 function exists" do
-      assert function_exported?(OpenAICompat, :format_tools, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :format_tools, 1)
     end
 
     test "CRASH: parse_tool_calls/1 function exists" do
-      assert function_exported?(OpenAICompat, :parse_tool_calls, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :parse_tool_calls, 1)
     end
 
     test "CRASH: parse_tool_calls/2 function exists (model-aware)" do
-      assert function_exported?(OpenAICompat, :parse_tool_calls, 2)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :parse_tool_calls, 2)
     end
 
     test "CRASH: reasoning_model?/1 function exists" do
-      assert function_exported?(OpenAICompat, :reasoning_model?, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :reasoning_model?, 1)
     end
 
     test "CRASH: generate_tool_call_id/0 function exists" do
-      assert function_exported?(OpenAICompat, :generate_tool_call_id, 0)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :generate_tool_call_id, 0)
     end
   end
 
@@ -308,12 +306,12 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
       # This is tested indirectly via the chat function
       # The supports_parallel_tool_calls? function is private
       # We can verify behavior through the format_tools output
-      assert function_exported?(OpenAICompat, :format_tools, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :format_tools, 1)
     end
 
     test "CRASH: Other models support parallel tool calls" do
       # Tested indirectly
-      assert function_exported?(OpenAICompat, :format_tools, 1)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :format_tools, 1)
     end
   end
 
@@ -398,41 +396,41 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
     test "CRASH: Response with usage returns parsed usage" do
       # Tested indirectly through chat function
       # The parse_usage function is private
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
 
     test "CRASH: Response without usage returns empty map" do
       # Tested indirectly through chat function
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
   end
 
   describe "Provider — Retry-After Parsing" do
     test "CRASH: Integer retry-after is parsed" do
       # Tested indirectly through chat error handling
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
 
     test "CRASH: HTTP-date retry-after is parsed" do
       # Tested indirectly through chat error handling
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
   end
 
   describe "Provider — Provider Detection from URL" do
     test "CRASH: groq.com detected as :groq" do
       # Tested indirectly through telemetry emission
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
 
     test "CRASH: api.openai.com detected as :openai" do
       # Tested indirectly through telemetry emission
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
 
     test "CRASH: Unknown URL detected as :unknown" do
       # Tested indirectly through telemetry emission
-      assert function_exported?(OpenAICompat, :chat, 5)
+      assert Code.ensure_loaded?(OpenAICompat) and function_exported?(OpenAICompat, :chat, 5)
     end
   end
 end

@@ -7,15 +7,17 @@ defmodule OptimalSystemAgent.EventStreamTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.EventStream
 
   @moduletag :capture_log
 
   setup do
-    # Start EventStream GenServer for each test
-    start_supervised!(EventStream)
+    # EventStream is already started by the application
+    # Just ensure it's running
+    unless Process.whereis(EventStream) do
+      start_supervised!(EventStream)
+    end
     :ok
   end
 

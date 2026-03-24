@@ -7,15 +7,16 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Speculative.Executor
 
   @moduletag :capture_log
 
   setup do
-    # Start Executor GenServer for each test
-    start_supervised!(Executor)
+    # Executor is already started by the application — clear any previous state
+    # by calling list_active and discarding all
+    Executor.list_active()
+    |> Enum.each(&Executor.discard/1)
     :ok
   end
 

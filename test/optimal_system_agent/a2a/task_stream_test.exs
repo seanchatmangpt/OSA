@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.A2A.TaskStreamTest do
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.A2A.TaskStream
 
@@ -81,7 +80,7 @@ defmodule OptimalSystemAgent.A2A.TaskStreamTest do
 
     test "publishes with empty metadata" do
       task_id = "test-task-pub2-#{System.unique_integer([:positive])}"
-      assert :ok = TaskStream.publish(task_id, "completed")
+      assert :ok = TaskStream.publish(task_id, "completed", %{})
     end
   end
 

@@ -62,7 +62,7 @@ defmodule OptimalSystemAgent.Speculative.Assumption do
   @doc "Mark an assumption as confirmed."
   @spec confirm(t()) :: t()
   def confirm(%__MODULE__{} = assumption) do
-    %{assumption | status: :confirmed, checked_at: DateTime.utc_now()}
+    %{assumption | status: :confirmed, checked_at: DateTime.utc_now(), invalidation_reason: nil}
   end
 
   @doc """

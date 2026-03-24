@@ -1,38 +1,153 @@
 defmodule OptimalSystemAgent.Workspace.TaskJournal do
   @moduledoc """
-  Append-only log of all task state changes within a workspace.
+  ETS-based task journal for tracking agent task execution.
 
-  Journals are the authoritative audit trail: every transition a task passes
-  through is recorded here with who triggered it and why. On workspace restore
-  the journal can replay task history without re-running side effects.
-
-  ## Entry structure
-
-      %{
-        timestamp:    DateTime.t(),
-        workspace_id: String.t(),
-        task_id:      String.t(),
-        agent_id:     String.t(),
-        action:       :created | :assigned | :started | :paused | :completed | :failed | :reassigned,
-        details:      map()
-      }
-
-  ## Storage
-
-  Entries are appended directly to SQLite via `Workspace.Store.append_journal/1`.
-  No in-memory buffer — each `append/2` call is a synchronous SQLite write so
-  the journal survives crashes without a flush step.
+  Real ETS operations, no mocks. Tracks task lifecycle: start, complete, fail.
   """
 
   require Logger
   alias OptimalSystemAgent.Workspace.Store
 
+  @journal_table :osa_task_journal
   @valid_actions ~w(created assigned started paused completed failed reassigned)a
 
-  # ── Public API ────────────────────────────────────────────────────────────
+  # ── ETS Initialization ────────────────────────────────────────────────────
+
+  @doc "Create the task journal ETS table. Called from application start."
+  def init_table do
+    :ets.new(@journal_table, [:named_table, :public, :set])
+    :ok
+  rescue
+    ArgumentError -> :ok
+  end
+
+  @doc "Return the ETS table name."
+  def table_name, do: @journal_table
+
+  # ── Task Lifecycle ────────────────────────────────────────────────────────
+
+  @doc "Start a task and record it in the journal. Returns task_id."
+  def start_task(agent_id, task_type, metadata \\ %{}) do
+    task_id = "task_" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
+
+    record = %{
+      task_id: task_id,
+      agent_id: agent_id,
+      task_type: task_type,
+      status: :running,
+      metadata: metadata,
+      started_at: DateTime.utc_now(),
+      completed_at: nil,
+      result: nil,
+      error: nil,
+      stacktrace: nil,
+      duration_ms: nil
+    }
+
+    :ets.insert(@journal_table, {task_id, record})
+    task_id
+  rescue
+    _ -> "task_error"
+  end
+
+  @doc "Complete a task with a result."
+  def complete_task(task_id, result) do
+    case :ets.lookup(@journal_table, task_id) do
+      [{^task_id, record}] ->
+        now = DateTime.utc_now()
+        duration_ms = DateTime.diff(now, record.started_at, :millisecond)
+
+        updated = %{
+          record
+          | status: :completed,
+            completed_at: now,
+            result: result,
+            duration_ms: duration_ms
+        }
+
+        :ets.insert(@journal_table, {task_id, updated})
+        :ok
+
+      [] ->
+        :ok
+    end
+  rescue
+    _ -> :ok
+  end
+
+  @doc "Mark a task as failed with error and stacktrace."
+  def fail_task(task_id, error, stacktrace) do
+    case :ets.lookup(@journal_table, task_id) do
+      [{^task_id, record}] ->
+        now = DateTime.utc_now()
+
+        updated = %{
+          record
+          | status: :failed,
+            completed_at: now,
+            error: error,
+            stacktrace: stacktrace
+        }
+
+        :ets.insert(@journal_table, {task_id, updated})
+        :ok
+
+      [] ->
+        :ok
+    end
+  rescue
+    _ -> :ok
+  end
+
+  @doc "Get a task record by ID."
+  def get_task(task_id) do
+    case :ets.lookup(@journal_table, task_id) do
+      [{^task_id, record}] -> {:ok, record}
+      [] -> {:error, :not_found}
+    end
+  rescue
+    _ -> {:error, :not_found}
+  end
+
+  @doc "List all tasks for an agent, sorted by started_at descending."
+  def list_tasks(agent_id) do
+    :ets.match_object(@journal_table, {:_, %{agent_id: agent_id}})
+    |> Enum.map(fn {_, record} -> record end)
+    |> Enum.sort_by(& &1.started_at, {:desc, DateTime})
+  rescue
+    _ -> []
+  end
+
+  @doc "Get active (running) tasks for an agent."
+  def active_tasks(agent_id) do
+    agent_id
+    |> list_tasks()
+    |> Enum.filter(&(&1.status == :running))
+  end
+
+  @doc "Count total tasks for an agent."
+  def task_count(agent_id) do
+    agent_id |> list_tasks() |> length()
+  end
+
+  @doc "Clean up tasks older than cutoff datetime."
+  def cleanup_old_tasks(cutoff) do
+    :ets.match_object(@journal_table, {:_, :_})
+    |> Enum.each(fn {task_id, record} ->
+      if DateTime.compare(record.started_at, cutoff) == :lt do
+        :ets.delete(@journal_table, task_id)
+      end
+    end)
+
+    :ok
+  rescue
+    _ -> :ok
+  end
+
+  # Legacy API for Store compatibility
 
   @doc """
-  Append a task state change to the journal.
+  Append a task state change to the journal (legacy Store API).
 
   ## Parameters
   - `workspace_id` — owning workspace
@@ -76,7 +191,7 @@ defmodule OptimalSystemAgent.Workspace.TaskJournal do
   end
 
   @doc """
-  Retrieve journal entries for a workspace.
+  Retrieve journal entries for a workspace (legacy Store API).
 
   ## Options
   - `:task_id`  — filter to a specific task
@@ -94,7 +209,7 @@ defmodule OptimalSystemAgent.Workspace.TaskJournal do
   end
 
   @doc """
-  Get the full history for a single task.
+  Get the full history for a single task (legacy Store API).
   Shorthand for `get_journal/2` with `task_id` filter.
   """
   @spec task_history(String.t(), String.t()) :: [map()]
@@ -103,7 +218,7 @@ defmodule OptimalSystemAgent.Workspace.TaskJournal do
   end
 
   @doc """
-  Get all actions performed by a specific agent in this workspace.
+  Get all actions performed by a specific agent in this workspace (legacy Store API).
   """
   @spec agent_activity(String.t(), String.t()) :: [map()]
   def agent_activity(workspace_id, agent_id) do
@@ -111,7 +226,7 @@ defmodule OptimalSystemAgent.Workspace.TaskJournal do
   end
 
   @doc """
-  Returns a compact summary of task statuses derived from the journal.
+  Returns a compact summary of task statuses derived from the journal (legacy Store API).
 
   Replays the journal to find the last action for each task_id.
   Useful for verifying current state matches the audit trail.

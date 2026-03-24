@@ -38,11 +38,11 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
     end
 
     test "CRASH: Implements Providers.Behaviour" do
-      assert function_exported?(Ollama, :name, 0)
-      assert function_exported?(Ollama, :default_model, 0)
-      assert function_exported?(Ollama, :available_models, 0)
-      assert function_exported?(Ollama, :chat, 2)
-      assert function_exported?(Ollama, :chat_stream, 3)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :name, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :default_model, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :available_models, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat, 2)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat_stream, 3)
     end
   end
 
@@ -202,13 +202,13 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
     test "CRASH: Strips JSON arguments from tool name" do
       # This is tested indirectly through the provider interface
       # The actual normalization is private
-      assert function_exported?(Ollama, :chat, 2)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat, 2)
     end
   end
 
   describe "Provider — Reachable Check" do
     test "CRASH: reachable? function exists" do
-      assert function_exported?(Ollama, :reachable?, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :reachable?, 0)
     end
 
     test "CRASH: reachable? returns boolean" do
@@ -221,17 +221,17 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
 
   describe "Provider — List Models" do
     test "CRASH: list_models function exists" do
-      assert function_exported?(Ollama, :list_models, 1)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :list_models, 1)
     end
 
     test "CRASH: list_models accepts default URL" do
-      assert function_exported?(Ollama, :list_models, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :list_models, 0)
     end
   end
 
   describe "Provider — Auto Detect Model" do
     test "CRASH: auto_detect_model function exists" do
-      assert function_exported?(Ollama, :auto_detect_model, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :auto_detect_model, 0)
     end
 
     test "CRASH: auto_detect_model returns :ok" do
@@ -243,23 +243,23 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
 
   describe "Provider — Chat Function" do
     test "CRASH: chat/2 function exists" do
-      assert function_exported?(Ollama, :chat, 2)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat, 2)
     end
 
     test "CRASH: chat/2 returns {:ok, map} or {:error, binary}" do
       # We can't test actual chat without Ollama running
       # But we can verify the function signature
-      assert function_exported?(Ollama, :chat, 2)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat, 2)
     end
   end
 
   describe "Provider — Chat Stream Function" do
     test "CRASH: chat_stream/3 function exists" do
-      assert function_exported?(Ollama, :chat_stream, 3)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat_stream, 3)
     end
 
     test "CRASH: chat_stream/3 requires callback" do
-      assert function_exported?(Ollama, :chat_stream, 3)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat_stream, 3)
     end
   end
 
@@ -348,11 +348,11 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
   describe "Provider — Behavior Contract" do
     test "CRASH: Implements required callback functions" do
       # Providers.Behaviour requires: name/0, default_model/0, available_models/0, chat/2, chat_stream/3
-      assert function_exported?(Ollama, :name, 0)
-      assert function_exported?(Ollama, :default_model, 0)
-      assert function_exported?(Ollama, :available_models, 0)
-      assert function_exported?(Ollama, :chat, 2)
-      assert function_exported?(Ollama, :chat_stream, 3)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :name, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :default_model, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :available_models, 0)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat, 2)
+      assert Code.ensure_loaded?(Ollama) and function_exported?(Ollama, :chat_stream, 3)
     end
 
     test "CRASH: name returns atom" do

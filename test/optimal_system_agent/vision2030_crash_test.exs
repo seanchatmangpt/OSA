@@ -13,8 +13,6 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
   NO MOCKS - only test against actual OSA subsystems.
   """
 
-  @moduletag :skip
-
   alias :telemetry, as: Telemetry
 
   describe "Open Telemetry Integration" do

@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Budget.Treasury
 
@@ -113,7 +112,7 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
 
     test "returns empty list initially" do
       # Clear any existing transactions
-      ledger = GenServer.call(:test_treasury, {:get_ledger, []})
+      assert {:ok, ledger} = GenServer.call(:test_treasury, {:get_ledger, []})
       # Initially should be empty or only have initial deposit
       assert is_list(ledger)
     end
@@ -121,7 +120,7 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
 
   describe "handle_call/3" do
     test "handles unknown calls" do
-      assert {:reply, {:error, :unknown_request}, _state} = :sys.handle_debug(:test_treasury, :unknown_call, self(), [])
+      assert {:error, :unknown_request} = GenServer.call(:test_treasury, :unknown_call)
     end
   end
 

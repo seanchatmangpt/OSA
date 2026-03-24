@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Swarm.PatternsTest do
   use ExUnit.Case
-  @moduletag :skip
   alias OptimalSystemAgent.Swarm.Patterns
 
   describe "list_patterns/0" do

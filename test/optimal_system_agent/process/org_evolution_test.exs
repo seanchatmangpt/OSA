@@ -6,7 +6,6 @@ defmodule OptimalSystemAgent.Process.OrgEvolutionTest do
   generate_sop, org_health, snapshot, list_proposals, approve/reject_proposal.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Process.OrgEvolution
 

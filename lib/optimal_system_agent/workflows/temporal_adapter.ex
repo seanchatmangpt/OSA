@@ -57,7 +57,10 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
     - `{:ok, execution_id}` on success
     - `{:error, reason}` on failure
   """
-  @spec start_workflow(workflow_id(), execution_params()) :: {:ok, String.t()} | {:error, term()}
+  @spec start_workflow(workflow_id() | nil, execution_params() | nil) :: {:ok, String.t()} | {:error, term()}
+  def start_workflow(nil, _), do: {:error, :missing_workflow_id}
+  def start_workflow(_, nil), do: {:error, :missing_execution_params}
+
   def start_workflow(workflow_id, execution_params) when is_binary(workflow_id) and is_map(execution_params) do
     Logger.info("[TemporalAdapter] Starting workflow: #{workflow_id}")
 
@@ -78,7 +81,7 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
 
   ## Parameters
     - `workflow_id`: Workflow execution ID
-    - `signal`: Map containing:
+    - `signal`: Signal name (string) or map containing:
       - `name` (required): Signal name
       - `input` (optional): Signal payload
 
@@ -86,8 +89,15 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
     - `{:ok, :sent}` on success
     - `{:error, reason}` on failure
   """
-  @spec signal_workflow(workflow_id(), signal()) :: {:ok, :sent} | {:error, term()}
-  def signal_workflow(workflow_id, signal) when is_binary(workflow_id) and is_map(signal) do
+  @spec signal_workflow(workflow_id() | nil, signal() | String.t() | nil) :: {:ok, :sent} | {:error, term()}
+  def signal_workflow(nil, _), do: {:error, :missing_workflow_id}
+  def signal_workflow(_, nil), do: {:error, :missing_signal}
+
+  def signal_workflow(_workflow_id, signal) when is_binary(signal) and signal not in ["pause", "skip_stage", "abort"] do
+    {:error, :invalid_signal}
+  end
+
+  def signal_workflow(workflow_id, signal) when is_binary(workflow_id) and (is_map(signal) or is_binary(signal)) do
     Logger.info("[TemporalAdapter] Sending signal to workflow: #{workflow_id}")
 
     with :ok <- validate_required_params(signal, ["name"]),
@@ -112,7 +122,9 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
     - `{:ok, state}` on success, where state is a map of workflow state
     - `{:error, reason}` on failure
   """
-  @spec query_workflow(workflow_id()) :: {:ok, workflow_state()} | {:error, term()}
+  @spec query_workflow(workflow_id() | nil) :: {:ok, workflow_state()} | {:error, term()}
+  def query_workflow(nil), do: {:error, :missing_workflow_id}
+
   def query_workflow(workflow_id) when is_binary(workflow_id) do
     Logger.debug("[TemporalAdapter] Querying workflow: #{workflow_id}")
 
@@ -126,11 +138,19 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
     end
   end
 
+  # ── Public: Configuration Helpers ─────────────────────────────────────────
+
+  @doc "Get the Temporal host from environment or default."
+  def get_temporal_host, do: System.get_env("TEMPORAL_HOST", "localhost")
+
+  @doc "Get the Temporal namespace from environment or default."
+  def get_namespace, do: System.get_env("TEMPORAL_NAMESPACE", "default")
+
   # ── Private: Configuration ─────────────────────────────────────────────
 
-  defp temporal_host, do: System.get_env("TEMPORAL_HOST", "localhost")
+  defp temporal_host, do: get_temporal_host()
   defp temporal_port, do: System.get_env("TEMPORAL_PORT", "7233") |> String.to_integer()
-  defp temporal_namespace, do: System.get_env("TEMPORAL_NAMESPACE", "default")
+  defp temporal_namespace, do: get_namespace()
 
   defp build_base_url do
     host = temporal_host()

@@ -4,7 +4,6 @@ defmodule OptimalSystemAgent.Agent.SessionRecoveryTest do
   checkpoint/restore crash recovery in Agent.Loop.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Agent.Loop
 

@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Memory.ScoringTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Memory.Scoring
 

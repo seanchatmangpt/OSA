@@ -40,15 +40,24 @@ defmodule OptimalSystemAgent.Sensors.RDFGenerator do
          modules = Jason.decode!(modules_json),
          deps = Jason.decode!(deps_json),
          patterns = Jason.decode!(patterns_json),
-         ttl_content = generate_ttl(modules, deps, patterns, base_uri),
+         # Apply migration to support old SPR formats
+         {:ok, migrated_modules} <- OptimalSystemAgent.Sensors.SPRMigration.migrate(modules),
+         {:ok, migrated_deps} <- OptimalSystemAgent.Sensors.SPRMigration.migrate(deps),
+         {:ok, migrated_patterns} <- OptimalSystemAgent.Sensors.SPRMigration.migrate(patterns),
+         ttl_content = generate_ttl(migrated_modules, migrated_deps, migrated_patterns, base_uri),
          :ok <- File.write(output_file, ttl_content) do
 
       triple_count = count_triples(ttl_content)
 
+      file_size = case File.stat(output_file) do
+        {:ok, stat} -> stat.size
+        {:error, _} -> 0
+      end
+
       metadata = %{
         file: output_file,
         triple_count: triple_count,
-        size: byte_size(output_file),
+        size: file_size,
         base_uri: base_uri,
         generated_at: System.system_time(:millisecond)
       }

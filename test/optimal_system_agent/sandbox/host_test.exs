@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Sandbox.HostTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Sandbox.Host
 

@@ -127,17 +127,14 @@ defmodule OptimalSystemAgent.Agent.Workflow do
         message
       )
 
-    # Length indicator (complex requests tend to be longer)
-    is_long = String.length(message) > 100
-
     # Multi-phase language
     has_phase_language =
       Regex.match?(
         ~r/\b(plan|phase|milestone|roadmap|sprint|breakdown|decompose|stages?|steps?)\b/i,
         message
-      ) and is_long
+      )
 
-    has_multi_step or (has_workflow_language and is_long) or has_phase_language
+    has_multi_step or has_workflow_language or has_phase_language
   end
 
   def should_create_workflow?(_), do: false
@@ -165,14 +162,15 @@ defmodule OptimalSystemAgent.Agent.Workflow do
     }
 
     # Find matching keywords
-    estimated = Enum.find_value(complexity_keywords, fn {keyword, _duration} ->
-      String.contains?(String.downcase(task_description), keyword)
+    estimated = Enum.find_value(complexity_keywords, fn {keyword, duration} ->
+      if String.contains?(String.downcase(task_description), keyword) do
+        duration
+      else
+        nil
+      end
     end)
 
-    case estimated do
-      {_keyword, duration} -> duration
-      nil -> nil
-    end
+    estimated
   end
 
   def estimate_duration(_), do: nil

@@ -10,7 +10,6 @@ defmodule OptimalSystemAgent.Agent.ContextTest do
   alias OptimalSystemAgent.Agent.Context
 
   @moduletag :capture_log
-  @moduletag :skip
 
   describe "build/1" do
     test "returns %{messages: [system_msg | conversation]}" do

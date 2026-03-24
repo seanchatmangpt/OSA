@@ -22,6 +22,7 @@ defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
 
       # Create test SPR files
       modules = %{
+        "version" => "2.0",
         "scan_type" => "modules",
         "timestamp" => System.system_time(:millisecond),
         "total_modules" => 2,
@@ -32,6 +33,7 @@ defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
       }
 
       deps = %{
+        "version" => "2.0",
         "scan_type" => "dependencies",
         "timestamp" => System.system_time(:millisecond),
         "total_deps" => 1,
@@ -41,6 +43,7 @@ defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
       }
 
       patterns = %{
+        "version" => "2.0",
         "scan_type" => "patterns",
         "timestamp" => System.system_time(:millisecond),
         "total_patterns" => 1,
@@ -66,7 +69,7 @@ defmodule OptimalSystemAgent.Fortune5.RDFGeneratorTest do
         output_file: output_file
       )
 
-      assert match?({:ok, %{file: ^output_file, triple_count: count}}, result)
+      assert match?({:ok, %{file: ^output_file, triple_count: _count}}, result)
       assert File.exists?(output_file)
 
       # Verify file has content

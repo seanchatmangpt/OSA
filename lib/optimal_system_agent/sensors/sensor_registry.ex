@@ -231,7 +231,29 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
 
   defp validate_no_path_traversal(path) do
     # Reject paths containing ".." (path traversal attempt)
-    if String.contains?(path, "..") do
+    # Also reject absolute paths and shell injection characters
+    dangerous_patterns = [
+      "..",                 # path traversal
+      ~r/^\//,             # absolute path (starts with /)
+      ~r/^~/,              # home directory expansion
+      ";",                 # shell command separator
+      "|",                 # pipe
+      "$",                 # variable expansion
+      "(",                 # subshell
+      ")",                 # subshell
+      "`",                 # command substitution
+      "&"                  # background process
+    ]
+
+    has_dangerous = Enum.any?(dangerous_patterns, fn pattern ->
+      if is_binary(pattern) do
+        String.contains?(path, pattern)
+      else
+        Regex.match?(pattern, path)
+      end
+    end)
+
+    if has_dangerous do
       {:error, :path_traversal_detected}
     else
       :ok
@@ -240,17 +262,24 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
 
   defp validate_output_directory(output_dir) do
     # Allow writing to priv/sensors and any tmp/ subdirectory
+    # Reject absolute paths and home directory expansion
     allowed_prefixes = ["priv/sensors", "tmp"]
 
-    is_allowed = Enum.any?(allowed_prefixes, fn prefix ->
-      String.starts_with?(output_dir, prefix) or
-        output_dir == prefix
-    end)
-
-    if is_allowed do
-      :ok
+    # First check: reject absolute paths
+    if String.starts_with?(output_dir, "/") or String.starts_with?(output_dir, "~") do
+      {:error, :absolute_path_not_allowed}
     else
-      {:error, :output_directory_not_allowed}
+      # Second check: must start with allowed prefix
+      is_allowed = Enum.any?(allowed_prefixes, fn prefix ->
+        String.starts_with?(output_dir, prefix) or
+          output_dir == prefix
+      end)
+
+      if is_allowed do
+        :ok
+      else
+        {:error, :output_directory_not_allowed}
+      end
     end
   end
 
@@ -713,14 +742,18 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
   end
 
   defp get_latest_scan(_state) do
-    # For :set tables, :ets.last/1 returns just the key
-    case :ets.last(@scan_table) do
-      :"$end_of_table" -> nil
-      scan_id ->
-        case :ets.lookup(@scan_table, scan_id) do
-          [{^scan_id, scan}] -> scan
-          [] -> nil
-        end
+    # Get the most recent scan by timestamp, not by insertion order
+    # ETS :set tables don't maintain chronological order, so we need to scan all entries
+    case :ets.match(@scan_table, {:"$1", :"$2"}) do
+      [] -> nil
+      matches ->
+        # matches is [[scan_id, scan_data], ...]
+        matches
+        |> Enum.map(fn [_scan_id, scan] -> scan end)
+        # Sort by timestamp descending (most recent first)
+        |> Enum.sort_by(fn scan -> scan.timestamp end, :desc)
+        # Return the most recent scan
+        |> List.first()
     end
   end
 

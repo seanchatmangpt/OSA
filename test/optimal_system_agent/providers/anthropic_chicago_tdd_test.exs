@@ -82,11 +82,11 @@ defmodule OptimalSystemAgent.Providers.AnthropicChicagoTDDTest do
 
   describe "Provider — Behavior Contract" do
     test "CRASH: Implements Providers.Behaviour" do
-      assert function_exported?(Anthropic, :name, 0)
-      assert function_exported?(Anthropic, :default_model, 0)
-      assert function_exported?(Anthropic, :available_models, 0)
-      assert function_exported?(Anthropic, :chat, 2)
-      assert function_exported?(Anthropic, :chat_stream, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :name, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :default_model, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :available_models, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat_stream, 2)
     end
 
     test "CRASH: name returns atom" do
@@ -102,11 +102,11 @@ defmodule OptimalSystemAgent.Providers.AnthropicChicagoTDDTest do
     end
 
     test "CRASH: chat function exists" do
-      assert function_exported?(Anthropic, :chat, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat, 2)
     end
 
     test "CRASH: chat_stream function exists" do
-      assert function_exported?(Anthropic, :chat_stream, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat_stream, 2)
     end
   end
 
@@ -178,18 +178,18 @@ defmodule OptimalSystemAgent.Providers.AnthropicChicagoTDDTest do
 
   describe "Provider — Function Signatures" do
     test "CRASH: chat/2 accepts messages and opts" do
-      assert function_exported?(Anthropic, :chat, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat, 2)
     end
 
     test "CRASH: chat_stream has default arguments" do
       # chat_stream/2 (callback provided) or chat_stream/3 (callback + opts)
       # Since opts has default value, check for the base function
-      assert function_exported?(Anthropic, :chat_stream, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat_stream, 2)
     end
 
     test "CRASH: format_messages/1 is exposed for testing" do
       # This function has @doc false but should be callable
-      assert function_exported?(Anthropic, :format_messages, 1)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :format_messages, 1)
     end
   end
 
@@ -201,11 +201,11 @@ defmodule OptimalSystemAgent.Providers.AnthropicChicagoTDDTest do
     test "CRASH: Module has behaviour attribute" do
       # The @behaviour attribute is compile-time only
       # We can verify the module implements the callbacks
-      assert function_exported?(Anthropic, :name, 0)
-      assert function_exported?(Anthropic, :default_model, 0)
-      assert function_exported?(Anthropic, :available_models, 0)
-      assert function_exported?(Anthropic, :chat, 2)
-      assert function_exported?(Anthropic, :chat_stream, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :name, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :default_model, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :available_models, 0)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat, 2)
+      assert Code.ensure_loaded?(Anthropic) and function_exported?(Anthropic, :chat_stream, 2)
     end
   end
 end

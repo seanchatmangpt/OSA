@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Store.TaskTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Store.Task
 

@@ -10,7 +10,6 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   @osa_url "http://localhost:9089"
 

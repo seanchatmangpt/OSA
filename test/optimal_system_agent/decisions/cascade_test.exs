@@ -1,8 +1,9 @@
 defmodule OptimalSystemAgent.Decisions.CascadeTest do
   @moduledoc """
-  Unit tests for Cascade module.
+  Integration tests for Cascade module.
 
   Tests confidence propagation through the decision graph.
+  Requires database setup to run.
   """
 
   use ExUnit.Case, async: false
@@ -10,7 +11,7 @@ defmodule OptimalSystemAgent.Decisions.CascadeTest do
   alias OptimalSystemAgent.Decisions.Cascade
 
   @moduletag :capture_log
-  @moduletag :skip
+  @moduletag :integration
 
   describe "propagate/2" do
     test "returns {:ok, count} for valid confidence in range" do

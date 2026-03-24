@@ -45,6 +45,10 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   """
   @spec run(map()) :: {String.t(), map()}
   def run(%{iteration: iter, session_id: sid} = state) do
+    # Ensure required keys exist for cached_context/1
+    state = Map.put_new(state, :plan_mode, false)
+    state = Map.put_new(state, :channel, nil)
+
     cancelled? =
       try do
         case :ets.lookup(@cancel_table, sid) do

@@ -24,11 +24,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileWriteChicagoTDDTest do
 
   describe "Tool — Behaviour Implementation" do
     test "CRASH: Implements Tools.Behaviour" do
-      assert function_exported?(FileWrite, :safety, 0)
-      assert function_exported?(FileWrite, :name, 0)
-      assert function_exported?(FileWrite, :description, 0)
-      assert function_exported?(FileWrite, :parameters, 0)
-      assert function_exported?(FileWrite, :execute, 1)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :safety, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :name, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :description, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :parameters, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :execute, 1)
     end
 
     test "CRASH: safety/0 returns :write_safe" do
@@ -104,12 +104,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileWriteChicagoTDDTest do
 
   describe "Tool — Execute Function" do
     test "CRASH: execute/1 function exists" do
-      assert function_exported?(FileWrite, :execute, 1)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :execute, 1)
     end
 
     test "CRASH: execute accepts map with path and content" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileWrite, :execute, 1)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :execute, 1)
     end
   end
 
@@ -138,11 +138,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileWriteChicagoTDDTest do
 
     test "CRASH: Module has @behaviour Tools.Behaviour" do
       # Verify callbacks are implemented
-      assert function_exported?(FileWrite, :safety, 0)
-      assert function_exported?(FileWrite, :name, 0)
-      assert function_exported?(FileWrite, :description, 0)
-      assert function_exported?(FileWrite, :parameters, 0)
-      assert function_exported?(FileWrite, :execute, 1)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :safety, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :name, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :description, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :parameters, 0)
+      assert Code.ensure_loaded?(FileWrite) and function_exported?(FileWrite, :execute, 1)
     end
   end
 

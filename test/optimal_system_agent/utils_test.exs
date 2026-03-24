@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.UtilsTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Utils.Tokens
   alias OptimalSystemAgent.Utils.Text

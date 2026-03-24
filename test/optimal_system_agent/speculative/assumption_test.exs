@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Speculative.AssumptionTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Speculative.Assumption
 

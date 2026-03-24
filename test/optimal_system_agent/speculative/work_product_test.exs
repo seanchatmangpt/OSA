@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Speculative.WorkProduct
 

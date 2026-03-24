@@ -6,7 +6,6 @@ defmodule OptimalSystemAgent.Agent.WorkflowTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Agent.Workflow
 

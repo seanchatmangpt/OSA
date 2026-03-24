@@ -49,6 +49,14 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
+  @doc "Get the provider name."
+  @spec name() :: :openai_compat
+  def name, do: :openai_compat
+
+  @doc "Get the default model name."
+  @spec default_model() :: String.t()
+  def default_model, do: "gpt-4o-mini"
+
   defp do_chat(base_url, api_key, model, messages, opts) do
     start_time = System.monotonic_time(:millisecond)
 

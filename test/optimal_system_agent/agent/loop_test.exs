@@ -6,7 +6,6 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
   """
 
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   @moduletag :capture_log
 
@@ -260,7 +259,7 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
 
     test "returns nil when session not found" do
       # From module: _ -> nil
-      assert Loop.get_owner("nonexistent_session_xyz") == nil
+      assert OptimalSystemAgent.Agent.Loop.get_owner("nonexistent_session_xyz") == nil
     end
   end
 

@@ -67,6 +67,10 @@ defmodule OptimalSystemAgent.Budget do
     GenServer.call(__MODULE__, :get_status)
   end
 
+  @doc "Return map of provider rates (USD per 1M tokens)."
+  @spec provider_rates() :: map()
+  def provider_rates, do: @provider_rates
+
   @doc "Record an API call cost. Fire-and-forget."
   @spec record_cost(atom(), String.t(), non_neg_integer(), non_neg_integer(), String.t()) :: :ok
   def record_cost(provider, model, tokens_in, tokens_out, session_id) do

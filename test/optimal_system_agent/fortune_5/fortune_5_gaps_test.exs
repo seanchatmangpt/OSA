@@ -13,7 +13,7 @@ defmodule OptimalSystemAgent.Fortune5.GapsTest do
       File.rm_rf!(output_dir)
       File.mkdir_p!(output_dir)
 
-      {:ok, result} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
+      {:ok, _result} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
         codebase_path: codebase_path,
         output_dir: output_dir
       )

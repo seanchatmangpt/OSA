@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.FileLocking.IntentBroadcaster
 

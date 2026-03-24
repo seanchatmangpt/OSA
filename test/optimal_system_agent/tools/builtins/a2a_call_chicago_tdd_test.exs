@@ -117,7 +117,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACallChicagoTDDTest do
       # We can't make HTTP calls without Finch started
       # But we can verify the function exists and is callable
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
 
       # The key test: call action requires message, list_tools doesn't
       # This is verified by the call action test above
@@ -136,22 +136,22 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACallChicagoTDDTest do
       # We can't test the actual HTTP call without a server
       # But we can verify the function is defined
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
 
     test "CRASH: Routes call action (function exists)" do
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
 
     test "CRASH: Routes list_tools action (function exists)" do
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
 
     test "CRASH: Routes execute_tool action (function exists)" do
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
   end
 
@@ -170,18 +170,18 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACallChicagoTDDTest do
       # We can't test this without making an HTTP call
       # But we can verify the function is callable
       assert Code.ensure_loaded?(A2ACall)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
   end
 
   describe "Tool — Behavior Contract" do
     test "CRASH: Implements Tools.Behaviour" do
       # Verify the module implements the required callbacks
-      assert function_exported?(A2ACall, :name, 0)
-      assert function_exported?(A2ACall, :description, 0)
-      assert function_exported?(A2ACall, :parameters, 0)
-      assert function_exported?(A2ACall, :safety, 0)
-      assert function_exported?(A2ACall, :execute, 1)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :name, 0)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :description, 0)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :parameters, 0)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :safety, 0)
+      assert Code.ensure_loaded?(A2ACall) and function_exported?(A2ACall, :execute, 1)
     end
 
     test "CRASH: execute/1 returns {:ok, result} or {:error, message}" do

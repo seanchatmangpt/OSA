@@ -12,7 +12,6 @@ defmodule OptimalSystemAgent.CoreSystemsCrashTest do
   NO MOCKS - only test against actual OSA subsystems.
   """
 
-  @moduletag :skip
 
   describe "Agent Loop crash scenarios" do
     test "CRASH: Agent loop with circular dependency detection crashes" do

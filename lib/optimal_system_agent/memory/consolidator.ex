@@ -141,6 +141,30 @@ defmodule OptimalSystemAgent.Memory.Consolidator do
       []
   end
 
+  @doc "Get a pattern by ID from SQLite."
+  @spec get_pattern(String.t()) :: map() | nil
+  def get_pattern(pattern_id) when is_binary(pattern_id) do
+    case Repo.get(Pattern, pattern_id) do
+      nil -> nil
+      pattern -> to_map(pattern)
+    end
+  rescue
+    _e -> nil
+  end
+
+  @doc "Delete a pattern by ID from SQLite."
+  @spec delete_pattern(String.t()) :: :ok
+  def delete_pattern(pattern_id) when is_binary(pattern_id) do
+    case Repo.get(Pattern, pattern_id) do
+      nil -> :ok
+      pattern ->
+        Repo.delete(pattern)
+        :ok
+    end
+  rescue
+    _e -> :ok
+  end
+
   @doc """
   Consolidate a list of memory entries by merging similar ones.
 

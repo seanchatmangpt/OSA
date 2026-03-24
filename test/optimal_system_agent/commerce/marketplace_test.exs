@@ -5,7 +5,6 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceTest do
   Uses unique publisher/buyer IDs to avoid collisions.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Commerce.Marketplace
 

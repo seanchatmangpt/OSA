@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Providers.OllamaTest do
   use ExUnit.Case, async: true
-  @moduletag :skip
 
   alias OptimalSystemAgent.Providers.Ollama
   alias OptimalSystemAgent.Utils.Text

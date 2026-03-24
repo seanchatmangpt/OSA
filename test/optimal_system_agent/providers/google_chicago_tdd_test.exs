@@ -150,10 +150,10 @@ defmodule OptimalSystemAgent.Providers.GoogleChicagoTDDTest do
 
   describe "Provider — Behavior Contract" do
     test "CRASH: Implements Providers.Behaviour" do
-      assert function_exported?(Google, :name, 0)
-      assert function_exported?(Google, :default_model, 0)
-      assert function_exported?(Google, :available_models, 0)
-      assert function_exported?(Google, :chat, 2)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :name, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :default_model, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :available_models, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :chat, 2)
     end
 
     test "CRASH: name returns atom" do
@@ -169,7 +169,7 @@ defmodule OptimalSystemAgent.Providers.GoogleChicagoTDDTest do
     end
 
     test "CRASH: chat function exists" do
-      assert function_exported?(Google, :chat, 2)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :chat, 2)
     end
   end
 
@@ -179,10 +179,10 @@ defmodule OptimalSystemAgent.Providers.GoogleChicagoTDDTest do
     end
 
     test "CRASH: Module has behaviour callbacks" do
-      assert function_exported?(Google, :name, 0)
-      assert function_exported?(Google, :default_model, 0)
-      assert function_exported?(Google, :available_models, 0)
-      assert function_exported?(Google, :chat, 2)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :name, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :default_model, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :available_models, 0)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :chat, 2)
     end
   end
 
@@ -210,7 +210,7 @@ defmodule OptimalSystemAgent.Providers.GoogleChicagoTDDTest do
 
   describe "Provider — Function Signatures" do
     test "CRASH: chat/2 accepts messages and opts" do
-      assert function_exported?(Google, :chat, 2)
+      assert Code.ensure_loaded?(Google) and function_exported?(Google, :chat, 2)
     end
   end
 end

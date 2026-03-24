@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.Process.ProcessMiningTest do
   collisions with other test runs.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Process.ProcessMining
 

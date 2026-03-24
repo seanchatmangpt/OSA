@@ -6,7 +6,6 @@ defmodule OptimalSystemAgent.Process.FingerprintTest do
   as part of the OSA supervision tree.
   """
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Process.Fingerprint
 

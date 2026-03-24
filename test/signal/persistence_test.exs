@@ -4,9 +4,6 @@ defmodule OptimalSystemAgent.Signal.PersistenceTest do
   alias OptimalSystemAgent.Signal.Persistence
   alias OptimalSystemAgent.Store.Signal
 
-  # All tests require Ecto Repo (started via Application). Skip under --no-start.
-  @moduletag :skip
-
   @valid_attrs %{
     channel: "cli",
     mode: "execute",

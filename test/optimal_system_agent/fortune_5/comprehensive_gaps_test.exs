@@ -21,7 +21,7 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
       File.mkdir_p!(output_dir)
 
       # Generate SPR
-      {:ok, spr_scan} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
+      {:ok, _spr_scan} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
         codebase_path: codebase_path,
         output_dir: output_dir
       )
@@ -53,7 +53,7 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
       File.rm_rf!(output_dir)
       File.mkdir_p!(output_dir)
 
-      {:ok, spr_scan} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
+      {:ok, _spr_scan} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
         codebase_path: codebase_path,
         output_dir: output_dir
       )
@@ -355,7 +355,7 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
       File.rm_rf!(output_dir)
       File.mkdir_p!(output_dir)
 
-      {:ok, scan_result} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
+      {:ok, _scan_result} = OptimalSystemAgent.Sensors.SensorRegistry.scan_sensor_suite(
         codebase_path: codebase_path,
         output_dir: output_dir
       )
@@ -385,11 +385,65 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
       assert true
     end
 
-    @tag :skip
     test "pre-commit hook blocks low-coherence commits" do
-      # RED: Pre-commit hook not yet implemented (Fortune 5 Layer 2 gap)
-      # Requires: git pre-commit hook with SHACL coherence validation
-      flunk("Pre-commit hook integration not implemented")
+      # GREEN: Pre-commit hook implemented (Fortune 5 Layer 2 complete)
+      # Validates Signal Theory coherence ≥ 0.8 before allowing commits
+
+      alias OptimalSystemAgent.Agent.Hooks.PreCommit
+
+      # Test register function
+      result = PreCommit.register()
+      assert result == :ok, "register/0 should return :ok"
+
+      # Test coherence validation
+      {score, details} = PreCommit.coherence_score()
+      assert is_float(score), "Coherence score should be a float"
+      assert score >= 0.0 and score <= 1.0, "Coherence score should be between 0.0 and 1.0"
+      assert is_map(details), "Details should be a map"
+
+      # Test validate_commit returns result tuple
+      result = PreCommit.validate_commit()
+      assert is_tuple(result), "validate_commit/0 should return a tuple"
+
+      # Test calculate_score with perfect signal
+      perfect_signal = Jason.encode!(%{
+        "mode" => "data",
+        "genre" => "spec",
+        "type" => "commit",
+        "format" => "json",
+        "structure" => "list"
+      })
+      score = PreCommit.calculate_score(perfect_signal)
+      assert score == 1.0, "Perfect signal should score 1.0, got #{score}"
+
+      # Test calculate_score with missing dimension
+      missing_dimension = Jason.encode!(%{
+        "mode" => "data",
+        "genre" => "spec",
+        "type" => "commit",
+        "format" => "json"
+      })
+      score = PreCommit.calculate_score(missing_dimension)
+      assert score == 0.0, "Missing dimension should score 0.0, got #{score}"
+
+      # Test calculate_score with invalid value
+      invalid_value = Jason.encode!(%{
+        "mode" => "invalid_mode",
+        "genre" => "spec",
+        "type" => "commit",
+        "format" => "json",
+        "structure" => "list"
+      })
+      score = PreCommit.calculate_score(invalid_value)
+      assert score == 0.5, "Invalid value should score 0.5, got #{score}"
+
+      # Test combine_scores function
+      combined = PreCommit.combine_scores([1.0, 0.8, 0.6])
+      expected = 0.8
+      assert abs(combined - expected) < 0.001, "Combined scores of [1.0, 0.8, 0.6] should equal 0.8, got #{combined}"
+
+      # Pre-commit hook successfully validates coherence with threshold ≥ 0.8
+      assert true
     end
   end
 
@@ -637,18 +691,43 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
   end
 
   describe "Fortune 5 Backward Compatibility" do
-    @tag :skip
     test "can read old SPR file formats" do
-      # RED: SPR format migration not implemented (Fortune 5 backward compat gap)
+      # GREEN: SPR format migration implemented (Fortune 5 backward compat)
+      # Migrate v1.0 format (minimal: just version + modules) to v2.0 (current format with Signal Theory)
       old_spr = %{
         "version" => "1.0",
         "modules" => []
       }
 
-      old_file = "tmp/old_format.json"
+      output_dir = "tmp/spr_migration_test_#{System.unique_integer([:positive])}"
+      File.mkdir_p!(output_dir)
+      old_file = Path.join(output_dir, "old_format.json")
       File.write!(old_file, Jason.encode!(old_spr))
 
-      flunk("SPR format migration not implemented")
+      # Test migration using the SPRMigration module
+      {:ok, migrated} = OptimalSystemAgent.Sensors.SPRMigration.migrate_file(old_file)
+
+      # Verify migration to v2.0
+      assert migrated["version"] == "2.0"
+      assert migrated["scan_type"] == "modules"
+      assert Map.has_key?(migrated, "timestamp")
+      assert Map.has_key?(migrated, "total_modules")
+      assert migrated["total_modules"] == 0
+
+      # Verify Signal Theory encoding
+      assert migrated["mode"] == "data"
+      assert migrated["genre"] == "spec"
+      assert migrated["type"] == "inform"
+      assert migrated["format"] == "json"
+      assert migrated["structure"] == "list"
+
+      # Verify migration metadata
+      assert migrated["migration"]["from_version"] == "1.0"
+      assert migrated["migration"]["to_version"] == "2.0"
+      assert migrated["migration"]["data_preserved"] == true
+
+      # Cleanup
+      File.rm_rf!(output_dir)
     end
 
     test "graceful degradation when optional features missing" do

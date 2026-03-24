@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.OS.RegistryTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.OS.Registry
 

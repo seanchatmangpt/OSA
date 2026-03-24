@@ -7,7 +7,6 @@ defmodule OptimalSystemAgent.BudgetTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip
 
   alias OptimalSystemAgent.Budget
 
@@ -111,34 +110,34 @@ defmodule OptimalSystemAgent.BudgetTest do
       # anthropic: {3.0, 15.0} per 1M tokens
       # 1000 input * 3.0 / 1M = 0.003
       # 500 output * 15.0 / 1M = 0.0075
-      cost = Budget.calculate_cost(:anthropic, "model", 1000, 500)
+      cost = Budget.calculate_cost(:anthropic, 1000, 500)
       assert_in_delta cost, 0.0105, 0.0001
     end
 
     test "calculates openai cost correctly" do
       # openai: {2.5, 10.0} per 1M tokens
-      cost = Budget.calculate_cost(:openai, "model", 1000, 500)
+      cost = Budget.calculate_cost(:openai, 1000, 500)
       assert_in_delta cost, 0.0075, 0.0001
     end
 
     test "calculates groq cost correctly" do
       # groq: {0.5, 0.8} per 1M tokens
-      cost = Budget.calculate_cost(:groq, "model", 1000, 500)
+      cost = Budget.calculate_cost(:groq, 1000, 500)
       assert_in_delta cost, 0.0009, 0.0001
     end
 
     test "returns 0.0 for ollama" do
-      assert Budget.calculate_cost(:ollama, "model", 1000, 500) == 0.0
+      assert Budget.calculate_cost(:ollama, 1000, 500) == 0.0
     end
 
     test "uses default rate for unknown provider" do
       # default: {1.0, 3.0} per 1M tokens
-      cost = Budget.calculate_cost(:unknown, "model", 1000, 500)
+      cost = Budget.calculate_cost(:unknown, 1000, 500)
       assert_in_delta cost, 0.0025, 0.0001
     end
 
     test "handles zero tokens" do
-      assert Budget.calculate_cost(:anthropic, "model", 0, 0) == 0.0
+      assert Budget.calculate_cost(:anthropic, 0, 0) == 0.0
     end
   end
 
@@ -179,13 +178,13 @@ defmodule OptimalSystemAgent.BudgetTest do
 
   describe "edge cases" do
     test "handles very large token counts" do
-      cost = Budget.calculate_cost(:anthropic, "model", 1_000_000, 500_000)
+      cost = Budget.calculate_cost(:anthropic, 1_000_000, 500_000)
       # Should not overflow
       assert cost > 0
     end
 
     test "handles negative token counts as zero" do
-      cost = Budget.calculate_cost(:anthropic, "model", -100, -50)
+      cost = Budget.calculate_cost(:anthropic, -100, -50)
       # Should handle gracefully
       assert is_float(cost)
     end
