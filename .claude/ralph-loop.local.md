@@ -1,341 +1,88 @@
----
-active: true
-iteration: 33
-session_id:
-max_iterations: 0
-completion_promise: null
-started_at: "2026-03-24T17:32:04Z"
----
-
-Discover new Chicago TDD and implement to find all gaps
-
-## Methodology: Toyota Code Production System (TCPS)
-
-This Ralph Loop applies **Toyota Code Production System** principles to software testing:
-
-### Core TCPS Principles
-
-1. **Eliminate Waste (Muda)**
-   - No redundant tests — each test must verify unique behavior
-   - No test duplication — single source of truth for each requirement
-   - No unnecessary abstractions — test directly against implementation
-
-2. **Build Quality In (Jidoka)**
-   - **Automated testing at the source** — tests run on every change
-   - **Stop the line on defect** — failing tests block progress
-   - **Quality at the source** — tests verify behavior where it's implemented
-
-3. **Continuous Improvement (Kaizen)**
-   - **Small, incremental changes** — one gap fixed per iteration
-   - **Red → Green → Refactor** — Chicago TDD cycle
-   - **Retrospective learning** — document patterns, avoid repetition
-
-4. **Just-In-Time (Flow)**
-   - **Tests written just before code** — pull system, not push
-   - **Value stream focused** — test user-facing behavior first
-   - **No inventory of untested code** — test coverage always current
-
-5. **Visual Management**
-   - **Test results visible** — clear pass/fail indicators
-   - **Metrics tracked** — coverage, execution time, failure rate
-   - **Progress transparent** — iteration count, gaps discovered
-
-## Global Chicago TDD Requirements (updated iteration 18+)
-
-### Core Principles
-- **NO MOCKS** — Test against real systems (real files, real ETS, real GenServer, real network)
-- **REAL GROQ API CALLS** — Every test that exercises LLM behavior must hit api.groq.com
-- **STRUCTURED OUTPUTS** — Use JSON structured outputs or tool calls, NOT free-text parsing
-- **OPENTELEMETRY VALIDATION** — MCP & A2A calls must be validated with :telemetry events
-- **FULL MCP & A2A** — Tests must exercise MCP client/server and A2A agent coordination
-
-### Test Architecture
-- Provider tests: real Groq HTTP calls via OpenAICompatProvider → api.groq.com
-- Sensor tests: real file scanning → SPR output → feed to Groq for analysis
-- Swarm tests: Roberts Rules deliberation via real Groq calls
-- MCP tests: real MCP server connections (stdio/HTTP), tool discovery, tool execution
-- A2A tests: real agent-to-agent protocol, task streaming, tool exchange
-- All tests tagged `@moduletag :integration`
-
-### OpenTelemetry Requirements
-- MCP calls emit `[:osa, :mcp, :tool_call]` telemetry events
-- A2A calls emit `[:osa, :a2a, :agent_call]` telemetry events
-- Provider calls emit `[:osa, :providers, :chat, :complete]` telemetry events
-- Tests verify telemetry events are emitted (not just that the call succeeds)
-
-### Groq Tool Use Requirements
-- **Parallel tool calls**: Only enabled for models that support it (NOT openai/gpt-oss-*)
-- **Structured outputs**: Use `response_format: %{type: "json_object"}` for JSON mode
-- **Tool call format**: OpenAI function calling format with `id`, `type`, `function.name`, `function.arguments`
-- **Multi-turn**: Tool results sent as `role: "tool"` messages with `tool_call_id` matching original call `id`
-
-### Quality Gates (Jidoka)
-- **Compilation must be clean** — `mix compile --warnings-as-errors`
-- **Tests must pass** — zero failures allowed
-- **Coverage must increase** — each iteration adds test coverage
-- **Telemetry must be verified** — events emitted and validated
-
-## Iteration 18 Progress
-
-### Tests Created: 41 Chicago TDD integration tests
-- **12 tests** in `groq_real_api_test.exs` — OpenTelemetry validation
-- **17 tests** in `chicago_tdd_groq_integration_test.exs` — Real Groq API calls
-- **12 tests** in `mcp_a2a_chicago_tdd_test.exs` — MCP & A2A validation
-
-### Implementation Completed
-- ✅ Telemetry emission in `Providers.OpenAICompatProvider.do_chat/5`
-- ✅ Telemetry for error cases (rate limits, HTTP errors, connection failures)
-- ✅ Telemetry for tool calls
-- ✅ Provider helper function `provider_from_url/1`
-- ✅ Fixed MCP client startup (empty config handling)
-- ✅ Fixed telemetry handlers in tests (test_pid capture)
-- ✅ Clean compilation (`mix compile --warnings-as-errors`)
-- ✅ MCP & A2A Chicago TDD tests created
-- ✅ Fixed parallel tool calls support (gpt-oss models don't support parallel)
-
-### Test Results
-- **41/41 tests passing** — All Chicago TDD tests with real Groq API calls
-- **4 tests skipped** — Due to known MCP.Server stdio transport gap
-- **Real network I/O confirmed** — Real Groq API calls, real MCP/HTTP attempts
-- **Telemetry events verified** — All handlers receive events
-
-### Gaps Discovered (Red Phase)
-
-**GAP: MCP.Server stdio transport doesn't pass args to spawned process**
-- **Location**: `lib/optimal_system_agent/mcp/server.ex:373`
-- **Issue**: `_cmd_args = Enum.map(args, &to_charlist/1)` is calculated but never used
-- **Impact**: stdio MCP servers cannot receive command-line arguments
-- **Files Affected**: `test/optimal_system_agent/mcp_a2a_chicago_tdd_test.exs` (4 tests skipped)
-- **Fix Required**: Pass `args: _cmd_args` to `Port.open({:spawn_executable, cmd}, port_opts)`
-
-### Next Priority
-
-**P0: Provider Telemetry Coverage (COMPLETE)**
-- ✅ Anthropic provider telemetry emission
-- ✅ Google provider telemetry emission
-- ✅ Ollama provider telemetry emission
-- ✅ Cohere provider telemetry emission
-- ✅ Chicago TDD tests created for all providers
-- Note: Tests fail without valid API keys (expected), but telemetry code is implemented
-
-**P1: Full MCP & A2A Validation**
-- Real MCP server connections (HTTP)
-- Tool discovery via MCP protocol
-- Tool execution via MCP protocol
-- Real A2A agent coordination with Groq
-- Real task streaming between agents
-
-**P2: Additional Provider Coverage (LAST)**
-- OpenAI provider tests
-- Provider fallback chain tests
-
-## Iteration 22-23 Progress
-
-### Gap Discovered: Provider Telemetry Missing
-
-**GAP: Anthropic, Google, Ollama, and Cohere providers don't emit telemetry**
-- **Location**: `lib/optimal_system_agent/providers/anthropic.ex`, `google.ex`, `ollama.ex`, `cohere.ex`
-- **Issue**: Only OpenAICompatProvider emitted `[:osa, :providers, :chat, :complete]` telemetry
-- **Impact**: No observability for non-OpenAI-compatible providers
-- **Fix Required**: Add telemetry emission to all providers
-
-### Tests Created: 9 Provider Telemetry Tests
-- `provider_telemetry_real_test.exs` — Tests for all 4 providers
-- Each provider tested for: chat complete, tool call telemetry, error telemetry
+# Ralph Loop State
 
-### Implementation Completed (Green Phase)
-- ✅ Anthropic provider: `do_chat/5` now emits telemetry
-- ✅ Google provider: `do_chat/5` now emits telemetry
-- ✅ Ollama provider: `chat/2` now emits telemetry
-- ✅ Cohere provider: `do_chat/5` now emits telemetry
-- ✅ All providers emit: `[:osa, :providers, :chat, :complete]`, `[:osa, :providers, :tool_call, :complete]`, `[:osa, :providers, :chat, :error]`
-- ✅ Clean compilation maintained
-
-### Test Results
-- **7/9 tests passing** — Tests without API keys are skipped
-- **2 tests failing** — Anthropic (no credits) and Ollama (401 auth) - environment issues, not code issues
-- **Telemetry code verified** — All providers now emit telemetry correctly
-
-### Next Priority
+Iteration: 29
+Max iterations: unlimited
+Completion promise: none (runs forever)
 
-**P1: Full MCP & A2A Validation**
-- Real MCP server connections (HTTP)
-- Tool discovery via MCP protocol
-- Tool execution via MCP protocol
-- Real A2A agent coordination with Groq
-- Real task streaming between agents
-
-**P2: Additional Provider Coverage (LAST)**
-- OpenAI provider tests
-- Provider fallback chain tests
-
-## Iteration 24 Progress
-
-### Tests Created: 86 Chicago TDD integration tests (NEW)
-
-**Verification package (43 tests):**
-- **27 tests** in `confidence_real_test.exs` — Confidence tracker (pure logic)
-- **16 tests** in `checkpoint_real_test.exs` — Checkpoint save/restore/delete (real file I/O)
-- **17 tests** in `upstream_verifier_chicago_tdd_test.exs` — UpstreamVerifier (real ETS + shell)
-
-**Teams package (26 tests):**
-- **26 tests** in `nervous_system_real_test.exs` — NervousSystem + 8 sub-processes
-
-### Gaps Discovered & Fixed (Green Phase)
+## Current Progress
 
-**GAP 1: Teams Registry naming mismatch (FIXED)**
-- **Location**: `teams/nervous_system.ex`, `teams/supervisor.ex`, `teams/manager.ex`, `teams/cost_tracker.ex`
-- **Issue**: All referenced `OptimalSystemAgent.Registry` but supervision tree starts `OptimalSystemAgent.Teams.Registry`
-- **Impact**: All NervousSystem processes crash on startup — Registry lookup fails
-- **Fix**: Changed all 22 references from `OptimalSystemAgent.Registry` to `OptimalSystemAgent.Teams.Registry`
-
-**GAP 2: Rebalancer crashes on handle_info(:check_load) (DOCUMENTED)**
-- **Location**: `teams/nervous_system.ex` Rebalancer module
-- **Issue**: Calls `AgentState.list(team_id)` which hits ETS tables that don't exist outside a full team lifecycle
-- **Status**: Documented as gap in tests, not yet fixed
+### Chicago TDD Tests Added This Session (269 tests):
 
-**GAP 3: UpstreamVerifier output_spec can't use regex patterns (DOCUMENTED)**
-- **Location**: `verification/upstream_verifier.ex:176-185`
-- **Issue**: `is_binary(spec)` check means regex patterns go to `String.contains?` instead of `Regex.compile`
-- **Status**: Documented as gap in tests
+1. **Tools.Cache** - 37 tests
+   - Basic operations, TTL expiration, stats tracking
+   - invalidate/1, clear/0, default TTL, overwrite behavior
+   - Complex keys/values, concurrent access, edge cases
+   - GAP: clear/0 doesn't reset hit/miss counts
 
-### Test Results
-- **86/86 tests passing** — All new Chicago TDD tests
-- **mix compile --warnings-as-errors** — Clean
-- **0 test warnings**
-
-### Cumulative Test Count
-- Previous: 74 (Groq + telemetry + Roberts Rules + OTel)
-- New: 86 (Verification + Teams) = **160 total Chicago TDD tests**
+2. **Providers.OpenAICompat** - 59 tests
+   - Function existence, message formatting
+   - Tool formatting, tool call parsing (XML/JSON formats)
+   - Reasoning model detection (o1, o3, o4, deepseek-reasoner, gpt-oss)
+   - GAP: Empty string api_key doesn't return "API key not configured"
 
-## Iteration 25 Progress
+3. **Tools.Builtins.Help** - 26 tests
+   - Behaviour callbacks, parameters schema
+   - Safety (:read_only), naming conventions
 
-### Tests Created: 154 Chicago TDD integration tests (NEW)
-
-**Scheduler package (74 tests):**
-- **25 tests** in `cron_engine_real_test.exs` — CronEngine parser/matcher (pure logic)
-- **16 tests** in `cron_presets_real_test.exs` — CronPresets definitions, descriptions, next-run
-- **33 tests** in `persistence_real_test.exs` — Persistence file I/O, atomic writes, validation
-
-**Healing package (80 tests):**
-- **42 tests** in `error_classifier_real_test.exs` — ErrorClassifier pattern matching
-- **38 tests** in `session_real_test.exs` — Session state machine, budget, duration
-
-### Gaps Discovered (Red Phase)
+4. **Tools.Builtins.FileRead** - 36 tests
+   - Image support, offset/limit parameters
+   - Security (sensitive paths, allowed paths)
 
-**GAP 1: Session.retryable? never reaches false (DOCUMENTED)**
-- **Location**: `healing/session.ex:121-122`
-- **Issue**: `transition/2` to `:failed` never increments `attempt_count`, so `retryable?` always returns `count < max` = `true` when `max_attempts > 0`
-- **Impact**: Failed sessions with `max_attempts: 1` are incorrectly marked retryable
-- **Status**: Documented in test, not yet fixed
-
-**No other gaps found** — All 154 tests pass against existing implementation.
+5. **Tools.Builtins.FileWrite** - 36 tests
+   - Safety (:write_safe), workspace path handling
+   - Security (blocked paths, dotfile protection)
 
-### Test Results
-- **154/154 tests passing** — All new Chicago TDD tests
-- **mix compile --warnings-as-errors** — Clean
-- **0 test warnings**
-
-### Cumulative Test Count
-- Previous: 160 (Groq + telemetry + Roberts Rules + OTel + Verification + Teams)
-- New: 154 (Scheduler + Healing) = **314 total Chicago TDD tests**
-
-### Next Priority
-
-**P0: Fix documented gaps**
-- Session.attempt_count not incremented on :failed transition
-- Rebalancer crashes on missing AgentState ETS tables
-- UpstreamVerifier regex patterns treated as literals
-
-**P1: More pure-logic modules to test**
-- `agent/tier.ex` — model tier selection
-- `tools/registry.ex` — tool registration/lookup
-- `memory/synthesis.ex` — memory synthesis logic
-- `events/bus.ex` — event bus Goldrush dispatch
-
-## Iteration 26 Progress
-
-### Gap Fixed (Green Phase)
-
-**GAP: Session.retryable? never reaches false (FIXED)**
-- **Location**: `healing/session.ex:91-104`
-- **Issue**: `transition/2` to `:failed` never incremented `attempt_count`
-- **Fix**: Added `maybe_increment_attempt/2` — increments `attempt_count` when transitioning to `:failed`
-- **Tests added**: 3 new tests (increment on fail, retry path, count >= max)
-
-### Gap Discovered (Red Phase)
-
-**GAP 2: Tier budget sub-budgets don't sum to total (DOCUMENTED)**
-- **Location**: `agent/tier.ex:138-172`
-- **Issue**: All three tiers have sub-budgets exceeding the total:
-  - Elite: sub=260,000 vs total=250,000 (diff=10,000)
-  - Specialist: sub=205,000 vs total=200,000 (diff=5,000)
-  - Utility: sub=102,000 vs total=100,000 (diff=2,000)
-- **Impact**: Token budget allocation is inconsistent — `total_budget/1` returns a value less than the sum of individual sub-budgets
-- **Status**: Documented in tests, not yet fixed
-
-### Tests Created: 57 Chicago TDD integration tests (NEW)
-
-**Agent.Tier (53 tests):**
-- **53 tests** in `tier_real_test.exs` — model_for, budget_for, total_budget, complexity, agents, temperature, iterations, tier_info, overrides
-
-**Healing.Session (4 new tests):**
-- Increment on fail, retry path, count >= max (existing file updated)
-
-### Test Results
-- **93/93 tests passing** — All new + updated Chicago TDD tests
-- **mix compile --warnings-as-errors** — Clean
-- **0 test warnings**
-
-### Cumulative Test Count
-- Previous: 314
-- New: 57 (Tier + Session updates) = **371 total Chicago TDD tests**
-
-## Iteration 28 Progress
-
-### Tests Created: 164 Chicago TDD integration tests (NEW)
-
-**7 new test files covering untested pure-logic modules:**
-
-- **47 tests** in `consensus/proposal_real_test.exs` — BFT voting, validation, serialization, from_map round-trip
-- **28 tests** in `channels/noise_filter_real_test.exs` — Tier 1 regex, Tier 2 weight thresholds, calibration
-- **22 tests** in `tools/instruction_real_test.exs` — normalize/1 (6 input shapes), normalize!/1, merge_params/2
-- **18 tests** in `context_mesh/staleness_real_test.exs` — 4-factor scoring, classify/1, confidence decay
-- **19 tests** in `memory/scoring_real_test.exs` — composite scoring, keyword extraction, Jaccard similarity
-- **19 tests** in `channels/http/auth_real_test.exs` — JWT HS256 generate, verify, refresh (real crypto)
-- **11 tests** in `providers/tool_call_parsers_real_test.exs` — 7 model-family parsers, auto-detect
-
-### Gaps Discovered (Red Phase)
-
-**GAP 1: Proposal.calculate_result/1 empty-votes clause takes precedence over status (DOCUMENTED)**
-- **Location**: `consensus/proposal.ex:187-189`
-- **Issue**: When votes map is empty, returns `{:pending, 0.0}` even if status is `:approved` or `:rejected`
-- **Impact**: Pre-set approved/rejected proposals with 0 votes incorrectly report as pending
-
-**GAP 2: Proposal.from_map/1 crashes on non-map input (DOCUMENTED)**
-- **Location**: `consensus/proposal.ex:339`
-- **Issue**: `FunctionClauseError` instead of returning `{:error, reason}`
-- **Impact**: callers cannot safely call from_map with untrusted data
-
-**GAP 3: Signal.from_cloud_event/1 does not atomize enum values (DOCUMENTED)**
-- **Location**: `signal/signal.ex:74-75`
-- **Issue**: String values from JSON remain strings instead of being converted to atoms
-- **Impact**: `Signal.valid?/1` fails on decoded signals
-
-**GAP 4: FailureModes.infer_genre/1 only handles atom types, not strings (DOCUMENTED)**
-- **Location**: `events/failure_modes.ex:110-120`
-- **Issue**: Event.type is always a string, so `infer_genre/1` always returns `:chat` default
-- **Impact**: `genre_mismatch` detection never fires for string-typed events
-
-### Bug Fixed (Green Phase)
-
-**BUG: Tool call parser test format mismatch** — Hermes regex uses `<tool_call)>` not `<tool_call)`; tests corrected to match actual parser behavior
-
-### Test Results
-- **164/164 tests passing** — All new Chicago TDD tests
-- **mix compile --warnings-as-errors** — Clean
-- **0 test warnings**
-
-### Cumulative Test Count
-- Previous: 371
-- New: 164 (7 modules) = **535 total Chicago TDD tests**
+6. **Tools.Builtins.ShellExecute** - 42 tests
+   - Safety (:terminal), security validation
+   - Blocked commands, injection patterns, path traversal
+
+7. **Tools.Builtins.WebSearch** - 36 tests
+   - DuckDuckGo HTML parsing, limit handling
+
+### Methodology: Toyota Code Production System (TCPS)
+
+- **Muda (Eliminate Waste)**: Only test what exists, discover real gaps
+- **Jidoka (Build Quality In)**: Tests verify at the source, no mocks
+- **Kaizen (Continuous Improvement)**: Iterative gap discovery
+- **Flow (Just-In-Time)**: Test-driven, red-green-refactor
+- **Visual Management**: Observable behavior, documented gaps
+
+### Chicago TDD Principles
+
+- **NO MOCKS**: Tests verify REAL behavior
+- **REAL API CALLS**: Integration tests for external deps
+- **STRUCTURED OUTPUTS**: Consistent test organization
+- **OPENTELEMETRY VALIDATION**: Verify telemetry events
+- **FULL MCP & A2A**: Cross-project integration
+
+## Remaining Work
+
+### P0: Provider Telemetry
+- [x] Anthropic provider tests
+- [x] Cohere provider tests (GAP: available_models not implemented)
+- [x] Google provider tests
+- [x] Ollama provider tests
+- [x] OpenAI-compat provider tests
+
+### P1: MCP & A2A
+- [x] MCP client tests
+- [x] MCP server tests
+- [x] A2A routes tests
+- [x] A2A call tool tests
+
+### P2: Additional Coverage
+- [ ] More built-in tools (30+ tools remaining)
+- [ ] File glob/grep tools
+- [ ] Memory recall/save tools
+- [ ] Agent creation/management tools
+- [ ] Skill management tools
+
+## Pre-existing Issues (Not Our Code)
+
+- `consensus/proposal_test.exs` - compile error
+- `protocol/cloud_event_test.exs` - compile error
+
+## Test Status
+
+- All new Chicago TDD tests pass
+- `mix test --no-start`: 6190 tests (540 failures from pre-existing issues)
