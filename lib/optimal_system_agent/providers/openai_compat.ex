@@ -19,6 +19,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
   @doc """
   Execute a chat completion against any OpenAI-compatible endpoint.
 
+  Full form with all parameters.
   Returns `{:ok, %{content: String.t(), tool_calls: list()}}` or `{:error, reason}`.
   """
   @spec chat(String.t(), String.t() | nil, String.t(), list(), keyword()) ::
@@ -28,6 +29,29 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       {:error, "API key not configured"}
     else
       do_chat(base_url, api_key, model, messages, opts)
+    end
+  end
+
+  @doc """
+  Simplified chat completion using application config defaults.
+
+  Uses:
+  - API key from `:openai_api_key` config
+  - Base URL from `:openai_base_url` config (default: OpenAI)
+  - Model from `:openai_model` config (default: "gpt-4o-mini")
+
+  Returns `{:ok, %{content: String.t(), tool_calls: list()}}` or `{:error, reason}`.
+  """
+  @spec chat(list()) :: {:ok, map()} | {:error, String.t()}
+  def chat(messages) do
+    api_key = Application.get_env(:optimal_system_agent, :openai_api_key)
+
+    unless api_key do
+      {:error, "OPENAI_API_KEY not configured"}
+    else
+      base_url = Application.get_env(:optimal_system_agent, :openai_base_url, "https://api.openai.com/v1")
+      model = Application.get_env(:optimal_system_agent, :openai_model, default_model())
+      chat(base_url, api_key, model, messages, [])
     end
   end
 

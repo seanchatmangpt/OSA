@@ -265,10 +265,11 @@ defmodule OptimalSystemAgent.Process.FingerprintTest do
         [%{tool_name: "test", duration_ms: 100, status: "success"}],
         process_type: "bench-unknown-#{:erlang.unique_integer([:positive])}"
       )
-      # NOTE: Known pre-existing bug at fingerprint.ex:952 uses &1.favorable? (atom with ?)
-      # but the key stored is :favorable (without ?). This causes a KeyError crash.
-      # When this bug is fixed, the assertion below should pass.
-      assert catch_exit(Fingerprint.industry_benchmark(fp, "unknown_industry_xyz"))
+      # FIXED: favorable? vs :favorable key mismatch in line 952 was causing KeyError.
+      # Now industry_benchmark correctly falls back to default benchmarks.
+      {:ok, result} = Fingerprint.industry_benchmark(fp, "unknown_industry_xyz")
+      assert result.industry == "unknown_industry_xyz"
+      assert result.overall_score > 0
     end
 
     test "industry_benchmark with empty string industry" do
@@ -276,8 +277,10 @@ defmodule OptimalSystemAgent.Process.FingerprintTest do
         [%{tool_name: "test", duration_ms: 100, status: "success"}],
         process_type: "bench-empty-#{:erlang.unique_integer([:positive])}"
       )
-      # NOTE: Same pre-existing bug as above (favorable? vs :favorable key mismatch)
-      assert catch_exit(Fingerprint.industry_benchmark(fp, ""))
+      # FIXED: favorable? vs :favorable key mismatch now resolved.
+      # Empty string industry falls back to default benchmarks.
+      {:ok, result} = Fingerprint.industry_benchmark(fp, "")
+      assert result.overall_score > 0
     end
   end
 end

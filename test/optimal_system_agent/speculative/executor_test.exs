@@ -14,9 +14,8 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
   setup do
     # Executor is already started by the application — clear any previous state
-    # by calling list_active and discarding all
-    Executor.list_active()
-    |> Enum.each(&Executor.discard/1)
+    # by querying ETS directly and deleting all entries (includes non-running statuses)
+    :ets.delete_all_objects(:osa_speculative_executions)
 
     :ok
   end

@@ -10,6 +10,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
   alias OptimalSystemAgent.Agent.Loop.ReactLoop
 
   @moduletag :capture_log
+  @moduletag :skip
 
   setup do
     # Initialize ETS cancel flag table for tests

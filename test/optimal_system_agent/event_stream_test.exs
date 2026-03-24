@@ -13,20 +13,26 @@ defmodule OptimalSystemAgent.EventStreamTest do
   @moduletag :capture_log
 
   setup do
-    # EventStream is already started by the application
-    # Just ensure it's running
-    unless Process.whereis(EventStream) do
-      start_supervised!(EventStream)
+    # EventStream is a named GenServer that should be running via application supervisor
+    # If it crashes during a test, it will be restarted automatically
+    # We just ensure it's in a good state
+    case Process.whereis(EventStream) do
+      nil ->
+        # Not running (shouldn't happen), start it
+        {:ok, _pid} = EventStream.start_link([])
+      _pid ->
+        # Already running, which is the normal case
+        :ok
     end
     :ok
   end
 
   describe "start_link/1" do
-    test "starts the EventStream GenServer" do
-      assert {:ok, pid} = EventStream.start_link([])
-      assert is_pid(pid)
-      # Stop the extra process we started
-      GenServer.stop(pid)
+    test "returns error if EventStream is already running" do
+      # EventStream is already started by setup
+      result = EventStream.start_link([])
+      # Should get already_started error since GenServer is registered globally
+      assert result == {:error, {:already_started, Process.whereis(EventStream)}}
     end
   end
 
@@ -102,10 +108,12 @@ defmodule OptimalSystemAgent.EventStreamTest do
     end
 
     test "adds event to ETS history" do
-      EventStream.broadcast("test_event", %{data: "test"})
+      EventStream.broadcast("test_event_unique", %{data: "test"})
+      # Wait for async cast to complete and ETS write to finish
+      Process.sleep(50)
 
       # Check event is in history
-      history = EventStream.event_history("test_event")
+      history = EventStream.event_history("test_event_unique")
       assert is_list(history)
       # Should have at least our event
       assert length(history) >= 1
@@ -131,8 +139,10 @@ defmodule OptimalSystemAgent.EventStreamTest do
   describe "event_history/0" do
     test "returns all event history" do
       # Add some events
-      EventStream.broadcast("test_1", %{index: 1})
-      EventStream.broadcast("test_2", %{index: 2})
+      EventStream.broadcast("history_test_1", %{index: 1})
+      EventStream.broadcast("history_test_2", %{index: 2})
+      # Wait for async casts to complete
+      Process.sleep(100)
 
       history = EventStream.event_history()
       assert is_list(history)
@@ -175,18 +185,20 @@ defmodule OptimalSystemAgent.EventStreamTest do
 
   describe "ETS operations" do
     test "stores events in ordered_set ETS table" do
-      EventStream.broadcast("ets_test", %{data: "test"})
+      EventStream.broadcast("ets_test_unique", %{data: "test"})
+      # Wait for async cast to complete
+      Process.sleep(50)
 
       # Event should be in ETS table
       ets_has_event = try do
         :ets.tab2list(:command_center_events)
-        |> Enum.any?(fn {_seq, event} -> event.type == "ets_test" end)
+        |> Enum.any?(fn {_seq, event} -> event.type == "ets_test_unique" end)
       rescue
         _ -> false
       end
 
       # Verify via event_history (which uses ETS internally)
-      history = EventStream.event_history("ets_test")
+      history = EventStream.event_history("ets_test_unique")
       assert length(history) >= 1
       # The event should be in the ETS table
       assert ets_has_event or length(history) >= 1
@@ -242,13 +254,13 @@ defmodule OptimalSystemAgent.EventStreamTest do
     end
 
     test "handle_call handles unknown calls" do
-      _result = try do
-        GenServer.call(EventStream, :unknown_call)
-      catch
-        :exit, _ -> :exited
-      end
-      # Should not crash the server
-      assert Process.alive?(Process.whereis(EventStream))
+      # Call with unknown message — should return error instead of crashing
+      result = GenServer.call(EventStream, :unknown_call)
+      assert result == {:error, :unknown_call}
+      # Process should still be alive
+      pid = Process.whereis(EventStream)
+      assert pid != nil
+      assert Process.alive?(pid)
     end
   end
 
@@ -338,18 +350,20 @@ defmodule OptimalSystemAgent.EventStreamTest do
 
     test "multiple event types with separate histories" do
       # Broadcast different types
-      EventStream.broadcast("type_a", %{value: 1})
-      EventStream.broadcast("type_b", %{value: 2})
-      EventStream.broadcast("type_a", %{value: 3})
+      EventStream.broadcast("type_a_multi", %{value: 1})
+      EventStream.broadcast("type_b_multi", %{value: 2})
+      EventStream.broadcast("type_a_multi", %{value: 3})
+      # Wait for async casts to complete
+      Process.sleep(100)
 
-      history_a = EventStream.event_history("type_a")
-      history_b = EventStream.event_history("type_b")
+      history_a = EventStream.event_history("type_a_multi")
+      history_b = EventStream.event_history("type_b_multi")
 
       assert length(history_a) >= 2
       assert length(history_b) >= 1
 
-      # All type_a events should have type "type_a"
-      assert Enum.all?(history_a, fn e -> e.type == "type_a" end)
+      # All type_a events should have type "type_a_multi"
+      assert Enum.all?(history_a, fn e -> e.type == "type_a_multi" end)
     end
 
     test "event structure includes timestamp" do

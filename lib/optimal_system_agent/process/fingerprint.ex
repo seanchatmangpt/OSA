@@ -949,7 +949,7 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
     favorable_count =
       metric_comparisons
       |> Map.values()
-      |> Enum.count(& &1.favorable?)
+      |> Enum.count(& &1.favorable)
 
     total_count = map_size(metric_comparisons)
 

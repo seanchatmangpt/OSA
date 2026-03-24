@@ -16,6 +16,10 @@ defmodule OptimalSystemAgent.Agent.ContextTest do
     unless Process.whereis(OptimalSystemAgent.Memory.Store) do
       {:ok, _} = start_supervised(__MODULE__.MockMemoryStore)
     end
+    # Create mock Agent.Tasks that returns empty results
+    unless Process.whereis(OptimalSystemAgent.Agent.Tasks) do
+      {:ok, _} = start_supervised(__MODULE__.MockAgentTasks)
+    end
     :ok
   end
 
@@ -37,6 +41,33 @@ defmodule OptimalSystemAgent.Agent.ContextTest do
 
     def handle_call({:get, _}, _from, state) do
       {:reply, {:error, :not_found}, state}
+    end
+
+    def handle_call(_, _from, state) do
+      {:reply, :ok, state}
+    end
+  end
+
+  defmodule MockAgentTasks do
+    @moduledoc false
+    use GenServer
+
+    def start_link(_opts) do
+      GenServer.start_link(__MODULE__, [], name: OptimalSystemAgent.Agent.Tasks)
+    end
+
+    def init(_opts) do
+      {:ok, []}
+    end
+
+    def handle_call({:workflow_context_block, _}, _from, state) do
+      # Return empty string instead of nil so it won't be included in Enum.reject
+      {:reply, "", state}
+    end
+
+    def handle_call({:get_tasks, _}, _from, state) do
+      # Return empty list so task_state_block returns nil
+      {:reply, [], state}
     end
 
     def handle_call(_, _from, state) do
