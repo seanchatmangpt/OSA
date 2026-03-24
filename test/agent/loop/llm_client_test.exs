@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.LLMClientTest do
   @moduledoc """
-  Chicago TDD unit tests for LLMClient module.
+  Unit tests for LLMClient module.
 
   Tests LLM provider interaction, response parsing, and error handling.
   """

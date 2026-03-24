@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.MessageHandlerTest do
   @moduledoc """
-  Chicago TDD unit tests for MessageHandler module.
+  Unit tests for MessageHandler module.
 
   Tests message formatting, tool call extraction, and response parsing.
   Pure functions that transform data without side effects.

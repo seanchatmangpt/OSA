@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Events.BusTest do
   @moduledoc """
-  Chicago TDD unit tests for Bus module.
+  Unit tests for Bus module.
 
   Tests event bus with goldrush-compiled routing.
   """

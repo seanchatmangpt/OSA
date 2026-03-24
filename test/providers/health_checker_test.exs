@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Providers.HealthCheckerTest do
   @moduledoc """
-  Chicago TDD unit tests for HealthChecker module.
+  Unit tests for HealthChecker module.
 
   Tests circuit breaker and rate-limit tracker for LLM providers.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.TaskQueueTest do
   @moduledoc """
-  Chicago TDD unit tests for TaskQueue module.
+  Unit tests for TaskQueue module.
 
   Tests task enqueueing, leasing, completion, and failure handling.
 

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
   @moduledoc """
-  Chicago TDD unit tests for Registry module.
+  Unit tests for Registry module.
 
   Tests ETS-backed registry of active ContextMesh Keepers.
   """

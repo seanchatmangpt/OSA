@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Scheduler.CronEngineTest do
   @moduledoc """
-  Chicago TDD unit tests for CronEngine module.
+  Unit tests for CronEngine module.
 
   Tests cron expression parsing and datetime matching.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Loop.GuardrailsTest do
   @moduledoc """
-  Chicago TDD unit tests for Guardrails module.
+  Unit tests for Guardrails module.
 
   Tests complex task detection, delegation requirements, and safety checks.
   """

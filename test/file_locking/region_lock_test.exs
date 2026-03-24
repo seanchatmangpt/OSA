@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.FileLocking.RegionLockTest do
   @moduledoc """
-  Chicago TDD unit tests for RegionLock module.
+  Unit tests for RegionLock module.
 
   Tests region-level file locking with overlap detection and auto-expiry.
   """

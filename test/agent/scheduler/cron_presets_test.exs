@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.Scheduler.CronPresetsTest do
   @moduledoc """
-  Chicago TDD unit tests for CronPresets module.
+  Unit tests for CronPresets module.
 
   Tests preset listing, descriptions, and next-run calculation.
   """

@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.Agent.TaskTrackerTest do
   @moduledoc """
-  Chicago TDD unit tests for TaskTracker module.
+  Unit tests for TaskTracker module.
 
   Tests task management, dependency tracking, and auto-extraction.
 

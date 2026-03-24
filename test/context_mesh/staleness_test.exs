@@ -1,6 +1,6 @@
 defmodule OptimalSystemAgent.ContextMesh.StalenessTest do
   @moduledoc """
-  Chicago TDD unit tests for Staleness module.
+  Unit tests for Staleness module.
 
   Tests 4-factor staleness scoring for ContextMesh Keepers.
   """
