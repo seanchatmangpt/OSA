@@ -30,6 +30,8 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   alias OptimalSystemAgent.Agent.Loop.ToolFilter
   alias OptimalSystemAgent.Agent.Loop.DoomLoop
   alias OptimalSystemAgent.Agent.Loop.Telemetry
+  alias OptimalSystemAgent.Healing.Orchestrator, as: HealingOrchestrator
+  alias OptimalSystemAgent.Healing.ErrorClassifier
 
   @cancel_table :osa_cancel_flags
 
@@ -292,8 +294,13 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
     recovery_count = get_in(state, [:metadata, :tool_call_recovery_count]) || 0
 
     if recovery_count >= 3 do
-      # Too many recovery attempts - give up and return error to user
+      # Too many recovery attempts - attempt healing before giving up
       Logger.warning("[ReactLoop] Too many tool call format recovery attempts (session #{state.session_id})")
+
+      error = {:tool_call_format_failed, %{recovered_tool_calls: tool_calls}}
+      {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
+
+      state = maybe_request_healing(state, error, retryable?)
       {"I'm having trouble with tool calls. Please try again.", state}
     else
       Logger.info("[ReactLoop] Recovering tool calls from format error (attempt #{recovery_count + 1}/3)")
@@ -339,8 +346,11 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   end
 
   # Fallback: if recovery data is malformed, treat as generic error
-  defp handle_result({:error, {:tool_call_format_failed, _}}, state, _context) do
+  defp handle_result({:error, {:tool_call_format_failed, _} = error}, state, _context) do
     Logger.warning("[ReactLoop] Failed to recover tool calls from format error - malformed recovery data")
+
+    {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
+    state = maybe_request_healing(state, error, retryable?)
     {"I encountered an error processing your request. Please try again.", state}
   end
 
@@ -356,9 +366,18 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
     else
       if context_overflow?(reason_str) do
         Logger.error("Context overflow after 3 compaction attempts (iteration #{state.iteration})")
+
+        error = {:context_overflow, reason}
+        {_cat, _sev, retryable?} = ErrorClassifier.classify(reason_str)
+        state = maybe_request_healing(state, error, retryable?)
+
         {"I've exceeded the context window. Try breaking your request into smaller parts.", state}
       else
         Logger.error("LLM call failed: #{reason_str}")
+
+        {_cat, _sev, retryable?} = ErrorClassifier.classify(reason)
+        state = maybe_request_healing(state, reason, retryable?)
+
         {"I encountered an error processing your request. Please try again.", state}
       end
     end
@@ -467,5 +486,44 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
       String.contains?(reason, "max_tokens") or
       String.contains?(reason, "maximum context length") or
       String.contains?(reason, "token limit")
+  end
+
+  # --- Healing integration ---
+
+  defp maybe_request_healing(%{healing_attempted: true} = state, _error, _retryable?) do
+    Logger.debug("[ReactLoop] Healing already attempted for session #{state.session_id} — skipping")
+    state
+  end
+
+  defp maybe_request_healing(state, error, retryable?) do
+    if retryable? do
+      Logger.info("[ReactLoop] Requesting healing for session #{state.session_id} (error=#{inspect(error)})")
+
+      healing_context = build_healing_context(state)
+
+      case HealingOrchestrator.request_healing(state.session_id, error, healing_context) do
+        {:ok, session_id} ->
+          Logger.info("[ReactLoop] Healing session #{session_id} started for agent #{state.session_id}")
+          %{state | healing_attempted: true}
+
+        {:error, reason} ->
+          Logger.warning("[ReactLoop] Healing request failed for session #{state.session_id}: #{inspect(reason)}")
+          state
+      end
+    else
+      Logger.debug("[ReactLoop] Error not retryable — skipping healing for session #{state.session_id}")
+      state
+    end
+  end
+
+  defp build_healing_context(state) do
+    %{
+      agent_pid: self(),
+      messages: state.messages,
+      working_dir: state.working_dir,
+      tool_history: Telemetry.extract_tools_used(state.messages),
+      provider: state.provider,
+      model: state.model
+    }
   end
 end

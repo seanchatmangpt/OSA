@@ -56,6 +56,16 @@ defmodule OptimalSystemAgent.Application do
     # ETS table for subagent session counters (Orchestrator.next_subagent_number/1)
     :ets.new(:osa_subagent_counters, [:named_table, :public, :set])
 
+    # ETS table for BusinessOS webhook events (received via POST /webhooks/businessos)
+    :ets.new(:osa_webhook_events, [:named_table, :public, :bag])
+
+    # ETS table for verification certificates (Innovation 8: Formal Correctness as a Service)
+    # Rows: {certificate_id, certificate_map}
+    :ets.new(:osa_verify_certificates, [:named_table, :public, :set])
+
+    # Agent Commerce Marketplace tables (Innovation 9)
+    OptimalSystemAgent.Commerce.Marketplace.init_tables()
+
     # Sandbox config (reads ~/.osa/sandbox.json if present)
     OptimalSystemAgent.Sandbox.Router.load_config()
 
@@ -82,6 +92,10 @@ defmodule OptimalSystemAgent.Application do
 
     # Load agent definitions from priv/agents/ and ~/.osa/agents/
     OptimalSystemAgent.Agents.Registry.load()
+
+    # Process intelligence ETS tables (Innovation 2, 4, 7)
+    OptimalSystemAgent.Process.ProcessMining.init_table()
+    OptimalSystemAgent.Process.OrgEvolution.init_tables()
 
     children =
       platform_repo_children() ++
@@ -116,6 +130,9 @@ defmodule OptimalSystemAgent.Application do
         # so the banner shows the correct model (not a stale fallback)
         OptimalSystemAgent.Providers.Ollama.auto_detect_model()
         OptimalSystemAgent.Agent.Tier.detect_ollama_tiers()
+
+        # Register audit trail hook for hash-chain logging (Innovation 3)
+        OptimalSystemAgent.Agent.Hooks.AuditTrail.register()
 
         {:ok, pid}
 

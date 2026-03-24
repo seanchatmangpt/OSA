@@ -37,6 +37,8 @@ defmodule OptimalSystemAgent.Agent.Loop do
   alias OptimalSystemAgent.Agent.Loop.ReactLoop
   alias OptimalSystemAgent.Agent.Loop.Survey
   alias OptimalSystemAgent.Agent.Loop.Telemetry
+  alias OptimalSystemAgent.Healing.Orchestrator, as: HealingOrchestrator
+  alias OptimalSystemAgent.Healing.ErrorClassifier
 
   defstruct [
     :session_id,
@@ -71,7 +73,9 @@ defmodule OptimalSystemAgent.Agent.Loop do
     # Per-call signal weight (0.0–1.0 or nil)
     signal_weight: nil,
     started_at: nil,
-    last_input_tokens: 0
+    last_input_tokens: 0,
+    # Healing orchestrator — set to true after first request_healing call
+    healing_attempted: false
   ]
 
   @cancel_table :osa_cancel_flags
@@ -398,10 +402,14 @@ defmodule OptimalSystemAgent.Agent.Loop do
       rescue
         e ->
           Logger.error("[loop] CRASH in ReactLoop: #{Exception.message(e)}\n#{Exception.format_stacktrace(__STACKTRACE__)}")
+          {_cat, _sev, retryable?} = ErrorClassifier.classify(e)
+          state = maybe_request_healing(state, e, retryable?)
           {"I hit an error processing that request. Check the logs for details.", state}
       catch
         :exit, reason ->
           Logger.error("[loop] EXIT in ReactLoop: #{inspect(reason)}")
+          {_cat, _sev, retryable?} = ErrorClassifier.classify(reason)
+          state = maybe_request_healing(state, reason, retryable?)
           {"I hit a timeout or process error. This usually means the LLM connection dropped — try again.", state}
       end
 
@@ -466,6 +474,71 @@ defmodule OptimalSystemAgent.Agent.Loop do
 
   defp maybe_override(state, _key, nil), do: state
   defp maybe_override(state, key, value), do: Map.put(state, key, value)
+
+  # --- Healing orchestrator callbacks ---
+
+  @impl true
+  def handle_info({:healing_complete, summary}, state) do
+    Logger.info("[loop] Healing complete for session #{state.session_id}: #{inspect(summary)}")
+
+    Bus.emit(:system_event, %{
+      event: :healing_result_received,
+      session_id: state.session_id,
+      healing_session_id: Map.get(summary, :session_id),
+      fix_applied: Map.get(summary, :fix_applied, false),
+      description: Map.get(summary, :description)
+    })
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info({:healing_failed, reason}, state) do
+    Logger.warning("[loop] Healing failed for session #{state.session_id}: #{inspect(reason)}")
+
+    Bus.emit(:system_event, %{
+      event: :healing_failed_received,
+      session_id: state.session_id,
+      reason: inspect(reason)
+    })
+
+    {:noreply, state}
+  end
+
+  # --- Healing helpers ---
+
+  defp maybe_request_healing(%{healing_attempted: true} = state, _error, _retryable?) do
+    Logger.debug("[loop] Healing already attempted for session #{state.session_id} — skipping")
+    state
+  end
+
+  defp maybe_request_healing(state, error, retryable?) do
+    if retryable? do
+      Logger.info("[loop] Requesting healing for session #{state.session_id} (error=#{inspect(error)})")
+
+      healing_context = %{
+        agent_pid: self(),
+        messages: state.messages,
+        working_dir: state.working_dir,
+        tool_history: Telemetry.extract_tools_used(state.messages),
+        provider: state.provider,
+        model: state.model
+      }
+
+      case HealingOrchestrator.request_healing(state.session_id, error, healing_context) do
+        {:ok, session_id} ->
+          Logger.info("[loop] Healing session #{session_id} started for agent #{state.session_id}")
+          %{state | healing_attempted: true}
+
+        {:error, reason} ->
+          Logger.warning("[loop] Healing request failed for session #{state.session_id}: #{inspect(reason)}")
+          state
+      end
+    else
+      Logger.debug("[loop] Error not retryable — skipping healing for session #{state.session_id}")
+      state
+    end
+  end
 
   # --- Backward-compatible delegations ---
 

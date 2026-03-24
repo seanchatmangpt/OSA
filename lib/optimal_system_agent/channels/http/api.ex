@@ -39,6 +39,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /dashboard   → DashboardRoutes   GET /
     /classify    → inline            POST / (signal classification)
     /config      → ConfigRoutes      GET /revisions/:type/:id, GET /revisions/:type/:id/:n, POST /revisions/:type/:id/rollback, GET /revisions/:type/:id/diff
+    /verify      → VerificationRoutes POST /workflow, GET /certificate/:id, POST /batch
+    /marketplace → MarketplaceRoutes  POST /publish, GET /search, GET /skills, GET /skills/:id, POST /skills/:id/acquire, POST /skills/:id/rate, GET /stats, GET /revenue/:publisher_id
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -150,6 +152,12 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── Config revisions ─────────────────────────────────────────────────
   forward "/config", to: API.ConfigRoutes
+
+  # ── Formal Correctness as a Service (Innovation 8) ───────────────────
+  forward "/verify", to: API.VerificationRoutes
+
+  # ── Agent Commerce Marketplace (Innovation 9) ───────────────────────
+  forward "/marketplace", to: API.MarketplaceRoutes
 
   # ── Signal classification (inline — single endpoint) ─────────────────
   post "/classify" do

@@ -474,6 +474,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "multi_file_edit" => OptimalSystemAgent.Tools.Builtins.MultiFileEdit,
       "web_fetch" => OptimalSystemAgent.Tools.Builtins.WebFetch,
       "web_search" => OptimalSystemAgent.Tools.Builtins.WebSearch,
+      "businessos_api" => OptimalSystemAgent.Tools.Builtins.BusinessOSAPI,
       "download" => OptimalSystemAgent.Tools.Builtins.Download,
       "code_symbols" => OptimalSystemAgent.Tools.Builtins.CodeSymbols,
       "create_skill" => OptimalSystemAgent.Tools.Builtins.CreateSkill,
