@@ -1,12 +1,12 @@
 # Ralph Loop State
 
-Iteration: 29
+Iteration: 30
 Max iterations: unlimited
 Completion promise: none (runs forever)
 
 ## Current Progress
 
-### Chicago TDD Tests Added This Session (269 tests):
+### Chicago TDD Tests Added This Session (355 tests):
 
 1. **Tools.Cache** - 37 tests
    - Basic operations, TTL expiration, stats tracking
@@ -28,7 +28,7 @@ Completion promise: none (runs forever)
    - Image support, offset/limit parameters
    - Security (sensitive paths, allowed paths)
 
-5. **Tools.Builtins.FileWrite** - 36 tests
+5. **Tools.Builtins.FileWrite** - 33 tests
    - Safety (:write_safe), workspace path handling
    - Security (blocked paths, dotfile protection)
 
@@ -38,6 +38,28 @@ Completion promise: none (runs forever)
 
 7. **Tools.Builtins.WebSearch** - 36 tests
    - DuckDuckGo HTML parsing, limit handling
+
+8. **Tools.Builtins.FileGlob** - 37 tests
+   - Glob pattern matching, max results limit
+   - available?/0 callback
+
+9. **Tools.Builtins.FileGrep** - 49 tests
+   - Regex search, ripgrep fallback
+   - Output modes (content, files_with_matches, count)
+   - Context lines, case-insensitive search
+
+## Bugs Fixed This Session
+
+### Ollama Provider: Structured Content Handling
+**Issue:** "cannot convert the given list to a string" error when receiving vision/multimodal messages with structured content blocks `[%{type: "text", text: "..."}]`
+
+**Fix:** Added `extract_content/1` helper function that:
+- Returns plain strings as-is
+- Extracts text from `[%{type: "text", text: "..."}]` format
+- Filters out image blocks (Ollama doesn't support vision input)
+- Joins multiple text blocks
+
+**File:** `lib/optimal_system_agent/providers/ollama.ex`
 
 ### Methodology: Toyota Code Production System (TCPS)
 
@@ -57,25 +79,33 @@ Completion promise: none (runs forever)
 
 ## Remaining Work
 
-### P0: Provider Telemetry
+### P0: Provider Telemetry - ✅ COMPLETE
 - [x] Anthropic provider tests
 - [x] Cohere provider tests (GAP: available_models not implemented)
 - [x] Google provider tests
 - [x] Ollama provider tests
 - [x] OpenAI-compat provider tests
 
-### P1: MCP & A2A
+### P1: MCP & A2A - ✅ COMPLETE
 - [x] MCP client tests
 - [x] MCP server tests
 - [x] A2A routes tests
 - [x] A2A call tool tests
 
-### P2: Additional Coverage
-- [ ] More built-in tools (30+ tools remaining)
-- [ ] File glob/grep tools
-- [ ] Memory recall/save tools
-- [ ] Agent creation/management tools
-- [ ] Skill management tools
+### P2: Additional Coverage (25+ tools remaining)
+- [ ] Memory tools (recall, save)
+- [ ] Agent tools (create, list, message)
+- [ ] Skill tools (create, list)
+- [ ] Team tools (tasks, cross_team_query)
+- [ ] Peer tools (review, negotiate, claim_region)
+- [ ] Session tools (search)
+- [ ] Development tools (code_symbols, computer_use, download, web_fetch)
+- [ ] Multi-file edit tool
+- [ ] Git tool
+- [ ] Delegate tool
+- [ ] Ask user tool
+- [ ] BusinessOS API tool
+- [ ] A2A call tool (already has tests)
 
 ## Pre-existing Issues (Not Our Code)
 
@@ -85,4 +115,4 @@ Completion promise: none (runs forever)
 ## Test Status
 
 - All new Chicago TDD tests pass
-- `mix test --no-start`: 6190 tests (540 failures from pre-existing issues)
+- `mix test --no-start`: 6190+ tests
