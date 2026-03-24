@@ -81,7 +81,7 @@ defmodule OptimalSystemAgent.Teams.Supervisor do
   # ---------------------------------------------------------------------------
 
   defp terminate_via(module, team_id) do
-    case Registry.lookup(OptimalSystemAgent.Registry, {module, team_id}) do
+    case Registry.lookup(OptimalSystemAgent.Teams.Registry, {module, team_id}) do
       [{pid, _}] ->
         DynamicSupervisor.terminate_child(__MODULE__, pid)
         |> tap(fn result ->

@@ -428,7 +428,7 @@ defmodule OptimalSystemAgent.MCP.Server do
       try do
         port = Port.open({:spawn_executable, cmd}, port_opts)
         # Monitor the port for disconnection detection
-        Process.monitor(port)
+        Port.monitor(port)
         # Wait briefly for the process to start
         Process.sleep(100)
         {:ok, %{state | port: port}}

@@ -301,7 +301,7 @@ defmodule OptimalSystemAgent.Teams.Manager do
   def start_link(config) when is_map(config) do
     team_id = Map.fetch!(config, :team_id)
     GenServer.start_link(__MODULE__, config,
-      name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+      name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
     )
   end
 

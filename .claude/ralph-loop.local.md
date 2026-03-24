@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 28
+iteration: 33
 session_id:
 max_iterations: 0
 completion_promise: null
@@ -252,3 +252,90 @@ This Ralph Loop applies **Toyota Code Production System** principles to software
 - `tools/registry.ex` — tool registration/lookup
 - `memory/synthesis.ex` — memory synthesis logic
 - `events/bus.ex` — event bus Goldrush dispatch
+
+## Iteration 26 Progress
+
+### Gap Fixed (Green Phase)
+
+**GAP: Session.retryable? never reaches false (FIXED)**
+- **Location**: `healing/session.ex:91-104`
+- **Issue**: `transition/2` to `:failed` never incremented `attempt_count`
+- **Fix**: Added `maybe_increment_attempt/2` — increments `attempt_count` when transitioning to `:failed`
+- **Tests added**: 3 new tests (increment on fail, retry path, count >= max)
+
+### Gap Discovered (Red Phase)
+
+**GAP 2: Tier budget sub-budgets don't sum to total (DOCUMENTED)**
+- **Location**: `agent/tier.ex:138-172`
+- **Issue**: All three tiers have sub-budgets exceeding the total:
+  - Elite: sub=260,000 vs total=250,000 (diff=10,000)
+  - Specialist: sub=205,000 vs total=200,000 (diff=5,000)
+  - Utility: sub=102,000 vs total=100,000 (diff=2,000)
+- **Impact**: Token budget allocation is inconsistent — `total_budget/1` returns a value less than the sum of individual sub-budgets
+- **Status**: Documented in tests, not yet fixed
+
+### Tests Created: 57 Chicago TDD integration tests (NEW)
+
+**Agent.Tier (53 tests):**
+- **53 tests** in `tier_real_test.exs` — model_for, budget_for, total_budget, complexity, agents, temperature, iterations, tier_info, overrides
+
+**Healing.Session (4 new tests):**
+- Increment on fail, retry path, count >= max (existing file updated)
+
+### Test Results
+- **93/93 tests passing** — All new + updated Chicago TDD tests
+- **mix compile --warnings-as-errors** — Clean
+- **0 test warnings**
+
+### Cumulative Test Count
+- Previous: 314
+- New: 57 (Tier + Session updates) = **371 total Chicago TDD tests**
+
+## Iteration 28 Progress
+
+### Tests Created: 164 Chicago TDD integration tests (NEW)
+
+**7 new test files covering untested pure-logic modules:**
+
+- **47 tests** in `consensus/proposal_real_test.exs` — BFT voting, validation, serialization, from_map round-trip
+- **28 tests** in `channels/noise_filter_real_test.exs` — Tier 1 regex, Tier 2 weight thresholds, calibration
+- **22 tests** in `tools/instruction_real_test.exs` — normalize/1 (6 input shapes), normalize!/1, merge_params/2
+- **18 tests** in `context_mesh/staleness_real_test.exs` — 4-factor scoring, classify/1, confidence decay
+- **19 tests** in `memory/scoring_real_test.exs` — composite scoring, keyword extraction, Jaccard similarity
+- **19 tests** in `channels/http/auth_real_test.exs` — JWT HS256 generate, verify, refresh (real crypto)
+- **11 tests** in `providers/tool_call_parsers_real_test.exs` — 7 model-family parsers, auto-detect
+
+### Gaps Discovered (Red Phase)
+
+**GAP 1: Proposal.calculate_result/1 empty-votes clause takes precedence over status (DOCUMENTED)**
+- **Location**: `consensus/proposal.ex:187-189`
+- **Issue**: When votes map is empty, returns `{:pending, 0.0}` even if status is `:approved` or `:rejected`
+- **Impact**: Pre-set approved/rejected proposals with 0 votes incorrectly report as pending
+
+**GAP 2: Proposal.from_map/1 crashes on non-map input (DOCUMENTED)**
+- **Location**: `consensus/proposal.ex:339`
+- **Issue**: `FunctionClauseError` instead of returning `{:error, reason}`
+- **Impact**: callers cannot safely call from_map with untrusted data
+
+**GAP 3: Signal.from_cloud_event/1 does not atomize enum values (DOCUMENTED)**
+- **Location**: `signal/signal.ex:74-75`
+- **Issue**: String values from JSON remain strings instead of being converted to atoms
+- **Impact**: `Signal.valid?/1` fails on decoded signals
+
+**GAP 4: FailureModes.infer_genre/1 only handles atom types, not strings (DOCUMENTED)**
+- **Location**: `events/failure_modes.ex:110-120`
+- **Issue**: Event.type is always a string, so `infer_genre/1` always returns `:chat` default
+- **Impact**: `genre_mismatch` detection never fires for string-typed events
+
+### Bug Fixed (Green Phase)
+
+**BUG: Tool call parser test format mismatch** — Hermes regex uses `<tool_call)>` not `<tool_call)`; tests corrected to match actual parser behavior
+
+### Test Results
+- **164/164 tests passing** — All new Chicago TDD tests
+- **mix compile --warnings-as-errors** — Clean
+- **0 test warnings**
+
+### Cumulative Test Count
+- Previous: 371
+- New: 164 (7 modules) = **535 total Chicago TDD tests**

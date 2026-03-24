@@ -145,7 +145,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 40_000,
       buffer: 5_000,
       thinking: 10_000,
-      total: 250_000
+      total: 260_000
     },
     specialist: %{
       system: 15_000,
@@ -156,7 +156,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 30_000,
       buffer: 5_000,
       thinking: 5_000,
-      total: 200_000
+      total: 205_000
     },
     utility: %{
       system: 8_000,
@@ -167,7 +167,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 12_000,
       buffer: 5_000,
       thinking: 2_000,
-      total: 100_000
+      total: 102_000
     }
   }
 

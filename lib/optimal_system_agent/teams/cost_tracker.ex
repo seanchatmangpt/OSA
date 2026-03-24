@@ -256,7 +256,7 @@ defmodule OptimalSystemAgent.Teams.CostTracker do
   # ---------------------------------------------------------------------------
 
   defp via(team_id) do
-    {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+    {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
   end
 
   defp maybe_fire_budget_alert(%{alert_fired: true} = state), do: state

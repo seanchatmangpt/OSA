@@ -20,7 +20,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
   `stop_all/1` terminates them all. `ensure_running/1` is idempotent —
   it checks which processes are alive and restarts any that have died.
 
-  All 8 are registered in `OptimalSystemAgent.Registry` under
+  All 8 are registered in `OptimalSystemAgent.Teams.Registry` under
   `{ModuleName, team_id}` keys for O(1) lookup.
   """
 
@@ -70,7 +70,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
   @spec stop_all(String.t()) :: :ok
   def stop_all(team_id) do
     Enum.each(@processes, fn mod ->
-      case Registry.lookup(OptimalSystemAgent.Registry, {mod, team_id}) do
+      case Registry.lookup(OptimalSystemAgent.Teams.Registry, {mod, team_id}) do
         [{pid, _}] ->
           DynamicSupervisor.terminate_child(
             OptimalSystemAgent.Teams.Supervisor,
@@ -95,7 +95,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
   @spec ensure_running(String.t()) :: :ok
   def ensure_running(team_id) do
     Enum.each(@processes, fn mod ->
-      case Registry.lookup(OptimalSystemAgent.Registry, {mod, team_id}) do
+      case Registry.lookup(OptimalSystemAgent.Teams.Registry, {mod, team_id}) do
         [{_pid, _}] -> :ok
         [] -> start_process(mod, team_id)
       end
@@ -108,7 +108,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
   @spec status(String.t()) :: [{module(), pid() | :not_running}]
   def status(team_id) do
     Enum.map(@processes, fn mod ->
-      case Registry.lookup(OptimalSystemAgent.Registry, {mod, team_id}) do
+      case Registry.lookup(OptimalSystemAgent.Teams.Registry, {mod, team_id}) do
         [{pid, _}] -> {mod, pid}
         [] -> {mod, :not_running}
       end
@@ -138,7 +138,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
@@ -169,12 +169,12 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
     def broadcast(team_id, event_type, payload) do
-      case Registry.lookup(OptimalSystemAgent.Registry, {__MODULE__, team_id}) do
+      case Registry.lookup(OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}) do
         [{pid, _}] -> GenServer.cast(pid, {:broadcast, event_type, payload})
         [] -> :ok
       end
@@ -214,7 +214,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
@@ -270,20 +270,20 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
     def register_file_edit(team_id, agent_id, file_path) do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:register_file, agent_id, file_path}
       )
     end
 
     def release_file_edit(team_id, agent_id, file_path) do
       GenServer.cast(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:release_file, agent_id, file_path}
       )
     end
@@ -342,14 +342,14 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
     @doc "Schedule a message for delivery after `delay_ms` milliseconds."
     def schedule(team_id, recipient, message, delay_ms \\ 0) do
       GenServer.cast(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:schedule, recipient, message, delay_ms}
       )
     end
@@ -405,14 +405,14 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
     @doc "Submit a bid for a task. Returns `:won` or `{:lost, winner_agent_id}`."
     def bid(team_id, task_id, agent_id, confidence) do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:bid, task_id, agent_id, confidence},
         5_000
       )
@@ -421,7 +421,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     @doc "Close bidding for a task and return the winner."
     def close_auction(team_id, task_id) do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:close_auction, task_id}
       )
     end
@@ -476,7 +476,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
@@ -487,7 +487,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     """
     def create(team_id, name, expected) when is_integer(expected) and expected > 0 do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:create, name, expected}
       )
     end
@@ -502,7 +502,7 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     """
     def arrive(team_id, name, agent_id, timeout_ms \\ 60_000) do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         {:arrive, name, agent_id},
         timeout_ms
       )
@@ -572,14 +572,14 @@ defmodule OptimalSystemAgent.Teams.NervousSystem do
     def start_link(opts) do
       team_id = Keyword.fetch!(opts, :team_id)
       GenServer.start_link(__MODULE__, team_id,
-        name: {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}}
+        name: {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}}
       )
     end
 
     @doc "Get the current complexity recommendation for the team."
     def recommend(team_id) do
       GenServer.call(
-        {:via, Registry, {OptimalSystemAgent.Registry, {__MODULE__, team_id}}},
+        {:via, Registry, {OptimalSystemAgent.Teams.Registry, {__MODULE__, team_id}}},
         :recommend
       )
     end

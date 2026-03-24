@@ -27,8 +27,12 @@ defmodule OptimalSystemAgent.Tools.CacheChicagoTDDTest do
   defp ensure_fresh_cache do
     case Process.whereis(Cache) do
       nil -> {:ok, _} = Cache.start_link([])
-      pid ->
-        GenServer.stop(pid)
+      pid when is_pid(pid) ->
+        try do
+          GenServer.stop(pid)
+        catch
+          :exit, _ -> :already_stopped
+        end
         {:ok, _} = Cache.start_link([])
     end
   end
@@ -36,7 +40,12 @@ defmodule OptimalSystemAgent.Tools.CacheChicagoTDDTest do
   defp cleanup_cache do
     case Process.whereis(Cache) do
       nil -> :ok
-      pid -> GenServer.stop(pid)
+      pid when is_pid(pid) ->
+        try do
+          GenServer.stop(pid)
+        catch
+          :exit, _ -> :already_stopped
+        end
     end
     :ok
   end
