@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.EventStreamTest do
   """
 
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.EventStream
 

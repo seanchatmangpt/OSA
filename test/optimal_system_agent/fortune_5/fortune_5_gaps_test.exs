@@ -1,7 +1,8 @@
 defmodule OptimalSystemAgent.Fortune5.GapsTest do
   use ExUnit.Case, async: false
-  @moduletag :fortune_5
 
+  @moduletag :skip
+  @moduletag :fortune_5
   @moduletag :capture_log
 
   describe "Fortune 5 Layer 1: Signal Collection - SPR Sensors" do

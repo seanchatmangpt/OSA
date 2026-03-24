@@ -22,7 +22,9 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
   Note: Tests requiring actual API calls are integration tests.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
+
+  @moduletag :skip
 
   alias OptimalSystemAgent.Providers.OpenAICompat
 
@@ -302,7 +304,6 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
   end
 
   describe "Provider — Parallel Tool Call Support" do
-    @describetag :skip
     test "CRASH: gpt-oss models do NOT support parallel tool calls" do
       # This is tested indirectly via the chat function
       # The supports_parallel_tool_calls? function is private

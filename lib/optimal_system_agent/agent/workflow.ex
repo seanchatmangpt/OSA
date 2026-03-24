@@ -175,6 +175,8 @@ defmodule OptimalSystemAgent.Agent.Workflow do
     end
   end
 
+  def estimate_duration(_), do: nil
+
   @doc """
   Check if workflow should use Temporal based on estimated duration.
 

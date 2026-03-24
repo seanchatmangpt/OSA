@@ -230,7 +230,6 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
   end
 
   describe "Provider — Auto Detect Model" do
-    @describetag :skip
     test "CRASH: auto_detect_model function exists" do
       assert function_exported?(Ollama, :auto_detect_model, 0)
     end
@@ -347,8 +346,6 @@ defmodule OptimalSystemAgent.Providers.OllamaChicagoTDDTest do
   end
 
   describe "Provider — Behavior Contract" do
-    @tag :skip
-    @tag :requires_start
     test "CRASH: Implements required callback functions" do
       # Providers.Behaviour requires: name/0, default_model/0, available_models/0, chat/2, chat_stream/3
       assert function_exported?(Ollama, :name, 0)

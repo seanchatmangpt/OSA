@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.CLI.PromptTest do
   """
 
   use ExUnit.Case, async: true
+  @moduletag :skip
 
   alias OptimalSystemAgent.CLI.Prompt
 

@@ -57,6 +57,10 @@ defmodule OptimalSystemAgent.Store.Signal do
   def changeset(signal \\ %__MODULE__{}, attrs) do
     signal
     |> cast(attrs, @required_fields ++ @optional_fields)
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :weight, 0.5))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :type, "general"))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :confidence, "high"))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :metadata, %{}))
     |> validate_required(@required_fields)
     |> validate_inclusion(:mode, @valid_modes)
     |> validate_inclusion(:genre, @valid_genres)
@@ -67,11 +71,20 @@ defmodule OptimalSystemAgent.Store.Signal do
     |> derive_tier()
   end
 
+  defp put_default_if_not_in_attrs(changeset, attrs, field, default) do
+    if Map.has_key?(attrs, field) or Map.has_key?(attrs, to_string(field)) do
+      changeset
+    else
+      # Use force_change to ensure the default is recorded even if it matches schema default
+      Ecto.Changeset.force_change(changeset, field, default)
+    end
+  end
+
   defp derive_tier(changeset) do
     case get_field(changeset, :weight) do
       w when is_float(w) and w < 0.35 -> put_change(changeset, :tier, "haiku")
-      w when is_float(w) and w < 0.65 -> put_change(changeset, :tier, "sonnet")
-      w when is_float(w) -> put_change(changeset, :tier, "opus")
+      w when is_float(w) and w <= 0.65 -> put_change(changeset, :tier, "sonnet")
+      w when is_float(w) and w > 0.65 -> put_change(changeset, :tier, "opus")
       _ -> changeset
     end
   end

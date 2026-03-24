@@ -75,16 +75,9 @@ defmodule OptimalSystemAgent.Store.SignalTest do
       refute changeset.valid?
     end
 
-    test "requires weight field" do
-      attrs = %{
-        channel: "test",
-        mode: "build",
-        genre: "direct",
-        format: "command"
-      }
-      changeset = Signal.changeset(%Signal{}, attrs)
-      refute changeset.valid?
-    end
+    # Note: "requires weight field" test removed - weight now has a default value of 0.5
+    # The original test expected weight to be required without a default, but this
+    # contradicted the "defaults weight to 0.5" test.
 
     test "validates mode is in allowed list" do
       for mode <- @valid_modes do
@@ -441,12 +434,8 @@ defmodule OptimalSystemAgent.Store.SignalTest do
   end
 
   describe "edge cases" do
-    test "handles empty channel" do
-      attrs = %{channel: "", mode: "build", genre: "direct", format: "command", weight: 0.5}
-      changeset = Signal.changeset(%Signal{}, attrs)
-      # Empty strings pass validation (Ecto doesn't validate emptiness by default)
-      assert changeset.valid?
-    end
+    # Note: "handles empty channel" test removed - Ecto's validate_required DOES reject
+    # empty strings with "can't be blank". The original test comment was incorrect.
 
     test "handles unicode in channel" do
       attrs = %{channel: "渠道", mode: "build", genre: "direct", format: "command", weight: 0.5}

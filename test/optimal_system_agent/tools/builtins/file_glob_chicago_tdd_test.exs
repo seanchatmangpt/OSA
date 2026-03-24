@@ -24,15 +24,15 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGlobChicagoTDDTest do
 
   describe "Tool — Behaviour Implementation" do
     test "CRASH: Implements Tools.Behaviour" do
-      assert function_exported?(FileGlob, :safety, 0)
-      assert function_exported?(FileGlob, :name, 0)
-      assert function_exported?(FileGlob, :description, 0)
-      assert function_exported?(FileGlob, :parameters, 0)
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :safety, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :name, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :description, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :parameters, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
 
     test "CRASH: Implements available?/0" do
-      assert function_exported?(FileGlob, :available?, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :available?, 0)
     end
 
     test "CRASH: available?/0 returns true" do
@@ -112,7 +112,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGlobChicagoTDDTest do
 
   describe "Tool — Execute Function" do
     test "CRASH: execute/1 function exists" do
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
 
     test "CRASH: execute returns error for missing pattern" do
@@ -122,12 +122,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGlobChicagoTDDTest do
 
     test "CRASH: execute accepts pattern only" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with path" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
   end
 
@@ -156,12 +156,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGlobChicagoTDDTest do
 
     test "CRASH: Module has @behaviour Tools.Behaviour" do
       # Verify callbacks are implemented
-      assert function_exported?(FileGlob, :safety, 0)
-      assert function_exported?(FileGlob, :name, 0)
-      assert function_exported?(FileGlob, :description, 0)
-      assert function_exported?(FileGlob, :parameters, 0)
-      assert function_exported?(FileGlob, :execute, 1)
-      assert function_exported?(FileGlob, :available?, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :safety, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :name, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :description, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :parameters, 0)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :available?, 0)
     end
   end
 
@@ -232,13 +232,13 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGlobChicagoTDDTest do
     test "CRASH: Has sensitive paths configured" do
       # This is tested indirectly via execute behavior
       # The @sensitive_paths module attribute is private
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
 
     test "CRASH: Has max results limit" do
       # This is tested indirectly via execute behavior
       # The @max_results module attribute is private
-      assert function_exported?(FileGlob, :execute, 1)
+      assert Code.ensure_loaded?(FileGlob) and function_exported?(FileGlob, :execute, 1)
     end
   end
 end

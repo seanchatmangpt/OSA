@@ -13,8 +13,17 @@ defmodule OptimalSystemAgent.FileLocking.RegionLockTest do
   @moduletag :capture_log
 
   setup do
-    # Start RegionLock GenServer for each test
-    start_supervised!(RegionLock)
+    # RegionLock is already started by the application supervisor.
+    # Verify it's running and clear ETS state for test isolation.
+    assert Process.whereis(RegionLock), "RegionLock GenServer should be running"
+
+    try do
+      :ets.delete_all_objects(:osa_region_locks)
+      :ets.delete_all_objects(:osa_region_lock_index)
+    catch
+      :error, :badarg -> :ok
+    end
+
     :ok
   end
 

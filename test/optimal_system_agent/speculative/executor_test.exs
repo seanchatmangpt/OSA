@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   """
 
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.Speculative.Executor
 

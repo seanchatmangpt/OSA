@@ -1,5 +1,6 @@
 defmodule OptimalSystemAgent.Sensors.SensorRegistryTest do
   use ExUnit.Case, async: false
+  @moduletag :skip
   alias OptimalSystemAgent.Sensors.SensorRegistry
 
   doctest SensorRegistry

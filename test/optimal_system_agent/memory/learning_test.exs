@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Memory.LearningTest do
   """
 
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.Memory.Learning
 

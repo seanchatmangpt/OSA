@@ -24,15 +24,15 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGrepChicagoTDDTest do
 
   describe "Tool — Behaviour Implementation" do
     test "CRASH: Implements Tools.Behaviour" do
-      assert function_exported?(FileGrep, :safety, 0)
-      assert function_exported?(FileGrep, :name, 0)
-      assert function_exported?(FileGrep, :description, 0)
-      assert function_exported?(FileGrep, :parameters, 0)
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :safety, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :name, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :description, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :parameters, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: Implements available?/0" do
-      assert function_exported?(FileGrep, :available?, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :available?, 0)
     end
 
     test "CRASH: available?/0 returns true" do
@@ -154,7 +154,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGrepChicagoTDDTest do
 
   describe "Tool — Execute Function" do
     test "CRASH: execute/1 function exists" do
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute returns error for missing pattern" do
@@ -164,37 +164,37 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGrepChicagoTDDTest do
 
     test "CRASH: execute accepts pattern only" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with path" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with glob" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with case_insensitive" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with context_lines" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with output_mode" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: execute accepts pattern with max_results" do
       # Function exists - actual behavior requires filesystem
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
   end
 
@@ -223,12 +223,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGrepChicagoTDDTest do
 
     test "CRASH: Module has @behaviour Tools.Behaviour" do
       # Verify callbacks are implemented
-      assert function_exported?(FileGrep, :safety, 0)
-      assert function_exported?(FileGrep, :name, 0)
-      assert function_exported?(FileGrep, :description, 0)
-      assert function_exported?(FileGrep, :parameters, 0)
-      assert function_exported?(FileGrep, :execute, 1)
-      assert function_exported?(FileGrep, :available?, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :safety, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :name, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :description, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :parameters, 0)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :available?, 0)
     end
   end
 
@@ -302,13 +302,13 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileGrepChicagoTDDTest do
     test "CRASH: Has sensitive paths configured" do
       # This is tested indirectly via execute behavior
       # The @sensitive_paths module attribute is private
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
 
     test "CRASH: Has max output bytes limit" do
       # This is tested indirectly via execute behavior
       # The @max_output_bytes module attribute is private
-      assert function_exported?(FileGrep, :execute, 1)
+      assert Code.ensure_loaded?(FileGrep) and function_exported?(FileGrep, :execute, 1)
     end
   end
 end

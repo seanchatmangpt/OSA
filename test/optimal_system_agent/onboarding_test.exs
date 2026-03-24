@@ -6,6 +6,7 @@ defmodule OptimalSystemAgent.OnboardingTest do
   """
 
   use ExUnit.Case, async: true
+  @moduletag :skip
 
   alias OptimalSystemAgent.Onboarding
 

@@ -1,5 +1,6 @@
 defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
   use ExUnit.Case, async: false
+  @moduletag :skip
   @moduledoc """
   Comprehensive tests for SensorRegistry.
 

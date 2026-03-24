@@ -45,11 +45,21 @@ defmodule OptimalSystemAgent.Store.Pattern do
   def changeset(pattern \\ %__MODULE__{}, attrs) do
     pattern
     |> cast(attrs, @required_fields ++ @optional_fields)
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :occurrences, 1))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :success_rate, 1.0))
     |> validate_required(@required_fields)
     |> validate_number(:occurrences, greater_than_or_equal_to: 1)
     |> validate_number(:success_rate,
       greater_than_or_equal_to: 0.0,
       less_than_or_equal_to: 1.0
     )
+  end
+
+  defp put_default_if_not_in_attrs(changeset, attrs, field, default) do
+    if Map.has_key?(attrs, field) or Map.has_key?(attrs, to_string(field)) do
+      changeset
+    else
+      Ecto.Changeset.force_change(changeset, field, default)
+    end
   end
 end

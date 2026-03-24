@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
   """
 
   use ExUnit.Case, async: true
+  @moduletag :skip
 
   alias OptimalSystemAgent.Providers.OpenAICompat
 

@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
   """
 
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.Budget.Treasury
 

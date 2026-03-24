@@ -25,11 +25,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.ShellExecuteChicagoTDDTest do
 
   describe "Tool — Behaviour Implementation" do
     test "CRASH: Implements Tools.Behaviour" do
-      assert function_exported?(ShellExecute, :safety, 0)
-      assert function_exported?(ShellExecute, :name, 0)
-      assert function_exported?(ShellExecute, :description, 0)
-      assert function_exported?(ShellExecute, :parameters, 0)
-      assert function_exported?(ShellExecute, :execute, 1)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :safety, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :name, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :description, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :parameters, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :execute, 1)
     end
 
     test "CRASH: safety/0 returns :terminal" do
@@ -98,7 +98,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ShellExecuteChicagoTDDTest do
 
   describe "Tool — Execute Function" do
     test "CRASH: execute/1 function exists" do
-      assert function_exported?(ShellExecute, :execute, 1)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :execute, 1)
     end
 
     test "CRASH: execute returns error for missing command" do
@@ -147,11 +147,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.ShellExecuteChicagoTDDTest do
 
     test "CRASH: Module has @behaviour Tools.Behaviour" do
       # Verify callbacks are implemented
-      assert function_exported?(ShellExecute, :safety, 0)
-      assert function_exported?(ShellExecute, :name, 0)
-      assert function_exported?(ShellExecute, :description, 0)
-      assert function_exported?(ShellExecute, :parameters, 0)
-      assert function_exported?(ShellExecute, :execute, 1)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :safety, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :name, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :description, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :parameters, 0)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :execute, 1)
     end
   end
 
@@ -229,12 +229,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.ShellExecuteChicagoTDDTest do
   describe "Tool — Command Normalization" do
     test "CRASH: Trailing & is stripped" do
       # Tested indirectly - the & would be stripped before execution
-      assert function_exported?(ShellExecute, :execute, 1)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :execute, 1)
     end
 
     test "CRASH: Leading nohup is stripped" do
       # Tested indirectly - nohup would be stripped before execution
-      assert function_exported?(ShellExecute, :execute, 1)
+      assert Code.ensure_loaded?(ShellExecute) and function_exported?(ShellExecute, :execute, 1)
     end
   end
 

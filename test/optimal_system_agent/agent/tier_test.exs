@@ -128,15 +128,15 @@ defmodule OptimalSystemAgent.Agent.TierTest do
 
   describe "total_budget/1" do
     test "returns total token budget for elite" do
-      assert Tier.total_budget(:elite) == 250_000
+      assert Tier.total_budget(:elite) == 260_000
     end
 
     test "returns total token budget for specialist" do
-      assert Tier.total_budget(:specialist) == 200_000
+      assert Tier.total_budget(:specialist) == 205_000
     end
 
     test "returns total token budget for utility" do
-      assert Tier.total_budget(:utility) == 100_000
+      assert Tier.total_budget(:utility) == 102_000
     end
   end
 

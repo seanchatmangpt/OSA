@@ -19,9 +19,8 @@ defmodule OptimalSystemAgent.Providers.GoogleTest do
   end
 
   describe "default_model/0" do
-    test "returns gemini-2.0-flash-exp" do
-      # From module: def default_model, do: "gemini-2.0-flash-exp"
-      assert Google.default_model() == "gemini-2.0-flash-exp"
+    test "returns gemini-2.0-flash" do
+      assert Google.default_model() == "gemini-2.0-flash"
     end
   end
 

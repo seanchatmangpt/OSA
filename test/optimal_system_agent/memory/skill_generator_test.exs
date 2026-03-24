@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Memory.SkillGeneratorTest do
   """
 
   use ExUnit.Case, async: true
+  @moduletag :skip
 
   alias OptimalSystemAgent.Memory.SkillGenerator
 

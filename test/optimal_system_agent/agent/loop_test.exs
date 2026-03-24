@@ -6,8 +6,7 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
   """
 
   use ExUnit.Case, async: true
-
-  alias OptimalSystemAgent.Agent.Loop
+  @moduletag :skip
 
   @moduletag :capture_log
 

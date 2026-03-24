@@ -24,11 +24,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebSearchChicagoTDDTest do
 
   describe "Tool — Behaviour Implementation" do
     test "CRASH: Implements Tools.Behaviour" do
-      assert function_exported?(WebSearch, :safety, 0)
-      assert function_exported?(WebSearch, :name, 0)
-      assert function_exported?(WebSearch, :description, 0)
-      assert function_exported?(WebSearch, :parameters, 0)
-      assert function_exported?(WebSearch, :execute, 1)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :safety, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :name, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :description, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :parameters, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :execute, 1)
     end
 
     test "CRASH: safety/0 returns :read_only" do
@@ -97,7 +97,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebSearchChicagoTDDTest do
 
   describe "Tool — Execute Function" do
     test "CRASH: execute/1 function exists" do
-      assert function_exported?(WebSearch, :execute, 1)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :execute, 1)
     end
 
     test "CRASH: execute returns error for missing query" do
@@ -122,12 +122,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebSearchChicagoTDDTest do
 
     test "CRASH: execute accepts query with limit" do
       # Function exists - actual behavior requires network
-      assert function_exported?(WebSearch, :execute, 1)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :execute, 1)
     end
 
     test "CRASH: execute accepts query without limit" do
       # Function exists - actual behavior requires network
-      assert function_exported?(WebSearch, :execute, 1)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :execute, 1)
     end
   end
 
@@ -156,11 +156,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebSearchChicagoTDDTest do
 
     test "CRASH: Module has @behaviour Tools.Behaviour" do
       # Verify callbacks are implemented
-      assert function_exported?(WebSearch, :safety, 0)
-      assert function_exported?(WebSearch, :name, 0)
-      assert function_exported?(WebSearch, :description, 0)
-      assert function_exported?(WebSearch, :parameters, 0)
-      assert function_exported?(WebSearch, :execute, 1)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :safety, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :name, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :description, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :parameters, 0)
+      assert Code.ensure_loaded?(WebSearch) and function_exported?(WebSearch, :execute, 1)
     end
   end
 

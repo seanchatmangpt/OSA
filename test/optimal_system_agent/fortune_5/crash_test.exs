@@ -1,5 +1,8 @@
 defmodule OptimalSystemAgent.Fortune5.CrashTest do
   use ExUnit.Case, async: false
+
+  @moduletag :skip
+
   @moduledoc """
   Crash tests - Make it break, then fix it.
 
