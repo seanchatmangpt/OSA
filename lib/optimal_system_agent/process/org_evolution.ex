@@ -1012,10 +1012,13 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
 
     # Ideal: each team interacts with every other team at least occasionally
     max_possible = length(team_names) * (length(team_names) - 1)
-    if max_possible == 0, do: 0.8
 
-    interaction_ratio = total_interactions / max_possible
-    min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
+    if max_possible == 0 do
+      0.8
+    else
+      interaction_ratio = total_interactions / max_possible
+      min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
+    end
   end
 
   defp compute_process_compliance(workflows, execution_data) do

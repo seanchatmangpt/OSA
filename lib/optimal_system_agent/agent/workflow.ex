@@ -142,6 +142,71 @@ defmodule OptimalSystemAgent.Agent.Workflow do
 
   def should_create_workflow?(_), do: false
 
+  @doc """
+  Estimate workflow duration in seconds based on task complexity.
+
+  Returns estimated duration or nil if cannot determine.
+  """
+  @spec estimate_duration(String.t()) :: non_neg_integer() | nil
+  def estimate_duration(task_description) when is_binary(task_description) do
+    # Base estimation from keywords and complexity
+    complexity_keywords = %{
+      "simple" => 60,
+      "basic" => 120,
+      "quick" => 180,
+      "comprehensive" => 1800,
+      "complete" => 3600,
+      "full" => 3600,
+      "complex" => 7200,
+      "advanced" => 7200,
+      "enterprise" => 14400,
+      "production" => 14400,
+      "scalable" => 10800
+    }
+
+    # Find matching keywords
+    estimated = Enum.find_value(complexity_keywords, fn {keyword, _duration} ->
+      String.contains?(String.downcase(task_description), keyword)
+    end)
+
+    case estimated do
+      {_keyword, duration} -> duration
+      nil -> nil
+    end
+  end
+
+  @doc """
+  Check if workflow should use Temporal based on estimated duration.
+
+  Returns true if estimated duration > 5 minutes (300 seconds).
+  """
+  @spec should_use_temporal?(String.t()) :: boolean()
+  def should_use_temporal?(task_description) when is_binary(task_description) do
+    case estimate_duration(task_description) do
+      nil -> false
+      duration -> duration > 300
+    end
+  end
+
+  @doc """
+  Route workflow to Temporal if it's long-running, otherwise use in-memory execution.
+
+  Returns {:ok, execution_mode} where execution_mode is :temporal or :in_memory.
+  """
+  @spec route_workflow(String.t(), keyword()) :: {:ok, :temporal | :in_memory}
+  def route_workflow(task_description, opts \\ []) do
+    # Allow explicit override via opts
+    force_temporal = Keyword.get(opts, :force_temporal, false)
+    force_in_memory = Keyword.get(opts, :force_in_memory, false)
+
+    cond do
+      force_temporal -> {:ok, :temporal}
+      force_in_memory -> {:ok, :in_memory}
+      should_use_temporal?(task_description) -> {:ok, :temporal}
+      true -> {:ok, :in_memory}
+    end
+  end
+
   # ── GenServer Callbacks ──────────────────────────────────────────────
 
   @impl true

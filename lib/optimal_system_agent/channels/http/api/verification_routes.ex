@@ -47,24 +47,30 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.VerificationRoutes do
     format = conn.body_params["format"] || "yawl"
 
     cond do
-      is_nil(workflow_def) or workflow_def == "" ->
+      is_nil(workflow_def) ->
         json_error(conn, 400, "invalid_request", "Missing required field: workflow")
 
-      not is_binary(workflow_def) ->
-        json_error(conn, 400, "invalid_request", "Field 'workflow' must be a string")
+      is_map(workflow_def) ->
+        # Accept JSON workflow objects — serialize to markdown for parsing
+        md_workflow = workflow_to_markdown(workflow_def)
+        format = "markdown"
+
+        case verify_single_workflow(md_workflow, format) do
+          {:ok, result} -> json(conn, 200, result)
+          {:error, reason} -> json_error(conn, 422, "verification_failed", reason)
+        end
+
+      is_binary(workflow_def) and workflow_def == "" ->
+        json_error(conn, 400, "invalid_request", "Missing required field: workflow")
 
       format not in @valid_formats ->
         valid_list = Enum.join(@valid_formats, ", ")
-
         json_error(conn, 400, "invalid_format", "Invalid format '#{format}'. Valid formats: #{valid_list}")
 
       true ->
         case verify_single_workflow(workflow_def, format) do
-          {:ok, result} ->
-            json(conn, 200, result)
-
-          {:error, reason} ->
-            json_error(conn, 422, "verification_failed", reason)
+          {:ok, result} -> json(conn, 200, result)
+          {:error, reason} -> json_error(conn, 422, "verification_failed", reason)
         end
     end
   end
@@ -792,6 +798,34 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.VerificationRoutes do
   # ===========================================================================
   # Private: Utility
   # ===========================================================================
+
+  # Convert a JSON workflow object to markdown format for parsing.
+  # Accepts: %{"name" => ..., "tasks" => %{"task_id" => %{"type" => ..., "next" => [...]}}}
+  defp workflow_to_markdown(workflow) when is_map(workflow) do
+    name = Map.get(workflow, "name", "Workflow")
+    tasks = Map.get(workflow, "tasks", %{})
+
+    lines = ["# #{name}", ""]
+
+    # Write each task as a heading with next-step transitions
+    sorted_tasks = Enum.sort_by(tasks, fn {id, _config} -> id end)
+
+    task_lines =
+      Enum.flat_map(sorted_tasks, fn {id, config} ->
+        task_type = Map.get(config, "type", "automated")
+        next = Map.get(config, "next", [])
+
+        next_str =
+          case next do
+            [] -> ""
+            targets -> " -> #{Enum.join(targets, ", ")}"
+          end
+
+        ["## #{id} (#{task_type})#{next_str}"]
+      end)
+
+    Enum.join(lines ++ task_lines, "\n")
+  end
 
   defp sha256(data) do
     :crypto.hash(:sha256, data)

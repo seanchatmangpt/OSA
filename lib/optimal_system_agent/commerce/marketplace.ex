@@ -642,6 +642,7 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
       skill_breakdown
       |> Enum.map(& &1.earnings)
       |> Enum.sum()
+      |> then(fn n -> n / 1.0 end)
       |> Float.round(2)
 
     %{
@@ -692,6 +693,7 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
         successful * amount
       end)
       |> Enum.sum()
+      |> then(fn n -> n / 1.0 end)
       |> Float.round(2)
 
     # Top categories

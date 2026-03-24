@@ -22,6 +22,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.MarketplaceRoutes do
   alias OptimalSystemAgent.Commerce.Marketplace
 
   plug(:match)
+  plug(Plug.Parsers, parsers: [:json], pass: ["*/*"], json_decoder: Jason)
   plug(:dispatch)
 
   # ===========================================================================
@@ -171,8 +172,14 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.MarketplaceRoutes do
   # ===========================================================================
 
   get "/stats" do
-    stats = Marketplace.marketplace_stats()
-    json(conn, 200, stats)
+    try do
+      stats = Marketplace.marketplace_stats()
+      json(conn, 200, stats)
+    rescue
+      e ->
+        Logger.error("[Marketplace] Stats failed: #{Exception.message(e)}")
+        json_error(conn, 500, "internal_error", Exception.message(e))
+    end
   end
 
   # ===========================================================================

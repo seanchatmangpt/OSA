@@ -220,6 +220,164 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
   end
 
   # ---------------------------------------------------------------------------
+  # BFT Consensus
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Byzantine Fault Tolerant consensus pattern for critical decisions.
+
+  All agents in the fleet vote on a proposal. Requires 2/3 supermajority
+  for approval. Uses HotStuff-BFT protocol for fault tolerance.
+
+  Fleet size must be at least 3 agents to achieve BFT properties.
+  Fault tolerance: f < n/3 where n is fleet size.
+  """
+  def bft_consensus(parent_id, configs, opts \\ []) do
+    Logger.info("[Swarm.Patterns] bft_consensus #{length(configs)} agents")
+
+    fleet_size = length(configs)
+
+    cond do
+      fleet_size < 3 ->
+        Logger.warning("[Swarm.Patterns] bft_consensus requires ≥3 agents, falling back to parallel")
+        parallel(parent_id, configs, opts)
+
+      true ->
+        run_bft_consensus(parent_id, configs, opts)
+    end
+  end
+
+  defp run_bft_consensus(parent_id, configs, opts) do
+    try do
+      # Ensure HotStuff-BFT module is available
+      if Code.ensure_loaded?(OptimalSystemAgent.Consensus.HotStuff) do
+        # Create proposal for voting
+        proposal_type = Keyword.get(opts, :proposal_type, :decision)
+        proposal_content = Keyword.get(opts, :proposal_content, %{})
+        proposer_id = Keyword.get(opts, :proposer_id, "system")
+
+        # Initialize proposal
+        {:ok, proposal} = OptimalSystemAgent.Consensus.Proposal.new(
+          proposal_type,
+          proposal_content,
+          proposer_id
+        )
+
+        Logger.info("[Swarm.Patterns] Created BFT proposal #{proposal.workflow_id}")
+
+        # Phase 1: Propose - Broadcast proposal to all agents
+        fleet_id = "fleet-#{parent_id}"
+
+        case OptimalSystemAgent.Consensus.HotStuff.propose_vote(fleet_id, proposal, configs) do
+          {:ok, _proposal} ->
+            # Phase 2: Vote - Each agent votes
+            vote_results =
+              Enum.map(configs, fn config ->
+                agent_id = Map.get(config, :role, "agent")
+                task_with_proposal = """
+## Proposal for BFT Consensus
+
+You are voting on the following proposal:
+
+**Type:** #{proposal_type}
+**Content:** #{inspect(proposal_content)}
+**Proposal ID:** #{proposal.workflow_id}
+
+Instructions:
+1. Evaluate the proposal on its merits
+2. Cast your vote: respond with either "APPROVE:" or "REJECT:"
+3. Provide brief reasoning for your vote
+
+Your task: Evaluate and vote on this proposal.
+"""
+
+                result = config
+                         |> Map.put(:parent_session_id, parent_id)
+                         |> Map.put(:task, task_with_proposal)
+                         |> Orchestrator.run_subagent()
+
+                {agent_id, result}
+              end)
+
+            # Tally votes
+            votes = Enum.reduce(vote_results, %{}, fn {agent_id, result}, acc ->
+              vote = case result do
+                {:ok, response} when is_binary(response) ->
+                  cond do
+                    String.contains?(String.upcase(response), "APPROVE") -> :approve
+                    String.contains?(String.upcase(response), "REJECT") -> :reject
+                    true -> :reject  # Default to reject on unclear response
+                  end
+
+                _ -> :reject  # Failed agents vote reject
+              end
+
+              Map.put(acc, agent_id, vote)
+            end)
+
+            Logger.info("[Swarm.Patterns] BFT votes collected: #{inspect(votes)}")
+
+            # Add votes to proposal
+            proposal_with_votes = Enum.reduce(votes, proposal, fn {agent_id, vote}, prop ->
+              OptimalSystemAgent.Consensus.Proposal.add_vote(prop, agent_id, vote)
+            end)
+
+            # Phase 3: Check if consensus reached
+            case OptimalSystemAgent.Consensus.Proposal.calculate_result(proposal_with_votes) do
+              {:ok, :approved} ->
+                # Phase 4: Commit the proposal
+                {:ok, committed_proposal} = OptimalSystemAgent.Consensus.HotStuff.commit(fleet_id, proposal_with_votes)
+
+                Logger.info("[Swarm.Patterns] BFT consensus reached: APPROVED")
+
+                # Collect all agent results with approval notice
+                results_with_notice = Enum.map(vote_results, fn {agent_id, {:ok, response}} ->
+                  response_with_notice = response <> "\n\n[BFT CONSENSUS: APPROVED - 2/3 supermajority reached]"
+                  {:ok, response_with_notice}
+                end)
+
+                {:ok, results_with_notice}
+
+              {:ok, :rejected} ->
+                Logger.info("[Swarm.Patterns] BFT consensus: REJECTED")
+
+                results_with_notice = Enum.map(vote_results, fn {_agent_id, {:ok, response}} ->
+                  response_with_notice = response <> "\n\n[BFT CONSENSUS: REJECTED - supermajority not reached]"
+                  {:ok, response_with_notice}
+                end)
+
+                {:ok, results_with_notice}
+
+              {:pending, ratio} ->
+                Logger.warning("[Swarm.Patterns] BFT consensus pending: #{Float.round(ratio * 100, 1)}% approval")
+
+                # Return results with pending notice
+                results_with_notice = Enum.map(vote_results, fn {_agent_id, {:ok, response}} ->
+                  response_with_notice = response <> "\n\n[BFT CONSENSUS: PENDING - #{Float.round(ratio * 100, 1)}% approval, need 66.7%]"
+                  {:ok, response_with_notice}
+                end)
+
+                {:ok, results_with_notice}
+            end
+
+          {:error, reason} ->
+            Logger.error("[Swarm.Patterns] BFT propose failed: #{inspect(reason)}")
+            {:error, reason}
+        end
+
+      else
+        Logger.warning("[Swarm.Patterns] HotStuff-BFT not available, falling back to parallel")
+        parallel(parent_id, configs, opts)
+      end
+
+    rescue
+      e ->
+        Logger.error("[Swarm.Patterns] BFT consensus error: #{Exception.message(e)}")
+        {:error, Exception.message(e)}
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   # Named Presets
   # ---------------------------------------------------------------------------
 
