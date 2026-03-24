@@ -6,10 +6,11 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
   Validates that each innovation module is running, accessible via HTTP API,
   and produces correct results.
 
-  Run: mix test test/integration/vision_2030_e2e_test.exs
+  Run: mix test test/integration/vision_2030_e2e_test.exs --include integration
   """
 
   use ExUnit.Case, async: false
+  @moduletag :integration
 
   @osa_url "http://localhost:9089"
 
@@ -71,7 +72,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
   describe "Innovation 3: Zero-Touch Compliance" do
     test "audit trail hook is registered" do
       # AuditTrail.register/0 adds itself to the hooks system
-      hooks = OptimalSystemAgent.Agent.Hooks.list()
+      hooks = OptimalSystemAgent.Agent.Hooks.list_hooks()
       audit_hook = Enum.find(hooks, fn h -> h.name == "audit_trail" end)
       assert audit_hook != nil, "audit_trail hook not registered"
     end
@@ -167,7 +168,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
 
   describe "Innovation 6: Agent-Native ERP" do
     test "businessos_api tool is registered" do
-      tools = OptimalSystemAgent.Tools.Registry.list()
+      tools = OptimalSystemAgent.Tools.Registry.list_tools()
       bos_tool = Enum.find(tools, fn t -> t.name == "businessos_api" end)
       assert bos_tool != nil, "businessos_api tool not registered"
     end
@@ -455,7 +456,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
       assert health["status"] == "ok"
 
       # 2. Verify audit trail hook is active
-      hooks = OptimalSystemAgent.Agent.Hooks.list()
+      hooks = OptimalSystemAgent.Agent.Hooks.list_hooks()
       assert Enum.any?(hooks, fn h -> h.name == "audit_trail" end)
 
       # 3. Verify marketplace can publish → acquire → execute → rate

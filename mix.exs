@@ -41,6 +41,9 @@ defmodule OptimalSystemAgent.MixProject do
       # HTTP client for LLM APIs
       {:req, "~> 0.5"},
 
+      # HTTP client for integration tests
+      {:httpoison, "~> 2.0", only: :test},
+
       # JSON
       {:jason, "~> 1.4"},
 
