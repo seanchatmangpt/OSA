@@ -5,6 +5,8 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11 do
 
   @behaviour OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapter
 
+  alias OptimalSystemAgent.Tools.Builtins.ComputerUse.Shared
+
   require Logger
 
   @scroll_buttons %{"up" => "4", "down" => "5", "left" => "6", "right" => "7"}
@@ -197,6 +199,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11 do
       combo
     end
   end
+
+  @doc "Delegates to `Shared.shell_escape/1`."
+  @spec shell_escape(String.t()) :: String.t()
+  def shell_escape(text), do: Shared.shell_escape(text)
 
   # ── Private ──────────────────────────────────────────────────────────
 

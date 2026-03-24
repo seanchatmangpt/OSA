@@ -11,7 +11,14 @@ defmodule OptimalSystemAgent.Memory.LearningTest do
   alias OptimalSystemAgent.Memory.Learning
 
   @moduletag :capture_log
-  @moduletag :skip
+
+  setup_all do
+    # Guard against already-started GenServer from previous test runs
+    if Process.whereis(Learning) == nil do
+      {:ok, _pid} = Learning.start_link([])
+    end
+    :ok
+  end
 
   setup do
     # Learning is already running from supervisor - ensure it's available

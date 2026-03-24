@@ -20,7 +20,6 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
   alias OptimalSystemAgent.Memory.Store
 
   @moduletag :capture_log
-  @moduletag :skip
 
   setup do
     # Ensure a clean table for each test
@@ -48,7 +47,7 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
     test "table is :set type" do
       table_name = :test_table_type
       {:ok, ^table_name} = Store.init_table(table_name, "./test.db")
-      info = :ets.table_info(table_name, :type)
+      info = :ets.info(table_name, :type)
       assert info == :set
       :ets.delete(table_name)
     end
@@ -56,7 +55,7 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
     test "table is :public" do
       table_name = :test_table_protection
       {:ok, ^table_name} = Store.init_table(table_name, "./test.db")
-      info = :ets.table_info(table_name, :protection)
+      info = :ets.info(table_name, :protection)
       assert info == :public
       :ets.delete(table_name)
     end
@@ -72,7 +71,7 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
         category: "decision"
       }
       assert {:ok, "test_1"} = Store.insert(table_name, "test_1", entry)
-      assert [{^table_name, {"test_1", _}}] = :ets.lookup(table_name, "test_1")
+      assert [{"test_1", _}] = :ets.lookup(table_name, "test_1")
     end
 
     test "returns error for duplicate ID" do
@@ -86,7 +85,7 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
       table_name = :memory_store_test
       entry = %{content: "test", keywords: "test", category: "decision"}
       assert {:ok, id} = Store.insert(table_name, nil, entry)
-      [{_, {^id, retrieved}}] = :ets.lookup(table_name, id)
+      [{^id, retrieved}] = :ets.lookup(table_name, id)
       assert Map.has_key?(retrieved, :created_at) or Map.has_key?(retrieved, "created_at")
     end
   end

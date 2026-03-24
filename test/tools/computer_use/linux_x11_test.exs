@@ -5,39 +5,28 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11Test do
 
   # ---------------------------------------------------------------------------
   # Shell escaping (security-critical)
-  # NOTE: shell_escape/1 is NOT IMPLEMENTED in the LinuxX11 adapter.
-  # These tests are skipped until the function is added to the module.
-  # Reason: Function does not exist in lib/optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex
+  # NOTE: shell_escape/1 delegates to Shared.shell_escape/1 which wraps
+  # text in single quotes with proper escaping of embedded quotes.
   # ---------------------------------------------------------------------------
 
   describe "shell_escape/1" do
-    @tag :skip
     test "normal text passes through in single quotes" do
-      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("hello world") == "'hello world'"
     end
 
-    @tag :skip
     test "single quotes are properly escaped" do
-      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("it's here") == "'it'\\''s here'"
     end
 
-    @tag :skip
     test "empty string returns empty single quotes" do
-      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("") == "''"
     end
 
-    @tag :skip
     test "special shell characters are safely contained" do
-      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("$(rm -rf /)") == "'$(rm -rf /)'"
     end
 
-    @tag :skip
     test "backticks are safely contained" do
-      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("`whoami`") == "'`whoami`'"
     end
   end

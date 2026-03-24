@@ -322,7 +322,7 @@ defmodule OptimalSystemAgent.Memory.VIGILTest do
       assert sub == "unclassified"
       assert is_binary(hint)
 
-      {cat, sub, hint} = VIGIL.classify(123)
+      {cat, sub, _hint} = VIGIL.classify(123)
       assert cat == :unknown_error
       assert sub == "unclassified"
     end
@@ -450,7 +450,7 @@ defmodule OptimalSystemAgent.Memory.VIGILTest do
   describe "integration" do
     test "classification can be used for error routing" do
       error = "file not found"
-      {cat, sub, _hint} = VIGIL.classify(error)
+      {cat, _sub, _hint} = VIGIL.classify(error)
 
       case cat do
         :io_error -> :handle_io
