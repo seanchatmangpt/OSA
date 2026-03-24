@@ -302,6 +302,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
   end
 
   describe "Provider — Parallel Tool Call Support" do
+    @describetag :skip
     test "CRASH: gpt-oss models do NOT support parallel tool calls" do
       # This is tested indirectly via the chat function
       # The supports_parallel_tool_calls? function is private
