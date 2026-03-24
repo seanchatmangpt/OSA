@@ -177,12 +177,27 @@ defmodule OptimalSystemAgent.MCP.Server do
 
   @impl true
   def handle_call({:call_tool, tool_name, arguments}, _from, state) do
+    start_time = System.monotonic_time(:microsecond)
+
     result =
       if state.connected do
         do_call_tool(state, tool_name, arguments)
       else
         {:error, :disconnected}
       end
+
+    # Emit telemetry event for tool call
+    duration = System.monotonic_time(:microsecond) - start_time
+
+    :telemetry.execute(
+      [:osa, :mcp, :tool_call],
+      %{duration: duration, cached: false},
+      %{
+        server: state.name,
+        tool: tool_name,
+        status: elem(result, 0)
+      }
+    )
 
     case result do
       {:error, :port_closed} ->

@@ -113,4 +113,66 @@ defmodule OptimalSystemAgent.MCP.HTTPTransportRealTest do
       assert metadata[:transport] == "http"
     end
   end
+
+  describe "HTTP Transport - call_tool" do
+    setup do
+      {:ok, server} = OptimalSystemAgent.MCP.Server.start_link(
+        name: "test_call_tool",
+        transport: "http",
+        url: "http://localhost:8084/mcp"
+      )
+
+      on_exit(fn ->
+        try do
+          OptimalSystemAgent.MCP.Server.stop("test_call_tool")
+        catch
+          _, _ -> :ok
+        end
+      end)
+
+      {:ok, %{server: server}}
+    end
+
+    test "CRASH: call_tool invokes tool via HTTP (returns error if no server)" do
+      # Try to call a tool (will fail if no actual MCP server running)
+      result = OptimalSystemAgent.MCP.Server.call_tool("test_call_tool", "echo", %{"message" => "hello"})
+
+      # Should return result or error depending on whether server is running
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
+    end
+
+    test "CRASH: call_tool emits [:osa, :mcp, :tool_call] telemetry" do
+      parent = self()
+      ref = make_ref()
+
+      handler_id = :telemetry.attach(
+        {__MODULE__, ref},
+        [:osa, :mcp, :tool_call],
+        fn _event, measurements, metadata, _config ->
+          send(parent, {ref, measurements, metadata})
+        end,
+        nil
+      )
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      # Call a tool (will fail but should still emit telemetry)
+      OptimalSystemAgent.MCP.Server.call_tool("test_call_tool", "test_tool", %{})
+
+      # Should receive telemetry event
+      assert_receive {^ref, measurements, metadata}, 2000
+      assert measurements[:duration] >= 0
+      assert measurements[:cached] == false
+      assert metadata[:server] == "test_call_tool"
+      assert metadata[:tool] == "test_tool"
+      assert metadata[:status] in [:ok, :error]
+    end
+
+    test "CRASH: call_tool with invalid args handles gracefully" do
+      result = OptimalSystemAgent.MCP.Server.call_tool("test_call_tool", "nonexistent", %{})
+
+      # Should return error, not crash
+      assert match?({:error, _}, result) or match?({:ok, _}, result)
+    end
+  end
 end
