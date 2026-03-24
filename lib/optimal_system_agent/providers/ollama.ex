@@ -482,7 +482,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
           end)
 
         content = Map.get(msg, :content, "") || ""
-        %{"role" => "assistant", "content" => to_string(content), "tool_calls" => formatted_calls}
+        %{"role" => "assistant", "content" => extract_content(content), "tool_calls" => formatted_calls}
 
       # Tool result messages — must carry tool_call_id and name so the model
       # can attribute the result to the correct call on iteration 2+.
@@ -492,13 +492,13 @@ defmodule OptimalSystemAgent.Providers.Ollama do
         name = Map.get(msg, :name, "")
         %{
           "role" => "tool",
-          "content" => to_string(content),
+          "content" => extract_content(content),
           "tool_call_id" => to_string(id),
           "name" => to_string(name)
         }
 
       %{role: role, content: content} ->
-        %{"role" => to_string(role), "content" => to_string(content)}
+        %{"role" => to_string(role), "content" => extract_content(content)}
 
       %{"role" => _} = msg ->
         msg
@@ -507,6 +507,27 @@ defmodule OptimalSystemAgent.Providers.Ollama do
         msg
     end)
   end
+
+  # Extract text content from structured format or return plain string
+  # Handles both plain strings and Anthropic-style content blocks:
+  #   - "plain text"
+  #   - [%{type: "text", text: "..."}]
+  #   - [%{type: "image", source: %{...}}]
+  defp extract_content(content) when is_binary(content), do: content
+  defp extract_content(content) when is_list(content) do
+    content
+    |> Enum.filter(fn
+      %{type: "text"} -> true
+      _ -> false
+    end)
+    |> Enum.map(fn
+      %{type: "text", text: text} -> text
+      text when is_binary(text) -> text
+      _ -> ""
+    end)
+    |> Enum.join("")
+  end
+  defp extract_content(_), do: ""
 
   defp maybe_add_tools(body, model, opts) do
     case Keyword.get(opts, :tools) do

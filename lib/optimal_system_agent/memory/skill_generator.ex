@@ -145,11 +145,14 @@ defmodule OptimalSystemAgent.Memory.SkillGenerator do
   """
   @spec slugify(String.t()) :: String.t()
   def slugify(text) when is_binary(text) do
-    text
-    |> String.downcase()
-    |> String.replace(~r/[^a-z0-9]+/, "-")
-    |> String.replace(~r/-{2,}/, "-")
-    |> String.trim("-")
+    result =
+      text
+      |> String.downcase()
+      |> String.replace(~r/[^a-z0-9]+/, "-")
+      |> String.replace(~r/-{2,}/, "-")
+      |> String.trim("-")
+
+    if result == "", do: "unnamed", else: result
   end
 
   def slugify(_), do: "unnamed"

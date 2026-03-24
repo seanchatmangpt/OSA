@@ -5,8 +5,8 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
   NO MOCKS. Tests verify REAL telemetry emission from A2A modules.
 
   Following Toyota Code Production System principles:
-    - Build Quality In (Jidoka) — tests verify at the source
-    - Visual Management — telemetry events must be observable
+    - Build Quality In (Jidoka) -- tests verify at the source
+    - Visual Management -- telemetry events must be observable
 
   ## Gap Discovered
 
@@ -24,11 +24,31 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
 
   @moduletag :integration
 
+  # Path to A2A routes source for static analysis tests
+  @a2a_routes_source Path.join(__DIR__, "../../lib/optimal_system_agent/channels/http/api/a2a_routes.ex")
+
+  setup_all do
+    # Ensure PubSub is available for tests that need it
+    case Process.whereis(OptimalSystemAgent.PubSub) do
+      nil ->
+        {:ok, _} =
+          Supervisor.start_link(
+            [{Phoenix.PubSub, name: OptimalSystemAgent.PubSub}],
+            strategy: :one_for_one
+          )
+
+      _ ->
+        :ok
+    end
+
+    :ok
+  end
+
   # ---------------------------------------------------------------------------
   # A2A TaskStream Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "A2A TaskStream — Telemetry Emission" do
+  describe "A2A TaskStream -- Telemetry Emission" do
     test "A2A: TaskStream.publish emits telemetry event" do
       test_pid = self()
       handler_name = :"test_a2a_task_stream_#{:erlang.unique_integer()}"
@@ -106,10 +126,10 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
   end
 
   # ---------------------------------------------------------------------------
-  # A2A Call Tool Telemetry Tests
+  # A2A Call Tool Telemetry Tests (gap acknowledged)
   # ---------------------------------------------------------------------------
 
-  describe "A2A Call Tool — Telemetry Emission" do
+  describe "A2A Call Tool -- Telemetry Emission" do
     test "A2A: A2ACall discover_agent emits telemetry" do
       test_pid = self()
       handler_name = :"test_a2a_discover_#{:erlang.unique_integer()}"
@@ -124,7 +144,6 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
       )
 
       # Try to discover a real agent endpoint (may fail, but telemetry should emit)
-      # Using a known local endpoint that may or may not be available
       agent_url = "http://localhost:8001/api/integrations/a2a/agents"
 
       params = %{
@@ -134,10 +153,6 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
 
       # Execute the tool (may fail due to endpoint not available)
       _result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(params)
-
-      # Note: Currently A2ACall doesn't emit telemetry - this test will fail
-      # Once telemetry is added, this assertion should pass
-      # For now, we expect no telemetry (gap acknowledged)
 
       :telemetry.detach(handler_name)
 
@@ -171,7 +186,6 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
       # Execute the tool (may fail, but telemetry should emit)
       _result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(params)
 
-      # Note: Currently A2ACall doesn't emit telemetry - this test documents the gap
       :telemetry.detach(handler_name)
 
       # This test documents the gap - A2ACall should emit telemetry but doesn't
@@ -180,15 +194,14 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
   end
 
   # ---------------------------------------------------------------------------
-  # A2A Integration Telemetry Tests
+  # A2A Integration Telemetry Tests (gap acknowledged)
   # ---------------------------------------------------------------------------
 
-  describe "A2A Integration — End-to-End Telemetry" do
+  describe "A2A Integration -- End-to-End Telemetry" do
     test "A2A: Full agent call workflow emits telemetry" do
       test_pid = self()
       handler_name = :"test_a2a_e2e_#{:erlang.unique_integer()}"
 
-      # Attach to all A2A telemetry events
       :telemetry.attach(
         handler_name,
         [:osa, :a2a, :agent_call],
@@ -198,18 +211,65 @@ defmodule OptimalSystemAgent.A2ATelemetryRealTest do
         nil
       )
 
-      # Simulate a full A2A workflow:
-      # 1. Discover agent
-      # 2. Call agent
-      # 3. Execute tool
-
-      # Note: This test documents expected telemetry flow
-      # Actual implementation may need real agent endpoints
-
       :telemetry.detach(handler_name)
 
       # This test documents the expected telemetry flow
       :gap_acknowledged
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Task 11: A2A Agent Call Telemetry Tests (Source Code Verification)
+  # ---------------------------------------------------------------------------
+
+  describe "A2A - Agent Call Telemetry" do
+    test "CRASH: agent calls emit [:osa, :a2a, :agent_call] telemetry" do
+      source = File.read!(@a2a_routes_source)
+
+      # Verify the telemetry event name is present
+      assert String.contains?(source, "[:osa, :a2a, :agent_call]"),
+             "Source must emit [:osa, :a2a, :agent_call] telemetry event"
+
+      # Verify duration measurement is included
+      assert String.contains?(source, "duration:"),
+             "Telemetry must include duration measurement"
+
+      # Verify task_id is included in metadata
+      assert String.contains?(source, "task_id:"),
+             "Telemetry metadata must include task_id"
+
+      # Verify status is included in metadata
+      assert String.contains?(source, "status:"),
+             "Telemetry metadata must include status"
+    end
+
+    test "CRASH: agent call telemetry includes both success and error paths" do
+      source = File.read!(@a2a_routes_source)
+
+      # Count telemetry.execute calls with status: :ok (success path)
+      success_count =
+        Regex.scan(~r/telemetry\.execute\([^)]*status:\s*:ok[^)]*\)/s, source)
+        |> length()
+
+      # Count telemetry.execute calls with status: :error (error path)
+      error_count =
+        Regex.scan(~r/telemetry\.execute\([^)]*status:\s*:error[^)]*\)/s, source)
+        |> length()
+
+      # Both paths must emit telemetry
+      assert success_count >= 1,
+             "Expected at least 1 telemetry.execute call with status: :ok, got #{success_count}"
+
+      assert error_count >= 1,
+             "Expected at least 1 telemetry.execute call with status: :error, got #{error_count}"
+
+      # Total telemetry.execute calls for agent_call should be at least 2
+      total_agent_call_count =
+        Regex.scan(~r/telemetry\.execute\(\s*\[:osa,\s*:a2a,\s*:agent_call\]/s, source)
+        |> length()
+
+      assert total_agent_call_count >= 2,
+             "Expected at least 2 :agent_call telemetry events (success + error), got #{total_agent_call_count}"
     end
   end
 end

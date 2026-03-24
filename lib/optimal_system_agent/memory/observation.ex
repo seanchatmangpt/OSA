@@ -55,7 +55,7 @@ defmodule OptimalSystemAgent.Memory.Observation do
 
     with {:ok, validated_type} <- validate_type(type) do
       obs = %__MODULE__{
-        id: System.monotonic_time(:nanosecond),
+        id: System.unique_integer([:positive, :monotonic]),
         type: validated_type,
         tool_name: to_string(Map.get(attrs, :tool_name) || Map.get(attrs, "tool_name") || "unknown"),
         error_message: string_or_nil(Map.get(attrs, :error_message) || Map.get(attrs, "error_message")),

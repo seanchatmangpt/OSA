@@ -46,13 +46,20 @@ defmodule OptimalSystemAgent.Tools.Middleware do
 
   Middleware is applied left-to-right: the first element wraps outermost,
   the last element wraps closest to the executor.
-  """
-  @spec execute(Instruction.t(), [module()], (Instruction.t() -> any())) :: any()
-  def execute(%Instruction{} = inst, [], executor), do: executor.(inst)
 
-  def execute(%Instruction{} = inst, [mw | rest], executor) do
-    mw.call(inst, fn updated -> execute(updated, rest, executor) end, [])
+  `opts` is forwarded to each middleware as the third argument, allowing
+  middleware like `Validation` to receive configuration (e.g. `:required`).
+  """
+  @spec execute(Instruction.t(), [module()], (Instruction.t() -> any()), keyword()) :: any()
+  def execute(%Instruction{} = inst, [], executor, _opts), do: executor.(inst)
+
+  def execute(%Instruction{} = inst, [mw | rest], executor, opts) do
+    mw.call(inst, fn updated -> execute(updated, rest, executor, opts) end, opts)
   end
+
+  @doc false
+  def execute(%Instruction{} = inst, middleware, executor),
+    do: execute(inst, middleware, executor, [])
 
   # ---------------------------------------------------------------------------
   # Built-in middleware
