@@ -36,19 +36,31 @@ defmodule OptimalSystemAgent.OS.ScannerTest do
       # Create a temporary test directory
       temp_dir = System.tmp_dir!()
       result = Scanner.scan(temp_dir)
-      assert is_list(result)
+      # Returns {:ok, manifest} or {:error, reason}
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
-    test "returns empty list for non-existent directory" do
+    test "returns error for non-existent directory" do
       result = Scanner.scan("/nonexistent/path/that/does/not/exist/12345")
-      assert is_list(result)
+      # Returns {:error, "Not a directory: ..."}
+      assert match?({:error, _}, result)
+    end
+
+    test "returns error for path that is not a directory" do
+      # Create a file instead of directory
+      temp_file = System.tmp_dir!() <> "/scanner_test_file"
+      File.write!(temp_file, "test")
+      result = Scanner.scan(temp_file)
+      assert match?({:error, _}, result)
+      File.rm!(temp_file)
     end
 
     test "handles empty directory" do
       temp_dir = System.tmp_dir!() <> "/scanner_test_empty"
       File.mkdir_p!(temp_dir)
       result = Scanner.scan(temp_dir)
-      assert is_list(result)
+      # Returns {:error, "No recognizable project in ..."} for empty dir
+      assert match?({:error, _}, result)
       File.rm_rf!(temp_dir)
     end
   end
@@ -102,49 +114,36 @@ defmodule OptimalSystemAgent.OS.ScannerTest do
     end
   end
 
-  describe "scan_directory/1" do
-    test "returns empty list for non-existent directory" do
-      result = Scanner.scan_directory("/nonexistent/12345")
-      assert is_list(result)
-    end
-
-    test "returns empty list for path that is not a directory" do
-      # Create a file instead of directory
-      temp_file = System.tmp_dir!() <> "/scanner_test_file"
-      File.write!(temp_file, "test")
-      result = Scanner.scan_directory(temp_file)
-      assert is_list(result)
-      File.rm!(temp_file)
-    end
-  end
-
   describe "edge cases" do
     test "handles unicode in directory path" do
       temp_dir = System.tmp_dir!() <> "/测试目录"
       File.mkdir_p!(temp_dir)
       result = Scanner.scan(temp_dir)
-      assert is_list(result)
+      # Returns {:error, "No recognizable project in ..."} for empty unicode dir
+      assert match?({:error, _}, result)
       File.rm_rf!(temp_dir)
     end
 
     test "handles very long directory path" do
       long_path = System.tmp_dir!() <> "/" <> String.duplicate("very_long_directory_name_", 100)
       result = Scanner.scan(long_path)
-      assert is_list(result)
+      # Returns {:error, ...} for non-existent long path
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
     test "handles directory with special characters" do
       temp_dir = System.tmp_dir!() <> "/test dir with spaces"
       File.mkdir_p!(temp_dir)
       result = Scanner.scan(temp_dir)
-      assert is_list(result)
+      # Returns {:error, "No recognizable project in ..."} for empty dir
+      assert match?({:error, _}, result)
       File.rm_rf!(temp_dir)
     end
   end
 
   describe "integration" do
-    test "scan_all calls scan_directory for each configured dir" do
-      # This tests the integration of scan_all with scan_directory
+    test "scan_all calls scan for each configured dir" do
+      # This tests the integration of scan_all with scan
       result = Scanner.scan_all()
       assert is_list(result)
     end

@@ -44,6 +44,8 @@ defmodule OptimalSystemAgent.A2A.TaskStream do
   @doc "Publish a task state update."
   @spec publish(String.t(), String.t(), map()) :: :ok
   def publish(task_id, status, metadata \\ %{}) when is_binary(task_id) and is_binary(status) do
+    start_time = System.monotonic_time(:microsecond)
+
     event = %{
       task_id: task_id,
       status: status,
@@ -58,6 +60,14 @@ defmodule OptimalSystemAgent.A2A.TaskStream do
       OptimalSystemAgent.PubSub,
       "a2a:tasks",
       {:a2a_task_event, event}
+    )
+
+    # Emit telemetry event for observability
+    duration = System.monotonic_time(:microsecond) - start_time
+    :telemetry.execute(
+      [:osa, :a2a, :task_stream],
+      %{duration: duration},
+      %{task_id: task_id, status: status, metadata: metadata}
     )
 
     # Emit Bus event for cross-subsystem notification

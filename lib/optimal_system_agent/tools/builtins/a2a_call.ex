@@ -82,22 +82,48 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
   # ── Actions ──────────────────────────────────────────────────────
 
   defp discover_agent(agent_url) do
+    start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url)
 
     case Req.get(url, receive_timeout: @default_timeout) do
       {:ok, %{status: 200, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Discovered agent at #{url}")
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :discover, agent_url: agent_url, status: :ok}
+        )
+
         {:ok, body}
 
       {:ok, %{status: status, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :discover, agent_url: agent_url, status: :error, http_status: status}
+        )
+
         {:error, "Agent discovery failed: HTTP #{status} — #{inspect(body)}"}
 
       {:error, reason} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :discover, agent_url: agent_url, status: :error, reason: :connection_failed}
+        )
+
         {:error, "Agent discovery failed: #{inspect(reason)}"}
     end
   end
 
   defp call_agent(agent_url, message) when is_binary(message) and message != "" do
+    start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url)
 
     case Req.post(
@@ -106,13 +132,37 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
            receive_timeout: 60_000
          ) do
       {:ok, %{status: 200, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Called agent at #{url}")
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :call, agent_url: agent_url, status: :ok}
+        )
+
         {:ok, body}
 
       {:ok, %{status: status, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :call, agent_url: agent_url, status: :error, http_status: status}
+        )
+
         {:error, "Agent call failed: HTTP #{status} — #{inspect(body)}"}
 
       {:error, reason} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :call, agent_url: agent_url, status: :error, reason: :connection_failed}
+        )
+
         {:error, "Agent call failed: #{inspect(reason)}"}
     end
   end
@@ -120,23 +170,49 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
   defp call_agent(_, _), do: {:error, "Message must be a non-empty string"}
 
   defp list_tools(agent_url) do
+    start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url <> "/tools")
 
     case Req.get(url, receive_timeout: @default_timeout) do
       {:ok, %{status: 200, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
         tools = Map.get(body, "tools", [])
         Logger.info("[A2A] Listed #{length(tools)} tools from #{agent_url}")
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :list_tools, agent_url: agent_url, status: :ok, tool_count: length(tools)}
+        )
+
         {:ok, tools}
 
       {:ok, %{status: status, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :list_tools, agent_url: agent_url, status: :error, http_status: status}
+        )
+
         {:error, "Tool listing failed: HTTP #{status} — #{inspect(body)}"}
 
       {:error, reason} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :agent_call],
+          %{duration: duration},
+          %{action: :list_tools, agent_url: agent_url, status: :error, reason: :connection_failed}
+        )
+
         {:error, "Tool listing failed: #{inspect(reason)}"}
     end
   end
 
   defp execute_tool(agent_url, tool_name, arguments) do
+    start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url <> "/tools/#{URI.encode(tool_name)}")
 
     case Req.post(
@@ -145,13 +221,37 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
            receive_timeout: @default_timeout
          ) do
       {:ok, %{status: 200, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Executed tool #{tool_name} on #{agent_url}")
+
+        :telemetry.execute(
+          [:osa, :a2a, :tool_call],
+          %{duration: duration},
+          %{agent_url: agent_url, tool_name: tool_name, status: :ok}
+        )
+
         {:ok, body}
 
       {:ok, %{status: status, body: body}} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :tool_call],
+          %{duration: duration},
+          %{agent_url: agent_url, tool_name: tool_name, status: :error, http_status: status}
+        )
+
         {:error, "Tool execution failed: HTTP #{status} — #{inspect(body)}"}
 
       {:error, reason} ->
+        duration = System.monotonic_time(:microsecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :a2a, :tool_call],
+          %{duration: duration},
+          %{agent_url: agent_url, tool_name: tool_name, status: :error, reason: :connection_failed}
+        )
+
         {:error, "Tool execution failed: #{inspect(reason)}"}
     end
   end
