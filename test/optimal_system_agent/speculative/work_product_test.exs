@@ -48,16 +48,16 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
     end
   end
 
-  describe "add_file/3" do
+  describe "add_file_create/3" do
     test "adds file to work product" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/path.txt", "content")
+      wp = WorkProduct.add_file_create(wp, "/target/path.txt", "content")
       assert length(wp.files_created) == 1
     end
 
     test "stores file entry with target_path and content" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/test.txt", "test content")
+      wp = WorkProduct.add_file_create(wp, "/target/test.txt", "test content")
       entry = hd(wp.files_created)
       assert entry.target_path == "/target/test.txt"
       assert entry.content == "test content"
@@ -65,9 +65,25 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
 
     test "creates temp file in temp_dir" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/test.txt", "content")
+      wp = WorkProduct.add_file_create(wp, "/target/test.txt", "content")
       entry = hd(wp.files_created)
       assert String.contains?(entry.temp_path, wp.temp_dir)
+    end
+  end
+
+  describe "add_file_modify/3" do
+    test "adds modified file to work product" do
+      wp = WorkProduct.new("test")
+      wp = WorkProduct.add_file_modify(wp, "/target/path.txt", "content")
+      assert length(wp.files_modified) == 1
+    end
+
+    test "stores file entry with target_path and content for modifications" do
+      wp = WorkProduct.new("test")
+      wp = WorkProduct.add_file_modify(wp, "/target/test.txt", "modified content")
+      entry = hd(wp.files_modified)
+      assert entry.target_path == "/target/test.txt"
+      assert entry.content == "modified content"
     end
   end
 
@@ -111,33 +127,28 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
   describe "promote/1" do
     test "promotes files to real locations" do
       wp = WorkProduct.new("test_promote")
-      temp_file = "/tmp/promote_test.txt"
+      target_file = "/tmp/promote_test.txt"
       content = "promoted content"
 
-      wp = WorkProduct.add_file(wp, temp_file, content)
-
-      # Create temp directory for testing
-      File.mkdir_p!(wp.temp_dir)
+      wp = WorkProduct.add_file_create(wp, target_file, content)
 
       result = WorkProduct.promote(wp)
-      case result do
-        {:ok, _} -> assert true
-        {:error, _} -> assert true
-      end
+      assert {:ok, promoted_wp} = result
+      assert promoted_wp.status == :promoted
 
       # Cleanup
-      File.rm_rf!(wp.temp_dir)
-      File.rm?(temp_file)
+      File.rm(target_file)
     end
 
     test "sets status to :promoted on success" do
-      wp = WorkProduct.new("test")
-      # Would need real file operations
-      assert true
+      wp = WorkProduct.new("test_promoted")
+      # Empty promotion (no files) should still succeed
+      assert {:ok, promoted_wp} = WorkProduct.promote(wp)
+      assert promoted_wp.status == :promoted
     end
 
     test "returns error for invalid work product" do
-      wp = %WorkProduct{id: "test", temp_dir: nil}
+      wp = %WorkProduct{id: "test", temp_dir: nil, status: :pending}
       result = WorkProduct.promote(wp)
       assert {:error, _} = result
     end
@@ -220,7 +231,7 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
   describe "edge cases" do
     test "handles empty file content" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/empty.txt", "")
+      wp = WorkProduct.add_file_create(wp, "/target/empty.txt", "")
       entry = hd(wp.files_created)
       assert entry.content == ""
     end
@@ -228,21 +239,21 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
     test "handles very large file content" do
       wp = WorkProduct.new("test")
       large_content = String.duplicate("x", 1_000_000)
-      wp = WorkProduct.add_file(wp, "/target/large.txt", large_content)
+      wp = WorkProduct.add_file_create(wp, "/target/large.txt", large_content)
       entry = hd(wp.files_created)
       assert String.length(entry.content) == 1_000_000
     end
 
     test "handles unicode in file content" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/unicode.txt", "测试内容")
+      wp = WorkProduct.add_file_create(wp, "/target/unicode.txt", "测试内容")
       entry = hd(wp.files_created)
       assert String.contains?(entry.content, "测试")
     end
 
     test "handles unicode in file path" do
       wp = WorkProduct.new("test")
-      wp = WorkProduct.add_file(wp, "/target/测试.txt", "content")
+      wp = WorkProduct.add_file_create(wp, "/target/测试.txt", "content")
       entry = hd(wp.files_created)
       assert String.contains?(entry.target_path, "测试")
     end
@@ -261,7 +272,7 @@ defmodule OptimalSystemAgent.Speculative.WorkProductTest do
       assert wp.status == :pending
 
       # Add file
-      wp = WorkProduct.add_file(wp, "/tmp/test.txt", "content")
+      wp = WorkProduct.add_file_create(wp, "/tmp/test.txt", "content")
       assert length(wp.files_created) == 1
 
       # Add message

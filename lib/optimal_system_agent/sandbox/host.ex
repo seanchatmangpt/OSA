@@ -19,13 +19,25 @@ defmodule OptimalSystemAgent.Sandbox.Host do
     working_dir = Keyword.get(opts, :working_dir)
 
     args = ["-c", command]
-    cmd_opts = [stderr_to_stdout: true, timeout: timeout]
+    # Note: System.cmd doesn't support :timeout option in Erlang/OTP 28
+    # Timeout is managed via Task.yield/2 wrapper below
+    cmd_opts = [stderr_to_stdout: true]
     cmd_opts = if working_dir, do: [{:cd, working_dir} | cmd_opts], else: cmd_opts
 
     try do
-      case System.cmd("sh", args, cmd_opts) do
-        {output, 0} -> {:ok, output}
-        {output, code} -> {:error, "Exit code #{code}: #{output}"}
+      # Wrap command execution in a Task to handle timeout
+      task = Task.async(fn ->
+        case System.cmd("sh", args, cmd_opts) do
+          {output, 0} -> {:ok, output}
+          {output, code} -> {:error, "Exit code #{code}: #{output}"}
+        end
+      end)
+
+      case Task.yield(task, timeout) do
+        {:ok, result} -> result
+        nil ->
+          Task.shutdown(task, :kill)
+          {:error, "Command timeout after #{timeout}ms"}
       end
     rescue
       e -> {:error, Exception.message(e)}

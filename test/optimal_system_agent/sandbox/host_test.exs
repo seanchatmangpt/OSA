@@ -111,7 +111,8 @@ defmodule OptimalSystemAgent.Sandbox.HostTest do
           assert {:ok, output} = Host.run_file(temp_file)
           assert String.contains?(output, "Go executed") or String.contains?(output, "go")
           File.rm!(temp_file)
-          File.rm!("/tmp/test_host_sandbox")  # Go binary
+          # Clean up Go binary if it exists (location varies by go version)
+          if File.exists?("/tmp/test_host_sandbox"), do: File.rm!("/tmp/test_host_sandbox")
         _ ->
           :skip
       end
