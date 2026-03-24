@@ -1,6 +1,6 @@
-defmodule OptimalSystemAgent.A2ATelemetryChicagoTDDTest do
+defmodule OptimalSystemAgent.A2ATelemetryRealTest do
   @moduledoc """
-  Chicago TDD: A2A Telemetry Emission Tests.
+  A2A Telemetry Emission Tests.
 
   NO MOCKS. Tests verify REAL telemetry emission from A2A modules.
 
@@ -28,7 +28,7 @@ defmodule OptimalSystemAgent.A2ATelemetryChicagoTDDTest do
   # A2A TaskStream Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: A2A TaskStream — Telemetry Emission" do
+  describe "A2A TaskStream — Telemetry Emission" do
     test "A2A: TaskStream.publish emits telemetry event" do
       test_pid = self()
       handler_name = :"test_a2a_task_stream_#{:erlang.unique_integer()}"
@@ -109,7 +109,7 @@ defmodule OptimalSystemAgent.A2ATelemetryChicagoTDDTest do
   # A2A Call Tool Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: A2A Call Tool — Telemetry Emission" do
+  describe "A2A Call Tool — Telemetry Emission" do
     test "A2A: A2ACall discover_agent emits telemetry" do
       test_pid = self()
       handler_name = :"test_a2a_discover_#{:erlang.unique_integer()}"
@@ -183,7 +183,7 @@ defmodule OptimalSystemAgent.A2ATelemetryChicagoTDDTest do
   # A2A Integration Telemetry Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: A2A Integration — End-to-End Telemetry" do
+  describe "A2A Integration — End-to-End Telemetry" do
     test "A2A: Full agent call workflow emits telemetry" do
       test_pid = self()
       handler_name = :"test_a2a_e2e_#{:erlang.unique_integer()}"

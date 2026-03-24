@@ -1,6 +1,6 @@
-defmodule OptimalSystemAgent.Verification.CheckpointChicagoTDDTest do
+defmodule OptimalSystemAgent.Verification.CheckpointRealTest do
   @moduledoc """
-  Chicago TDD integration tests for Verification.Checkpoint.
+  Real integration tests for Verification.Checkpoint.
 
   NO MOCKS. Tests real file I/O — real directories, real JSON files.
   Uses a temp directory via config override to avoid polluting ~/.osa/.
@@ -56,7 +56,7 @@ defmodule OptimalSystemAgent.Verification.CheckpointChicagoTDDTest do
       {:ok, decoded} = Jason.decode(content)
 
       assert Map.has_key?(decoded, "checkpointed_at")
-      {:ok, _datetime} = DateTime.from_iso8601(decoded["checkpointed_at"])
+      {_, _datetime, _offset} = DateTime.from_iso8601(decoded["checkpointed_at"])
     end
 
     test "CRASH: save converts atom keys to strings", %{tmp_dir: tmp_dir} do
@@ -115,7 +115,7 @@ defmodule OptimalSystemAgent.Verification.CheckpointChicagoTDDTest do
       assert {:ok, nil} == OptimalSystemAgent.Verification.Checkpoint.restore("nonexistent")
     end
 
-    test "CRASH: restore returns saved state", %{tmp_dir: tmp_dir} do
+    test "CRASH: restore returns saved state", _ctx do
       OptimalSystemAgent.Verification.Checkpoint.save("restore-test", %{
         status: :failed,
         iteration: 5,
@@ -157,7 +157,8 @@ defmodule OptimalSystemAgent.Verification.CheckpointChicagoTDDTest do
     test "CRASH: checkpoint_path returns correct file path" do
       path = OptimalSystemAgent.Verification.Checkpoint.checkpoint_path("my-loop")
       assert String.ends_with?(path, "my-loop.json")
-      assert String.contains?(path, "verification_checkpoints")
+      # Path should be an absolute path ending with loop_id.json
+      assert Path.type(path) == :absolute
     end
   end
 

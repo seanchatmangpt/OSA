@@ -1,6 +1,6 @@
-defmodule OptimalSystemAgent.Verification.ConfidenceChicagoTDDTest do
+defmodule OptimalSystemAgent.Verification.ConfidenceRealTest do
   @moduledoc """
-  Chicago TDD integration tests for Verification.Confidence.
+  Real integration tests for Verification.Confidence.
 
   NO MOCKS. Tests real state transitions with real struct manipulation.
   Pure logic module — no GenServer, no external dependencies.
