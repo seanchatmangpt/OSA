@@ -348,11 +348,11 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
     provider = Application.get_env(:optimal_system_agent, :default_provider, "ollama")
     case to_string(provider) do
       p when p in ["ollama", "ollama_cloud"] ->
-        Application.get_env(:optimal_system_agent, :ollama_model) || "llama3.2:latest"
+        Application.get_env(:optimal_system_agent, :ollama_model) || "openai/gpt-oss-20b"
       "anthropic" ->
         Application.get_env(:optimal_system_agent, :anthropic_model) || "claude-sonnet-4-20250514"
       _ ->
-        Application.get_env(:optimal_system_agent, :default_model) || "llama3.2:latest"
+        Application.get_env(:optimal_system_agent, :default_model) || "openai/gpt-oss-20b"
     end
   end
 end

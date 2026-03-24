@@ -15,7 +15,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DataRoutes do
   require Logger
 
   alias OptimalSystemAgent.SDK.Memory
-  alias OptimalSystemAgent.Providers
   alias OptimalSystemAgent.Agent.Scheduler
   alias OptimalSystemAgent.Machines
 
@@ -188,7 +187,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DataRoutes do
 
     model =
       Application.get_env(:optimal_system_agent, :default_model) ||
-        Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest")
+        Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b")
 
     model_name = to_string(model)
 
@@ -311,7 +310,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DataRoutes do
 
     current_model =
       Application.get_env(:optimal_system_agent, :default_model) ||
-        Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest")
+        Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b")
 
     ollama_models =
       try do

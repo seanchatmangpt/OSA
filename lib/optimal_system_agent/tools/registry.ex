@@ -95,7 +95,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
         case Map.get(mcp_tools, tool_name) do
           nil -> {:error, "Unknown tool: #{tool_name}"}
-          _mcp_info -> {:error, "MCP tools not available in this build"}
+          %{
+            server_name: server_name,
+            original_name: original_name
+          } ->
+            OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
         end
 
       mod ->
@@ -121,7 +125,12 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
         case Map.get(mcp_tools, tool_name) do
           nil -> {:error, "Unknown tool: #{tool_name}"}
-          _mcp_info -> {:error, "MCP tools not available in this build"}
+
+          %{
+            server_name: server_name,
+            original_name: original_name
+          } ->
+            OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
         end
 
       mod ->
@@ -173,8 +182,10 @@ defmodule OptimalSystemAgent.Tools.Registry do
     end
   end
 
-  @doc "Discover MCP tools from all running servers and register them. No-op in this build."
-  def register_mcp_tools, do: :ok
+  @doc "Discover MCP tools from all running servers and register them."
+  def register_mcp_tools do
+    OptimalSystemAgent.MCP.Client.register_tools()
+  end
 
   @doc "List tool and skill documentation (for context injection)."
   def list_docs do
@@ -436,7 +447,12 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
           case Map.get(mcp_tools, tool_name) do
             nil -> {:error, "Unknown tool: #{tool_name}"}
-            _mcp_info -> {:error, "MCP tools not available in this build"}
+
+            %{
+              server_name: server_name,
+              original_name: original_name
+            } ->
+              OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
           end
 
         mod ->
@@ -491,7 +507,8 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "peer_review" => OptimalSystemAgent.Tools.Builtins.PeerReview,
       "peer_claim_region" => OptimalSystemAgent.Tools.Builtins.PeerClaimRegion,
       "peer_negotiate_task" => OptimalSystemAgent.Tools.Builtins.PeerNegotiateTask,
-      "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery
+      "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery,
+      "a2a_call" => OptimalSystemAgent.Tools.Builtins.A2ACall
     }
   end
 

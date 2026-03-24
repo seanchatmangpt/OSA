@@ -722,4 +722,31 @@ defmodule OptimalSystemAgent.Agent.Compactor do
   defp compactor_llm_enabled? do
     Application.get_env(:optimal_system_agent, :compactor_llm_enabled, true)
   end
+
+  # ---------------------------------------------------------------------------
+  # Utility functions (for tests and external use)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Compact messages to fit within a token budget.
+
+  Returns a (possibly reduced) message list that fits within max_tokens.
+  """
+  def compact_messages(messages, max_tokens) when is_list(messages) do
+    current_tokens = estimate_tokens(messages)
+
+    if current_tokens <= max_tokens do
+      messages
+    else
+      # Remove oldest messages (except system) until under limit
+      messages
+      |> Enum.reverse()
+      |> Enum.drop_while(fn msg ->
+        remaining = Enum.drop(messages, [msg])
+        estimate_tokens(remaining) > max_tokens and msg.role != "system"
+      end)
+      |> Enum.reverse()
+    end
+  end
 end
+

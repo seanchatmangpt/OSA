@@ -49,7 +49,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   plug(:match)
   plug(:dispatch)
 
-  @gen_server_timeout 5000
 
   # ══════════════════════════════════════════════════════════════════════
   # Fingerprint Endpoints
@@ -551,8 +550,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     case result do
       :ok -> :ok
-      {:ok, _} -> :ok
-      {:error, reason} -> {:error, reason}
       other -> handle_result(other)
     end
   rescue

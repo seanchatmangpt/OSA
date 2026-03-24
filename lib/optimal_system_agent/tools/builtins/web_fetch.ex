@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Tools.Builtins.WebFetch do
   @behaviour OptimalSystemAgent.Tools.Behaviour
 
-  @max_download_bytes 1_048_576
   @default_max_length 10_000
 
   @impl true

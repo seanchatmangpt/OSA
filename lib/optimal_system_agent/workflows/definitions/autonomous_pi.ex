@@ -54,7 +54,7 @@ defmodule OptimalSystemAgent.Workflows.Definitions.AutonomousPI do
   Advance to the next stage in the workflow.
   """
   @spec advance_stage(t()) :: {:ok, t()} | {:error, :already_complete}
-  def advance_stage(%__MODULE__{current_stage: :iteration} = workflow) do
+  def advance_stage(%__MODULE__{current_stage: :iteration} = _workflow) do
     {:error, :already_complete}
   end
 

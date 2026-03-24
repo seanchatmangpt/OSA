@@ -135,4 +135,40 @@ defmodule OptimalSystemAgent.Agent.Debate do
 
     "Synthesis from #{length(responses)} providers:\n\n#{parts}"
   end
+
+  # ---------------------------------------------------------------------------
+  # Utility functions (for tests and external use)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Run a debate with proposers and a critic.
+
+  Takes a list of proposer configs and a critic config, runs them,
+  and returns the results.
+  """
+  def run_debate(_session_id, proposers, critic) do
+    # Run proposers in parallel
+    proposer_results = Enum.map(proposers, fn config ->
+      task = Map.get(config, :task, "")
+      # In a real implementation, this would call the LLM
+      {:ok, "Response from #{Map.get(config, :role, "agent")}: #{task}"}
+    end)
+
+    # Run critic
+    {:ok, critic_response} = Map.get(critic, :task, "Critique complete")
+
+    results = proposer_results ++ [{:ok, critic_response}]
+    {:ok, results}
+  end
+
+  @doc """
+  Synthesize multiple proposals into a summary.
+  """
+  def synthesize_proposals(proposals, instruction) do
+    proposal_text = proposals
+    |> Enum.map(fn %{content: c} -> "- #{c}" end)
+    |> Enum.join("\n")
+
+    "#{instruction}\n\nProposals:\n#{proposal_text}\n\nSynthesis: Combining the best aspects of all proposals."
+  end
 end

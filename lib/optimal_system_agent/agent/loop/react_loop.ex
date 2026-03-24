@@ -288,98 +288,101 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
     end
   end
 
-  # Recover from tool_call_format_failed errors (e.g., provider returning XML-style tool calls)
-  defp handle_result({:error, {:tool_call_format_failed, %{recovered_tool_calls: tool_calls}}}, state, _context) do
-    # Track recovery attempts per session
-    recovery_count = get_in(state, [:metadata, :tool_call_recovery_count]) || 0
+  # LLM error — compact and retry or surface error
+  defp handle_result({:error, reason}, state, _context) do
+    # Handle tool_call_format_failed with recovery attempt
+    case reason do
+      {:tool_call_format_failed, recovery_data} ->
+        handle_tool_call_format_failed(recovery_data, state)
 
-    if recovery_count >= 3 do
-      # Too many recovery attempts - attempt healing before giving up
-      Logger.warning("[ReactLoop] Too many tool call format recovery attempts (session #{state.session_id})")
+      _ ->
+        reason_str = if is_binary(reason), do: reason, else: inspect(reason)
 
-      error = {:tool_call_format_failed, %{recovered_tool_calls: tool_calls}}
-      {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
+        if context_overflow?(reason_str) and state.overflow_retries < 3 do
+          Logger.warning("Context overflow — compacting and retrying (overflow_retry #{state.overflow_retries + 1}/3, iteration #{state.iteration})")
+          compacted = OptimalSystemAgent.Agent.Compactor.maybe_compact(state.messages)
+          state = %{state | messages: compacted, overflow_retries: state.overflow_retries + 1}
+          run(state)
+        else
+          if context_overflow?(reason_str) do
+            Logger.error("Context overflow after 3 compaction attempts (iteration #{state.iteration})")
 
-      state = maybe_request_healing(state, error, retryable?)
-      {"I'm having trouble with tool calls. Please try again.", state}
-    else
-      Logger.info("[ReactLoop] Recovering tool calls from format error (attempt #{recovery_count + 1}/3)")
+            error = {:context_overflow, reason}
+            {_cat, _sev, retryable?} = ErrorClassifier.classify(reason_str)
+            state = maybe_request_healing(state, error, retryable?)
 
-      # Build an assistant message with the recovered tool calls in proper format
-      alias OptimalSystemAgent.Providers.OpenAICompat
+            {"I've exceeded the context window. Try breaking your request into smaller parts.", state}
+          else
+            Logger.error("LLM call failed: #{reason_str}")
 
-      assistant_msg = %{
-        role: "assistant",
-        content: "",
-        tool_calls: Enum.map(tool_calls, fn tc ->
-          %{
-            "id" => tc[:id] || OpenAICompat.generate_tool_call_id(),
-            "type" => "function",
-            "function" => %{
-              "name" => tc[:name],
-              "arguments" => Jason.encode!(tc[:arguments])
-            }
-          }
-        end)
-      }
+            {_cat, _sev, retryable?} = ErrorClassifier.classify(reason)
+            state = maybe_request_healing(state, reason, retryable?)
 
-      # Optionally add system nudge after multiple attempts
-      messages = if recovery_count >= 1 do
-        nudge = %{
-          role: "system",
-          content: "Note: Please use the JSON tool_calls format for function calls, not XML format like <function=name>."
-        }
-        state.messages ++ [nudge, assistant_msg]
-      else
-        state.messages ++ [assistant_msg]
-      end
-
-      # Update state and continue execution
-      new_state = %{state |
-        messages: messages,
-        tool_call_count: state.tool_call_count + length(tool_calls),
-        metadata: Map.put(state.metadata || %{}, :tool_call_recovery_count, recovery_count + 1)
-      }
-
-      run(new_state)
+            {"I encountered an error processing your request. Please try again.", state}
+          end
+        end
     end
   end
 
-  # Fallback: if recovery data is malformed, treat as generic error
-  defp handle_result({:error, {:tool_call_format_failed, _} = error}, state, _context) do
-    Logger.warning("[ReactLoop] Failed to recover tool calls from format error - malformed recovery data")
+  # Handle tool_call_format_failed recovery
+  defp handle_tool_call_format_failed(recovery_data, state) do
+    tool_calls = Map.get(recovery_data, :recovered_tool_calls)
 
-    {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
-    state = maybe_request_healing(state, error, retryable?)
-    {"I encountered an error processing your request. Please try again.", state}
-  end
+    if is_list(tool_calls) and tool_calls != [] do
+      recovery_count = get_in(state, [:metadata, :tool_call_recovery_count]) || 0
 
-  # LLM error — compact and retry or surface error
-  defp handle_result({:error, reason}, state, _context) do
-    reason_str = if is_binary(reason), do: reason, else: inspect(reason)
+      if recovery_count >= 3 do
+        Logger.warning("[ReactLoop] Too many tool call format recovery attempts (session #{state.session_id})")
 
-    if context_overflow?(reason_str) and state.overflow_retries < 3 do
-      Logger.warning("Context overflow — compacting and retrying (overflow_retry #{state.overflow_retries + 1}/3, iteration #{state.iteration})")
-      compacted = OptimalSystemAgent.Agent.Compactor.maybe_compact(state.messages)
-      state = %{state | messages: compacted, overflow_retries: state.overflow_retries + 1}
-      run(state)
-    else
-      if context_overflow?(reason_str) do
-        Logger.error("Context overflow after 3 compaction attempts (iteration #{state.iteration})")
+        error = {:tool_call_format_failed, recovery_data}
+        {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
 
-        error = {:context_overflow, reason}
-        {_cat, _sev, retryable?} = ErrorClassifier.classify(reason_str)
         state = maybe_request_healing(state, error, retryable?)
-
-        {"I've exceeded the context window. Try breaking your request into smaller parts.", state}
+        {"I'm having trouble with tool calls. Please try again.", state}
       else
-        Logger.error("LLM call failed: #{reason_str}")
+        Logger.info("[ReactLoop] Recovering tool calls from format error (attempt #{recovery_count + 1}/3)")
 
-        {_cat, _sev, retryable?} = ErrorClassifier.classify(reason)
-        state = maybe_request_healing(state, reason, retryable?)
+        alias OptimalSystemAgent.Providers.OpenAICompat
 
-        {"I encountered an error processing your request. Please try again.", state}
+        assistant_msg = %{
+          role: "assistant",
+          content: "",
+          tool_calls: Enum.map(tool_calls, fn tc ->
+            %{
+              "id" => tc[:id] || OpenAICompat.generate_tool_call_id(),
+              "type" => "function",
+              "function" => %{
+                "name" => tc[:name],
+                "arguments" => Jason.encode!(tc[:arguments])
+              }
+            }
+          end)
+        }
+
+        messages = if recovery_count >= 1 do
+          nudge = %{
+            role: "system",
+            content: "Note: Please use the JSON tool_calls format for function calls, not XML format like <function=name>."
+          }
+          state.messages ++ [nudge, assistant_msg]
+        else
+          state.messages ++ [assistant_msg]
+        end
+
+        new_state = %{state |
+          messages: messages,
+          tool_call_count: state.tool_call_count + length(tool_calls),
+          metadata: Map.put(state.metadata || %{}, :tool_call_recovery_count, recovery_count + 1)
+        }
+
+        run(new_state)
       end
+    else
+      Logger.warning("[ReactLoop] Failed to recover tool calls from format error - malformed recovery data")
+      error = {:tool_call_format_failed, recovery_data}
+      {_cat, _sev, retryable?} = ErrorClassifier.classify(error)
+      state = maybe_request_healing(state, error, retryable?)
+      {"I encountered an error processing your request. Please try again.", state}
     end
   end
 

@@ -302,7 +302,7 @@ defmodule OptimalSystemAgent.Providers.Registry do
 
       {:error, {:rate_limited, retry_after}} = _rate_err ->
         HealthChecker.record_rate_limited(provider, retry_after)
-        try_fallback_chain(provider, messages, opts, "rate-limited (HTTP 429)")
+        {:error, {:rate_limited, retry_after}}
 
       {:error, {:tool_call_format_failed, _}} ->
         # This is a model generation error (XML instead of JSON tool calls), not a
@@ -315,56 +315,8 @@ defmodule OptimalSystemAgent.Providers.Registry do
 
       {:error, reason} = err ->
         HealthChecker.record_failure(provider, reason)
-        fallback_chain = Application.get_env(:optimal_system_agent, :fallback_chain, [])
-
-        remaining_chain =
-          fallback_chain
-          |> Enum.drop_while(&(&1 == provider))
-          |> then(fn
-            chain when chain == fallback_chain -> chain
-            [_ | rest] -> rest
-            [] -> []
-          end)
-          |> filter_boot_excluded_providers()
-          |> Enum.filter(&HealthChecker.is_available?/1)
-
-        if remaining_chain == [] do
-          Logger.error("Provider #{provider} failed, no fallback configured: #{reason}")
-          err
-        else
-          Logger.warning(
-            "Provider #{provider} failed: #{reason}. Trying fallback chain: #{inspect(remaining_chain)}"
-          )
-
-          chat_with_fallback(messages, remaining_chain, opts)
-        end
-    end
-  end
-
-  defp try_fallback_chain(failed_provider, messages, opts, reason) do
-    fallback_chain = Application.get_env(:optimal_system_agent, :fallback_chain, [])
-
-    remaining_chain =
-      fallback_chain
-      |> Enum.drop_while(&(&1 == failed_provider))
-      |> then(fn
-        chain when chain == fallback_chain -> chain
-        [_ | rest] -> rest
-        [] -> []
-      end)
-      |> filter_boot_excluded_providers()
-      |> Enum.filter(&HealthChecker.is_available?/1)
-
-    if remaining_chain == [] do
-      Logger.error(
-        "Provider #{failed_provider} #{reason}, no available fallback in chain: #{inspect(fallback_chain)}"
-      )
-      {:error, "Provider #{failed_provider} #{reason} and no fallback available"}
-    else
-      Logger.warning(
-        "Provider #{failed_provider} #{reason}, trying next available: #{inspect(remaining_chain)}"
-      )
-      chat_with_fallback(messages, remaining_chain, opts)
+        Logger.error("Provider #{provider} failed: #{inspect(reason)}")
+        err
     end
   end
 
@@ -388,41 +340,8 @@ defmodule OptimalSystemAgent.Providers.Registry do
         :ok
 
       {:error, reason} ->
-        fallback_chain = Application.get_env(:optimal_system_agent, :fallback_chain, [])
-
-        remaining_chain =
-          fallback_chain
-          |> Enum.drop_while(&(&1 == provider))
-          |> then(fn
-            chain when chain == fallback_chain -> chain
-            [_ | rest] -> rest
-            [] -> []
-          end)
-
-        if remaining_chain == [] do
-          Logger.error("Provider #{provider} stream failed, no fallback: #{reason}")
-          {:error, reason}
-        else
-          Logger.warning(
-            "Provider #{provider} stream failed: #{reason}. Trying fallback chain: #{inspect(remaining_chain)}"
-          )
-
-          # Try each fallback provider
-          Enum.reduce_while(remaining_chain, {:error, reason}, fn fb_provider, _acc ->
-            case Map.get(@providers, fb_provider) do
-              nil ->
-                {:cont, {:error, "Unknown fallback provider: #{fb_provider}"}}
-
-              fb_module ->
-                case try_stream_provider(fb_module, messages, callback, opts) do
-                  :ok -> {:halt, :ok}
-                  {:error, r} ->
-                    Logger.warning("Fallback stream provider #{fb_provider} failed: #{r}")
-                    {:cont, {:error, r}}
-                end
-            end
-          end)
-        end
+        Logger.error("Provider #{provider} stream failed: #{inspect(reason)}")
+        {:error, reason}
     end
   end
 
@@ -547,9 +466,7 @@ defmodule OptimalSystemAgent.Providers.Registry do
     "deepseek-chat" => 128_000,
     "deepseek-reasoner" => 128_000,
     # Groq (context varies by model)
-    "llama-3.3-70b-versatile" => 128_000,
-    "llama-3.1-8b-instant" => 131_072,
-    "mixtral-8x7b-32768" => 32_768,
+    "openai/gpt-oss-20b" => 131_072,
     # Mistral
     "mistral-large-latest" => 128_000,
     "mistral-small-latest" => 128_000,

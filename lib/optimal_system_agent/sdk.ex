@@ -524,11 +524,16 @@ defmodule OptimalSystemAgent.SDK do
   # ── MCP ──────────────────────────────────────────────────────────────
 
   defmodule MCP do
-    @moduledoc "SDK MCP server management facade. MCP.Manager not yet implemented."
+    @moduledoc "SDK MCP server management facade."
 
-    def list_servers, do: []
-    def list_tools, do: []
-    def reload_servers, do: :ok
+    def list_servers, do: OptimalSystemAgent.MCP.Client.list_servers()
+
+    def list_tools do
+      OptimalSystemAgent.Tools.Registry.list_tools()
+      |> Enum.filter(&String.starts_with?(&1.name, "mcp_"))
+    end
+
+    def reload_servers, do: OptimalSystemAgent.MCP.Client.reload_servers()
   end
 
   # ── Supervisor ───────────────────────────────────────────────────────

@@ -64,8 +64,12 @@ defmodule OptimalSystemAgent.Channels.Telegram do
   @doc """
   Handle a single parsed Telegram update delivered via webhook.
   """
+  @spec handle_update(map()) :: :ok | {:error, :not_started}
   def handle_update(update) when is_map(update) do
-    GenServer.cast(__MODULE__, {:webhook_update, update})
+    case GenServer.whereis(__MODULE__) do
+      nil -> {:error, :not_started}
+      _pid -> GenServer.cast(__MODULE__, {:webhook_update, update})
+    end
   end
 
   # ── GenServer callbacks ───────────────────────────────────────────────

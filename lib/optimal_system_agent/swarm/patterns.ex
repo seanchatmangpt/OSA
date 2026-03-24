@@ -257,7 +257,7 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
         proposer_id = Keyword.get(opts, :proposer_id, "system")
 
         # Initialize proposal
-        {:ok, proposal} = OptimalSystemAgent.Consensus.Proposal.new(
+        proposal = OptimalSystemAgent.Consensus.Proposal.new(
           proposal_type,
           proposal_content,
           proposer_id
@@ -326,12 +326,12 @@ Your task: Evaluate and vote on this proposal.
             case OptimalSystemAgent.Consensus.Proposal.calculate_result(proposal_with_votes) do
               {:ok, :approved} ->
                 # Phase 4: Commit the proposal
-                {:ok, committed_proposal} = OptimalSystemAgent.Consensus.HotStuff.commit(fleet_id, proposal_with_votes)
+                _commit_result = OptimalSystemAgent.Consensus.HotStuff.commit(fleet_id, proposal_with_votes)
 
                 Logger.info("[Swarm.Patterns] BFT consensus reached: APPROVED")
 
                 # Collect all agent results with approval notice
-                results_with_notice = Enum.map(vote_results, fn {agent_id, {:ok, response}} ->
+                results_with_notice = Enum.map(vote_results, fn {_agent_id, {:ok, response}} ->
                   response_with_notice = response <> "\n\n[BFT CONSENSUS: APPROVED - 2/3 supermajority reached]"
                   {:ok, response_with_notice}
                 end)

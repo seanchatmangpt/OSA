@@ -76,6 +76,10 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     GenServer.call(__MODULE__, {:detect_drift, org_config}, 30_000)
   end
 
+  def detect_drift(nil) do
+    {:error, :org_config_is_nil}
+  end
+
   @doc """
   Propose structural mutations based on org config and a prior drift analysis.
 
@@ -298,7 +302,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       :ets.tab2list(@proposals_table)
       |> Enum.map(fn {_id, record} -> record end)
       |> maybe_filter_by_status(status_filter)
-      |> Enum.sort_by(& &1.created_at, {:desc, DateTime})
+      |> Enum.sort_by(& &1.created_at, :desc)
 
     {:reply, proposals, state}
   end
@@ -801,14 +805,17 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
           reason: "Auto-approved #{Float.round(approval_skip_rate * 100, 0)}% of requests"
         }
       )
-      |> maybe_add_change(
-        length(independent_pairs) > 0,
-        %{
-          type: :parallelize,
-          steps: hd(independent_pairs),
-          reason: "Independent checks detected from execution timing analysis"
-        }
-      )
+      |> then(fn acc ->
+        if length(independent_pairs) > 0 do
+          [%{
+            type: :parallelize,
+            steps: hd(independent_pairs),
+            reason: "Independent checks detected from execution timing analysis"
+          } | acc]
+        else
+          acc
+        end
+      end)
       |> maybe_add_change(
         bug_before_review_rate > 0.1,
         %{
@@ -961,78 +968,81 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp compute_role_utilization(teams, execution_data) do
-    if map_size(teams) == 0, do: 0.5
+    if map_size(teams) == 0 do
+      0.5
+    else
+      utilizations =
+        teams
+        |> Enum.map(fn {team_name, _config} ->
+          load = compute_team_load(team_name, execution_data)
+          cond do
+            load < 0.3 -> load
+            load > 1.5 -> max(0.0, 1.0 - (load - 1.5) * 0.5)
+            true -> 1.0 - abs(load - 0.75) * 0.8
+          end
+        end)
 
-    utilizations =
-      teams
-      |> Enum.map(fn {team_name, _config} ->
-        load = compute_team_load(team_name, execution_data)
-        # Optimal utilization is between 0.6 and 0.85
-        cond do
-          load < 0.3 -> load  # underutilized
-          load > 1.5 -> max(0.0, 1.0 - (load - 1.5) * 0.5)  # overloaded penalty
-          true -> 1.0 - abs(load - 0.75) * 0.8  # proximity to sweet spot
-        end
-      end)
-
-    if utilizations == [], do: 0.5, else: Float.round(Enum.sum(utilizations) / length(utilizations), 2)
+      if utilizations == [], do: 0.5, else: Float.round(Enum.sum(utilizations) / length(utilizations), 2)
+    end
   end
 
   defp compute_workflow_efficiency(workflows, execution_data) do
-    if map_size(workflows) == 0, do: 0.5
+    if map_size(workflows) == 0 do
+      0.5
+    else
+      efficiencies =
+        workflows
+        |> Enum.map(fn {workflow_name, _config} ->
+          cycle_times = get_cycle_times(workflow_name, execution_data)
 
-    efficiencies =
-      workflows
-      |> Enum.map(fn {workflow_name, _config} ->
-        cycle_times = get_cycle_times(workflow_name, execution_data)
+          if length(cycle_times) > 1 do
+            avg = Enum.sum(cycle_times) / length(cycle_times)
+            variance = cycle_times |> Enum.map(&(&1 - avg)) |> Enum.map(fn x -> x * x end) |> Enum.sum() |> Kernel./(length(cycle_times))
+            std_dev = :math.sqrt(variance)
+            cv = if avg == 0, do: 1.0, else: std_dev / avg
+            max(0.0, 1.0 - cv)
+          else
+            0.5
+          end
+        end)
 
-        if length(cycle_times) > 1 do
-          avg = Enum.sum(cycle_times) / length(cycle_times)
-          variance = cycle_times |> Enum.map(&(&1 - avg)) |> Enum.map(fn x -> x * x end) |> Enum.sum() |> Kernel./(length(cycle_times))
-          std_dev = :math.sqrt(variance)
-          # Low coefficient of variation = high efficiency
-          cv = if avg == 0, do: 1.0, else: std_dev / avg
-          max(0.0, 1.0 - cv)
-        else
-          0.5
-        end
-      end)
-
-    if efficiencies == [], do: 0.5, else: Float.round(Enum.sum(efficiencies) / length(efficiencies), 2)
+      if efficiencies == [], do: 0.5, else: Float.round(Enum.sum(efficiencies) / length(efficiencies), 2)
+    end
   end
 
   defp compute_communication_flow(org_config, execution_data) do
     teams = Map.get(org_config, :teams, %{})
 
-    if map_size(teams) < 2, do: 0.8
-
-    # Measure cross-team interaction frequency
-    team_names = Map.keys(teams)
-    total_interactions = count_cross_team_interactions(team_names, execution_data)
-
-    # Ideal: each team interacts with every other team at least occasionally
-    max_possible = length(team_names) * (length(team_names) - 1)
-
-    if max_possible == 0 do
+    if map_size(teams) < 2 do
       0.8
     else
-      interaction_ratio = total_interactions / max_possible
-      min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
+      team_names = Map.keys(teams)
+      total_interactions = count_cross_team_interactions(team_names, execution_data)
+      max_possible = length(team_names) * (length(team_names) - 1)
+
+      if max_possible == 0 do
+        0.8
+      else
+        interaction_ratio = total_interactions / max_possible
+        min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
+      end
     end
   end
 
   defp compute_process_compliance(workflows, execution_data) do
-    if map_size(workflows) == 0, do: 0.5
+    if map_size(workflows) == 0 do
+      0.5
+    else
+      compliances =
+        workflows
+        |> Enum.map(fn {workflow_name, workflow_config} ->
+          required = Map.get(workflow_config, :required_steps, [])
+          bypass_rate = compute_bypass_rate(workflow_name, required, execution_data)
+          1.0 - bypass_rate
+        end)
 
-    compliances =
-      workflows
-      |> Enum.map(fn {workflow_name, workflow_config} ->
-        required = Map.get(workflow_config, :required_steps, [])
-        bypass_rate = compute_bypass_rate(workflow_name, required, execution_data)
-        1.0 - bypass_rate
-      end)
-
-    if compliances == [], do: 0.5, else: Float.round(Enum.sum(compliances) / length(compliances), 2)
+      if compliances == [], do: 0.5, else: Float.round(Enum.sum(compliances) / length(compliances), 2)
+    end
   end
 
   defp generate_health_recommendations(dimensions) do
@@ -1120,17 +1130,19 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp compute_bypass_rate(_workflow_name, required_steps, execution_data) do
-    if required_steps == [] or execution_data == [], do: 0.0
+    if required_steps == [] or execution_data == [] do
+      0.0
+    else
+      total = length(execution_data)
+      bypassed =
+        execution_data
+        |> Enum.count(fn exec ->
+          completed_steps = Map.get(exec, :completed_steps, [])
+          required_steps -- completed_steps != []
+        end)
 
-    total = length(execution_data)
-    bypassed =
-      execution_data
-      |> Enum.count(fn exec ->
-        completed_steps = Map.get(exec, :completed_steps, [])
-        required_steps -- completed_steps != []
-      end)
-
-    bypassed / total
+      bypassed / total
+    end
   end
 
   defp compute_information_yield(process_name, execution_data) do
@@ -1138,36 +1150,42 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       execution_data
       |> Enum.filter(&Map.get(&1, :process) == process_name)
 
-    if process_execs == [], do: 0.5
+    if process_execs == [] do
+      0.5
+    else
+      informative =
+        process_execs
+        |> Enum.count(fn exec ->
+          Map.get(exec, :produced_new_info, false) or
+            Map.get(exec, :action_items_generated, 0) > 0 or
+            Map.get(exec, :decisions_made, 0) > 0
+        end)
 
-    informative =
-      process_execs
-      |> Enum.count(fn exec ->
-        Map.get(exec, :produced_new_info, false) or
-          Map.get(exec, :action_items_generated, 0) > 0 or
-          Map.get(exec, :decisions_made, 0) > 0
-      end)
-
-    informative / length(process_execs)
+      informative / length(process_execs)
+    end
   end
 
   defp compute_skill_match_rate(role_name, required_skills, execution_data) do
-    if required_skills == [] or execution_data == [], do: 0.8
+    if required_skills == [] or execution_data == [] do
+      0.8
+    else
+      role_tasks =
+        execution_data
+        |> Enum.filter(&Map.get(&1, :role) == role_name)
 
-    role_tasks =
-      execution_data
-      |> Enum.filter(&Map.get(&1, :role) == role_name)
+      if role_tasks == [] do
+        0.8
+      else
+        matched =
+          role_tasks
+          |> Enum.count(fn task ->
+            task_skills = Map.get(task, :skills_used, [])
+            Enum.any?(required_skills, &(&1 in task_skills))
+          end)
 
-    if role_tasks == [], do: 0.8
-
-    matched =
-      role_tasks
-      |> Enum.count(fn task ->
-        task_skills = Map.get(task, :skills_used, [])
-        Enum.any?(required_skills, &(&1 in task_skills))
-      end)
-
-    matched / length(role_tasks)
+        matched / length(role_tasks)
+      end
+    end
   end
 
   defp get_cycle_times(workflow_name, execution_data) do
@@ -1240,9 +1258,10 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     end)
   end
 
+  defp count_missing_checks([]), do: 0
+
   defp count_missing_checks(execution_history) do
     total = length(execution_history)
-    if total == 0, do: 0
 
     failures_after_review =
       execution_history
@@ -1253,18 +1272,22 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     if failures_after_review / total > 0.1, do: 1, else: 0
   end
 
+  defp compute_approval_auto_rate([]), do: 0.0
+
   defp compute_approval_auto_rate(execution_history) do
     approvals =
       execution_history
       |> Enum.filter(&Map.get(&1, :required_approval, false))
 
-    if approvals == [], do: 0.0
+    if approvals == [] do
+      0.0
+    else
+      auto_approved =
+        approvals
+        |> Enum.count(&Map.get(&1, :auto_approved, false))
 
-    auto_approved =
-      approvals
-      |> Enum.count(&Map.get(&1, :auto_approved, false))
-
-    auto_approved / length(approvals)
+      auto_approved / length(approvals)
+    end
   end
 
   defp detect_independent_steps(execution_history) do
@@ -1297,10 +1320,10 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     |> Enum.take(3)
   end
 
+  defp compute_bug_before_review_rate([]), do: 0.0
+
   defp compute_bug_before_review_rate(execution_history) do
     total = length(execution_history)
-    if total == 0, do: 0.0
-
     bugs_found =
       execution_history
       |> Enum.count(&Map.get(&1, :bugs_before_review, 0) > 0)

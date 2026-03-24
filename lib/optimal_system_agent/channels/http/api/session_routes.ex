@@ -111,7 +111,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
         |> put_resp_content_type("application/json")
         |> send_resp(201, body)
 
-      {:error, _reason} ->
+      other ->
+        Logger.error("[SessionRoutes] Unexpected Session.create result: #{inspect(other)}")
         json_error(conn, 500, "session_create_failed", "An internal error occurred while creating the session")
     end
   end

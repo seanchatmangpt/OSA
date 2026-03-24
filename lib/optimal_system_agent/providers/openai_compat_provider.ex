@@ -19,8 +19,8 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatProvider do
     },
     groq: %{
       default_url: "https://api.groq.com/openai/v1",
-      default_model: "llama-3.3-70b-versatile",
-      available_models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"]
+      default_model: "openai/gpt-oss-20b",
+      available_models: ["openai/gpt-oss-20b"]
     },
     deepseek: %{
       default_url: "https://api.deepseek.com/v1",

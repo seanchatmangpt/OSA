@@ -39,7 +39,6 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.PlatformVM do
 
   @behaviour OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapter
 
-  alias OptimalSystemAgent.Sandbox.Sprites
   alias OptimalSystemAgent.Tools.Builtins.ComputerUse.Shared
 
   require Logger
@@ -298,24 +297,24 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.PlatformVM do
   # ---------------------------------------------------------------------------
 
   defp sprites_available? do
-    if Code.ensure_loaded?(Sprites) do
-      Sprites.available?()
+    if Code.ensure_loaded?(OptimalSystemAgent.Sandbox.Sprites) do
+      apply(OptimalSystemAgent.Sandbox.Sprites, :available?, [])
     else
       false
     end
   end
 
   defp sprites_preview_url(sprite_id) do
-    if Code.ensure_loaded?(Sprites) do
-      Sprites.preview_url(sprite_id)
+    if Code.ensure_loaded?(OptimalSystemAgent.Sandbox.Sprites) do
+      apply(OptimalSystemAgent.Sandbox.Sprites, :preview_url, [sprite_id])
     else
       {:error, :sprites_unavailable}
     end
   end
 
   defp sprites_execute(command, opts) do
-    if Code.ensure_loaded?(Sprites) do
-      Sprites.execute(command, opts)
+    if Code.ensure_loaded?(OptimalSystemAgent.Sandbox.Sprites) do
+      apply(OptimalSystemAgent.Sandbox.Sprites, :execute, [command, opts])
     else
       {:error, :sprites_unavailable}
     end

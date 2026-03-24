@@ -158,4 +158,59 @@ defmodule OptimalSystemAgent.Agent.Loop.MessageHandler do
       acc
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Message formatting utilities (for tests and external use)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Format user input into the message structure expected by LLM providers.
+  Simple wrapper for compatibility with test expectations.
+  """
+  def format_messages(input, history \\ []) do
+    user_msg = %{role: "user", content: input}
+    history ++ [user_msg]
+  end
+
+  @doc """
+  Extract tool calls from an LLM response.
+  Returns empty list if no tool calls present.
+  """
+  def extract_tool_calls(response) do
+    case response do
+      %{tool_calls: nil} -> []
+      %{tool_calls: calls} when is_list(calls) -> calls
+      _ -> []
+    end
+  end
+
+  @doc """
+  Parse raw LLM response into standardized format.
+  Handles both string and map responses.
+  """
+  def parse_response(raw) when is_binary(raw) do
+    {:ok, %{content: raw, tool_calls: []}}
+  end
+
+  def parse_response(raw) when is_map(raw) do
+    content = Map.get(raw, "content") || Map.get(raw, :content) || ""
+    tool_calls = Map.get(raw, "tool_calls") || Map.get(raw, :tool_calls) || []
+
+    parsed_calls = case tool_calls do
+      nil -> []
+      calls when is_list(calls) -> Enum.map(calls, &normalize_tool_call/1)
+    end
+
+    {:ok, %{content: content, tool_calls: parsed_calls}}
+  end
+
+  defp normalize_tool_call(call) when is_map(call) do
+    %{
+      id: Map.get(call, "id") || Map.get(call, :id) || generate_id(),
+      name: Map.get(call, "name") || Map.get(call, :name),
+      arguments: Map.get(call, "arguments") || Map.get(call, :arguments) || %{}
+    }
+  end
+
+  defp generate_id, do: "call_#{System.unique_integer([:positive])}"
 end

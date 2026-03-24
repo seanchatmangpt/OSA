@@ -97,6 +97,9 @@ defmodule OptimalSystemAgent.Application do
     OptimalSystemAgent.Process.ProcessMining.init_table()
     OptimalSystemAgent.Process.OrgEvolution.init_tables()
 
+    # SPR Sensor ETS tables (Fortune 5 Layer 1: Signal Collection)
+    OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+
     children =
       platform_repo_children() ++
       [
@@ -108,6 +111,9 @@ defmodule OptimalSystemAgent.Application do
         OptimalSystemAgent.Supervisors.Sessions,
         OptimalSystemAgent.Supervisors.AgentServices,
         OptimalSystemAgent.Supervisors.Extensions,
+
+        # SPR Sensor Registry (Fortune 5)
+        {OptimalSystemAgent.Sensors.SensorRegistry, []},
 
         # Deferred channel startup — starts configured channels in handle_continue
         OptimalSystemAgent.Channels.Starter,

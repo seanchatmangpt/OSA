@@ -359,9 +359,6 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
         broadcast_view_change(fleet_id, new_view_info)
 
         {:ok, new_view_info}
-
-      {:error, _} = error ->
-        error
     end
   end
 
@@ -502,7 +499,7 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
   defp get_audit_info(fleet_id) do
     # Find highest sequence number
     pattern = {{fleet_id, :"$1"}, :_}
-    selectors = [{{:"$1", [], []}}]
+    selectors = [:"$1"]
 
     case :ets.select(@audit_table, [{pattern, [], selectors}], 1) do
       :"$end_of_table" ->
@@ -568,7 +565,7 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
   # Need 2f+1 votes out of 3f+1 total agents
   # This translates to > 2/3 of total agents
   defp check_threshold(proposal, total_agents) when total_agents > 0 do
-    votes_count = map_size(proposal.votes)
+    _votes_count = map_size(proposal.votes)
     approve_count = Enum.count(proposal.votes, fn {_agent, vote} -> vote == :approve end)
     reject_count = Enum.count(proposal.votes, fn {_agent, vote} -> vote == :reject end)
 

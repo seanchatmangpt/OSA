@@ -10,7 +10,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   Config keys:
     :ollama_url   — base URL (default: http://localhost:11434)
-    :ollama_model — model name (default: auto-detected or llama3.2:latest)
+    :ollama_model — model name (default: auto-detected or openai/gpt-oss-20b)
   """
 
   @behaviour OptimalSystemAgent.Providers.Behaviour
@@ -22,7 +22,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   # Models known to handle tool calling well (name prefix → min size in GB)
   # Include both hyphenated and non-hyphenated variants (glm-4 AND glm4)
-  @tool_capable_prefixes ~w(qwen3 qwen2.5 qwen2 qwen llama3.3 llama3.2 llama3.1 llama3 llama2 llama gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin)
+  @tool_capable_prefixes ~w(gpt-oss qwen3 qwen2.5 qwen2 qwen gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin)
 
   # Minimum model size (in bytes) to enable tool calling — ~14B params ≈ 8GB on disk
   @tool_min_size 7_000_000_000
@@ -33,7 +33,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
   @impl true
   def default_model do
     # Return whatever auto-detect found, not a hardcoded small model
-    Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest")
+    Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b")
   end
 
   @impl true

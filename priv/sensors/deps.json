@@ -1,0 +1,11 @@
+{
+  "scan_type": "dependencies",
+  "timestamp": 1774331624638,
+  "total_deps": 0,
+  "mode": "data",
+  "genre": "analysis",
+  "type": "inform",
+  "format": "json",
+  "structure": "list",
+  "dependencies": []
+}

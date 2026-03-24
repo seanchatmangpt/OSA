@@ -14,23 +14,8 @@ defmodule OptimalSystemAgent.Orchestrator do
   alias OptimalSystemAgent.Agent.Loop
   alias OptimalSystemAgent.Agent.Tier
   alias OptimalSystemAgent.Agent.Hooks
-
-  @doc """
-  Run a subagent to completion and return its result.
-
-  Config map keys:
-    - :task (required) — the task description sent to the subagent
-    - :parent_session_id (required) — routes events to parent's SSE stream
-    - :role — display name (e.g., "architect", "backend")
-    - :tier — :elite | :specialist | :utility (default :specialist)
-    - :model — explicit model override (otherwise resolved from tier)
-    - :provider — provider override (otherwise uses app default)
-    - :max_iterations — override tier default
-    - :system_prompt — override from AGENT.md
-    - :tools_allowed — allowlist from AGENT.md (nil = all)
-    - :tools_blocked — denylist from AGENT.md
-  """
   alias OptimalSystemAgent.Team
+
 
   @doc """
   Run multiple subagents in parallel and collect all results.
@@ -124,6 +109,21 @@ defmodule OptimalSystemAgent.Orchestrator do
     all_results
   end
 
+  @doc """
+  Run a subagent to completion and return its result.
+
+  Config map keys:
+    - :task (required) -- the task description sent to the subagent
+    - :parent_session_id (required) -- routes events to parent's SSE stream
+    - :role -- display name (e.g., "architect", "backend")
+    - :tier -- :elite | :specialist | :utility (default :specialist)
+    - :model -- explicit model override (otherwise resolved from tier)
+    - :provider -- provider override (otherwise uses app default)
+    - :max_iterations -- override tier default
+    - :system_prompt -- override from AGENT.md
+    - :tools_allowed -- allowlist from AGENT.md (nil = all)
+    - :tools_blocked -- denylist from AGENT.md
+  """
   @spec run_subagent(map()) :: {:ok, String.t()} | {:error, term()}
   def run_subagent(config) do
     task = Map.fetch!(config, :task)
@@ -574,25 +574,24 @@ defmodule OptimalSystemAgent.Orchestrator do
       proposer_id = Keyword.get(opts, :proposer_id, "orchestrator")
 
       # Create proposal
-      case OptimalSystemAgent.Consensus.Proposal.new(proposal_type, proposal_content, proposer_id) do
-        {:ok, proposal} ->
-          fleet_id = "fleet-#{parent_id}"
+      proposal = OptimalSystemAgent.Consensus.Proposal.new(proposal_type, proposal_content, proposer_id)
+      fleet_id = "fleet-#{parent_id}"
 
-          # Propose vote
-          case OptimalSystemAgent.Consensus.HotStuff.propose_vote(fleet_id, proposal, configs) do
-            {:ok, _proposal} ->
-              # Collect votes from all agents
-              vote_results = Enum.map(configs, fn config ->
-                agent_id = Map.get(config, :role, "agent")
-                task = build_bft_voting_task(proposal, config)
+      # Propose vote
+      case OptimalSystemAgent.Consensus.HotStuff.propose_vote(fleet_id, proposal, configs) do
+        {:ok, _proposal} ->
+          # Collect votes from all agents
+          vote_results = Enum.map(configs, fn config ->
+            agent_id = Map.get(config, :role, "agent")
+            task = build_bft_voting_task(proposal, config)
 
-                result = config
-                         |> Map.put(:parent_session_id, parent_id)
-                         |> Map.put(:task, task)
-                         |> Orchestrator.run_subagent()
+            result = config
+                     |> Map.put(:parent_session_id, parent_id)
+                     |> Map.put(:task, task)
+                     |> run_subagent()
 
-                {agent_id, result}
-              end)
+            {agent_id, result}
+          end)
 
               # Tally votes
               votes = Enum.reduce(vote_results, %{}, fn {agent_id, result}, acc ->
@@ -625,16 +624,11 @@ defmodule OptimalSystemAgent.Orchestrator do
               Logger.error("[Orchestrator] BFT propose failed: #{inspect(reason)}")
               {:error, reason}
           end
-
-        {:error, reason} ->
-          Logger.error("[Orchestrator] Failed to create BFT proposal: #{inspect(reason)}")
-          {:error, reason}
-      end
     else
       Logger.warning("[Orchestrator] HotStuff-BFT not available, using parallel fallback")
       # Fall back to parallel execution
       Enum.map(configs, fn config ->
-        Orchestrator.run_subagent(Map.put(config, :parent_session_id, parent_id))
+        run_subagent(Map.put(config, :parent_session_id, parent_id))
       end)
     end
   end

@@ -180,7 +180,8 @@ defmodule OptimalSystemAgent.Healing.ErrorClassifier do
       contains_any?(lower, ["file conflict", "write before read", "merge conflict", "already modified"]) ->
         {:file_conflict, :medium, true}
 
-      contains_any?(lower, ["assertion", "assert", "expected", "test failed", "flunk"]) ->
+      contains_any?(lower, ["assertion", "assert", "test failed", "flunk"]) or
+        (String.contains?(lower, "expected") and not String.contains?(lower, "unexpected")) ->
         {:assertion_failure, :medium, true}
 
       contains_any?(lower, ["tool", "function call", "tool_call", "tool error", "tool failure"]) ->

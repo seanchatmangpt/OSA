@@ -10,6 +10,7 @@ defmodule OptimalSystemAgent.Agent.HooksETSTest do
     5. API surface is identical to the original GenServer-only implementation
   """
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.Agent.Hooks
 

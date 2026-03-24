@@ -440,12 +440,7 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
 
         :ets.insert(@acquisitions_table, {{skill_id, buyer_id}, acquisition})
 
-        # Increment download count
-        :ets.update_element(@skills_table, skill_id, [
-          {15, 1}  # downloads field is position 15 in the tuple
-        ])
-
-        # Re-read skill to get updated download count and bump quality score
+        # Re-read skill to get current download count and bump quality score
         [{^skill_id, skill}] = :ets.lookup(@skills_table, skill_id)
         updated_skill = %{skill | downloads: skill.downloads + 1}
         updated_skill = %{updated_skill | quality_score: compute_quality_score(updated_skill)}

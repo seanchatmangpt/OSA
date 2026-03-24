@@ -672,7 +672,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.VerificationRoutes do
   end
 
   defp xml_attr(node, attr_name) do
-    path = '@' ++ String.to_charlist(attr_name)
+    path = ~c"@" ++ String.to_charlist(attr_name)
 
     case :xmerl_xpath.string(path, node) do
       # xmlAttribute record (Erlang/OTP 27): {xmlAttribute, name, parents, pos, ns, nsinfo, list_pos, lang, value, expanded, specified}
@@ -716,7 +716,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.VerificationRoutes do
     |> Map.keys()
     |> Enum.flat_map(fn task_id ->
       # XPath to find element with this id and its flowsInto children
-      xpath = '//*[@id=\'' ++ String.to_charlist(task_id) ++ '\']/flowsInto/flowElementRef/text()'
+      xpath = ~c"//*[@id='" ++ String.to_charlist(task_id) ++ ~c"']/flowsInto/flowElementRef/text()"
 
       targets =
         xpath_all(doc, xpath)

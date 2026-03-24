@@ -56,7 +56,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
 
       # MCP integration — Registry for server name lookup + DynamicSupervisor for per-server GenServers
       {Registry, keys: :unique, name: OptimalSystemAgent.MCP.Registry},
-      {DynamicSupervisor, name: OptimalSystemAgent.MCP.Supervisor, strategy: :one_for_one}
+      {DynamicSupervisor, name: OptimalSystemAgent.MCP.Supervisor, strategy: :one_for_one},
+
+      # MCP client — starts MCP server child processes, depends on Registry + DynamicSupervisor above
+      {OptimalSystemAgent.MCP.Client, []}
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

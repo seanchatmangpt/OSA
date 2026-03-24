@@ -1,0 +1,11 @@
+{
+  "scan_type": "patterns",
+  "timestamp": 1774331624638,
+  "total_patterns": 0,
+  "mode": "data",
+  "genre": "analysis",
+  "type": "inform",
+  "format": "json",
+  "structure": "list",
+  "patterns": []
+}

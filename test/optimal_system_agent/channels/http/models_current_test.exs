@@ -123,13 +123,13 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ModelsCurrentTest do
 
     test "reflects Application env default_provider" do
       Application.put_env(:optimal_system_agent, :default_provider, :ollama)
-      Application.put_env(:optimal_system_agent, :default_model, "llama3.2:latest")
+      Application.put_env(:optimal_system_agent, :default_model, "openai/gpt-oss-20b")
 
       conn = json_get("/current")
       body = decode(conn)
 
       assert body["provider"] == "ollama"
-      assert body["model"] == "llama3.2:latest"
+      assert body["model"] == "openai/gpt-oss-20b"
     end
   end
 
@@ -140,41 +140,41 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ModelsCurrentTest do
     # This makes it a safe provider to use in tests without external dependencies.
 
     test "returns 200" do
-      conn = json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       assert conn.status == 200
     end
 
     test "returns application/json content-type" do
-      conn = json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       assert content_type(conn) =~ "application/json"
     end
 
     test "response status is switched" do
-      conn = json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       body = decode(conn)
       assert body["status"] == "switched"
     end
 
     test "response echoes back provider" do
-      conn = json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       body = decode(conn)
       assert body["provider"] == "ollama"
     end
 
     test "response echoes back model" do
-      conn = json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       body = decode(conn)
-      assert body["model"] == "llama3.2:latest"
+      assert body["model"] == "openai/gpt-oss-20b"
     end
 
     test "updates Application env default_provider" do
-      json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
+      json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
       assert Application.get_env(:optimal_system_agent, :default_provider) == :ollama
     end
 
     test "updates Application env default_model" do
-      json_post("/current", %{"provider" => "ollama", "model" => "llama3.2:latest"})
-      assert Application.get_env(:optimal_system_agent, :default_model) == "llama3.2:latest"
+      json_post("/current", %{"provider" => "ollama", "model" => "openai/gpt-oss-20b"})
+      assert Application.get_env(:optimal_system_agent, :default_model) == "openai/gpt-oss-20b"
     end
 
     test "GET /current reflects the switch immediately" do
@@ -208,7 +208,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ModelsCurrentTest do
     end
 
     test "returns 400 when provider is missing" do
-      conn = json_post("/current", %{"model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"model" => "openai/gpt-oss-20b"})
       assert conn.status == 400
     end
 
@@ -218,7 +218,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ModelsCurrentTest do
     end
 
     test "returns 400 when provider is empty string" do
-      conn = json_post("/current", %{"provider" => "", "model" => "llama3.2:latest"})
+      conn = json_post("/current", %{"provider" => "", "model" => "openai/gpt-oss-20b"})
       assert conn.status == 400
     end
 

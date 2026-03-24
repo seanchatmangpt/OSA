@@ -1,0 +1,1752 @@
+# Fortune 5 Workspace RDF
+# Generated: 2026-03-24T18:21:20.145788Z
+# Signal Theory: S=(data,report,inform,turtle,rdf-graph)
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix osa: <https://chatmangpt.com/workspace#>.
+@prefix module: <https://chatmangpt.com/workspace#module/>.
+@prefix dep: <https://chatmangpt.com/workspace#dep/>.
+@prefix pattern: <https://chatmangpt.com/workspace#pattern/>.
+
+# Workspace metadata
+osa:workspace a owl:Ontology ;
+    rdfs:label "Fortune 5 Workspace" ;
+    rdfs:comment "SPR sensor outputs converted to RDF" ;
+    osa:generatedAt "2026-03-24T18:21:20.145801Z"^^xsd:dateTime ;
+    osa:totalModules 288 ;
+    osa:totalDeps 0 ;
+    osa:totalPatterns 0 .
+
+module:osa a osa:Module ;
+    rdfs:label "OSA" ;
+    osa:type "module" ;
+    osa:file "lib/osa_sdk.ex" ;
+    osa:line 1 .
+
+module:miosatools a osa:Module ;
+    rdfs:label "MiosaTools" ;
+    osa:type "module" ;
+    osa:file "lib/miosa/shims.ex" ;
+    osa:line 1 .
+
+module:mix a osa:Module ;
+    rdfs:label "Mix" ;
+    osa:type "module" ;
+    osa:file "lib/mix/tasks/osa.serve.ex" ;
+    osa:line 1 .
+
+module:mix a osa:Module ;
+    rdfs:label "Mix" ;
+    osa:type "module" ;
+    osa:file "lib/mix/tasks/osa.sandbox.setup.ex" ;
+    osa:line 1 .
+
+module:mix a osa:Module ;
+    rdfs:label "Mix" ;
+    osa:type "module" ;
+    osa:file "lib/mix/tasks/osa.setup.wizard.ex" ;
+    osa:line 1 .
+
+module:mix a osa:Module ;
+    rdfs:label "Mix" ;
+    osa:type "module" ;
+    osa:file "lib/mix/tasks/osa.setup.ex" ;
+    osa:line 1 .
+
+module:mix a osa:Module ;
+    rdfs:label "Mix" ;
+    osa:type "module" ;
+    osa:file "lib/mix/tasks/osa.chat.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/machines.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/onboarding.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/soul.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/team.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sdk.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/prompt_loader.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/application.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/cli.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/utils.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/event_stream.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/orchestrator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/commerce/marketplace.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/consensus/proposal.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/consensus/hot_stuff.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/swarm/patterns.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sensors/rdf_generator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sensors/sensor_registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sensors/application.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/cache.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/instruction.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/middleware.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/behaviour.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/pipeline.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/web_fetch.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/file_edit.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/shell_execute.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/file_grep.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/download.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/ask_user.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/create_skill.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/delegate.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/memory_recall.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/git.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/businessos_api.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/file_write.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/task_write.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/peer_negotiate_task.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/message_agent.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/multi_file_edit.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/peer_review.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/list_agents.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/a2a_call.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/create_agent.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/file_read.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/web_search.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/code_symbols.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/list_skills.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/memory_save.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/cross_team_query.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/session_search.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/team_tasks.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/peer_claim_region.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/file_glob.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/dir_list.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/keyframe.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/server.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/planner.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/accessibility.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/executor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/shared.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapters/docker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapters/macos.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapters/remote_ssh.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapters/platform_vm.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/registry/skill_loader.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/tools/registry/search.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/scoring.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/store.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/consolidator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/vigil.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/observation.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/learning.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/skill_generator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/memory/synthesis.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/a2a/config_validator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/a2a/task_stream.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/context_mesh/supervisor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/context_mesh/archiver.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/context_mesh/registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/context_mesh/keeper.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/context_mesh/staleness.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/replicate.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/openai_compat_provider.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/google.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/tool_call_parsers.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/cohere.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/ollama.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/behaviour.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/openai_compat.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/anthropic.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/providers/health_checker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workspace/session.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workspace/task_journal.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workspace/store.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workspace/workspace.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workflows/temporal_adapter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/workflows/definitions/autonomous_pi.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agents/registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/budget.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/debate.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scratchpad.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/hooks.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/compactor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/task_queue.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tasks.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/progress.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/workflow.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/task_tracker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/context.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tasks/queue.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tasks/persistence.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tasks/workflow.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/tasks/tracker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/memory/sqlite_bridge.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/memory/episodic.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/job_executor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/sqlite_store.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/persistence.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/cron_presets.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/heartbeat.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/cron_engine.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/scheduler/heartbeat_executor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/hooks/audit_trail.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/telemetry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/doom_loop.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/tool_filter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/survey.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/message_handler.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/checkpoint.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/tool_executor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/react_loop.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/genre_router.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/guardrails.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/loop/llm_client.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/agent/orchestrator/goal_dispatch.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/mcp/config_validator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/mcp/client.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/mcp/server.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/protocol/cloud_event.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/cli/prompt.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/cli/doctor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/peer/protocol.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/peer/review.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/peer/discovery.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/peer/negotiation.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/file_locking/intent_broadcaster.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/file_locking/region_lock.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/graph.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/narrative.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/pulse.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/merge.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/pivot.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/decisions/cascade.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/supervisors/infrastructure.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/supervisors/agent_services.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/supervisors/sessions.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/supervisors/extensions.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/checkpoint.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/confidence.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/structural_analyzer.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/upstream_verifier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/loop.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/verification/tools/verify_loop.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/system/updater.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sandbox/host.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sandbox/docker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sandbox/e2b.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sandbox/router.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/sandbox/behaviour.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/debate.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/persona.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/server.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/weaver.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/turn_strategy.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/tools/spawn_conversation.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/strategies/round_robin.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/strategies/weighted.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/conversations/strategies/facilitator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/supervisor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/agent_state.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/table_registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/nervous_system.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/cost_tracker.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/teams/manager.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/os/registry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/os/scanner.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/os/manifest.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/error_classifier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/session.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/prompts.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/ephemeral_agent.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/orchestrator.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/healing/reflex_arcs.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/speculative/work_product.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/speculative/executor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/speculative/assumption.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/speculative/tools/start_speculative.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/stream.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/event.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/classifier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/failure_modes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/dlq.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/events/bus.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/signal/signal.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/signal/message_classifier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/signal/persistence.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/signal/classifier.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/process/fingerprint.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/process/process_mining.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/process/org_evolution.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/pattern.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/message.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/decision_node.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/task.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/signal.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/memory_entry.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/decision_edge.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/store/repo.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/telegram.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/discord.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/session.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/signal.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/manager.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/slack.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/starter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/behaviour.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/noise_filter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/events.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/renderer.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/session.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/plan_review.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/task_display.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/line_editor.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/spinner.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/computer_use_dispatch.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/cli/markdown.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/rate_limiter.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/auth.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/integrity.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/config_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/tool_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/approval_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/verification_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/provider_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/canopy_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/agent_state_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/data_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/dashboard_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/webhook_verify.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/audit_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/settings_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/session_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/a2a_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/marketplace_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/issue_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/agent_management_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/debate_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/shared.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/auth_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/scheduler_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/orchestrate_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/workspace_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/cost_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/channel_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/process_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/agent_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/channels/http/api/project_routes.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/budget/budget.ex" ;
+    osa:line 1 .
+
+module:optimalsystemagent a osa:Module ;
+    rdfs:label "OptimalSystemAgent" ;
+    osa:type "module" ;
+    osa:file "lib/optimal_system_agent/budget/treasury.ex" ;
+    osa:line 1 .
+
+
+

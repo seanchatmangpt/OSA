@@ -272,9 +272,10 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrail do
     try do
       @chain_table
       |> :ets.match_object({{session_id, :_}, :_})
-      |> length()
+      |> Enum.map(fn {_key, _value} -> 1 end)
+      |> Enum.sum()
     rescue
-      ArgumentError -> 0
+      _ -> 0
     end
   end
 
@@ -295,21 +296,27 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrail do
   end
 
   defp compute_entry_hash(entry) do
-    # Serialize in a deterministic field order for consistent hashing
-    canonical =
-      [
-        index: entry.index,
-        timestamp: entry.timestamp,
-        session_id: entry.session_id,
-        tool_name: entry.tool_name,
-        arguments_hash: entry.arguments_hash,
-        result_hash: entry.result_hash,
-        duration_ms: entry.duration_ms,
-        provider: entry.provider,
-        model: entry.model,
-        previous_hash: entry.previous_hash,
-        entry_hash: entry.entry_hash
-      ]
+    # Serialize in a deterministic field order for consistent hashing.
+    # Use a plain map (not keyword list) to avoid Jason tuple-encoding issues.
+
+    idx = case Map.get(entry, :index) do
+      i when is_integer(i) -> i
+      _ -> 0
+    end
+
+    canonical = %{
+      "index" => idx,
+      "timestamp" => to_string(Map.get(entry, :timestamp, "")),
+      "session_id" => to_string(Map.get(entry, :session_id, "")),
+      "tool_name" => to_string(Map.get(entry, :tool_name, "")),
+      "arguments_hash" => to_string(Map.get(entry, :arguments_hash, "")),
+      "result_hash" => to_string(Map.get(entry, :result_hash, "")),
+      "duration_ms" => to_string(Map.get(entry, :duration_ms, 0)),
+      "provider" => to_string(Map.get(entry, :provider, "")),
+      "model" => to_string(Map.get(entry, :model, "")),
+      "previous_hash" => to_string(Map.get(entry, :previous_hash, "")),
+      "entry_hash" => to_string(Map.get(entry, :entry_hash, ""))
+    }
 
     json = Jason.encode!(canonical)
     :crypto.hash(:sha256, json) |> Base.encode16(case: :lower)

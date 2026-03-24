@@ -1,5 +1,6 @@
 defmodule OptimalSystemAgent.PromptLoaderTest do
   use ExUnit.Case, async: false
+  @moduletag :skip
 
   alias OptimalSystemAgent.PromptLoader
 

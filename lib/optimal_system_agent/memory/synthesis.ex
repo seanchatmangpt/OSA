@@ -99,6 +99,10 @@ defmodule OptimalSystemAgent.Memory.Synthesis do
     end
   end
 
+  def compact(nil, _current_tokens, _max_tokens) do
+    {:ok, []}
+  end
+
   @doc """
   Classify the current token usage against configured thresholds.
 

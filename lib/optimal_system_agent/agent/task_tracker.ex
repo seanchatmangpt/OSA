@@ -96,6 +96,15 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     GenServer.call(server, {:clear_tasks, session_id})
   end
 
+  @doc """
+  Reset the entire TaskTracker state (for testing only).
+
+  Clears all sessions from memory. This is useful for test isolation.
+  """
+  def reset_state(server \\ __MODULE__) do
+    GenServer.call(server, :reset_state)
+  end
+
   @doc "Record token usage against a specific task."
   def record_tokens(session_id, task_id, count, server \\ __MODULE__) do
     GenServer.cast(server, {:record_tokens, session_id, task_id, count})
@@ -428,6 +437,11 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     })
 
     {:reply, :ok, state}
+  end
+
+  @impl true
+  def handle_call(:reset_state, _from, _state) do
+    {:reply, :ok, %__MODULE__{sessions: %{}}}
   end
 
   @impl true

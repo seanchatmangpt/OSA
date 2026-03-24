@@ -57,8 +57,8 @@ defmodule OptimalSystemAgent.Agent.Tier do
 
     # --- Fast inference providers (all 70B+ for tool calling) ---
     groq: %{
-      elite: "llama-3.3-70b-versatile",
-      specialist: "llama-3.3-70b-versatile",
+      elite: "openai/gpt-oss-20b",
+      specialist: "openai/gpt-oss-20b",
       utility: "qwen-qwq-32b"
     },
     fireworks: %{

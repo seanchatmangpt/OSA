@@ -193,7 +193,6 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       }
     else
       sorted = Enum.sort_by(snapshots, & &1.timestamp)
-      metric_series = extract_metric_series(sorted)
 
       {method, predictions, confidence} =
         if length(sorted) >= 10 and variance_of_values(Enum.map(sorted, & &1.timestamp)) > 0 do
@@ -345,7 +344,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       }
     else
       sorted = Enum.sort_by(snapshots, & &1.timestamp)
-      {velocity, trend} = compute_pattern_velocity(sorted)
+      {velocity, _trend} = compute_pattern_velocity(sorted)
 
       # Find the lowest-velocity window in recent history
       {window_start, window_end} = find_low_velocity_window(sorted)
@@ -359,9 +358,6 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
 
       reasoning =
         cond do
-          trend == :decelerating and velocity < 0.5 ->
-            "Process velocity decelerating -- favorable conditions for intervention"
-
           velocity < @stagnation_velocity_threshold ->
             "Low change velocity period detected -- ideal for process changes"
 
@@ -398,7 +394,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
   def linear_regression(points) when is_list(points) and length(points) >= 2 do
     n = length(points)
 
-    {sum_x, sum_y, sum_xy, sum_x2, sum_y2} =
+    {sum_x, sum_y, sum_xy, sum_x2, _sum_y2} =
       Enum.reduce(points, {0.0, 0.0, 0.0, 0.0, 0.0}, fn {x, y}, {sx, sy, sxy, sx2, sy2} ->
         x_f = x * 1.0
         y_f = y * 1.0
@@ -446,7 +442,6 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
   """
   @spec exponential_smoothing([number()], float()) :: [float()]
   def exponential_smoothing([], _alpha), do: []
-  def exponential_smoothing([first | _rest], _alpha), do: [first * 1.0]
 
   def exponential_smoothing([first | rest], alpha) when is_number(alpha) and alpha > 0 and alpha <= 1.0 do
     alpha = alpha * 1.0
@@ -659,7 +654,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
     predictions =
       metric_series
       |> Enum.map(fn {key, points} ->
-        {slope, intercept, r2} = linear_regression(points)
+        {slope, intercept, _r2} = linear_regression(points)
         last_idx = length(points) - 1
         projected = slope * (last_idx + weeks_ahead) + intercept
         {key, projected}
@@ -963,7 +958,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       recent = Enum.take(sorted_snapshots, -20)
 
       if length(recent) >= 5 do
-        oldest = List.first(recent).timestamp
+        _oldest = List.first(recent).timestamp
         newest = List.last(recent).timestamp
 
         # The period immediately after the most recent snapshot tends to have

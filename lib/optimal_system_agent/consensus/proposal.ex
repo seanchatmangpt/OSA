@@ -47,7 +47,8 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
           proposer: String.t(),
           votes: %{String.t() => vote()},
           status: status(),
-          created_at: DateTime.t()
+          created_at: DateTime.t(),
+          workflow_id: String.t() | nil
         }
 
   defstruct type: :process_model,
@@ -55,7 +56,8 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
             proposer: "",
             votes: %{},
             status: :pending,
-            created_at: nil
+            created_at: nil,
+            workflow_id: nil
 
   # ---------------------------------------------------------------------------
   # Constructor
@@ -75,22 +77,23 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
 
     * `:votes` - Initial votes map (default: `%{}`)
     * `:status` - Initial status (default: `:pending`)
+    * `:workflow_id` - Optional workflow identifier
 
   ## Examples
 
-      iex> OptimalSystemAgent.Consensus.Proposal.new(
+      iex> proposal = OptimalSystemAgent.Consensus.Proposal.new(
       ...>   :process_model,
       ...>   %{name: "Customer Onboarding"},
       ...>   "agent_123"
       ...> )
-      %OptimalSystemAgent.Consensus.Proposal{
-        type: :process_model,
-        content: %{name: "Customer Onboarding"},
-        proposer: "agent_123",
-        votes: %{},
-        status: :pending,
-        created_at: _
-      }
+      iex> proposal.type
+      :process_model
+      iex> proposal.content
+      %{name: "Customer Onboarding"}
+      iex> proposal.proposer
+      "agent_123"
+      iex> proposal.workflow_id
+      nil
   """
   @spec new(proposal_type(), any(), String.t(), keyword()) :: t()
   def new(type, content, proposer, opts \\ []) when type in [:process_model, :workflow, :decision] do
@@ -100,7 +103,8 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
       proposer: proposer,
       votes: Keyword.get(opts, :votes, %{}),
       status: Keyword.get(opts, :status, :pending),
-      created_at: DateTime.utc_now()
+      created_at: DateTime.utc_now(),
+      workflow_id: Keyword.get(opts, :workflow_id)
     }
   end
 
@@ -321,7 +325,8 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
       "proposer" => proposal.proposer,
       "votes" => proposal.votes,
       "status" => proposal.status,
-      "created_at" => DateTime.to_iso8601(proposal.created_at)
+      "created_at" => DateTime.to_iso8601(proposal.created_at),
+      "workflow_id" => proposal.workflow_id
     }
   end
 
@@ -339,7 +344,8 @@ defmodule OptimalSystemAgent.Consensus.Proposal do
            proposer: Map.get(map, "proposer"),
            votes: Map.get(map, "votes", %{}),
            status: Map.get(map, "status", :pending),
-           created_at: created_at
+           created_at: created_at,
+           workflow_id: Map.get(map, "workflow_id")
          },
          :ok <- validate(proposal) do
       {:ok, proposal}

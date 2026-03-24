@@ -98,7 +98,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SettingsRoutes do
 
     model =
       (Application.get_env(:optimal_system_agent, :default_model) ||
-         Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest"))
+         Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b"))
       |> to_string()
 
     working_dir = Map.get(file_config, "working_dir") || safe_cwd()

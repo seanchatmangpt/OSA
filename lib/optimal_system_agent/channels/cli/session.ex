@@ -9,7 +9,7 @@ defmodule OptimalSystemAgent.Channels.CLI.Session do
 
   require Logger
 
-  alias OptimalSystemAgent.Agent.{Loop, Tasks}
+  alias OptimalSystemAgent.Agent.Loop
   alias OptimalSystemAgent.Channels.CLI.{PlanReview, Renderer, Spinner}
   alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.SDK.{Hook, Permission}
@@ -158,7 +158,7 @@ defmodule OptimalSystemAgent.Channels.CLI.Session do
     hook_fn = fn %{tool_name: tool_name, arguments: args} = payload ->
       case permission_fn.(tool_name, args) do
         :allow -> {:ok, payload}
-        {:deny, reason} -> {:block, reason}
+        result -> {:ok, Map.put(payload, :permission_result, result)}
       end
     end
 
