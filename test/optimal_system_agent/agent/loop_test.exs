@@ -5,9 +5,17 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
   Tests bounded ReAct agent loop — the core reasoning engine.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   @moduletag :capture_log
+
+  setup do
+    # Start required processes for SessionRegistry
+    unless Process.whereis(OptimalSystemAgent.SessionRegistry) do
+      start_supervised!({Registry, keys: :unique, name: OptimalSystemAgent.SessionRegistry})
+    end
+    :ok
+  end
 
   describe "child_spec/1" do
     test "returns child spec with :transient restart" do

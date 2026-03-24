@@ -11,6 +11,12 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrailTest do
 
   @unique_prefix "audit-test-#{:erlang.unique_integer([:positive])}-"
 
+  setup do
+    # Initialize audit trail ETS tables
+    AuditTrail.register()
+    :ok
+  end
+
   describe "append_entry/1" do
     test "appends an entry and returns it with hash" do
       session = @unique_prefix <> "append"

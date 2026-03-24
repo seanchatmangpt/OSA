@@ -5,11 +5,22 @@ defmodule OptimalSystemAgent.Agent.Loop.TelemetryTest do
   Tests context pressure telemetry and token estimation.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias OptimalSystemAgent.Agent.Loop.Telemetry
 
   @moduletag :capture_log
+
+  setup do
+    # Start required processes for Events.Bus
+    unless Process.whereis(OptimalSystemAgent.Events.TaskSupervisor) do
+      start_supervised!({Task.Supervisor, name: OptimalSystemAgent.Events.TaskSupervisor, max_children: 2000})
+    end
+    unless Process.whereis(OptimalSystemAgent.Events.Bus) do
+      start_supervised!(OptimalSystemAgent.Events.Bus)
+    end
+    :ok
+  end
 
   describe "emit_context_pressure/1" do
     test "returns :ok on success" do

@@ -38,16 +38,28 @@ defmodule OptimalSystemAgent.Providers.CohereChicagoTDDTest do
     end
   end
 
-  describe "Provider — GAP: available_models NOT implemented" do
-    test "CRASH: available_models/0 function does NOT exist" do
-      # This is a GAP - the function should exist but doesn't
-      refute Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
+  describe "Provider — available_models implementation" do
+    test "PASS: available_models/0 function exists" do
+      # Function is now implemented
+      assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
     end
 
-    test "CRASH: Calling available_models raises UndefinedFunctionError" do
-      assert_raise UndefinedFunctionError, fn ->
-        Cohere.available_models()
-      end
+    test "PASS: Calling available_models returns list of models" do
+      models = Cohere.available_models()
+      assert is_list(models)
+      assert length(models) > 0
+      assert Enum.all?(models, &is_binary/1)
+    end
+
+    test "PASS: available_models includes command-r-plus" do
+      models = Cohere.available_models()
+      assert "command-r-plus" in models
+    end
+
+    test "PASS: available_models includes other Command models" do
+      models = Cohere.available_models()
+      assert "command-r" in models
+      assert "command-light" in models
     end
   end
 
@@ -64,11 +76,11 @@ defmodule OptimalSystemAgent.Providers.CohereChicagoTDDTest do
   end
 
   describe "Provider — Behavior Contract" do
-    test "CRASH: Implements part of Providers.Behaviour" do
+    test "PASS: Implements Providers.Behaviour contract" do
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :name, 0)
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :default_model, 0)
-      # GAP: available_models is NOT implemented
-      refute Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
+      # Now implemented: available_models
+      assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :chat, 2)
     end
 
@@ -86,15 +98,15 @@ defmodule OptimalSystemAgent.Providers.CohereChicagoTDDTest do
   end
 
   describe "Provider — Module Properties" do
-    test "CRASH: Module is loaded" do
+    test "PASS: Module is loaded" do
       assert Code.ensure_loaded?(Cohere)
     end
 
-    test "CRASH: Module has partial behaviour implementation" do
+    test "PASS: Module has complete behaviour implementation" do
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :name, 0)
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :default_model, 0)
+      assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
       assert Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :chat, 2)
-      # GAP: missing available_models
     end
   end
 
@@ -155,18 +167,21 @@ defmodule OptimalSystemAgent.Providers.CohereChicagoTDDTest do
     end
   end
 
-  describe "Provider — GAP Summary" do
-    test "CRASH: Cohere provider is missing available_models/0" do
-      refute Code.ensure_loaded?(Cohere) and function_exported?(Cohere, :available_models, 0)
+  describe "Provider — Parity with other providers" do
+    test "PASS: Cohere provider now has available_models/0 implemented" do
+      assert Code.ensure_loaded?(Cohere) and
+             function_exported?(Cohere, :available_models, 0)
     end
 
-    test "CRASH: Other providers have available_models implemented" do
+    test "PASS: All standard providers have available_models implemented" do
       assert Code.ensure_loaded?(OptimalSystemAgent.Providers.Anthropic) and
              function_exported?(OptimalSystemAgent.Providers.Anthropic, :available_models, 0)
       assert Code.ensure_loaded?(OptimalSystemAgent.Providers.Google) and
              function_exported?(OptimalSystemAgent.Providers.Google, :available_models, 0)
       assert Code.ensure_loaded?(OptimalSystemAgent.Providers.Ollama) and
              function_exported?(OptimalSystemAgent.Providers.Ollama, :available_models, 0)
+      assert Code.ensure_loaded?(Cohere) and
+             function_exported?(Cohere, :available_models, 0)
     end
   end
 end

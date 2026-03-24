@@ -5,11 +5,44 @@ defmodule OptimalSystemAgent.Agent.ContextTest do
   Tests two-tier token-budgeted system prompt assembly.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias OptimalSystemAgent.Agent.Context
 
   @moduletag :capture_log
+
+  setup do
+    # Create mock Memory.Store that returns empty recalls without needing Ecto
+    unless Process.whereis(OptimalSystemAgent.Memory.Store) do
+      {:ok, _} = start_supervised(__MODULE__.MockMemoryStore)
+    end
+    :ok
+  end
+
+  defmodule MockMemoryStore do
+    @moduledoc false
+    use GenServer
+
+    def start_link(_opts) do
+      GenServer.start_link(__MODULE__, [], name: OptimalSystemAgent.Memory.Store)
+    end
+
+    def init(_opts) do
+      {:ok, []}
+    end
+
+    def handle_call({:recall, _, _}, _from, state) do
+      {:reply, {:ok, []}, state}
+    end
+
+    def handle_call({:get, _}, _from, state) do
+      {:reply, {:error, :not_found}, state}
+    end
+
+    def handle_call(_, _from, state) do
+      {:reply, :ok, state}
+    end
+  end
 
   describe "build/1" do
     test "returns %{messages: [system_msg | conversation]}" do

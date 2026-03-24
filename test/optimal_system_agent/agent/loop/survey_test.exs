@@ -12,6 +12,14 @@ defmodule OptimalSystemAgent.Agent.Loop.SurveyTest do
   @moduletag :capture_log
 
   setup do
+    # Start required processes for Bus.emit
+    unless Process.whereis(OptimalSystemAgent.Events.TaskSupervisor) do
+      start_supervised!({Task.Supervisor, name: OptimalSystemAgent.Events.TaskSupervisor, max_children: 2000})
+    end
+    unless Process.whereis(OptimalSystemAgent.Events.Bus) do
+      start_supervised!(OptimalSystemAgent.Events.Bus)
+    end
+
     # Initialize ETS tables for tests - delete if they exist first
     try do
       :ets.delete(:osa_cancel_flags)
