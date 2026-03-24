@@ -280,7 +280,8 @@ defmodule OptimalSystemAgent.Protocol.CloudEventTest do
       assert decoded.type == original.type
       assert decoded.source == original.source
       assert decoded.subject == original.subject
-      assert decoded.data == original.data
+      # JSON decode returns string keys - this is expected behavior
+      assert decoded.data == %{"message" => "hello"}
     end
   end
 end
