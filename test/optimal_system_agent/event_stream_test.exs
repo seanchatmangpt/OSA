@@ -216,19 +216,22 @@ defmodule OptimalSystemAgent.EventStreamTest do
     end
 
     test "prunes oldest entries when exceeding max_history" do
-      # Clear with specific type
+      # Broadcast 110 events (exceeds max_history of 100)
       for i <- 1..110 do
-        EventStream.broadcast("prune_test", %{index: i})
+        EventStream.broadcast("prune_test_unique", %{index: i})
       end
+      # Wait for async casts to complete
+      Process.sleep(100)
 
-      history = EventStream.event_history("prune_test")
+      history = EventStream.event_history("prune_test_unique")
+      # Should keep at most 100 events
       assert length(history) <= 100
 
-      # Oldest entries should be pruned
+      # Oldest entries should be pruned. With 110 events and max=100,
+      # we prune 10 oldest, so first remaining event should have index >= 11
       first_event = List.first(history)
-      # First event should not be index 1 (pruned)
       if length(history) > 0 do
-        assert first_event.payload.index > 10
+        assert first_event.payload.index >= 11
       end
     end
   end
@@ -384,10 +387,12 @@ defmodule OptimalSystemAgent.EventStreamTest do
       :ok = EventStream.subscribe()
 
       # Broadcast
-      EventStream.broadcast("pubsub_test", %{test: "data"})
+      EventStream.broadcast("pubsub_test_unique", %{test: "data"})
+      # Wait for async cast to complete
+      Process.sleep(50)
 
       # Event should be in history (broadcast occurred)
-      history = EventStream.event_history("pubsub_test")
+      history = EventStream.event_history("pubsub_test_unique")
       assert length(history) >= 1
     end
   end
