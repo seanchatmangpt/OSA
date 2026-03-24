@@ -244,6 +244,12 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
     GenServer.call(__MODULE__, :count)
   end
 
+  @doc "List all stored fingerprints (reads directly from ETS)."
+  def list_all do
+    :ets.tab2list(@fingerprint_table)
+    |> Enum.map(fn {_key, fp} -> fp end)
+  end
+
   # ---------------------------------------------------------------------------
   # GenServer Callbacks
   # ---------------------------------------------------------------------------

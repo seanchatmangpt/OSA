@@ -83,6 +83,18 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
     end
   end
 
+  # ── GET /fingerprint/list — list all stored fingerprints ──────────────
+
+  get "/fingerprint/list" do
+    case safe_list_fingerprints() do
+      {:ok, fingerprints} ->
+        send_json(conn, 200, %{fingerprints: fingerprints, count: length(fingerprints)})
+
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+    end
+  end
+
   # ── GET /fingerprint/:id — retrieve stored fingerprint ───────────────
 
   get "/fingerprint/:id" do
@@ -475,6 +487,19 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   catch
     :exit, reason ->
       Logger.error("[ProcessRoutes] get_fingerprint exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
+  end
+
+  defp safe_list_fingerprints do
+    fingerprints = Fingerprint.list_all()
+    {:ok, fingerprints}
+  rescue
+    e ->
+      Logger.error("[ProcessRoutes] list_fingerprints error: #{Exception.message(e)}")
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
+  catch
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] list_fingerprints exit: #{inspect(reason)}")
       {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 

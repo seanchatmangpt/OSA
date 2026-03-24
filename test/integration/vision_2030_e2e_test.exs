@@ -236,6 +236,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
 
   describe "Innovation 8: Formal Correctness" do
     test "verify workflow endpoint returns certificate" do
+      # Accepts JSON workflow objects — auto-converted to markdown
       workflow = %{
         name: "e2e-test-workflow",
         tasks: %{
