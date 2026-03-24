@@ -134,15 +134,38 @@ defmodule OptimalSystemAgent.MCP.Server do
                   "[MCP.Server:#{name}] Connected: #{transport}, #{map_size(state.tools)} tools"
                 )
 
+                # Emit telemetry event for successful server start
+                :telemetry.execute(
+                  [:osa, :mcp, :server_start],
+                  %{tools_count: map_size(state.tools)},
+                  %{server_name: name, transport: transport, status: :connected}
+                )
+
                 {:ok, %{state | connected: true}}
 
               {:error, reason} ->
                 Logger.error("[MCP.Server:#{name}] Tool discovery failed: #{inspect(reason)}")
+
+                # Emit telemetry event for server start with tool discovery failure
+                :telemetry.execute(
+                  [:osa, :mcp, :server_start],
+                  %{tools_count: 0},
+                  %{server_name: name, transport: transport, status: :partial, reason: inspect(reason)}
+                )
+
                 {:ok, %{state | connected: true}}
             end
 
           {:error, reason} ->
             Logger.error("[MCP.Server:#{name}] Initialization failed: #{inspect(reason)}")
+
+            # Emit telemetry event for server start with initialization failure
+            :telemetry.execute(
+              [:osa, :mcp, :server_start],
+              %{tools_count: 0},
+              %{server_name: name, transport: transport, status: :failed, reason: inspect(reason)}
+            )
+
             {:ok, %{state | connected: false}}
         end
 
@@ -236,6 +259,13 @@ defmodule OptimalSystemAgent.MCP.Server do
         "[MCP.Server:#{state.name}] Reconnection failed after #{@max_reconnect_attempts} attempts"
       )
 
+      # Emit telemetry event for failed reconnection
+      :telemetry.execute(
+        [:osa, :mcp, :server_reconnect],
+        %{tools_count: 0},
+        %{server_name: state.name, transport: state.transport, status: :failed, attempts: state.reconnect_attempt}
+      )
+
       emit_bus_event(:mcp_reconnect_failed, state.name, %{attempts: state.reconnect_attempt})
 
       %{state | connected: false, reconnect_attempt: 0}
@@ -265,6 +295,13 @@ defmodule OptimalSystemAgent.MCP.Server do
                 {:ok, state} ->
                   Logger.info(
                     "[MCP.Server:#{state.name}] Reconnected: #{map_size(state.tools)} tools discovered"
+                  )
+
+                  # Emit telemetry event for successful reconnection
+                  :telemetry.execute(
+                    [:osa, :mcp, :server_reconnect],
+                    %{tools_count: map_size(state.tools)},
+                    %{server_name: state.name, transport: state.transport, status: :reconnected}
                   )
 
                   # Invalidate cached tool results for this server

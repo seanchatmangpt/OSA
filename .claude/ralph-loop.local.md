@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 24
+iteration: 28
 session_id:
 max_iterations: 0
 completion_promise: null
@@ -168,3 +168,87 @@ This Ralph Loop applies **Toyota Code Production System** principles to software
 **P2: Additional Provider Coverage (LAST)**
 - OpenAI provider tests
 - Provider fallback chain tests
+
+## Iteration 24 Progress
+
+### Tests Created: 86 Chicago TDD integration tests (NEW)
+
+**Verification package (43 tests):**
+- **27 tests** in `confidence_real_test.exs` — Confidence tracker (pure logic)
+- **16 tests** in `checkpoint_real_test.exs` — Checkpoint save/restore/delete (real file I/O)
+- **17 tests** in `upstream_verifier_chicago_tdd_test.exs` — UpstreamVerifier (real ETS + shell)
+
+**Teams package (26 tests):**
+- **26 tests** in `nervous_system_real_test.exs` — NervousSystem + 8 sub-processes
+
+### Gaps Discovered & Fixed (Green Phase)
+
+**GAP 1: Teams Registry naming mismatch (FIXED)**
+- **Location**: `teams/nervous_system.ex`, `teams/supervisor.ex`, `teams/manager.ex`, `teams/cost_tracker.ex`
+- **Issue**: All referenced `OptimalSystemAgent.Registry` but supervision tree starts `OptimalSystemAgent.Teams.Registry`
+- **Impact**: All NervousSystem processes crash on startup — Registry lookup fails
+- **Fix**: Changed all 22 references from `OptimalSystemAgent.Registry` to `OptimalSystemAgent.Teams.Registry`
+
+**GAP 2: Rebalancer crashes on handle_info(:check_load) (DOCUMENTED)**
+- **Location**: `teams/nervous_system.ex` Rebalancer module
+- **Issue**: Calls `AgentState.list(team_id)` which hits ETS tables that don't exist outside a full team lifecycle
+- **Status**: Documented as gap in tests, not yet fixed
+
+**GAP 3: UpstreamVerifier output_spec can't use regex patterns (DOCUMENTED)**
+- **Location**: `verification/upstream_verifier.ex:176-185`
+- **Issue**: `is_binary(spec)` check means regex patterns go to `String.contains?` instead of `Regex.compile`
+- **Status**: Documented as gap in tests
+
+### Test Results
+- **86/86 tests passing** — All new Chicago TDD tests
+- **mix compile --warnings-as-errors** — Clean
+- **0 test warnings**
+
+### Cumulative Test Count
+- Previous: 74 (Groq + telemetry + Roberts Rules + OTel)
+- New: 86 (Verification + Teams) = **160 total Chicago TDD tests**
+
+## Iteration 25 Progress
+
+### Tests Created: 154 Chicago TDD integration tests (NEW)
+
+**Scheduler package (74 tests):**
+- **25 tests** in `cron_engine_real_test.exs` — CronEngine parser/matcher (pure logic)
+- **16 tests** in `cron_presets_real_test.exs` — CronPresets definitions, descriptions, next-run
+- **33 tests** in `persistence_real_test.exs` — Persistence file I/O, atomic writes, validation
+
+**Healing package (80 tests):**
+- **42 tests** in `error_classifier_real_test.exs` — ErrorClassifier pattern matching
+- **38 tests** in `session_real_test.exs` — Session state machine, budget, duration
+
+### Gaps Discovered (Red Phase)
+
+**GAP 1: Session.retryable? never reaches false (DOCUMENTED)**
+- **Location**: `healing/session.ex:121-122`
+- **Issue**: `transition/2` to `:failed` never increments `attempt_count`, so `retryable?` always returns `count < max` = `true` when `max_attempts > 0`
+- **Impact**: Failed sessions with `max_attempts: 1` are incorrectly marked retryable
+- **Status**: Documented in test, not yet fixed
+
+**No other gaps found** — All 154 tests pass against existing implementation.
+
+### Test Results
+- **154/154 tests passing** — All new Chicago TDD tests
+- **mix compile --warnings-as-errors** — Clean
+- **0 test warnings**
+
+### Cumulative Test Count
+- Previous: 160 (Groq + telemetry + Roberts Rules + OTel + Verification + Teams)
+- New: 154 (Scheduler + Healing) = **314 total Chicago TDD tests**
+
+### Next Priority
+
+**P0: Fix documented gaps**
+- Session.attempt_count not incremented on :failed transition
+- Rebalancer crashes on missing AgentState ETS tables
+- UpstreamVerifier regex patterns treated as literals
+
+**P1: More pure-logic modules to test**
+- `agent/tier.ex` — model tier selection
+- `tools/registry.ex` — tool registration/lookup
+- `memory/synthesis.ex` — memory synthesis logic
+- `events/bus.ex` — event bus Goldrush dispatch
