@@ -41,6 +41,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /config      → ConfigRoutes      GET /revisions/:type/:id, GET /revisions/:type/:id/:n, POST /revisions/:type/:id/rollback, GET /revisions/:type/:id/diff
     /verify      → VerificationRoutes POST /workflow, GET /certificate/:id, POST /batch
     /marketplace → MarketplaceRoutes  POST /publish, GET /search, GET /skills, GET /skills/:id, POST /skills/:id/acquire, POST /skills/:id/rate, GET /stats, GET /revenue/:publisher_id
+    /audit-trail → AuditRoutes       GET /:session_id, GET /:session_id/verify, GET /:session_id/merkle
+    /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -158,6 +160,12 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── Agent Commerce Marketplace (Innovation 9) ───────────────────────
   forward "/marketplace", to: API.MarketplaceRoutes
+
+  # ── Audit trail (Innovation 3 — hash-chain compliance) ───────────────
+  forward "/audit-trail", to: API.AuditRoutes
+
+  # ── Process intelligence (Innovations 2, 4, 7) ───────────────────────
+  forward "/process", to: API.ProcessRoutes
 
   # ── Signal classification (inline — single endpoint) ─────────────────
   post "/classify" do

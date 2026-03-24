@@ -510,10 +510,10 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       end)
 
     # Normalize to 0.0-1.0 range (5+ high-severity drifts = max)
-    Float.min(weighted_sum / 5.0, 1.0) |> Float.round(2)
+    min(weighted_sum / 5.0, 1.0) |> Float.round(2)
   end
 
-  defp synthesize_recommendation(drifts, drift_score) when drift_score < 0.2 do
+  defp synthesize_recommendation(_drifts, drift_score) when drift_score < 0.2 do
     "Organization structure is aligned with execution patterns"
   end
 
@@ -568,7 +568,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     }
   end
 
-  defp propose_team_merges(proposals, drifts, teams, org_config) do
+  defp propose_team_merges(proposals, drifts, _teams, org_config) do
     overloaded_teams =
       drifts
       |> Enum.filter(&(&1.type == :role_overload and &1.severity in [:high, :critical]))
@@ -578,7 +578,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       merged_name = suggest_merged_name(overloaded_teams)
       cross_functional_rate = compute_cross_functional_rate(overloaded_teams, org_config)
 
-      confidence = Float.min(0.5 + cross_functional_rate * 0.4, 0.95)
+      confidence = min(0.5 + cross_functional_rate * 0.4, 0.95)
 
       [%{
         type: :merge_teams,
@@ -605,7 +605,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       responsibilities = Map.get(team_config, :responsibilities, [])
 
       if length(responsibilities) > 4 do
-        [half1, half2] = Enum.split(responsibilities, div(length(responsibilities), 2))
+        [_half1, _half2] = Enum.split(responsibilities, div(length(responsibilities), 2))
         name1 = "#{team_name}-core"
         name2 = "#{team_name}-platform"
 
@@ -637,7 +637,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       scope = Map.get(role_config, :scope, [])
 
       if length(scope) > 3 do
-        [half1, half2] = Enum.split(scope, div(length(scope), 2))
+        [_half1, _half2] = Enum.split(scope, div(length(scope), 2))
         name1 = role_name |> String.replace_suffix("-engineer", "-engineer") |> String.replace("devops", "sre")
         name2 = "platform-#{role_name}"
 
@@ -697,8 +697,8 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
           type: :automate_process,
           from: drift.entity,
           to: "automated-#{drift.entity}",
-          confidence: Float.min(0.6 + bypass_rate * 0.3, 0.95) |> Float.round(2),
-          risk_score: Float.max(0.15, 0.4 - bypass_rate * 0.3) |> Float.round(2),
+          confidence: min(0.6 + bypass_rate * 0.3, 0.95) |> Float.round(2),
+          risk_score: max(0.15, 0.4 - bypass_rate * 0.3) |> Float.round(2),
           justification: "High bypass rate (#{Float.round(bypass_rate * 100, 0)}%) indicates manual process should be automated"
         }
         | acc
@@ -772,7 +772,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
 
     # Estimate improved success rate from added checks
     failure_reduction = missing_checks * 0.05
-    new_success_rate = Float.min(original.success_rate + failure_reduction, 1.0) |> Float.round(2)
+    new_success_rate = min(original.success_rate + failure_reduction, 1.0) |> Float.round(2)
 
     %{
       steps: optimized_steps,
@@ -782,43 +782,47 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp derive_changes(_workflow_id, _original, _optimized, execution_history) do
-    changes = []
-
     # Detect auto-approvable steps
     approval_skip_rate = compute_approval_auto_rate(execution_history)
-
-    if approval_skip_rate > 0.9 do
-      changes = [%{
-        type: :remove_step,
-        step: "manual_approval",
-        reason: "Auto-approved #{Float.round(approval_skip_rate * 100, 0)}% of requests"
-      } | changes]
-    end
 
     # Detect independent steps that could run in parallel
     independent_pairs = detect_independent_steps(execution_history)
 
-    if length(independent_pairs) > 0 do
-      changes = [%{
-        type: :parallelize,
-        steps: hd(independent_pairs),
-        reason: "Independent checks detected from execution timing analysis"
-      } | changes]
-    end
-
     # Detect missing test coverage
     bug_before_review_rate = compute_bug_before_review_rate(execution_history)
 
-    if bug_before_review_rate > 0.1 do
-      changes = [%{
-        type: :add_step,
-        step: "automated_test",
-        reason: "Catches #{Float.round(bug_before_review_rate * 100, 0)}% of bugs before review"
-      } | changes]
-    end
+    changes =
+      []
+      |> maybe_add_change(
+        approval_skip_rate > 0.9,
+        %{
+          type: :remove_step,
+          step: "manual_approval",
+          reason: "Auto-approved #{Float.round(approval_skip_rate * 100, 0)}% of requests"
+        }
+      )
+      |> maybe_add_change(
+        length(independent_pairs) > 0,
+        %{
+          type: :parallelize,
+          steps: hd(independent_pairs),
+          reason: "Independent checks detected from execution timing analysis"
+        }
+      )
+      |> maybe_add_change(
+        bug_before_review_rate > 0.1,
+        %{
+          type: :add_step,
+          step: "automated_test",
+          reason: "Catches #{Float.round(bug_before_review_rate * 100, 0)}% of bugs before review"
+        }
+      )
 
     Enum.reverse(changes)
   end
+
+  defp maybe_add_change(acc, true, change), do: [change | acc]
+  defp maybe_add_change(acc, false, _change), do: acc
 
   defp compute_savings_pct(original, optimized) do
     if original.avg_cycle_time_ms == 0 do
@@ -988,7 +992,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
           std_dev = :math.sqrt(variance)
           # Low coefficient of variation = high efficiency
           cv = if avg == 0, do: 1.0, else: std_dev / avg
-          Float.max(0.0, 1.0 - cv)
+          max(0.0, 1.0 - cv)
         else
           0.5
         end
@@ -1011,7 +1015,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     if max_possible == 0, do: 0.8
 
     interaction_ratio = total_interactions / max_possible
-    Float.min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
+    min(interaction_ratio * 2.0, 1.0) |> Float.round(2)
   end
 
   defp compute_process_compliance(workflows, execution_data) do
@@ -1112,7 +1116,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
     max(teams, 1)
   end
 
-  defp compute_bypass_rate(workflow_name, required_steps, execution_data) do
+  defp compute_bypass_rate(_workflow_name, required_steps, execution_data) do
     if required_steps == [] or execution_data == [], do: 0.0
 
     total = length(execution_data)
@@ -1137,8 +1141,8 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
       process_execs
       |> Enum.count(fn exec ->
         Map.get(exec, :produced_new_info, false) or
-          Map.get(exec, :action_items_generated, 0, 0) > 0 or
-          Map.get(exec, :decisions_made, 0, 0) > 0
+          Map.get(exec, :action_items_generated, 0) > 0 or
+          Map.get(exec, :decisions_made, 0) > 0
       end)
 
     informative / length(process_execs)
@@ -1181,7 +1185,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
         Enum.any?(team_names, &(&1 in involved))
       end)
 
-    Float.min(shared / max(length(team_names), 1), 1.0)
+    min(shared / max(length(team_names), 1), 1.0)
   end
 
   defp suggest_merged_name(team_names) do
@@ -1296,7 +1300,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
 
     bugs_found =
       execution_history
-      |> Enum.count(&Map.get(&1, :bugs_before_review, 0, 0) > 0)
+      |> Enum.count(&Map.get(&1, :bugs_before_review, 0) > 0)
 
     bugs_found / total
   end

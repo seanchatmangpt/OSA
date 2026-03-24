@@ -32,7 +32,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   """
 
   use Plug.Router
-  import OptimalSystemAgent.Channels.HTTP.API.Shared
+  import Plug.Conn
   require Logger
 
   alias OptimalSystemAgent.Process.Fingerprint
@@ -49,6 +49,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   plug(:match)
   plug(:dispatch)
 
+  @gen_server_timeout 5000
+
   # ══════════════════════════════════════════════════════════════════════
   # Fingerprint Endpoints
   # ══════════════════════════════════════════════════════════════════════
@@ -63,17 +65,20 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_list(events) or events == [] ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'events' array")
+        send_json_error(conn, 400, "Missing or empty 'events' array")
 
       true ->
         opts = [process_type: process_type]
 
         case safe_extract_fingerprint(events, opts) do
           {:ok, fingerprint} ->
-            json(conn, 200, %{fingerprint: fingerprint})
+            send_json(conn, 200, %{fingerprint: fingerprint})
 
           {:error, reason} ->
-            json_error(conn, 400, "fingerprint_error", "Failed to extract fingerprint: #{inspect(reason)}")
+            send_json_error(conn, 400, "Failed to extract fingerprint: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
         end
     end
   end
@@ -82,11 +87,14 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
   get "/fingerprint/:id" do
     case safe_get_fingerprint(id) do
-      nil ->
-        json_error(conn, 404, "not_found", "Fingerprint not found")
+      {:ok, fingerprint} ->
+        send_json(conn, 200, %{fingerprint: fingerprint})
 
-      fingerprint ->
-        json(conn, 200, %{fingerprint: fingerprint})
+      :not_found ->
+        send_json_error(conn, 404, "Fingerprint not found")
+
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
     end
   end
 
@@ -99,22 +107,24 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_map(fp_a) or map_size(fp_a) == 0 ->
-        json_error(conn, 400, "invalid_request", "Missing or invalid 'fingerprint_a'")
+        send_json_error(conn, 400, "Missing or invalid 'fingerprint_a'")
 
       not is_map(fp_b) or map_size(fp_b) == 0 ->
-        json_error(conn, 400, "invalid_request", "Missing or invalid 'fingerprint_b'")
+        send_json_error(conn, 400, "Missing or invalid 'fingerprint_b'")
 
       true ->
-        # Convert string keys to atom keys for the Fingerprint module
         fp_a_normalized = normalize_fingerprint_map(fp_a)
         fp_b_normalized = normalize_fingerprint_map(fp_b)
 
         case safe_compare_fingerprints(fp_a_normalized, fp_b_normalized) do
           {:ok, comparison} ->
-            json(conn, 200, %{comparison: comparison})
+            send_json(conn, 200, %{comparison: comparison})
 
           {:error, reason} ->
-            json_error(conn, 400, "compare_error", "Failed to compare fingerprints: #{inspect(reason)}")
+            send_json_error(conn, 400, "Failed to compare fingerprints: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
         end
     end
   end
@@ -127,18 +137,20 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_list(fingerprints) or fingerprints == [] ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'fingerprints' array")
+        send_json_error(conn, 400, "Missing or empty 'fingerprints' array")
 
       true ->
-        normalized =
-          Enum.map(fingerprints, &normalize_fingerprint_map/1)
+        normalized = Enum.map(fingerprints, &normalize_fingerprint_map/1)
 
         case safe_evolution_track(normalized) do
           {:ok, evolution} ->
-            json(conn, 200, %{evolution: evolution})
+            send_json(conn, 200, %{evolution: evolution})
 
           {:error, reason} ->
-            json_error(conn, 400, "evolution_error", "Failed to track evolution: #{inspect(reason)}")
+            send_json_error(conn, 400, "Failed to track evolution: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
         end
     end
   end
@@ -146,25 +158,30 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   # ── GET /fingerprint/benchmark/:industry — industry benchmark ────────
 
   get "/fingerprint/benchmark/:industry" do
-    # Require a fingerprint_id query param to look up a stored fingerprint
     conn = Plug.Conn.fetch_query_params(conn)
     fingerprint_id = conn.query_params["fingerprint_id"]
 
     if is_nil(fingerprint_id) do
-      json_error(conn, 400, "invalid_request", "Query parameter 'fingerprint_id' is required")
+      send_json_error(conn, 400, "Query parameter 'fingerprint_id' is required")
     else
       case safe_get_fingerprint(fingerprint_id) do
-        nil ->
-          json_error(conn, 404, "not_found", "Fingerprint not found")
-
-        fingerprint ->
+        {:ok, fingerprint} ->
           case safe_industry_benchmark(fingerprint, industry) do
             {:ok, benchmark} ->
-              json(conn, 200, %{benchmark: benchmark})
+              send_json(conn, 200, %{benchmark: benchmark})
 
             {:error, reason} ->
-              json_error(conn, 400, "benchmark_error", "Benchmark failed: #{inspect(reason)}")
+              send_json_error(conn, 400, "Benchmark failed: #{inspect(reason)}")
+
+            {:service_unavailable, reason} ->
+              send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
           end
+
+        :not_found ->
+          send_json_error(conn, 404, "Fingerprint not found")
+
+        {:service_unavailable, reason} ->
+          send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
       end
     end
   end
@@ -183,13 +200,12 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_binary(process_id) or process_id == "" ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'process_id'")
+        send_json_error(conn, 400, "Missing or empty 'process_id'")
 
       not is_map(metrics) or map_size(metrics) == 0 ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'metrics' map")
+        send_json_error(conn, 400, "Missing or empty 'metrics' map")
 
       true ->
-        # Convert string keys to atoms for the Temporal module
         normalized_metrics =
           metrics
           |> Enum.map(fn {k, v} ->
@@ -198,25 +214,33 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
           end)
           |> Map.new()
 
-        :ok = safe_record_snapshot(process_id, normalized_metrics)
+        case safe_record_snapshot(process_id, normalized_metrics) do
+          :ok ->
+            send_json(conn, 200, %{
+              process_id: process_id,
+              status: "recorded",
+              recorded_at: DateTime.utc_now() |> DateTime.to_iso8601()
+            })
 
-        json(conn, 200, %{
-          process_id: process_id,
-          status: "recorded",
-          recorded_at: DateTime.utc_now() |> DateTime.to_iso8601()
-        })
+          {:error, reason} ->
+            send_json_error(conn, 500, "Failed to record snapshot: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+        end
     end
   end
 
   # ── GET /temporal/velocity/:process_id — process velocity ───────────
 
   get "/temporal/velocity/:process_id" do
-    velocity = safe_process_velocity(process_id)
+    case safe_process_velocity(process_id) do
+      {:ok, velocity} ->
+        send_json(conn, 200, %{process_id: process_id, velocity: velocity})
 
-    json(conn, 200, %{
-      process_id: process_id,
-      velocity: velocity
-    })
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+    end
   end
 
   # ── GET /temporal/predict/:process_id — predict future state ─────────
@@ -229,34 +253,37 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
       |> Map.get("weeks_ahead", "4")
       |> parse_positive_int(4)
 
-    prediction = safe_predict_state(process_id, weeks_ahead)
+    case safe_predict_state(process_id, weeks_ahead) do
+      {:ok, prediction} ->
+        send_json(conn, 200, %{process_id: process_id, prediction: prediction})
 
-    json(conn, 200, %{
-      process_id: process_id,
-      prediction: prediction
-    })
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+    end
   end
 
   # ── GET /temporal/early-warning/:process_id — early warnings ─────────
 
   get "/temporal/early-warning/:process_id" do
-    warning = safe_early_warning(process_id)
+    case safe_early_warning(process_id) do
+      {:ok, warning} ->
+        send_json(conn, 200, %{process_id: process_id, early_warning: warning})
 
-    json(conn, 200, %{
-      process_id: process_id,
-      early_warning: warning
-    })
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+    end
   end
 
   # ── GET /temporal/stagnation/:process_id — stagnation detection ─────
 
   get "/temporal/stagnation/:process_id" do
-    stagnation = safe_stagnation_detect(process_id)
+    case safe_stagnation_detect(process_id) do
+      {:ok, stagnation} ->
+        send_json(conn, 200, %{process_id: process_id, stagnation: stagnation})
 
-    json(conn, 200, %{
-      process_id: process_id,
-      stagnation: stagnation
-    })
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
+    end
   end
 
   # ══════════════════════════════════════════════════════════════════════
@@ -270,17 +297,20 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
     org_config = Map.get(params, "org_config", params)
 
     if not is_map(org_config) or map_size(org_config) == 0 do
-      json_error(conn, 400, "invalid_request", "Missing or empty 'org_config'")
+      send_json_error(conn, 400, "Missing or empty 'org_config'")
     else
       normalized_org_config = atomize_keys(org_config, ~w(teams roles workflows execution_data))
 
       case safe_detect_drift(normalized_org_config) do
-        drift when is_map(drift) ->
-          json(conn, 200, %{drift: drift})
+        {:ok, drift} ->
+          send_json(conn, 200, %{drift: drift})
 
         {:error, reason} ->
           Logger.warning("[ProcessRoutes] detect_drift error: #{inspect(reason)}")
-          json_error(conn, 500, "internal_error", "Drift detection failed")
+          send_json_error(conn, 500, "Drift detection failed: #{inspect(reason)}")
+
+        {:service_unavailable, reason} ->
+          send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
       end
     end
   end
@@ -294,22 +324,25 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_map(org_config) or map_size(org_config) == 0 ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'org_config'")
+        send_json_error(conn, 400, "Missing or empty 'org_config'")
 
       not is_map(drift_analysis) ->
-        json_error(conn, 400, "invalid_request", "Invalid 'drift_analysis'")
+        send_json_error(conn, 400, "Invalid 'drift_analysis'")
 
       true ->
         normalized_org_config = atomize_keys(org_config, ~w(teams roles workflows execution_data))
         normalized_drift = atomize_keys(drift_analysis, ~w(drifts drift_score recommendation analyzed_at))
 
         case safe_propose_mutation(normalized_org_config, normalized_drift) do
-          result when is_map(result) ->
-            json(conn, 200, %{mutation: result})
+          {:ok, result} ->
+            send_json(conn, 200, %{mutation: result})
 
           {:error, reason} ->
             Logger.warning("[ProcessRoutes] propose_mutation error: #{inspect(reason)}")
-            json_error(conn, 500, "internal_error", "Mutation proposal failed")
+            send_json_error(conn, 500, "Mutation proposal failed: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
         end
     end
   end
@@ -321,15 +354,18 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
     execution_history = Map.get(params, "execution_history", [])
 
     if not is_list(execution_history) do
-      json_error(conn, 400, "invalid_request", "'execution_history' must be an array")
+      send_json_error(conn, 400, "'execution_history' must be an array")
     else
       case safe_optimize_workflow(workflow_id, execution_history) do
-        result when is_map(result) ->
-          json(conn, 200, %{optimization: result})
+        {:ok, result} ->
+          send_json(conn, 200, %{optimization: result})
 
         {:error, reason} ->
           Logger.warning("[ProcessRoutes] optimize_workflow error: #{inspect(reason)}")
-          json_error(conn, 500, "internal_error", "Workflow optimization failed")
+          send_json_error(conn, 500, "Workflow optimization failed: #{inspect(reason)}")
+
+        {:service_unavailable, reason} ->
+          send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
       end
     end
   end
@@ -344,19 +380,22 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
 
     cond do
       not is_binary(process_id) or process_id == "" ->
-        json_error(conn, 400, "invalid_request", "Missing or empty 'process_id'")
+        send_json_error(conn, 400, "Missing or empty 'process_id'")
 
       not is_list(executions) ->
-        json_error(conn, 400, "invalid_request", "'executions' must be an array")
+        send_json_error(conn, 400, "'executions' must be an array")
 
       true ->
         case safe_generate_sop(process_id, executions) do
-          sop when is_map(sop) ->
-            json(conn, 200, %{sop: sop})
+          {:ok, sop} ->
+            send_json(conn, 200, %{sop: sop})
 
           {:error, reason} ->
             Logger.warning("[ProcessRoutes] generate_sop error: #{inspect(reason)}")
-            json_error(conn, 500, "internal_error", "SOP generation failed")
+            send_json_error(conn, 500, "SOP generation failed: #{inspect(reason)}")
+
+          {:service_unavailable, reason} ->
+            send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
         end
     end
   end
@@ -364,26 +403,45 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   # ── GET /org/health — org health assessment ──────────────────────────
 
   get "/org/health" do
-    conn = Plug.Conn.fetch_query_params(conn)
-
-    # Accept org_config as a JSON string query param for simple health checks.
-    # For full assessments, POST /org/drift + POST /org/mutate provide richer data.
     org_config = %{}
 
     case safe_org_health(org_config) do
-      health when is_map(health) ->
-        json(conn, 200, %{health: health})
+      {:ok, health} ->
+        send_json(conn, 200, %{health: health})
 
       {:error, reason} ->
         Logger.warning("[ProcessRoutes] org_health error: #{inspect(reason)}")
-        json_error(conn, 500, "internal_error", "Health assessment failed")
+        send_json_error(conn, 500, "Health assessment failed: #{inspect(reason)}")
+
+      {:service_unavailable, reason} ->
+        send_json_error(conn, 503, "Service unavailable: #{inspect(reason)}")
     end
   end
 
   # ── catch-all ────────────────────────────────────────────────────────
 
   match _ do
-    json_error(conn, 404, "not_found", "Process intelligence endpoint not found")
+    send_json_error(conn, 404, "Process intelligence endpoint not found")
+  end
+
+  # ══════════════════════════════════════════════════════════════════════
+  # JSON Response Helpers (local — no dependency on Shared module)
+  # ══════════════════════════════════════════════════════════════════════
+
+  defp send_json(conn, status, data) do
+    body = Jason.encode!(data)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(status, body)
+  end
+
+  defp send_json_error(conn, status, message) do
+    body = Jason.encode!(%{error: message})
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(status, body)
   end
 
   # ══════════════════════════════════════════════════════════════════════
@@ -391,53 +449,72 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   # ══════════════════════════════════════════════════════════════════════
 
   defp safe_extract_fingerprint(events, opts) do
-    Fingerprint.extract_fingerprint(events, opts)
+    result = Fingerprint.extract_fingerprint(events, opts)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] extract_fingerprint error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] extract_fingerprint exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_get_fingerprint(id) do
-    Fingerprint.get_fingerprint(id)
+    result = Fingerprint.get_fingerprint(id)
+
+    case result do
+      nil -> :not_found
+      fingerprint -> {:ok, fingerprint}
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] get_fingerprint error: #{Exception.message(e)}")
-      nil
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
   catch
-    :exit, _ -> nil
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] get_fingerprint exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_compare_fingerprints(fp_a, fp_b) do
-    Fingerprint.compare_fingerprints(fp_a, fp_b)
+    result = Fingerprint.compare_fingerprints(fp_a, fp_b)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] compare_fingerprints error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] compare_fingerprints exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_evolution_track(fingerprints) do
-    Fingerprint.evolution_track(fingerprints)
+    result = Fingerprint.evolution_track(fingerprints)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] evolution_track error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] evolution_track exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_industry_benchmark(fingerprint, industry) do
-    Fingerprint.industry_benchmark(fingerprint, industry)
+    result = Fingerprint.industry_benchmark(fingerprint, industry)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] industry_benchmark error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] industry_benchmark exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   # ══════════════════════════════════════════════════════════════════════
@@ -445,109 +522,74 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   # ══════════════════════════════════════════════════════════════════════
 
   defp safe_record_snapshot(process_id, metrics) do
-    ProcessMining.record_snapshot(process_id, metrics)
+    result = ProcessMining.record_snapshot(process_id, metrics)
+
+    case result do
+      :ok -> :ok
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, reason}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] record_snapshot error: #{Exception.message(e)}")
-      :ok
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> :ok
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] record_snapshot exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_process_velocity(process_id) do
-    ProcessMining.process_velocity(process_id)
+    result = ProcessMining.process_velocity(process_id)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] process_velocity error: #{Exception.message(e)}")
-      %{
-        pattern_velocity: 0.0,
-        metric_velocity: %{},
-        overall_velocity: 0.0,
-        trend: :stable,
-        data_points: 0,
-        error: "service_unavailable"
-      }
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
   catch
-    :exit, _ ->
-      %{
-        pattern_velocity: 0.0,
-        metric_velocity: %{},
-        overall_velocity: 0.0,
-        trend: :stable,
-        data_points: 0,
-        error: "service_unavailable"
-      }
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] process_velocity exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_predict_state(process_id, weeks_ahead) do
-    ProcessMining.predict_state(process_id, weeks_ahead)
+    result = ProcessMining.predict_state(process_id, weeks_ahead)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] predict_state error: #{Exception.message(e)}")
-      %{
-        predicted_at: DateTime.add(DateTime.utc_now(), weeks_ahead * 7 * 24 * 3600, :second),
-        metrics: %{},
-        confidence: 0.0,
-        method: :error,
-        warning_threshold: false,
-        error: "service_unavailable"
-      }
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
   catch
-    :exit, _ ->
-      %{
-        predicted_at: DateTime.add(DateTime.utc_now(), weeks_ahead * 7 * 24 * 3600, :second),
-        metrics: %{},
-        confidence: 0.0,
-        method: :error,
-        warning_threshold: false,
-        error: "service_unavailable"
-      }
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] predict_state exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_early_warning(process_id) do
-    ProcessMining.early_warning(process_id)
+    result = ProcessMining.early_warning(process_id)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] early_warning error: #{Exception.message(e)}")
-      %{
-        warnings: [],
-        health_score: 0.0,
-        risk_level: :critical,
-        data_points: 0,
-        error: "service_unavailable"
-      }
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
   catch
-    :exit, _ ->
-      %{
-        warnings: [],
-        health_score: 0.0,
-        risk_level: :critical,
-        data_points: 0,
-        error: "service_unavailable"
-      }
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] early_warning exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_stagnation_detect(process_id) do
-    ProcessMining.stagnation_detect(process_id)
+    result = ProcessMining.stagnation_detect(process_id)
+    handle_result(result)
   rescue
     e ->
       Logger.error("[ProcessRoutes] stagnation_detect error: #{Exception.message(e)}")
-      %{
-        is_stagnant: false,
-        stagnation_score: 0.0,
-        last_improvement: nil,
-        recommended_action: "Unable to assess -- service unavailable",
-        error: "service_unavailable"
-      }
+      {:service_unavailable, "Service unavailable: #{Exception.message(e)}"}
   catch
-    :exit, _ ->
-      %{
-        is_stagnant: false,
-        stagnation_score: 0.0,
-        last_improvement: nil,
-        recommended_action: "Unable to assess -- service unavailable",
-        error: "service_unavailable"
-      }
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] stagnation_detect exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   # ══════════════════════════════════════════════════════════════════════
@@ -555,54 +597,102 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   # ══════════════════════════════════════════════════════════════════════
 
   defp safe_detect_drift(org_config) do
-    OrgEvolution.detect_drift(org_config)
+    result = OrgEvolution.detect_drift(org_config)
+
+    case result do
+      drift when is_map(drift) -> {:ok, drift}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] detect_drift error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] detect_drift exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_propose_mutation(org_config, drift_analysis) do
-    OrgEvolution.propose_mutation(org_config, drift_analysis)
+    result = OrgEvolution.propose_mutation(org_config, drift_analysis)
+
+    case result do
+      mutation when is_map(mutation) -> {:ok, mutation}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] propose_mutation error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] propose_mutation exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_optimize_workflow(workflow_id, execution_history) do
-    OrgEvolution.optimize_workflow(workflow_id, execution_history)
+    result = OrgEvolution.optimize_workflow(workflow_id, execution_history)
+
+    case result do
+      optimization when is_map(optimization) -> {:ok, optimization}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] optimize_workflow error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] optimize_workflow exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_generate_sop(process_id, executions) do
-    OrgEvolution.generate_sop(process_id, executions)
+    result = OrgEvolution.generate_sop(process_id, executions)
+
+    case result do
+      sop when is_map(sop) -> {:ok, sop}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] generate_sop error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] generate_sop exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
 
   defp safe_org_health(org_config) do
-    OrgEvolution.org_health(org_config)
+    result = OrgEvolution.org_health(org_config)
+
+    case result do
+      health when is_map(health) -> {:ok, health}
+      other -> handle_result(other)
+    end
   rescue
     e ->
       Logger.error("[ProcessRoutes] org_health error: #{Exception.message(e)}")
-      {:error, :internal_error}
+      {:error, "Internal error: #{Exception.message(e)}"}
   catch
-    :exit, _ -> {:error, :service_unavailable}
+    :exit, reason ->
+      Logger.error("[ProcessRoutes] org_health exit: #{inspect(reason)}")
+      {:service_unavailable, "Service unavailable: #{inspect(reason)}"}
   end
+
+  # ══════════════════════════════════════════════════════════════════════
+  # Result Normalization
+  # ══════════════════════════════════════════════════════════════════════
+
+  # Normalizes the various return shapes from backend modules into tagged tuples.
+  # Handles GenServer-style {:ok, ...}, {:error, ...}, raw maps, and unknown values.
+  defp handle_result({:ok, data}) when is_map(data), do: {:ok, data}
+  defp handle_result({:ok, data}) when is_list(data), do: {:ok, data}
+  defp handle_result({:error, reason}), do: {:error, reason}
+  defp handle_result(data) when is_map(data), do: {:ok, data}
+  defp handle_result(data) when is_list(data), do: {:ok, data}
+  defp handle_result(other), do: {:error, "Unexpected result: #{inspect(other)}"}
 
   # ══════════════════════════════════════════════════════════════════════
   # Key Normalization Helpers
@@ -617,7 +707,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
         {String.to_atom(k), v}
 
       {k, v} when is_binary(k) and k == "extracted_at" ->
-        # Parse ISO8601 string back to DateTime
         parsed =
           case v do
             s when is_binary(s) ->
@@ -672,4 +761,19 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProcessRoutes do
   end
 
   defp atomize_keys(other, _allowed_keys), do: other
+
+  # ══════════════════════════════════════════════════════════════════════
+  # Shared Parsers
+  # ══════════════════════════════════════════════════════════════════════
+
+  defp parse_positive_int(nil, default), do: default
+
+  defp parse_positive_int(val, default) when is_binary(val) do
+    case Integer.parse(val) do
+      {n, ""} when n > 0 -> n
+      _ -> default
+    end
+  end
+
+  defp parse_positive_int(_, default), do: default
 end
