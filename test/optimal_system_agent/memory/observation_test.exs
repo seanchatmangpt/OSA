@@ -170,7 +170,10 @@ defmodule OptimalSystemAgent.Memory.ObservationTest do
         type: :success,
         context: %{key: "value"}
       })
-      assert obs.context == %{key: "value"}
+      # Context supports dual-key access: both atom and string keys
+      # so %{key: "value"} becomes %{key: "value", "key": "value"}
+      assert obs.context[:key] == "value"
+      assert obs.context["key"] == "value"
     end
 
     test "has recorded_at field" do

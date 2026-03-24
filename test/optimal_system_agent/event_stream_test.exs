@@ -323,6 +323,9 @@ defmodule OptimalSystemAgent.EventStreamTest do
       EventStream.broadcast("lifecycle_update", %{phase: "update"})
       EventStream.broadcast("lifecycle_complete", %{phase: "complete"})
 
+      # Allow async cast to complete
+      Process.sleep(100)
+
       # Get all history
       all_history = EventStream.event_history()
       assert length(all_history) >= 3

@@ -5,33 +5,39 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11Test do
 
   # ---------------------------------------------------------------------------
   # Shell escaping (security-critical)
-  # NOTE: shell_escape/1 does not exist in the LinuxX11 adapter source module.
-  # All tests are skipped until the function is implemented.
+  # NOTE: shell_escape/1 is NOT IMPLEMENTED in the LinuxX11 adapter.
+  # These tests are skipped until the function is added to the module.
+  # Reason: Function does not exist in lib/optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex
   # ---------------------------------------------------------------------------
 
   describe "shell_escape/1" do
     @tag :skip
     test "normal text passes through in single quotes" do
+      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("hello world") == "'hello world'"
     end
 
     @tag :skip
     test "single quotes are properly escaped" do
+      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("it's here") == "'it'\\''s here'"
     end
 
     @tag :skip
     test "empty string returns empty single quotes" do
+      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("") == "''"
     end
 
     @tag :skip
     test "special shell characters are safely contained" do
+      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("$(rm -rf /)") == "'$(rm -rf /)'"
     end
 
     @tag :skip
     test "backticks are safely contained" do
+      # TODO: Implement LinuxX11.shell_escape/1 — currently undefined
       assert LinuxX11.shell_escape("`whoami`") == "'`whoami`'"
     end
   end
@@ -64,29 +70,32 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Adapters.LinuxX11Test do
 
   # ---------------------------------------------------------------------------
   # Screenshot command generation
-  # NOTE: screenshot_cmd/1 returns scrot on macOS (maim not installed).
-  # These tests hardcode maim expectations and are skipped on non-Linux platforms.
+  # NOTE: screenshot_cmd/1 checks for maim availability at runtime.
+  # On systems without maim (like macOS), it falls back to scrot.
+  # These tests are platform-conditional.
   # ---------------------------------------------------------------------------
 
   describe "screenshot_cmd/1" do
-    @tag :skip
-    test "full screenshot uses maim" do
+    test "full screenshot uses available tool" do
       {cmd, args} = LinuxX11.screenshot_cmd(%{path: "/tmp/test.png"})
-      assert cmd == "maim"
-      assert args == ["/tmp/test.png"]
+      # Command is either "maim" or "scrot" depending on availability
+      assert cmd in ["maim", "scrot"]
+      assert "/tmp/test.png" in args
     end
 
-    @tag :skip
-    test "region screenshot uses maim -g geometry" do
+    test "region screenshot generates geometry string when maim available" do
       {cmd, args} =
         LinuxX11.screenshot_cmd(%{
           path: "/tmp/test.png",
           region: %{"x" => 10, "y" => 20, "width" => 300, "height" => 200}
         })
 
-      assert cmd == "maim"
-      assert "-g" in args
-      assert "300x200+10+20" in args
+      assert cmd in ["maim", "scrot"]
+      # maim uses -g geometry, scrot uses full screen
+      if cmd == "maim" do
+        assert "-g" in args
+        assert "300x200+10+20" in args
+      end
       assert "/tmp/test.png" in args
     end
   end

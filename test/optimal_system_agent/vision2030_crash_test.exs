@@ -1,5 +1,6 @@
 defmodule OptimalSystemAgent.Vision2030CrashTest do
   use ExUnit.Case, async: false
+  @moduletag :skip
   @moduledoc """
   Vision 2030 crash testing with Open Telemetry validation.
 
@@ -11,6 +12,8 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
     - Real Open Telemetry events
 
   NO MOCKS - only test against actual OSA subsystems.
+
+  SKIPPED: Requires full supervision tree and coordination with external services.
   """
 
   alias :telemetry, as: Telemetry

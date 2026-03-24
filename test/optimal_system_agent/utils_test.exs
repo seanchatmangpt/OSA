@@ -84,7 +84,7 @@ defmodule OptimalSystemAgent.UtilsTest do
     end
 
     test "handles unicode characters" do
-      result = Text.truncate("测试文本", 5)
+      result = Text.truncate("测试文本字符串", 5)
       assert String.length(result) == 5
       assert String.ends_with?(result, "…")
     end

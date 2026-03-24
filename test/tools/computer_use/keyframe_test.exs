@@ -115,47 +115,46 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.KeyframeTest do
   # Doom loop detection
   # ---------------------------------------------------------------------------
 
-  # NOTE: All detect_doom_loop/1 tests are skipped because the implementation
-  # hashes action:result pairs via SHA256, not the keyframe_hash field that
-  # the tests assumed. Tests need rewriting to match the actual implementation.
+  # NOTE: detect_doom_loop/1 hashes action:result pairs via SHA256.
+  # Tests rewritten to match the actual implementation.
   describe "detect_doom_loop/1" do
-    @tag :skip
-    test "no doom loop with different entries", %{base_dir: dir} do
+    test "no doom loop with different action:result pairs", %{base_dir: dir} do
       {:ok, journal_dir} = Keyframe.init_journal("sess_nodoom", base_dir: dir)
 
-      for i <- 1..3 do
-        Keyframe.record_entry(journal_dir, %{
-          step: i, action: "click",
-          params: %{"x" => i * 100}, result: "ok",
-          keyframe_hash: "hash_#{i}"
-        })
-      end
+      # Different action:result pairs produce different hashes
+      Keyframe.record_entry(journal_dir, %{
+        step: 1, action: "click", params: %{"x" => 100}, result: "ok"
+      })
+      Keyframe.record_entry(journal_dir, %{
+        step: 2, action: "click", params: %{"x" => 200}, result: "ok"
+      })
+      Keyframe.record_entry(journal_dir, %{
+        step: 3, action: "type", params: %{"text" => "hello"}, result: "ok"
+      })
 
       assert Keyframe.detect_doom_loop(journal_dir) == :ok
     end
 
-    @tag :skip
-    test "detects 3 identical keyframe hashes", %{base_dir: dir} do
+    test "detects 3 identical action:result pairs", %{base_dir: dir} do
       {:ok, journal_dir} = Keyframe.init_journal("sess_doom", base_dir: dir)
 
-      for i <- 1..3 do
+      # Same action:result pair creates identical hashes
+      for _i <- 1..3 do
         Keyframe.record_entry(journal_dir, %{
-          step: i, action: "click",
-          params: %{"x" => 100}, result: "ok",
-          keyframe_hash: "same_hash"
+          step: 1, action: "click", params: %{"x" => 100}, result: "ok"
         })
       end
 
       assert {:doom_loop, 3} = Keyframe.detect_doom_loop(journal_dir)
     end
 
-    @tag :skip
-    test "no doom loop with only 2 identical hashes", %{base_dir: dir} do
+    test "no doom loop with only 2 identical action:result pairs", %{base_dir: dir} do
       {:ok, journal_dir} = Keyframe.init_journal("sess_2doom", base_dir: dir)
 
-      Keyframe.record_entry(journal_dir, %{step: 1, action: "click", params: %{}, result: "ok", keyframe_hash: "same"})
-      Keyframe.record_entry(journal_dir, %{step: 2, action: "click", params: %{}, result: "ok", keyframe_hash: "same"})
-      Keyframe.record_entry(journal_dir, %{step: 3, action: "click", params: %{}, result: "ok", keyframe_hash: "diff"})
+      # Only 2 identical pairs: not enough to trigger doom loop
+      Keyframe.record_entry(journal_dir, %{step: 1, action: "click", params: %{"x" => 100}, result: "ok"})
+      Keyframe.record_entry(journal_dir, %{step: 2, action: "click", params: %{"x" => 100}, result: "ok"})
+      Keyframe.record_entry(journal_dir, %{step: 3, action: "type", params: %{"text" => "text"}, result: "ok"})
 
       assert Keyframe.detect_doom_loop(journal_dir) == :ok
     end

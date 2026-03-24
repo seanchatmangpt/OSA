@@ -44,6 +44,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
     GenServer.call(__MODULE__, :list_tools)
   end
 
+  @doc "Alias for list_tools/0 — returns list of available tools."
+  def list do
+    list_tools()
+  end
+
   @doc """
   List all available tools without going through the GenServer.
 

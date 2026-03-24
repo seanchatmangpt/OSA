@@ -17,13 +17,17 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
     # by calling list_active and discarding all
     Executor.list_active()
     |> Enum.each(&Executor.discard/1)
+
     :ok
   end
 
   describe "start_link/1" do
     test "starts the Executor GenServer" do
-      assert {:ok, pid} = Executor.start_link(:ok)
-      assert is_pid(pid)
+      # Executor is a singleton started by the application
+      # Verify it's running by calling a basic operation
+      {:ok, speculative_id} = Executor.start_speculative("test_agent", %{}, [])
+      assert is_binary(speculative_id)
+      Executor.discard(speculative_id)
     end
   end
 
@@ -34,6 +38,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
       assumptions = ["User intent unchanged", "File not modified"]
 
       result = Executor.start_speculative(agent_id, predicted_task, assumptions)
+
       case result do
         {:ok, speculative_id} -> assert is_binary(speculative_id)
         {:error, _} -> assert true
@@ -42,6 +47,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
     test "accepts empty assumptions list" do
       result = Executor.start_speculative("agent", %{}, [])
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -50,6 +56,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
     test "returns speculative_id string" do
       result = Executor.start_speculative("agent", %{}, ["test"])
+
       case result do
         {:ok, id} -> assert is_binary(id)
         {:error, _} -> assert true
@@ -64,6 +71,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
         {:ok, spec_id} ->
           check_fn = fn _assumption, _context -> :ok end
           result = Executor.check_assumptions(spec_id, %{}, check_fn)
+
           case result do
             {:ok, _} -> assert true
             {:invalidated, _} -> assert true
@@ -90,6 +98,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   describe "get_status/1" do
     test "returns status for speculative execution" do
       result = Executor.get_status("test_spec_id")
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -104,6 +113,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   describe "promote/1" do
     test "promotes speculative work to real state" do
       result = Executor.promote("test_spec_id")
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -118,6 +128,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   describe "discard/1" do
     test "discards speculative work" do
       result = Executor.discard("test_spec_id")
+
       case result do
         :ok -> assert true
         {:error, _} -> assert true
@@ -126,6 +137,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
     test "returns :ok for non-existent speculative_id" do
       result = Executor.discard("nonexistent")
+
       case result do
         :ok -> assert true
         {:error, _} -> assert true
@@ -176,6 +188,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   describe "edge cases" do
     test "handles empty agent_id" do
       result = Executor.start_speculative("", %{}, ["test"])
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -184,6 +197,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
     test "handles nil predicted_task" do
       result = Executor.start_speculative("agent", nil, ["test"])
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -193,6 +207,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
     test "handles very long agent_id" do
       long_id = String.duplicate("a", 1000)
       result = Executor.start_speculative(long_id, %{}, ["test"])
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -201,6 +216,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
     test "handles unicode in agent_id" do
       result = Executor.start_speculative("代理_123", %{}, ["test"])
+
       case result do
         {:ok, _} -> assert true
         {:error, _} -> assert true
@@ -221,6 +237,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
         {:ok, spec_id} ->
           # Get status
           status_result = Executor.get_status(spec_id)
+
           case status_result do
             {:ok, _} -> assert true
             {:error, _} -> assert true
@@ -232,6 +249,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
           # Discard
           discard_result = Executor.discard(spec_id)
+
           case discard_result do
             :ok -> assert true
             {:error, _} -> assert true

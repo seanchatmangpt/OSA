@@ -46,10 +46,13 @@ defmodule OptimalSystemAgent.Utils.Text do
   """
   @spec truncate(String.t() | any(), non_neg_integer()) :: String.t()
   def truncate(str, max_len) when is_binary(str) do
-    if String.length(str) <= max_len do
-      str
-    else
-      String.slice(str, 0, max_len - 1) <> "…"
+    cond do
+      String.length(str) <= max_len ->
+        str
+      max_len <= 1 ->
+        "…"
+      true ->
+        String.slice(str, 0, max_len - 1) <> "…"
     end
   end
 

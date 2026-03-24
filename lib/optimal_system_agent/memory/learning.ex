@@ -147,14 +147,17 @@ defmodule OptimalSystemAgent.Memory.Learning do
   @doc "Consolidate patterns by threshold."
   @spec consolidate_patterns(float()) :: {:ok, [map()]} | {:error, term()}
   def consolidate_patterns(threshold) when is_float(threshold) do
-    {:ok, patterns()} |> elem(1) |> then(fn patterns ->
-      if Enum.empty?(patterns) do
-        {:ok, []}
-      else
-        # Simulate consolidation by returning grouped patterns
-        {:ok, patterns}
-      end
-    end)
+    case patterns() do
+      {:ok, patterns_list} ->
+        if Enum.empty?(patterns_list) do
+          {:ok, []}
+        else
+          # Simulate consolidation by returning grouped patterns
+          {:ok, patterns_list}
+        end
+      error ->
+        error
+    end
   end
 
   @doc "Delete a pattern by ID."

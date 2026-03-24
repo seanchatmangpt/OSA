@@ -22,7 +22,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   # Models known to handle tool calling well (name prefix → min size in GB)
   # Include both hyphenated and non-hyphenated variants (glm-4 AND glm4)
-  @tool_capable_prefixes ~w(gpt-oss qwen3 qwen2.5 qwen2 qwen gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin)
+  @tool_capable_prefixes ~w(gpt-oss qwen3 qwen2.5 qwen2 qwen gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin llama3 llama2 llama)
 
   # Minimum model size (in bytes) to enable tool calling — ~14B params ≈ 8GB on disk
   @tool_min_size 7_000_000_000

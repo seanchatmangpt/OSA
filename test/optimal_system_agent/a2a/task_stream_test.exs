@@ -75,12 +75,12 @@ defmodule OptimalSystemAgent.A2A.TaskStreamTest do
   describe "publish/3" do
     test "publishes without error" do
       task_id = "test-task-pub-#{System.unique_integer([:positive])}"
-      assert :ok = TaskStream.publish(task_id, "running", %{step: 1})
+      assert {:ok, _count} = TaskStream.publish(task_id, "running", %{step: 1})
     end
 
     test "publishes with empty metadata" do
       task_id = "test-task-pub2-#{System.unique_integer([:positive])}"
-      assert :ok = TaskStream.publish(task_id, "completed", %{})
+      assert {:ok, _count} = TaskStream.publish(task_id, "completed", %{})
     end
   end
 

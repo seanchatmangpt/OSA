@@ -25,6 +25,9 @@ defmodule OptimalSystemAgent.Providers.Cohere do
   def default_model, do: "command-r-plus"
 
   @impl true
+  def available_models, do: ["command-r", "command-r-plus", "command-light"]
+
+  @impl true
   def chat(messages, opts \\ []) do
     api_key = Application.get_env(:optimal_system_agent, :cohere_api_key)
 

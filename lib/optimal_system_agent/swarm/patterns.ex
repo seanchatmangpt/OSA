@@ -159,6 +159,14 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
     end
   end
 
+  @doc """
+  Four-argument variant of review_loop/3 that accepts additional options.
+  Delegates to review_loop/3 with opts properly structured.
+  """
+  def review_loop(parent_id, worker_config, reviewer_config, opts) when is_list(opts) do
+    review_loop(parent_id, [worker_config, reviewer_config], opts)
+  end
+
   defp run_review_loop(_parent_id, _worker_cfg, _reviewer_cfg, max_iter) when max_iter < 1 do
     Logger.warning("[Swarm.Patterns] review_loop max_iterations=#{max_iter} < 1, returning empty result")
     {:ok, [{:ok, "[no iterations]"}]}

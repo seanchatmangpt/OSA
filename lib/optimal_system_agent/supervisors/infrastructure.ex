@@ -9,7 +9,7 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
   Uses `:rest_for_one` because several children have strict ordering:
   - TaskSupervisor must start before Events.Bus (Bus spawns supervised tasks)
   - Events.Bus must start before Events.DLQ and Bridge.PubSub
-  - Bridge.PubSub must start before Telemetry.Metrics
+  - PubSub must start before Telemetry.Metrics (metrics depends on pubsub)
   - HealthChecker must start before Providers.Registry
   """
   use Supervisor
@@ -59,7 +59,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       {DynamicSupervisor, name: OptimalSystemAgent.MCP.Supervisor, strategy: :one_for_one},
 
       # MCP client — starts MCP server child processes, depends on Registry + DynamicSupervisor above
-      {OptimalSystemAgent.MCP.Client, []}
+      {OptimalSystemAgent.MCP.Client, []},
+
+      # Metrics collection GenServer — collects tool, provider, noise filter, and signal weight metrics
+      OptimalSystemAgent.Telemetry.Metrics
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

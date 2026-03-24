@@ -120,7 +120,8 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
         iteration: 0,
         messages: [],
         provider: :test_provider,
-        model: :test_model
+        model: :test_model,
+        tools: []
       }
 
       {response, _state} = ReactLoop.run(state)
