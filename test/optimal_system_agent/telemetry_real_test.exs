@@ -1,6 +1,6 @@
-defmodule OptimalSystemAgent.ChicagoTDDTelemetryTest do
+defmodule OptimalSystemAgent.TelemetryRealTest do
   @moduledoc """
-  Chicago TDD — OpenTelemetry validation tests for MCP & A2A calls.
+  OpenTelemetry validation tests for MCP & A2A calls.
 
   NO MOCKS. Tests verify that real :telemetry events are emitted during
   MCP tool calls and A2A agent calls.

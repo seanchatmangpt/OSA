@@ -1,7 +1,7 @@
-defmodule OptimalSystemAgent.Sensors.SensorRegistry.ChicagoTDD do
+defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
   use ExUnit.Case, async: false
   @moduledoc """
-  Chicago TDD comprehensive tests for SensorRegistry.
+  Comprehensive tests for SensorRegistry.
 
   Tests EVERY EXISTING FUNCTION with all edge cases, error conditions,
   and real-world inputs. Following Joe Armstrong's principle: "Make it crash,

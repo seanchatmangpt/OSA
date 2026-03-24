@@ -1,7 +1,7 @@
-defmodule OptimalSystemAgent.Fortune5.ChicagoTDDNewGaps do
+defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
   use ExUnit.Case, async: false
   @moduledoc """
-  NEW Chicago TDD - Discover additional gaps in Fortune 5 implementation.
+  Discover additional gaps in Fortune 5 implementation.
 
   Following "NO MOCKS ONLY TEST AGAINST REAL" methodology:
     - Test against actual filesystem, not mocks

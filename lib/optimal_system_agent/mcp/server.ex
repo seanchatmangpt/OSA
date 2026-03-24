@@ -349,30 +349,16 @@ defmodule OptimalSystemAgent.MCP.Server do
     unless is_binary(command) and command != "" do
       {:error, :missing_command}
     else
-      port_opts = [
-        :binary,
-        :exit_status,
-        {:line, 65_536},
-        :use_stdio,
-        :hide,
-        :nouse_stderr
-      ]
-
       env_list =
         env
         |> Enum.map(fn {k, v} -> {to_charlist(k), to_charlist(v)} end)
 
-      port_opts =
-        if env_list != [] do
-          [{:env, env_list} | port_opts]
-        else
-          port_opts
-        end
-
       cmd = to_charlist(command)
       cmd_args = Enum.map(args, &to_charlist/1)
 
-      # Add arguments to port options if present
+      # Build port options - minimal for :spawn_executable compatibility
+      port_opts = [:binary]
+
       port_opts =
         if cmd_args != [] do
           [{:args, cmd_args} | port_opts]
@@ -380,7 +366,6 @@ defmodule OptimalSystemAgent.MCP.Server do
           port_opts
         end
 
-      # Re-apply env option after args (order matters for port_opts)
       port_opts =
         if env_list != [] do
           [{:env, env_list} | port_opts]

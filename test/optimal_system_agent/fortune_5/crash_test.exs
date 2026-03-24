@@ -1,13 +1,13 @@
-defmodule OptimalSystemAgent.Fortune5.ChicagoTDDTest do
+defmodule OptimalSystemAgent.Fortune5.CrashTest do
   use ExUnit.Case, async: false
   @moduledoc """
-  Chicago TDD tests - Make it break, then fix it.
+  Crash tests - Make it break, then fix it.
 
   These tests will CRASH existing code to expose bugs.
   Not testing missing features - testing EXISTING code's edge cases.
   """
 
-  describe "Chicago TDD: Crash SensorRegistry with Real-World Edge Cases" do
+  describe "Crash SensorRegistry with Real-World Edge Cases" do
     setup do
       OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
       :ok

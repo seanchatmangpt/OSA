@@ -536,24 +536,79 @@ defmodule OptimalSystemAgent.Swarm.RobertsRules do
   end
 
   @doc """
-  Call LLM with structured JSON output (response_format: json_object).
+  Call LLM with structured JSON output via tool calling.
 
-  Uses `response_format: %{type: "json_object"}` to force the model to return
-  valid JSON, then parses with Jason.decode!. No free-text regex parsing.
+  Uses OpenAI function calling (tool use) to force the model to return
+  structured JSON, then parses the tool call arguments with Jason.decode!.
+  No free-text regex parsing. Falls back to response_format: json_object
+  if tool calling fails.
+
+  Uses the configured default provider and model (no hardcoded provider).
   """
   def call_llm_json(prompt, opts \\ []) do
     temperature = Keyword.get(opts, :temperature, 0.6)
     max_tokens = Keyword.get(opts, :max_tokens, 300)
 
+    # Use the caller's provider/model if specified, otherwise use defaults
+    provider = Keyword.get(opts, :provider)
+    model = Keyword.get(opts, :model)
+    chat_opts = Keyword.drop(opts, [:provider, :model])
+
     messages = [%{role: "user", content: prompt}]
 
-    case Providers.chat(messages,
-           provider: :groq,
-           model: "openai/gpt-oss-20b",
-           temperature: temperature,
-           max_tokens: max_tokens,
-           response_format: %{type: "json_object"}
-         ) do
+    # Strategy 1: Tool calling (reliable structured output on OpenAI-compat)
+    tools = [
+      %{
+        name: "respond_json",
+        description: "Return a JSON object as your response.",
+        parameters: %{
+          type: "object",
+          properties: %{data: %{type: "object"}},
+          required: ["data"]
+        }
+      }
+    ]
+
+    tool_opts = [temperature: temperature, max_tokens: max_tokens, tools: tools]
+    tool_opts = if provider, do: Keyword.put(tool_opts, :provider, provider), else: tool_opts
+    tool_opts = if model, do: Keyword.put(tool_opts, :model, model), else: tool_opts
+
+    case Providers.chat(messages, tool_opts) do
+      {:ok, %{tool_calls: [tool_call | _]}} when is_map(tool_call) ->
+        args = tool_call[:arguments] || tool_call["arguments"] || %{}
+        # Unwrap the "data" wrapper (string or atom keys)
+        case args do
+          %{"data" => data} when is_map(data) and map_size(data) > 0 -> {:ok, data}
+          %{data: data} when is_map(data) and map_size(data) > 0 -> {:ok, data}
+          _ when is_map(args) and map_size(args) > 0 -> {:ok, args}
+          _ -> {:error, :empty_response}
+        end
+
+      {:ok, %{content: content}} when is_binary(content) and content != "" ->
+        # Model returned text instead of tool call — try parsing as JSON
+        case Jason.decode(content) do
+          {:ok, parsed} when is_map(parsed) -> {:ok, parsed}
+          _ -> call_llm_json_fallback(messages, chat_opts, provider, model)
+        end
+
+      {:ok, _} ->
+        call_llm_json_fallback(messages, chat_opts, provider, model)
+
+      {:error, reason} ->
+        Logger.warning("[RobertsRules] Tool call failed: #{inspect(reason)}, trying fallback")
+        call_llm_json_fallback(messages, chat_opts, provider, model)
+    end
+  rescue
+    e -> {:error, Exception.message(e)}
+  end
+
+  # Fallback: use response_format: json_object
+  defp call_llm_json_fallback(messages, chat_opts, provider, model) do
+    format_opts = Keyword.put(chat_opts, :response_format, %{type: "json_object"})
+    format_opts = if provider, do: Keyword.put(format_opts, :provider, provider), else: format_opts
+    format_opts = if model, do: Keyword.put(format_opts, :model, model), else: format_opts
+
+    case Providers.chat(messages, format_opts) do
       {:ok, %{content: content}} when is_binary(content) ->
         case Jason.decode(content) do
           {:ok, parsed} when is_map(parsed) -> {:ok, parsed}
@@ -571,7 +626,5 @@ defmodule OptimalSystemAgent.Swarm.RobertsRules do
       {:error, reason} ->
         {:error, reason}
     end
-  rescue
-    e -> {:error, Exception.message(e)}
   end
 end

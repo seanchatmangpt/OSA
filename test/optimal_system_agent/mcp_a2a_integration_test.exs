@@ -230,8 +230,6 @@ defmodule OptimalSystemAgent.MCPA2AIntegrationTest do
     test "INTEGRATION: A2A agent can coordinate multiple MCP tools" do
       # Simulate multi-tool coordination
       handler_name = :"test_multi_tool_coordination_#{:erlang.unique_integer()}"
-
-      events = []
       :telemetry.attach(
         handler_name,
         [:osa, :a2a, :tool_coordination],
@@ -271,7 +269,7 @@ defmodule OptimalSystemAgent.MCPA2AIntegrationTest do
       :telemetry.attach(
         handler_name,
         [:osa, :mcp, :tool_call],
-        fn _event, measurements, metadata, _config ->
+        fn _event, _measurements, metadata, _config ->
           # Verify required metadata attributes
           assert Map.has_key?(metadata, :session_id) or Map.has_key?(metadata, "session_id")
           assert Map.has_key?(metadata, :status) or Map.has_key?(metadata, "status")
@@ -297,7 +295,7 @@ defmodule OptimalSystemAgent.MCPA2AIntegrationTest do
       :telemetry.attach(
         handler_name,
         [:osa, :a2a, :agent_call],
-        fn _event, measurements, metadata, _config ->
+        fn _event, _measurements, metadata, _config ->
           # Verify required metadata attributes
           assert Map.has_key?(metadata, :task_id) or Map.has_key?(metadata, "task_id")
           assert Map.has_key?(metadata, :status) or Map.has_key?(metadata, "status")

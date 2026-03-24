@@ -1,6 +1,6 @@
-defmodule OptimalSystemAgent.ChicagoTDD.GroqIntegrationTest do
+defmodule OptimalSystemAgent.GroqIntegrationRealTest do
   @moduledoc """
-  Chicago TDD — Real Groq API Integration Tests.
+  Real Groq API Integration Tests.
 
   NO MOCKS. NO STUBS. Every test hits the actual Groq API at api.groq.com.
   Requires GROQ_API_KEY environment variable.

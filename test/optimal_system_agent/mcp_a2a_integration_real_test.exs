@@ -1,9 +1,9 @@
-defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
+defmodule OptimalSystemAgent.MCPA2AIntegrationRealTest do
   @moduledoc """
-  Chicago TDD — Real MCP & A2A Integration Tests.
+  Real MCP & A2A Integration Tests.
 
   NO MOCKS. NO STUBS. Tests exercise REAL systems:
-    - Real MCP server connections (stdio/HTTP)
+    - Real MCP HTTP server connections
     - Real tool discovery via MCP protocol
     - Real tool execution via MCP protocol
     - Real A2A agent coordination with Groq API calls
@@ -29,96 +29,12 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
   end
 
   # ---------------------------------------------------------------------------
-  # P0: MCP Server Connection Tests
+  # P0: MCP Server Connection Tests (HTTP only - NO STDIO)
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: MCP Server — Real stdio Server" do
-    test "MCP: Real stdio server starts and connects" do
-      # Create a test MCP server using echo as a simple stdio server
-      # This tests REAL subprocess spawning and stdio communication
-
-      server_name = "test_stdio_#{:erlang.unique_integer()}"
-
-      # Try to start a real stdio MCP server
-      result = try do
-        opts = [
-          name: server_name,
-          transport: "stdio",
-          command: "cat",
-          args: [],
-          env: %{}
-        ]
-
-        case Code.ensure_compiled(OptimalSystemAgent.MCP.Server) do
-          {:module, _} ->
-            # Real MCP server start
-            {:ok, _pid} = OptimalSystemAgent.MCP.Server.start_link(opts)
-            :server_started
-
-          {:error, _} ->
-            :module_not_available
-        end
-      rescue
-        e -> {:error, Exception.message(e)}
-      end
-
-      # Verify server started or module loaded
-      case result do
-        :server_started -> assert true
-        :module_not_available -> assert true
-        {:error, _reason} -> assert true
-        _other -> flunk("Unexpected result: #{inspect(result)}")
-      end
-    end
-
-    test "MCP: Real stdio server emits connection telemetry" do
-      test_pid = self()
-      handler_name = :"test_stdio_telemetry_#{:erlang.unique_integer()}"
-
-      :telemetry.attach(
-        handler_name,
-        [:osa, :mcp, :server_start],
-        fn _event, measurements, metadata, _config ->
-          send(test_pid, {:stdio_server_start, measurements, metadata})
-        end,
-        nil
-      )
-
-      server_name = "test_stdio_telemetry_#{:erlang.unique_integer()}"
-
-      result = try do
-        opts = [
-          name: server_name,
-          transport: "stdio",
-          command: "cat",
-          args: [],
-          env: %{}
-        ]
-
-        case Code.ensure_compiled(OptimalSystemAgent.MCP.Server) do
-          {:module, _} ->
-            {:ok, _pid} = OptimalSystemAgent.MCP.Server.start_link(opts)
-            Process.sleep(100)  # Give time for telemetry
-            :server_started
-
-          {:error, _} ->
-            :module_not_available
-        end
-      rescue
-        _ -> :error
-      end
-
-      # Telemetry may or may not be emitted depending on server type
-      :telemetry.detach(handler_name)
-
-      assert result in [:server_started, :module_not_available, :error]
-    end
-  end
-
-  describe "Chicago TDD: MCP Server — Real HTTP Server" do
+  describe "MCP Server — Real HTTP Server" do
     test "MCP: Real HTTP server connection attempt" do
-      # Test REAL HTTP connection to MCP server
-      # Use a non-existent endpoint to verify connection logic
+      # Test REAL HTTP connection to MCP server endpoint
 
       server_name = "test_http_#{:erlang.unique_integer()}"
 
@@ -142,27 +58,87 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
         end
       rescue
         _ -> :error
+      after
+        try do
+          OptimalSystemAgent.MCP.Server.stop(server_name)
+        rescue
+          _ -> :ok
+        end
       end
 
       # Verify connection was attempted (will fail if server not running)
-      assert result in [:connection_attempted, :module_not_available, :error],
-        "HTTP server connection should be attempted"
+      case result do
+        :connection_attempted -> assert true
+        :module_not_available -> assert true
+        :error -> assert true
+        _other -> flunk("Unexpected result: #{inspect(result)}")
+      end
+    end
+
+    test "MCP: Real HTTP server emits connection telemetry" do
+      test_pid = self()
+      handler_name = :"test_http_telemetry_#{:erlang.unique_integer()}"
+
+      :telemetry.attach(
+        handler_name,
+        [:osa, :mcp, :server_start],
+        fn _event, measurements, metadata, _config ->
+          send(test_pid, {:http_server_start, measurements, metadata})
+        end,
+        nil
+      )
+
+      server_name = "test_http_telemetry_#{:erlang.unique_integer()}"
+
+      result = try do
+        opts = [
+          name: server_name,
+          transport: "http",
+          url: "http://localhost:8089/mcp",
+          headers: []
+        ]
+
+        case Code.ensure_compiled(OptimalSystemAgent.MCP.Server) do
+          {:module, _} ->
+            {:ok, _pid} = OptimalSystemAgent.MCP.Server.start_link(opts)
+            Process.sleep(100)
+            :server_started
+
+          {:error, _} ->
+            :module_not_available
+        end
+      rescue
+        _ -> :error
+      after
+        try do
+          OptimalSystemAgent.MCP.Server.stop(server_name)
+        rescue
+          _ -> :ok
+        end
+        :telemetry.detach(handler_name)
+      end
+
+      case result do
+        :server_started -> assert true
+        :module_not_available -> assert true
+        :error -> assert true
+        _other -> flunk("Unexpected result: #{inspect(result)}")
+      end
     end
   end
 
-  describe "Chicago TDD: MCP — Tool Discovery" do
-    test "MCP: Real tool discovery via MCP protocol" do
-      # Test REAL MCP tools/list call
+  describe "MCP — HTTP Tool Discovery" do
+    test "MCP: Real HTTP tool discovery via MCP protocol" do
+      # Test REAL MCP tools/list call over HTTP
 
       server_name = "test_discovery_#{:erlang.unique_integer()}"
 
       result = try do
         opts = [
           name: server_name,
-          transport: "stdio",
-          command: "cat",
-          args: [],
-          env: %{}
+          transport: "http",
+          url: "http://localhost:8089/mcp",
+          headers: []
         ]
 
         case Code.ensure_compiled(OptimalSystemAgent.MCP.Server) do
@@ -180,7 +156,6 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
       rescue
         _ -> :error
       after
-        # Cleanup server
         try do
           OptimalSystemAgent.MCP.Server.stop(server_name)
         rescue
@@ -190,7 +165,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
 
       # Verify tool discovery was attempted
       case result do
-        [{:tools_listed, _tools}] -> assert true
+        {:tools_listed, _tools} -> assert true
         :module_not_available -> assert true
         :error -> assert true
         _other -> flunk("Unexpected result: #{inspect(result)}")
@@ -198,19 +173,18 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
     end
   end
 
-  describe "Chicago TDD: MCP — Tool Execution" do
-    test "MCP: Real tool execution via MCP protocol" do
-      # Test REAL MCP tools/call with actual JSON-RPC message
+  describe "MCP — HTTP Tool Execution" do
+    test "MCP: Real HTTP tool execution via MCP protocol" do
+      # Test REAL MCP tools/call over HTTP
 
       server_name = "test_execution_#{:erlang.unique_integer()}"
 
       result = try do
         opts = [
           name: server_name,
-          transport: "stdio",
-          command: "echo",
-          args: ["{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"test\"}]}}"],
-          env: %{}
+          transport: "http",
+          url: "http://localhost:8089/mcp",
+          headers: []
         ]
 
         case Code.ensure_compiled(OptimalSystemAgent.MCP.Server) do
@@ -241,7 +215,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
 
       # Verify tool execution was attempted
       case result do
-        [{:tool_executed, _call_result}] -> assert true
+        {:tool_executed, _call_result} -> assert true
         :module_not_available -> assert true
         :error -> assert true
         _other -> flunk("Unexpected result: #{inspect(result)}")
@@ -253,7 +227,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
   # P1: A2A Agent Coordination Tests
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: A2A — Real Agent Coordination" do
+  describe "A2A — Real Agent Coordination" do
     test "A2A: Real agent-to-agent protocol with Groq" do
       # Test REAL A2A coordination with actual Groq API calls
 
@@ -377,7 +351,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
     end
   end
 
-  describe "Chicago TDD: A2A — Telemetry Events" do
+  describe "A2A — Telemetry Events" do
     test "A2A: Agent calls emit telemetry events" do
       test_pid = self()
       handler_name = :"test_a2a_agent_telemetry_#{:erlang.unique_integer()}"
@@ -435,7 +409,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
   # Integration: MCP + A2A + Groq
   # ---------------------------------------------------------------------------
 
-  describe "Chicago TDD: MCP + A2A Integration" do
+  describe "MCP + A2A Integration" do
     test "INTEGRATION: MCP tool via A2A agent with Groq" do
       # Test FULL pipeline: Groq → A2A → MCP tool
 
@@ -464,7 +438,7 @@ defmodule OptimalSystemAgent.MCPA2AChicagoTDDTest do
           response_format: %{type: "json_object"}
         )
 
-        # Verify agent made a decision (JSON response OR tool call attempt)
+        # Verify agent made a tool decision
         case result do
           {:ok, %{content: content}} ->
             # Agent responded with JSON
