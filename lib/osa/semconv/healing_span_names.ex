@@ -241,6 +241,16 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingSpanNames do
   def healing_reflex_arc, do: "healing.reflex_arc"
 
   @doc """
+  Adaptive retry backoff execution — applying dynamic retry strategy during healing.
+
+  Span: `span.healing.retry.adaptive`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec healing_retry_adaptive() :: String.t()
+  def healing_retry_adaptive, do: "healing.retry.adaptive"
+
+  @doc """
   Rollback execution — reverting the system to a known-good checkpoint or snapshot after a healing failure.
 
   Span: `span.healing.rollback.execute`
@@ -309,6 +319,7 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingSpanNames do
       healing_recovery_simulate(),
       healing_recovery_loop(),
       healing_reflex_arc(),
+      healing_retry_adaptive(),
       healing_rollback_execute(),
       healing_self_healing_trigger(),
       healing_surge_detect(),

@@ -27,7 +27,7 @@ defmodule OptimalSystemAgent.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :crypto],
+      extra_applications: [:logger, :crypto, :opentelemetry, :opentelemetry_exporter],
       mod: {OptimalSystemAgent.Application, []}
     ]
   end

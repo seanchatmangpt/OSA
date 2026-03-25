@@ -161,6 +161,16 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aSpanNames do
   def a2a_escrow_release, do: "a2a.escrow.release"
 
   @doc """
+  Transfer of knowledge or capability data between agents via A2A.
+
+  Span: `span.a2a.knowledge.transfer`
+  Kind: `producer`
+  Stability: `development`
+  """
+  @spec a2a_knowledge_transfer() :: String.t()
+  def a2a_knowledge_transfer, do: "a2a.knowledge.transfer"
+
+  @doc """
   Batched delivery of multiple A2A messages — aggregates messages for efficient transport.
 
   Span: `span.a2a.message.batch`
@@ -311,6 +321,7 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aSpanNames do
       a2a_dispute_resolve(),
       a2a_escrow_create(),
       a2a_escrow_release(),
+      a2a_knowledge_transfer(),
       a2a_message_batch(),
       a2a_message_route(),
       a2a_negotiate(),

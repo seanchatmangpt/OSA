@@ -125,7 +125,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
     @tag :unit
     test "agent_decision_type key is correct OTel attribute name" do
-      assert AgentAttributes.agent_decision_type() == :"agent.decision_type"
+      assert AgentAttributes.agent_decision_type() == :"agent.decision.type"
     end
 
     @tag :unit

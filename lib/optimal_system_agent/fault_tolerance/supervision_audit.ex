@@ -124,7 +124,7 @@ defmodule OptimalSystemAgent.FaultTolerance.SupervisionAudit do
     - Both have proper supervision
   """
   @spec autonomous_healing_check(atom()) :: boolean()
-  def autonomous_healing_check(system_name \\ OptimalSystemAgent) do
+  def autonomous_healing_check(_system_name \\ OptimalSystemAgent) do
     orchestrator_alive = Process.whereis(OptimalSystemAgent.Healing.Orchestrator) != nil
     reflex_arcs_alive = Process.whereis(OptimalSystemAgent.Healing.ReflexArcs) != nil
 
@@ -317,7 +317,15 @@ defmodule OptimalSystemAgent.FaultTolerance.SupervisionAudit.TreeAnalyzer do
 
   defp child_info(other), do: other
 
-  defp calculate_depth(supervisor_pid, max_depth \\ 0) when max_depth < 10 do
+  defp calculate_depth(supervisor_pid) do
+    calculate_depth(supervisor_pid, 0)
+  end
+
+  defp calculate_depth(_supervisor_pid, max_depth) when max_depth >= 10 do
+    10
+  end
+
+  defp calculate_depth(supervisor_pid, max_depth) do
     case Supervisor.which_children(supervisor_pid) do
       [] ->
         1
@@ -337,9 +345,7 @@ defmodule OptimalSystemAgent.FaultTolerance.SupervisionAudit.TreeAnalyzer do
     end
   end
 
-  defp calculate_depth(_supervisor_pid, _max_depth), do: 10
-
-  defp calculate_cascade_risk(supervisor_pid, children) do
+  defp calculate_cascade_risk(_supervisor_pid, children) do
     child_count = Enum.count(children)
 
     if child_count > 20 do
@@ -404,7 +410,7 @@ end
 defmodule OptimalSystemAgent.FaultTolerance.SupervisionAudit.RecoveryMetrics do
   @moduledoc false
 
-  def measure(failure_scenario) do
+  def measure(_failure_scenario) do
     # Collect baseline metrics from current system state
     measurements = []
 

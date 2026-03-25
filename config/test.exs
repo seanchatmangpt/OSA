@@ -28,7 +28,9 @@ config :opentelemetry_exporter,
 # Disable OTEL span processors during tests to keep output clean.
 # When WEAVER_LIVE_CHECK=true, weaver.exs re-enables the batch processor
 # so spans are exported to the Weaver receiver for schema conformance checking.
-config :opentelemetry, :processors, []
+# NOTE: Must use a keyword list, not empty list [], to avoid :badmap crash
+# in opentelemetry 1.7.0 which tries to iterate the processors config at boot.
+config :opentelemetry, :processors, [disabled: %{exporter: {:no_op, []}}]
 
 if System.get_env("WEAVER_LIVE_CHECK") == "true" do
   import_config "weaver.exs"

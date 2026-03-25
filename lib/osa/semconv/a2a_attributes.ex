@@ -1208,6 +1208,42 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   end
 
   @doc """
+  Unique identifier for knowledge transfer.
+
+  Attribute: `a2a.knowledge.transfer.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `kt-abc123`, `transfer-2026-03-25-001`
+  """
+  @spec a2a_knowledge_transfer_id() :: :"a2a.knowledge.transfer.id"
+  def a2a_knowledge_transfer_id, do: :"a2a.knowledge.transfer.id"
+
+  @doc """
+  Size of knowledge payload in bytes.
+
+  Attribute: `a2a.knowledge.transfer.size_bytes`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1024`, `65536`, `1048576`
+  """
+  @spec a2a_knowledge_transfer_size_bytes() :: :"a2a.knowledge.transfer.size_bytes"
+  def a2a_knowledge_transfer_size_bytes, do: :"a2a.knowledge.transfer.size_bytes"
+
+  @doc """
+  Topic or domain of knowledge being transferred.
+
+  Attribute: `a2a.knowledge.transfer.topic`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `process_mining`, `agent_capability`, `compliance_rules`
+  """
+  @spec a2a_knowledge_transfer_topic() :: :"a2a.knowledge.transfer.topic"
+  def a2a_knowledge_transfer_topic, do: :"a2a.knowledge.transfer.topic"
+
+  @doc """
   Encoding format of the A2A message.
 
   Attribute: `a2a.message.encoding`

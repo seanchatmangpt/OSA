@@ -31,6 +31,16 @@ defmodule OpenTelemetry.SemConv.Incubating.McpSpanNames do
   def mcp_connection_establish, do: "mcp.connection.establish"
 
   @doc """
+  Acquiring a connection from the MCP connection pool for use in a client-server interaction.
+
+  Span: `span.mcp.connection.pool.acquire`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec mcp_connection_pool_acquire() :: String.t()
+  def mcp_connection_pool_acquire, do: "mcp.connection.pool.acquire"
+
+  @doc """
   MCP tool discovery — listing available tools from a connected server.
 
   Span: `span.mcp.registry.discover`
@@ -178,6 +188,7 @@ defmodule OpenTelemetry.SemConv.Incubating.McpSpanNames do
     [
       mcp_call(),
       mcp_connection_establish(),
+      mcp_connection_pool_acquire(),
       mcp_registry_discover(),
       mcp_resource_read(),
       mcp_server_health_check(),

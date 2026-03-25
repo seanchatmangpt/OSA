@@ -505,18 +505,6 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   def consensus_leader_tenure_ms, do: :"consensus.leader.tenure_ms"
 
   @doc """
-  ID of the leader node for this consensus view.
-
-  Attribute: `consensus.leader_id`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `node-1`, `osa-primary`
-  """
-  @spec consensus_leader_id() :: :"consensus.leader_id"
-  def consensus_leader_id, do: :"consensus.leader_id"
-
-  @doc """
   Number of consecutive rounds completed to prove liveness of the protocol.
 
   Attribute: `consensus.liveness.proof_rounds`
@@ -1329,6 +1317,124 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   """
   @spec consensus_safety_threshold() :: :"consensus.safety.threshold"
   def consensus_safety_threshold, do: :"consensus.safety.threshold"
+
+  @doc """
+  Unique identifier for the safety violation event.
+
+  Attribute: `consensus.safety.violation.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `violation-001`, `violation-epoch-5-double-vote`
+  """
+  @spec consensus_safety_violation_id() :: :"consensus.safety.violation.id"
+  def consensus_safety_violation_id, do: :"consensus.safety.violation.id"
+
+  @doc """
+  Severity level of the safety violation.
+
+  Attribute: `consensus.safety.violation.severity`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `warning`, `critical`, `fatal`
+  """
+  @spec consensus_safety_violation_severity() :: :"consensus.safety.violation.severity"
+  def consensus_safety_violation_severity, do: :"consensus.safety.violation.severity"
+
+  @doc """
+  Enumerated values for `consensus.safety.violation.severity`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `warning` | `"warning"` | Potential safety violation detected, system remains safe |
+  | `critical` | `"critical"` | Safety violation confirmed, immediate intervention required |
+  | `fatal` | `"fatal"` | Unrecoverable safety violation, consensus must restart |
+  """
+  @spec consensus_safety_violation_severity_values() :: %{
+    warning: :warning,
+    critical: :critical,
+    fatal: :fatal
+  }
+  def consensus_safety_violation_severity_values do
+    %{
+      warning: :warning,
+      critical: :critical,
+      fatal: :fatal
+    }
+  end
+
+  defmodule ConsensusSafetyViolationSeverityValues do
+    @moduledoc """
+    Typed constants for the `consensus.safety.violation.severity` attribute.
+    """
+
+    @doc "Potential safety violation detected, system remains safe"
+    @spec warning() :: :warning
+    def warning, do: :warning
+
+    @doc "Safety violation confirmed, immediate intervention required"
+    @spec critical() :: :critical
+    def critical, do: :critical
+
+    @doc "Unrecoverable safety violation, consensus must restart"
+    @spec fatal() :: :fatal
+    def fatal, do: :fatal
+
+  end
+
+  @doc """
+  Type of consensus safety violation detected.
+
+  Attribute: `consensus.safety.violation.type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `double_vote`, `equivocation`, `quorum_breach`
+  """
+  @spec consensus_safety_violation_type() :: :"consensus.safety.violation.type"
+  def consensus_safety_violation_type, do: :"consensus.safety.violation.type"
+
+  @doc """
+  Enumerated values for `consensus.safety.violation.type`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `double_vote` | `"double_vote"` | Replica voted for conflicting blocks in the same phase |
+  | `equivocation` | `"equivocation"` | Replica sent conflicting messages violating protocol rules |
+  | `quorum_breach` | `"quorum_breach"` | Decision made without sufficient quorum majority |
+  """
+  @spec consensus_safety_violation_type_values() :: %{
+    double_vote: :double_vote,
+    equivocation: :equivocation,
+    quorum_breach: :quorum_breach
+  }
+  def consensus_safety_violation_type_values do
+    %{
+      double_vote: :double_vote,
+      equivocation: :equivocation,
+      quorum_breach: :quorum_breach
+    }
+  end
+
+  defmodule ConsensusSafetyViolationTypeValues do
+    @moduledoc """
+    Typed constants for the `consensus.safety.violation.type` attribute.
+    """
+
+    @doc "Replica voted for conflicting blocks in the same phase"
+    @spec double_vote() :: :double_vote
+    def double_vote, do: :double_vote
+
+    @doc "Replica sent conflicting messages violating protocol rules"
+    @spec equivocation() :: :equivocation
+    def equivocation, do: :equivocation
+
+    @doc "Decision made without sufficient quorum majority"
+    @spec quorum_breach() :: :quorum_breach
+    def quorum_breach, do: :quorum_breach
+
+  end
 
   @doc """
   Number of safety violations detected in the current consensus epoch.

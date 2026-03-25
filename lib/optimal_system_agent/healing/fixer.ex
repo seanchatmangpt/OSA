@@ -59,8 +59,6 @@ defmodule OptimalSystemAgent.Healing.Fixer do
 
   require Logger
 
-  alias OptimalSystemAgent.Healing.ErrorClassifier
-
   @type failure_mode ::
           :ashby_drift
           | :logic_regression

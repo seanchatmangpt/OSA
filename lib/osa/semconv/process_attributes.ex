@@ -1391,6 +1391,90 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   def process_mining_hierarchy_parent_process_id, do: :"process.mining.hierarchy.parent_process_id"
 
   @doc """
+  Number of cuts made during inductive mining.
+
+  Attribute: `process.mining.inductive.cut_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `5`, `20`
+  """
+  @spec process_mining_inductive_cut_count() :: :"process.mining.inductive.cut_count"
+  def process_mining_inductive_cut_count, do: :"process.mining.inductive.cut_count"
+
+  @doc """
+  Type of split in inductive miner tree.
+
+  Attribute: `process.mining.inductive.split_type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `exclusive`, `parallel`, `loop`, `sequence`
+  """
+  @spec process_mining_inductive_split_type() :: :"process.mining.inductive.split_type"
+  def process_mining_inductive_split_type, do: :"process.mining.inductive.split_type"
+
+  @doc """
+  Enumerated values for `process.mining.inductive.split_type`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `exclusive` | `"exclusive"` | exclusive |
+  | `parallel` | `"parallel"` | parallel |
+  | `loop` | `"loop"` | loop |
+  | `sequence` | `"sequence"` | sequence |
+  """
+  @spec process_mining_inductive_split_type_values() :: %{
+    exclusive: :exclusive,
+    parallel: :parallel,
+    loop: :loop,
+    sequence: :sequence
+  }
+  def process_mining_inductive_split_type_values do
+    %{
+      exclusive: :exclusive,
+      parallel: :parallel,
+      loop: :loop,
+      sequence: :sequence
+    }
+  end
+
+  defmodule ProcessMiningInductiveSplitTypeValues do
+    @moduledoc """
+    Typed constants for the `process.mining.inductive.split_type` attribute.
+    """
+
+    @doc "exclusive"
+    @spec exclusive() :: :exclusive
+    def exclusive, do: :exclusive
+
+    @doc "parallel"
+    @spec parallel() :: :parallel
+    def parallel, do: :parallel
+
+    @doc "loop"
+    @spec loop() :: :loop
+    def loop, do: :loop
+
+    @doc "sequence"
+    @spec sequence() :: :sequence
+    def sequence, do: :sequence
+
+  end
+
+  @doc """
+  Maximum depth of inductive miner tree.
+
+  Attribute: `process.mining.inductive.tree_depth`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `3`, `10`
+  """
+  @spec process_mining_inductive_tree_depth() :: :"process.mining.inductive.tree_depth"
+  def process_mining_inductive_tree_depth, do: :"process.mining.inductive.tree_depth"
+
+  @doc """
   Unique identifier of the event log being processed.
 
   Attribute: `process.mining.log.id`
@@ -1495,66 +1579,6 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
     @doc "declare"
     @spec declare() :: :declare
     def declare, do: :declare
-
-  end
-
-  @doc """
-  The type of process model used for conformance checking.
-
-  Attribute: `process.mining.model_type`
-  Type: `enum`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `petri_net`, `bpmn`
-  """
-  @spec process_mining_model_type() :: :"process.mining.model_type"
-  def process_mining_model_type, do: :"process.mining.model_type"
-
-  @doc """
-  Enumerated values for `process.mining.model_type`.
-
-  | Key | Value | Description |
-  |-----|-------|-------------|
-  | `petri_net` | `"petri_net"` | petri_net |
-  | `bpmn` | `"bpmn"` | bpmn |
-  | `declare` | `"declare"` | declare |
-  | `dfg` | `"dfg"` | dfg |
-  """
-  @spec process_mining_model_type_values() :: %{
-    petri_net: :petri_net,
-    bpmn: :bpmn,
-    declare: :declare,
-    dfg: :dfg
-  }
-  def process_mining_model_type_values do
-    %{
-      petri_net: :petri_net,
-      bpmn: :bpmn,
-      declare: :declare,
-      dfg: :dfg
-    }
-  end
-
-  defmodule ProcessMiningModelTypeValues do
-    @moduledoc """
-    Typed constants for the `process.mining.model_type` attribute.
-    """
-
-    @doc "petri_net"
-    @spec petri_net() :: :petri_net
-    def petri_net, do: :petri_net
-
-    @doc "bpmn"
-    @spec bpmn() :: :bpmn
-    def bpmn, do: :bpmn
-
-    @doc "declare"
-    @spec declare() :: :declare
-    def declare, do: :declare
-
-    @doc "dfg"
-    @spec dfg() :: :dfg
-    def dfg, do: :dfg
 
   end
 
@@ -1761,18 +1785,6 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   """
   @spec process_mining_replay_token_count() :: :"process.mining.replay.token_count"
   def process_mining_replay_token_count, do: :"process.mining.replay.token_count"
-
-  @doc """
-  Replay fitness score [0.0, 1.0] measuring how well the log fits the discovered model.
-
-  Attribute: `process.mining.replay_fitness`
-  Type: `double`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `0.85`, `0.97`, `1.0`
-  """
-  @spec process_mining_replay_fitness() :: :"process.mining.replay_fitness"
-  def process_mining_replay_fitness, do: :"process.mining.replay_fitness"
 
   @doc """
   Confidence score for the root cause classification [0.0, 1.0].

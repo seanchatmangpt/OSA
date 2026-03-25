@@ -211,6 +211,16 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusSpanNames do
   def consensus_safety_monitor, do: "consensus.safety.monitor"
 
   @doc """
+  Safety violation detected in the consensus protocol — double voting, equivocation, or quorum breach.
+
+  Span: `span.consensus.safety.violation`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec consensus_safety_violation() :: String.t()
+  def consensus_safety_violation, do: "consensus.safety.violation"
+
+  @doc """
   Consensus threshold adaptation — dynamically adjusting the quorum threshold based on observed fault rates and network conditions.
 
   Span: `span.consensus.threshold.adapt`
@@ -296,6 +306,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusSpanNames do
       consensus_round(),
       consensus_safety_check(),
       consensus_safety_monitor(),
+      consensus_safety_violation(),
       consensus_threshold_adapt(),
       consensus_threshold_vote(),
       consensus_timeout_event(),

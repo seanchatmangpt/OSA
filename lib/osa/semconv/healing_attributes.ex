@@ -1604,6 +1604,90 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   end
 
   @doc """
+  Current retry attempt number (1-indexed) for adaptive retry logic.
+
+  Attribute: `healing.retry.adaptive.attempt`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `2`, `3`, `5`
+  """
+  @spec healing_retry_adaptive_attempt() :: :"healing.retry.adaptive.attempt"
+  def healing_retry_adaptive_attempt, do: :"healing.retry.adaptive.attempt"
+
+  @doc """
+  Backoff duration in milliseconds before the next retry attempt.
+
+  Attribute: `healing.retry.adaptive.backoff_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `100`, `500`, `2000`, `5000`
+  """
+  @spec healing_retry_adaptive_backoff_ms() :: :"healing.retry.adaptive.backoff_ms"
+  def healing_retry_adaptive_backoff_ms, do: :"healing.retry.adaptive.backoff_ms"
+
+  @doc """
+  Backoff strategy for adaptive retries during healing.
+
+  Attribute: `healing.retry.adaptive.strategy`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `exponential`, `linear`, `fibonacci`, `constant`
+  """
+  @spec healing_retry_adaptive_strategy() :: :"healing.retry.adaptive.strategy"
+  def healing_retry_adaptive_strategy, do: :"healing.retry.adaptive.strategy"
+
+  @doc """
+  Enumerated values for `healing.retry.adaptive.strategy`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `exponential` | `"exponential"` | Exponential backoff (2^attempt * base_ms) |
+  | `linear` | `"linear"` | Linear backoff (attempt * base_ms) |
+  | `fibonacci` | `"fibonacci"` | Fibonacci backoff sequence |
+  | `constant` | `"constant"` | Constant backoff (base_ms) |
+  """
+  @spec healing_retry_adaptive_strategy_values() :: %{
+    exponential: :exponential,
+    linear: :linear,
+    fibonacci: :fibonacci,
+    constant: :constant
+  }
+  def healing_retry_adaptive_strategy_values do
+    %{
+      exponential: :exponential,
+      linear: :linear,
+      fibonacci: :fibonacci,
+      constant: :constant
+    }
+  end
+
+  defmodule HealingRetryAdaptiveStrategyValues do
+    @moduledoc """
+    Typed constants for the `healing.retry.adaptive.strategy` attribute.
+    """
+
+    @doc "Exponential backoff (2^attempt * base_ms)"
+    @spec exponential() :: :exponential
+    def exponential, do: :exponential
+
+    @doc "Linear backoff (attempt * base_ms)"
+    @spec linear() :: :linear
+    def linear, do: :linear
+
+    @doc "Fibonacci backoff sequence"
+    @spec fibonacci() :: :fibonacci
+    def fibonacci, do: :fibonacci
+
+    @doc "Constant backoff (base_ms)"
+    @spec constant() :: :constant
+    def constant, do: :constant
+
+  end
+
+  @doc """
   Identifier of the checkpoint or snapshot used as the rollback target.
 
   Attribute: `healing.rollback.checkpoint_id`

@@ -52,7 +52,10 @@ defmodule OptimalSystemAgent.Verification.SoundnessChecker do
         {:sound, proof_summaries}
 
       false ->
-        gaps = Enum.filter_map(proofs, &match?({:error, _}, &1), fn {:error, msg} -> msg end)
+        gaps =
+          proofs
+          |> Enum.filter(&match?({:error, _}, &1))
+          |> Enum.map(fn {:error, msg} -> msg end)
         {:unsound, gaps}
     end
   end
@@ -72,7 +75,10 @@ defmodule OptimalSystemAgent.Verification.SoundnessChecker do
             {:sound, proof_summaries}
 
           false ->
-            gaps = Enum.filter_map(proofs, &match?({:error, _}, &1), fn {:error, msg} -> msg end)
+            gaps =
+              proofs
+              |> Enum.filter(&match?({:error, _}, &1))
+              |> Enum.map(fn {:error, msg} -> msg end)
             {:unsound, gaps}
         end
 
@@ -303,7 +309,7 @@ defmodule OptimalSystemAgent.Verification.SoundnessChecker do
           {:error, "Unable to fetch supervision tree"}
       end
     rescue
-      _e in [BadArg, ArgumentError, UndefinedFunctionError] ->
+      _e in [ArgumentError, UndefinedFunctionError] ->
         {:error, "Invalid supervisor PID"}
     end
   end

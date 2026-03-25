@@ -316,6 +316,90 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmAttributes do
   def llm_chain_of_thought_steps, do: :"llm.chain_of_thought.steps"
 
   @doc """
+  Compression ratio for context (original_tokens / compressed_tokens).
+
+  Attribute: `llm.context.compression.ratio`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.5`, `2.0`, `3.5`
+  """
+  @spec llm_context_compression_ratio() :: :"llm.context.compression.ratio"
+  def llm_context_compression_ratio, do: :"llm.context.compression.ratio"
+
+  @doc """
+  Strategy used for context compression.
+
+  Attribute: `llm.context.compression.strategy`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `summarize`, `truncate`, `sliding_window`
+  """
+  @spec llm_context_compression_strategy() :: :"llm.context.compression.strategy"
+  def llm_context_compression_strategy, do: :"llm.context.compression.strategy"
+
+  @doc """
+  Enumerated values for `llm.context.compression.strategy`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `summarize` | `"summarize"` | summarize |
+  | `truncate` | `"truncate"` | truncate |
+  | `sliding_window` | `"sliding_window"` | sliding_window |
+  | `selective` | `"selective"` | selective |
+  """
+  @spec llm_context_compression_strategy_values() :: %{
+    summarize: :summarize,
+    truncate: :truncate,
+    sliding_window: :sliding_window,
+    selective: :selective
+  }
+  def llm_context_compression_strategy_values do
+    %{
+      summarize: :summarize,
+      truncate: :truncate,
+      sliding_window: :sliding_window,
+      selective: :selective
+    }
+  end
+
+  defmodule LlmContextCompressionStrategyValues do
+    @moduledoc """
+    Typed constants for the `llm.context.compression.strategy` attribute.
+    """
+
+    @doc "summarize"
+    @spec summarize() :: :summarize
+    def summarize, do: :summarize
+
+    @doc "truncate"
+    @spec truncate() :: :truncate
+    def truncate, do: :truncate
+
+    @doc "sliding_window"
+    @spec sliding_window() :: :sliding_window
+    def sliding_window, do: :sliding_window
+
+    @doc "selective"
+    @spec selective() :: :selective
+    def selective, do: :selective
+
+  end
+
+  @doc """
+  Number of tokens saved through compression.
+
+  Attribute: `llm.context.compression.tokens_saved`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `128`, `512`, `2048`
+  """
+  @spec llm_context_compression_tokens_saved() :: :"llm.context.compression.tokens_saved"
+  def llm_context_compression_tokens_saved, do: :"llm.context.compression.tokens_saved"
+
+  @doc """
   Maximum token limit for the LLM context window.
 
   Attribute: `llm.context.max_tokens`

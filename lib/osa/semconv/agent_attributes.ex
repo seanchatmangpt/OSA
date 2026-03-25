@@ -263,18 +263,6 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   end
 
   @doc """
-  Type of decision made by the agent in the ReAct loop.
-
-  Attribute: `agent.decision_type`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `tool_call`, `observation`, `final_answer`, `escalate`
-  """
-  @spec agent_decision_type() :: :"agent.decision_type"
-  def agent_decision_type, do: :"agent.decision_type"
-
-  @doc """
   Duration of the critical path through the execution graph in milliseconds.
 
   Attribute: `agent.execution.critical_path_ms`

@@ -191,6 +191,16 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessSpanNames do
   def process_mining_hierarchy_build, do: "process.mining.hierarchy.build"
 
   @doc """
+  Inductive miner algorithm — discovers a process model by recursively partitioning the event log using cut semantics.
+
+  Span: `span.process.mining.inductive.mine`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec process_mining_inductive_mine() :: String.t()
+  def process_mining_inductive_mine, do: "process.mining.inductive.mine"
+
+  @doc """
   Preprocessing an event log — filtering, sorting, and preparing for mining or conformance.
 
   Span: `span.process.mining.log.preprocess`
@@ -354,6 +364,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessSpanNames do
       process_mining_drift_detect(),
       process_mining_event_abstract(),
       process_mining_hierarchy_build(),
+      process_mining_inductive_mine(),
       process_mining_log_preprocess(),
       process_mining_model_enhance(),
       process_mining_model_quality(),

@@ -62,10 +62,10 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Time in milliseconds the request waited to acquire a connection.
 
   Attribute: `mcp.connection.pool.wait_ms`
-  Type: `int`
+  Type: `double`
   Stability: `development`
   Requirement: `recommended`
-  Examples: `0`, `50`, `500`
+  Examples: `0.0`, `50.5`, `500.0`
   """
   @spec mcp_connection_pool_wait_ms() :: :"mcp.connection.pool.wait_ms"
   def mcp_connection_pool_wait_ms, do: :"mcp.connection.pool.wait_ms"
@@ -595,78 +595,6 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   """
   @spec mcp_tool_composition_latency_ms() :: :"mcp.tool.composition_latency_ms"
   def mcp_tool_composition_latency_ms, do: :"mcp.tool.composition_latency_ms"
-
-  @doc """
-  Number of steps in the tool composition pipeline.
-
-  Attribute: `mcp.tool.composition_step_count`
-  Type: `int`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `3`, `7`
-  """
-  @spec mcp_tool_composition_step_count() :: :"mcp.tool.composition_step_count"
-  def mcp_tool_composition_step_count, do: :"mcp.tool.composition_step_count"
-
-  @doc """
-  Strategy used to compose multiple tools into a pipeline.
-
-  Attribute: `mcp.tool.composition_strategy`
-  Type: `enum`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `pipeline`, `fan_out`
-  """
-  @spec mcp_tool_composition_strategy() :: :"mcp.tool.composition_strategy"
-  def mcp_tool_composition_strategy, do: :"mcp.tool.composition_strategy"
-
-  @doc """
-  Enumerated values for `mcp.tool.composition_strategy`.
-
-  | Key | Value | Description |
-  |-----|-------|-------------|
-  | `pipeline` | `"pipeline"` | pipeline |
-  | `fan_out` | `"fan_out"` | fan_out |
-  | `conditional` | `"conditional"` | conditional |
-  | `loop` | `"loop"` | loop |
-  """
-  @spec mcp_tool_composition_strategy_values() :: %{
-    pipeline: :pipeline,
-    fan_out: :fan_out,
-    conditional: :conditional,
-    loop: :loop
-  }
-  def mcp_tool_composition_strategy_values do
-    %{
-      pipeline: :pipeline,
-      fan_out: :fan_out,
-      conditional: :conditional,
-      loop: :loop
-    }
-  end
-
-  defmodule McpToolCompositionStrategyValues do
-    @moduledoc """
-    Typed constants for the `mcp.tool.composition_strategy` attribute.
-    """
-
-    @doc "pipeline"
-    @spec pipeline() :: :pipeline
-    def pipeline, do: :pipeline
-
-    @doc "fan_out"
-    @spec fan_out() :: :fan_out
-    def fan_out, do: :fan_out
-
-    @doc "conditional"
-    @spec conditional() :: :conditional
-    def conditional, do: :conditional
-
-    @doc "loop"
-    @spec loop() :: :loop
-    def loop, do: :loop
-
-  end
 
   @doc """
   Whether the MCP tool is deprecated.

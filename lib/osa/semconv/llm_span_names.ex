@@ -51,6 +51,16 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmSpanNames do
   def llm_chain_of_thought, do: "llm.chain_of_thought"
 
   @doc """
+  Context compression — reducing token count of context using configured strategy.
+
+  Span: `span.llm.context.compress`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec llm_context_compress() :: String.t()
+  def llm_context_compress, do: "llm.context.compress"
+
+  @doc """
   Context window management — handles overflow by applying the configured strategy.
 
   Span: `span.llm.context.manage`
@@ -270,6 +280,7 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmSpanNames do
       llm_batch_run(),
       llm_cache_lookup(),
       llm_chain_of_thought(),
+      llm_context_compress(),
       llm_context_manage(),
       llm_cost_record(),
       llm_distillation_train(),

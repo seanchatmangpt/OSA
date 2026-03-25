@@ -178,7 +178,7 @@ defmodule OptimalSystemAgent.Verification.FormalModel do
   """
   @spec verify_property(petri_net(), ltl_formula()) :: boolean()
   def verify_property(net, property) when is_map(net) do
-    initial_marking = get_initial_marking(net)
+    _initial_marking = get_initial_marking(net)
     reachable = compute_reachability_graph(net)
     # Property is satisfied if it holds in at least one reachable state (for basic properties)
     # For universal properties (G φ), would need to check all states
