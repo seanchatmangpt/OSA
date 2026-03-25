@@ -20,18 +20,32 @@ config :optimal_system_agent, http_port: 0
 config :optimal_system_agent,
   shared_secret: "osa-test-#{:crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)}"
 
-# Point at Weaver live-check receiver during test runs (future weaver live-check)
-config :opentelemetry_exporter,
-  otlp_protocol: :http_protobuf,
-  otlp_endpoint: "http://localhost:4318"
+# OpenTelemetry for tests only (`config.exs` skips `otel.exs` when env is :test).
+config :opentelemetry, :resource,
+  service: [name: "osa", version: "1.0.0"]
 
-# Disable OTEL span processors during tests to keep output clean.
-# When WEAVER_LIVE_CHECK=true, weaver.exs re-enables the batch processor
-# so spans are exported to the Weaver receiver for schema conformance checking.
-# NOTE: Must use a keyword list, not empty list [], to avoid :badmap crash
-# in opentelemetry 1.7.0 which tries to iterate the processors config at boot.
-config :opentelemetry, :processors, [disabled: %{exporter: {:no_op, []}}]
+config :opentelemetry, tracer: :global
 
+# Default: no trace export. Weaver live-check: simple processor + gRPC OTLP on span end
+# (batch default scheduled_delay_ms is 5s; mix test often exits first → 0 entities in Weaver).
 if System.get_env("WEAVER_LIVE_CHECK") == "true" do
-  import_config "weaver.exs"
+  config :opentelemetry,
+    traces_exporter: :otlp,
+    processors: [
+      otel_simple_processor: %{
+        exporter: {:opentelemetry_exporter, %{}}
+      }
+    ]
+
+  config :opentelemetry_exporter,
+    otlp_protocol: :grpc,
+    otlp_endpoint: System.get_env("WEAVER_OTLP_ENDPOINT", "http://localhost:4317")
+else
+  config :opentelemetry,
+    traces_exporter: :none,
+    processors: [
+      otel_batch_processor: %{
+        exporter: {:opentelemetry_exporter, %{}}
+      }
+    ]
 end

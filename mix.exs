@@ -81,7 +81,7 @@ defmodule OptimalSystemAgent.MixProject do
       {:opentelemetry_api, "~> 1.4"},
       {:opentelemetry, "~> 1.4"},
       {:opentelemetry_exporter, "~> 1.7"},
-      {:grpc, "~> 0.9", only: :dev},
+      {:grpc, "~> 0.9", only: [:dev, :test]},
 
       # OTP 28: rustler removed — nif.ex uses pure Elixir fallbacks
       # {:rustler, "~> 0.37", optional: true}
