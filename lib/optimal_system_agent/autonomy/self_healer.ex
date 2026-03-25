@@ -78,7 +78,6 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
   require Logger
 
   alias OptimalSystemAgent.Events.Bus
-  alias OptimalSystemAgent.Healing.ReflexArcs
 
   # -- Configuration --
 
@@ -447,12 +446,6 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
             context: context
           })
         end
-
-      {:error, reason} ->
-        log_action(state, :recovery_error, "#{failure_type} recovery error", %{
-          error: reason,
-          context: context
-        })
     end
   end
 
@@ -486,7 +479,7 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
     {:ok, state}
   end
 
-  defp execute_recovery(:split_brain, _strategy, context, state) do
+  defp execute_recovery(:split_brain, _strategy, _context, state) do
     # Force consistency via quorum
     Logger.info("[SelfHealer] Resolving split-brain with quorum votes")
     {:ok, state}
@@ -585,17 +578,15 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
       OptimalSystemAgent.Healing.ReflexArcs,
       OptimalSystemAgent.Events.Bus
     ]
-    |> Enum.filter_map(
-      fn module ->
-        case Process.whereis(module) do
-          nil -> true
-          _ -> false
-        end
-      end,
-      fn module ->
-        %{process: module, issue: :not_running}
+    |> Enum.filter(fn module ->
+      case Process.whereis(module) do
+        nil -> true
+        _ -> false
       end
-    )
+    end)
+    |> Enum.map(fn module ->
+      %{process: module, issue: :not_running}
+    end)
   end
 
   defp check_data_staleness do

@@ -375,6 +375,14 @@ end
 
 # ── OpenTelemetry ─────────────────────────────────────────────────────────
 config :opentelemetry, :resource, service: [name: "osa", version: "1.0.0"]
-config :opentelemetry_exporter,
-  otlp_protocol: :http_protobuf,
-  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
+
+if System.get_env("WEAVER_LIVE_CHECK") == "true" do
+  # Live-check receiver listens on OTLP gRPC (default :4317).
+  config :opentelemetry_exporter,
+    otlp_protocol: :grpc,
+    otlp_endpoint: System.get_env("WEAVER_OTLP_ENDPOINT", "http://localhost:4317")
+else
+  config :opentelemetry_exporter,
+    otlp_protocol: :http_protobuf,
+    otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
+end

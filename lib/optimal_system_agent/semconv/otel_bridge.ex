@@ -40,11 +40,11 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
 
   def a2a_negotiation_state_values do
     %{
-      proposed: :"proposed",
-      counter: :"counter",
-      accepted: :"accepted",
-      rejected: :"rejected",
-      expired: :"expired"
+      proposed: :proposed,
+      counter: :counter,
+      accepted: :accepted,
+      rejected: :rejected,
+      expired: :expired
     }
   end
 
@@ -197,10 +197,10 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
 
   def process_mining_model_type_values do
     %{
-      petri_net: :"petri_net",
-      bpmn: :"bpmn",
-      declare: :"declare",
-      dfg: :"dfg"
+      petri_net: :petri_net,
+      bpmn: :bpmn,
+      declare: :declare,
+      dfg: :dfg
     }
   end
 

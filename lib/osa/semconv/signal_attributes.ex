@@ -23,6 +23,54 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   def signal_bandwidth, do: :"signal.bandwidth"
 
   @doc """
+  Number of signals dropped during batch aggregation due to capacity limits.
+
+  Attribute: `signal.batch.drop_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `3`, `12`
+  """
+  @spec signal_batch_drop_count() :: :"signal.batch.drop_count"
+  def signal_batch_drop_count, do: :"signal.batch.drop_count"
+
+  @doc """
+  Number of signals in the batch aggregate.
+
+  Attribute: `signal.batch.size`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `10`, `50`, `200`
+  """
+  @spec signal_batch_size() :: :"signal.batch.size"
+  def signal_batch_size, do: :"signal.batch.size"
+
+  @doc """
+  Time window in milliseconds over which signals are batched.
+
+  Attribute: `signal.batch.window_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `100`, `500`, `1000`
+  """
+  @spec signal_batch_window_ms() :: :"signal.batch.window_ms"
+  def signal_batch_window_ms, do: :"signal.batch.window_ms"
+
+  @doc """
+  The identifier of the channel this signal is transmitted through.
+
+  Attribute: `signal.channel.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `chan-001`, `priority-queue-high`, `broadcast-main`
+  """
+  @spec signal_channel_id() :: :"signal.channel.id"
+  def signal_channel_id, do: :"signal.channel.id"
+
+  @doc """
   The classifier module or model that analyzed and scored the signal.
 
   Attribute: `signal.classifier`
@@ -33,6 +81,78 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   """
   @spec signal_classifier() :: :"signal.classifier"
   def signal_classifier, do: :"signal.classifier"
+
+  @doc """
+  Compression ratio applied to the signal [0.0, 1.0]. 1.0 = no compression.
+
+  Attribute: `signal.compression.ratio`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.0`, `0.7`, `0.3`
+  """
+  @spec signal_compression_ratio() :: :"signal.compression.ratio"
+  def signal_compression_ratio, do: :"signal.compression.ratio"
+
+  @doc """
+  Wire encoding format used to serialize the signal payload.
+
+  Attribute: `signal.encoding`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `json`, `protobuf`
+  """
+  @spec signal_encoding() :: :"signal.encoding"
+  def signal_encoding, do: :"signal.encoding"
+
+  @doc """
+  Enumerated values for `signal.encoding`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `json` | `"json"` | json |
+  | `protobuf` | `"protobuf"` | protobuf |
+  | `msgpack` | `"msgpack"` | msgpack |
+  | `plain` | `"plain"` | plain |
+  """
+  @spec signal_encoding_values() :: %{
+    json: :json,
+    protobuf: :protobuf,
+    msgpack: :msgpack,
+    plain: :plain
+  }
+  def signal_encoding_values do
+    %{
+      json: :json,
+      protobuf: :protobuf,
+      msgpack: :msgpack,
+      plain: :plain
+    }
+  end
+
+  defmodule SignalEncodingValues do
+    @moduledoc """
+    Typed constants for the `signal.encoding` attribute.
+    """
+
+    @doc "json"
+    @spec json() :: :json
+    def json, do: :json
+
+    @doc "protobuf"
+    @spec protobuf() :: :protobuf
+    def protobuf, do: :protobuf
+
+    @doc "msgpack"
+    @spec msgpack() :: :msgpack
+    def msgpack, do: :msgpack
+
+    @doc "plain"
+    @spec plain() :: :plain
+    def plain, do: :plain
+
+  end
 
   @doc """
   The format component (F) of the signal — the container or serialization format.
@@ -225,6 +345,18 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   end
 
   @doc """
+  Number of routing hops the signal traversed before reaching the final destination.
+
+  Attribute: `signal.hop_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec signal_hop_count() :: :"signal.hop_count"
+  def signal_hop_count, do: :"signal.hop_count"
+
+  @doc """
   Signal propagation latency in milliseconds from generation to delivery.
 
   Attribute: `signal.latency_ms`
@@ -337,6 +469,114 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   def signal_noise_level, do: :"signal.noise_level"
 
   @doc """
+  Priority level of the signal for queue ordering and routing decisions.
+
+  Attribute: `signal.priority`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `critical`, `high`
+  """
+  @spec signal_priority() :: :"signal.priority"
+  def signal_priority, do: :"signal.priority"
+
+  @doc """
+  Enumerated values for `signal.priority`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `critical` | `"critical"` | critical |
+  | `high` | `"high"` | high |
+  | `normal` | `"normal"` | normal |
+  | `low` | `"low"` | low |
+  """
+  @spec signal_priority_values() :: %{
+    critical: :critical,
+    high: :high,
+    normal: :normal,
+    low: :low
+  }
+  def signal_priority_values do
+    %{
+      critical: :critical,
+      high: :high,
+      normal: :normal,
+      low: :low
+    }
+  end
+
+  defmodule SignalPriorityValues do
+    @moduledoc """
+    Typed constants for the `signal.priority` attribute.
+    """
+
+    @doc "critical"
+    @spec critical() :: :critical
+    def critical, do: :critical
+
+    @doc "high"
+    @spec high() :: :high
+    def high, do: :high
+
+    @doc "normal"
+    @spec normal() :: :normal
+    def normal, do: :normal
+
+    @doc "low"
+    @spec low() :: :low
+    def low, do: :low
+
+  end
+
+  @doc """
+  Whether signal quality has degraded below acceptable threshold.
+
+  Attribute: `signal.quality.degraded`
+  Type: `boolean`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `true`, `false`
+  """
+  @spec signal_quality_degraded() :: :"signal.quality.degraded"
+  def signal_quality_degraded, do: :"signal.quality.degraded"
+
+  @doc """
+  Composite quality score for the signal, range [0.0, 1.0]. Combines S/N ratio, bandwidth, and latency metrics.
+
+  Attribute: `signal.quality.score`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.95`, `0.72`, `0.5`
+  """
+  @spec signal_quality_score() :: :"signal.quality.score"
+  def signal_quality_score, do: :"signal.quality.score"
+
+  @doc """
+  The configured S/N quality threshold below which signals are rejected. Default is 0.7.
+
+  Attribute: `signal.quality.threshold`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.7`, `0.8`, `0.9`
+  """
+  @spec signal_quality_threshold() :: :"signal.quality.threshold"
+  def signal_quality_threshold, do: :"signal.quality.threshold"
+
+  @doc """
+  Number of retransmission retries attempted for this signal.
+
+  Attribute: `signal.retry.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec signal_retry_count() :: :"signal.retry.count"
+  def signal_retry_count, do: :"signal.retry.count"
+
+  @doc """
   Shannon signal-to-noise ratio score in range [0.0, 1.0]. Values >= 0.7 pass the S/N gate for transmission.
 
   Attribute: `signal.sn_ratio`
@@ -359,6 +599,18 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   """
   @spec signal_source() :: :"signal.source"
   def signal_source, do: :"signal.source"
+
+  @doc """
+  Time-to-live for the signal in milliseconds — signal expires if not consumed.
+
+  Attribute: `signal.ttl_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1000`, `30000`, `300000`
+  """
+  @spec signal_ttl_ms() :: :"signal.ttl_ms"
+  def signal_ttl_ms, do: :"signal.ttl_ms"
 
   @doc """
   The type component (T) of the signal — the speech act or communicative intent.
@@ -438,47 +690,5 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   """
   @spec signal_weight() :: :"signal.weight"
   def signal_weight, do: :"signal.weight"
-
-  @doc """
-  Dispatch priority of the signal through the routing layer.
-
-  Attribute: `signal.priority`
-  Type: `enum`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `critical`, `high`, `normal`, `low`
-  """
-  @spec signal_priority :: :"signal.priority"
-  def signal_priority, do: :"signal.priority"
-
-  @doc """
-  Enumerated values for `signal.priority`.
-  """
-  @spec signal_priority_values() :: %{critical: :critical, high: :high, normal: :normal, low: :low}
-  def signal_priority_values, do: %{critical: :critical, high: :high, normal: :normal, low: :low}
-
-  @doc """
-  Encoding scheme applied to the signal payload.
-
-  Attribute: `signal.encoding`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `utf8`, `base64`, `msgpack`
-  """
-  @spec signal_encoding :: :"signal.encoding"
-  def signal_encoding, do: :"signal.encoding"
-
-  @doc """
-  Number of hops the signal has traversed across routing layers.
-
-  Attribute: `signal.hop_count`
-  Type: `int`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `1`, `3`, `7`
-  """
-  @spec signal_hop_count :: :"signal.hop_count"
-  def signal_hop_count, do: :"signal.hop_count"
 
 end

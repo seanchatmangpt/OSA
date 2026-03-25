@@ -19,7 +19,7 @@ config :opentelemetry, :resource,
 config :opentelemetry,
   processors: [
     otel_batch_processor: %{
-      exporter: {:opentelemetry_exporter, []}
+      exporter: {:opentelemetry_exporter, %{}}
     }
   ]
 
