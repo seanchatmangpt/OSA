@@ -76,11 +76,16 @@ defmodule OptimalSystemAgent.Verification.StructuralAnalyzer do
     A map with per-check booleans, overall score (0.0-5.0), and issue list.
   """
   @spec analyze_workflow(workflow(), atom()) :: analysis_result()
-  def analyze_workflow(workflow, format \\ :unknown) do
-    Logger.info("[StructuralAnalyzer] Analyzing #{format} workflow: #{map_size(workflow.tasks)} tasks, #{length(workflow.transitions)} transitions")
+  def analyze_workflow(workflow, format \\ :unknown)
 
-    # Normalize: ensure we have at least an empty start/end node
+  def analyze_workflow(nil, _format) do
+    {:error, :nil_workflow}
+  end
+
+  def analyze_workflow(workflow, format) do
     workflow = normalize_workflow(workflow)
+
+    Logger.info("[StructuralAnalyzer] Analyzing #{format} workflow: #{map_size(workflow.tasks)} tasks, #{length(workflow.transitions)} transitions")
 
     # Run all checks
     deadlock = check_deadlock(workflow)
@@ -868,4 +873,12 @@ defmodule OptimalSystemAgent.Verification.StructuralAnalyzer do
       metadata: %{}
     }
   end
+
+  @doc """
+  Analyze a workflow for structural issues.
+
+  Delegates to analyze_workflow/2 for nil and empty input handling.
+  """
+  def analyze(nil), do: {:error, :nil_workflow}
+  def analyze(workflow), do: analyze_workflow(workflow)
 end
