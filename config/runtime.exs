@@ -372,3 +372,9 @@ if config_env() != :test do
     :erlang.system_flag(:max_heap_size, max_heap_bytes)
   end
 end
+
+# ── OpenTelemetry ─────────────────────────────────────────────────────────
+config :opentelemetry, :resource, service: [name: "osa", version: "1.0.0"]
+config :opentelemetry_exporter,
+  otlp_protocol: :http_protobuf,
+  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
