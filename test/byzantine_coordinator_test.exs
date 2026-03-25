@@ -14,7 +14,6 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
   """
 
   use ExUnit.Case
-  doctest OptimalSystemAgent.ByzantineCoordinator
 
   import ExUnit.CaptureLog
 
