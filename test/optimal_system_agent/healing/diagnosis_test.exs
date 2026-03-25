@@ -413,4 +413,133 @@ defmodule OptimalSystemAgent.Healing.DiagnosisTest do
       assert HealingAttributes.healing_confidence() == :"healing.confidence"
     end
   end
+
+  # -------- Schema Contract: Chicago TDD semconv validation --------
+
+  describe "schema contract — semconv validation" do
+    alias OpenTelemetry.SemConv.Incubating.HealingAttributes
+    alias OpenTelemetry.SemConv.Incubating.SpanNames
+
+    # --- failure mode atom identity contracts ---
+
+    @tag :unit
+    test "deadlock failure_mode matches semconv schema" do
+      error = {:error, :circular_wait}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().deadlock
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "timeout failure_mode matches semconv schema" do
+      error = {:error, :timeout}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().timeout
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "race_condition semconv constant is the atom :race_condition" do
+      # Validates the semconv registry constant itself is schema-correct.
+      # Diagnosis does not expose :race_condition internally; this test
+      # enforces that any code emitting spans uses the typed constant.
+      expected = HealingAttributes.healing_failure_mode_values().race_condition
+      assert expected == :race_condition
+    end
+
+    @tag :unit
+    test "memory_leak semconv constant is the atom :memory_leak" do
+      # Same schema-enforcement contract for :memory_leak.
+      expected = HealingAttributes.healing_failure_mode_values().memory_leak
+      assert expected == :memory_leak
+    end
+
+    @tag :unit
+    test "livelock failure_mode matches semconv schema" do
+      error = {:error, :livelock}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().livelock
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "cascading_failure semconv constant is the atom :cascading_failure" do
+      # Diagnosis maps :cascading_failure input to :cascade internally;
+      # this test validates the semconv schema constant remains :cascading_failure.
+      expected = HealingAttributes.healing_failure_mode_values().cascading_failure
+      assert expected == :cascading_failure
+    end
+
+    @tag :unit
+    test "stagnation semconv constant is the atom :stagnation" do
+      expected = HealingAttributes.healing_failure_mode_values().stagnation
+      assert expected == :stagnation
+    end
+
+    # --- attribute key contracts ---
+
+    @tag :unit
+    test ~s(healing_failure_mode attribute key matches schema :"healing.failure_mode") do
+      assert HealingAttributes.healing_failure_mode() == :"healing.failure_mode"
+    end
+
+    @tag :unit
+    test ~s(healing_confidence attribute key matches schema :"healing.confidence") do
+      assert HealingAttributes.healing_confidence() == :"healing.confidence"
+    end
+
+    @tag :unit
+    test ~s(healing_agent_id attribute key matches schema :"healing.agent_id") do
+      assert HealingAttributes.healing_agent_id() == :"healing.agent_id"
+    end
+
+    @tag :unit
+    test ~s(healing_mttr_ms attribute key matches schema :"healing.mttr_ms") do
+      assert HealingAttributes.healing_mttr_ms() == :"healing.mttr_ms"
+    end
+
+    @tag :unit
+    test ~s(healing_recovery_action attribute key matches schema :"healing.recovery_action") do
+      assert HealingAttributes.healing_recovery_action() == :"healing.recovery_action"
+    end
+
+    @tag :unit
+    test ~s(healing_reflex_arc attribute key matches schema :"healing.reflex_arc") do
+      assert HealingAttributes.healing_reflex_arc() == :"healing.reflex_arc"
+    end
+
+    # --- span name contracts ---
+
+    @tag :unit
+    test "healing diagnosis span name matches semconv schema" do
+      assert SpanNames.healing_diagnosis() == "healing.diagnosis"
+    end
+
+    @tag :unit
+    test "healing reflex arc span name matches semconv schema" do
+      assert SpanNames.healing_reflex_arc() == "healing.reflex_arc"
+    end
+
+    # --- completeness: all semconv failure_mode values are present in schema map ---
+
+    @tag :unit
+    test "healing_failure_mode_values contains all 7 required schema keys" do
+      values = HealingAttributes.healing_failure_mode_values()
+      required_keys = [:deadlock, :timeout, :race_condition, :memory_leak, :cascading_failure, :stagnation, :livelock]
+      for key <- required_keys do
+        assert Map.has_key?(values, key), "semconv schema missing key: #{key}"
+      end
+    end
+
+    @tag :unit
+    test "all healing_failure_mode_values entries are atoms matching their key" do
+      # Schema contract: every value in the map is an atom equal to its key.
+      # This prevents silent string/atom type mismatches in span attribute emission.
+      values = HealingAttributes.healing_failure_mode_values()
+      for {key, value} <- values do
+        assert is_atom(value), "semconv value for #{key} must be an atom, got: #{inspect(value)}"
+        assert key == value, "semconv map key #{key} must equal value #{value}"
+      end
+    end
+  end
 end

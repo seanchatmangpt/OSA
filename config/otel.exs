@@ -8,6 +8,9 @@ import Config
 #
 # SDK configuration for batch span processing with HTTP/protobuf export.
 
+config :opentelemetry, :resource,
+  service: [name: "osa", version: "1.0.0"]
+
 config :opentelemetry,
   tracer: :global,
   processors: [
