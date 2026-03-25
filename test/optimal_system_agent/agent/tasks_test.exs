@@ -215,13 +215,14 @@ defmodule OptimalSystemAgent.Agent.TasksTest do
   # Workflow API tests
 
   describe "create_workflow/2" do
-    @tag :skip
+    @tag :integration
     test "creates workflow from description" do
+      # Requires real LLM API call for task decomposition
       assert {:ok, workflow} = Tasks.create_workflow("Build a feature", "session")
       assert is_map(workflow)
     end
 
-    @tag :skip
+    @tag :integration
     test "accepts opts list" do
       assert {:ok, _} = Tasks.create_workflow("Test", "session", [])
     end

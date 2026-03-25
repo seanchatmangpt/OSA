@@ -130,7 +130,6 @@ defmodule OptimalSystemAgent.Agent.ScratchpadTest do
   end
 
   describe "process_response/2" do
-    @tag :skip
     test "returns clean text" do
       result = Scratchpad.process_response("<think>X</think>Response", "session")
       assert result == "Response"

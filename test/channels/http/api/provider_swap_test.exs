@@ -26,7 +26,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProviderSwapTest do
       assert conn.status == 400
     end
 
-    @tag :skip
     test "returns 404 for non-existent session" do
       # Requires app boot — Registry.lookup(OptimalSystemAgent.SessionRegistry, _) crashes without it
       conn = json_post("/no-such-session-xyz/provider", %{"provider" => "openai"})
@@ -35,7 +34,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProviderSwapTest do
       assert body["error"] =~ "not_found" or body["details"] =~ "not_found"
     end
 
-    @tag :skip
     test "returns 404 when session registry has no entry" do
       # Requires app boot — Registry.lookup(OptimalSystemAgent.SessionRegistry, _) crashes without it
       conn = json_post("/ghost-session-42/provider", %{"provider" => "anthropic"})
@@ -43,7 +41,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ProviderSwapTest do
       assert conn.status == 404
     end
 
-    @tag :skip
     test "response includes provider field on success path" do
       # Requires app boot — Registry.lookup(OptimalSystemAgent.SessionRegistry, _) crashes without it
       conn = json_post("/missing-session/provider", %{"provider" => "groq", "model" => "llama3"})

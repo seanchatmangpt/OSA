@@ -92,6 +92,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
       Application.put_env(:optimal_system_agent, :max_iterations, 30)
     end
 
+    # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
     @tag :skip
     test "continues to iteration when below max and not cancelled" do
       # This test requires actual LLM integration (LLMClient.llm_chat_stream/3)
@@ -116,6 +117,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
   end
 
   describe "cancel flag handling" do
+    # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
     @tag :skip
     test "returns :execute_tools when cancel flag not set" do
       # This test requires actual LLM integration which is not available in test
@@ -208,7 +210,6 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
   end
 
   describe "context overflow detection" do
-    @tag :skip
     test "detects context_length in error message" do
       # Private function testing would require mocking LLMClient response
       # Skip this test as context_overflow?/1 is private and only used internally
@@ -218,6 +219,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
   end
 
   describe "max_response_tokens" do
+    # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
     @tag :skip
     test "has configurable max_response_tokens" do
       # This test requires actual LLM integration which is not available in test
@@ -288,6 +290,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
       Application.put_env(:optimal_system_agent, :max_iterations, 30)
     end
 
+    # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
     @tag :skip
     test "handles zero iteration" do
       # Test for iteration 0 would require LLM integration (skipped)
@@ -307,6 +310,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
       refute is_nil(response)
     end
 
+    # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
     @tag :skip
     test "handles negative iteration (edge case)" do
       # Test for negative iteration would require LLM integration (skipped)

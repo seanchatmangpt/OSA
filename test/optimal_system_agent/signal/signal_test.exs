@@ -374,8 +374,7 @@ defmodule OptimalSystemAgent.SignalTest do
   end
 
   describe "integration" do
-    @tag :skip
-    test "CloudEvents round-trip preserves signal data (skipped: to_cloud_event atom keys vs from_cloud_event string keys)" do
+    test "CloudEvents round-trip preserves signal data" do
       original = Signal.new(%{mode: :execute, genre: :direct, type: :request, format: :text, weight: 0.7, content: "test"})
       cloud_event = Signal.to_cloud_event(original)
       decoded = Signal.from_cloud_event(cloud_event)

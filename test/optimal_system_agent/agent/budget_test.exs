@@ -12,19 +12,16 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
   @moduletag :capture_log
 
   describe "start_link/1" do
-    @tag :skip
     test "starts the Budget GenServer" do
       start_supervised!(Budget)
       assert Process.whereis(Budget) != nil
     end
 
-    @tag :skip
     test "accepts opts list" do
       start_supervised!(Budget)
       assert Process.whereis(Budget) != nil
     end
 
-    @tag :skip
     test "registers with __MODULE__ name" do
       start_supervised!(Budget)
       assert Process.whereis(Budget) != nil
@@ -39,7 +36,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       :ok
     end
 
-    @tag :skip
     test "accepts provider, model, tokens_in, tokens_out, session_id" do
       assert Budget.record_cost(:anthropic, "claude-sonnet-4-6", 1000, 500, "test_session") == :ok
     end
@@ -49,12 +45,10 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       assert true
     end
 
-    @tag :skip
     test "returns :ok" do
       assert Budget.record_cost(:ollama, "llama3", 100, 50, "session") == :ok
     end
 
-    @tag :skip
     test "tracks spend across multiple calls" do
       Budget.reset_daily()
       Budget.record_cost(:anthropic, "claude-sonnet-4-6", 1000, 500, "test")
@@ -87,13 +81,11 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       :ok
     end
 
-    @tag :skip
     test "returns {:ok, %{daily_remaining: x, monthly_remaining: y}} when under budget" do
       result = Budget.check_budget()
       assert match?({:ok, %{daily_remaining: _, monthly_remaining: _}}, result)
     end
 
-    @tag :skip
     test "returns {:over_limit, :daily} when daily exceeded" do
       # Set daily limit very low via env
       System.put_env("OSA_DAILY_BUDGET_USD", "0.001")
@@ -105,7 +97,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       assert is_tuple(result)
     end
 
-    @tag :skip
     test "returns {:over_limit, :monthly} when monthly exceeded" do
       result = Budget.check_budget()
       assert is_tuple(result)
@@ -125,54 +116,45 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       :ok
     end
 
-    @tag :skip
     test "returns {:ok, status_map}" do
       assert match?({:ok, %{}}, Budget.get_status())
     end
 
-    @tag :skip
     test "includes daily_limit" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :daily_limit)
     end
 
-    @tag :skip
     test "includes monthly_limit" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :monthly_limit)
     end
 
-    @tag :skip
     test "includes per_call_limit" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :per_call_limit)
     end
 
-    @tag :skip
     test "includes daily_spent" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :daily_spent)
     end
 
-    @tag :skip
     test "includes monthly_spent" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :monthly_spent)
     end
 
-    @tag :skip
     test "includes daily_remaining" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :daily_remaining)
     end
 
-    @tag :skip
     test "includes monthly_remaining" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :monthly_remaining)
     end
 
-    @tag :skip
     test "includes ledger_entries" do
       {:ok, status} = Budget.get_status()
       assert Map.has_key?(status, :ledger_entries)
@@ -192,7 +174,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       :ok
     end
 
-    @tag :skip
     test "resets daily_spent to 0" do
       Budget.record_cost(:anthropic, "claude-sonnet-4-6", 1000, 500, "test")
       Budget.reset_daily()
@@ -200,7 +181,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       assert status.daily_spent == 0.0
     end
 
-    @tag :skip
     test "returns :ok" do
       assert Budget.reset_daily() == :ok
     end
@@ -219,7 +199,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       :ok
     end
 
-    @tag :skip
     test "resets monthly_spent to 0" do
       Budget.record_cost(:anthropic, "claude-sonnet-4-6", 1000, 500, "test")
       Budget.reset_monthly()
@@ -227,7 +206,6 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
       assert status.monthly_spent == 0.0
     end
 
-    @tag :skip
     test "returns :ok" do
       assert Budget.reset_monthly() == :ok
     end

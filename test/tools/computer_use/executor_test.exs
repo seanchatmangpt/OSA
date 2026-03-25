@@ -1,5 +1,5 @@
 defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.ExecutorTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor
 
@@ -17,7 +17,6 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.ExecutorTest do
       assert Code.ensure_loaded?(Executor)
     end
 
-    @tag :skip
     test "run/1 and run/2 are exported" do
       # SKIPPED: Requires full app start to detect function arity correctly.
       # When running with `mix test --no-start`, default-argument variants

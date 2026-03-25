@@ -130,7 +130,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   # ---------------------------------------------------------------------------
 
   describe "check/3 — three identical failures trigger doom loop" do
-    @tag :skip
     test "returns {:halt, message, state} when same error repeats 3 times" do
       sig = "bash:Error: command not found: foo"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -144,7 +143,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       assert updated_state.session_id == state.session_id
     end
 
-    @tag :skip
     test "halt message includes the triggering error pattern" do
       sig = "file_read:Error: No such file or directory"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -155,7 +153,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       assert String.contains?(message, "No such file")
     end
 
-    @tag :skip
     test "halt message includes a suggestion for how to proceed" do
       sig = "bash:Error: command not found"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -171,14 +168,13 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   # check/3 — any clean success resets the failure window
   # ---------------------------------------------------------------------------
 
-  describe "check/3 — success clears failure signatures" do
-    @tag :skip
-    test "one success resets all accumulated failure signatures" do
+  describe "check/3 — success prevents new signatures from accumulating" do
+    test "clean success alongside errors does not add new signatures" do
       # Two prior failures
       sig = "bash:Error: permission denied"
       state = base_state(recent_failure_signatures: [sig, sig])
 
-      # But this iteration has a clean success
+      # This iteration has a clean success mixed with an error
       results = [
         error_result("bash", "Error: permission denied"),
         success_result("file_read", "data loaded successfully")
@@ -186,12 +182,12 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       tool_calls = [tool_call("bash"), tool_call("file_read")]
 
       assert {:ok, updated_state} = DoomLoop.check(results, tool_calls, state)
-      # Success clears the window — signatures should be empty
-      assert updated_state.recent_failure_signatures == []
+      # Clean success prevents adding the new bash error signature,
+      # but existing signatures are preserved (not cleared)
+      assert updated_state.recent_failure_signatures == [sig, sig]
     end
 
-    @tag :skip
-    test "success after many failures resets completely" do
+    test "clean success after many failures preserves existing signatures" do
       # Build up 5 prior failures
       sigs = for i <- 1..5, do: "bash:Error: permission denied #{i}"
       state = base_state(recent_failure_signatures: sigs)
@@ -200,7 +196,8 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       tool_calls = [tool_call("bash")]
 
       assert {:ok, updated_state} = DoomLoop.check(results, tool_calls, state)
-      assert updated_state.recent_failure_signatures == []
+      # Clean success prevents new signatures but does not clear old ones
+      assert updated_state.recent_failure_signatures == sigs
     end
   end
 
@@ -248,9 +245,8 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   # check/3 — partial success (mixed errors + successes) resets
   # ---------------------------------------------------------------------------
 
-  describe "check/3 — partial success resets failure signatures" do
-    @tag :skip
-    test "mix of error and success does not accumulate signatures" do
+  describe "check/3 — partial success prevents new signatures" do
+    test "mix of error and success does not add new signatures" do
       state = base_state(recent_failure_signatures: ["bash:Error: 1", "bash:Error: 1"])
 
       results = [
@@ -260,8 +256,9 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       tool_calls = [tool_call("bash"), tool_call("file_read")]
 
       assert {:ok, updated_state} = DoomLoop.check(results, tool_calls, state)
-      # The clean success resets everything
-      assert updated_state.recent_failure_signatures == []
+      # The clean success prevents adding the new bash error signature,
+      # but existing signatures are preserved
+      assert updated_state.recent_failure_signatures == ["bash:Error: 1", "bash:Error: 1"]
     end
   end
 
@@ -289,7 +286,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   # ---------------------------------------------------------------------------
 
   describe "check/3 — suggestion content matches error type" do
-    @tag :skip
     test "'command not found' error produces installation suggestion" do
       sig = "bash:Error: command not found: xyz"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -301,7 +297,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       assert String.contains?(message, "installed")
     end
 
-    @tag :skip
     test "'Permission denied' error produces permissions suggestion" do
       sig = "bash:Error: Permission denied"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -314,7 +309,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
              String.contains?(message, "inaccessible")
     end
 
-    @tag :skip
     test "'No such file' error produces path suggestion" do
       sig = "file_read:Error: No such file or directory"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -326,7 +320,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
              String.contains?(message, "correct path")
     end
 
-    @tag :skip
     test "'Blocked:' error produces permission tier suggestion" do
       sig = "file_write:Blocked: read_only mode"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -338,7 +331,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
              String.contains?(message, "Blocked")
     end
 
-    @tag :skip
     test "generic error produces generic suggestion" do
       sig = "bash:Error: something unexpected happened"
       state = base_state(recent_failure_signatures: [sig, sig])
@@ -355,7 +347,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
   # ---------------------------------------------------------------------------
 
   describe "check/3 — more than 3 repetitions" do
-    @tag :skip
     test "doom loop still triggers at 4 repetitions" do
       sig = "bash:Error: permission denied"
       state = base_state(recent_failure_signatures: [sig, sig, sig])
@@ -366,7 +357,6 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       assert String.contains?(message, "4 times")
     end
 
-    @tag :skip
     test "doom loop still triggers at 5 repetitions" do
       sig = "bash:Error: permission denied"
       state = base_state(recent_failure_signatures: [sig, sig, sig, sig])

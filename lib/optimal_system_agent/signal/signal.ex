@@ -77,7 +77,16 @@ defmodule OptimalSystemAgent.Signal do
     _ -> new(%{})
   end
 
+  def from_cloud_event(%{data: data}) when is_map(data) do
+    new(for {k, v} <- data, into: %{}, do: {to_atom_key(k), v})
+  rescue
+    _ -> new(%{})
+  end
+
   def from_cloud_event(_), do: new(%{})
+
+  defp to_atom_key(k) when is_atom(k), do: k
+  defp to_atom_key(k) when is_binary(k), do: String.to_existing_atom(k)
 
   @doc "Return the signal weight (proxy for signal-to-noise ratio)."
   @spec measure_sn_ratio(t()) :: float()
