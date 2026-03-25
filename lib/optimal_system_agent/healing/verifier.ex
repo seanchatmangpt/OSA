@@ -61,27 +61,38 @@ defmodule OptimalSystemAgent.Healing.Verifier do
   """
   @spec verify(map(), [test_case()]) :: {:ok, verification_result()}
   def verify(repaired_state, test_suite) when is_map(repaired_state) and is_list(test_suite) do
-    start_time = System.monotonic_time(:millisecond)
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    results =
-      test_suite
-      |> Enum.map(fn test -> run_test(test, repaired_state) end)
+    :otel_tracer.with_span(tracer, "healing.verify", %{"test_suite_size" => Enum.count(test_suite)}, fn span_ctx ->
+      start_time = System.monotonic_time(:millisecond)
 
-    passed = Enum.count(results, &(&1[:passed]))
-    failed = length(results) - passed
-    failures = Enum.filter(results, &(!&1[:passed]))
+      results =
+        test_suite
+        |> Enum.map(fn test -> run_test(test, repaired_state) end)
 
-    execution_time = System.monotonic_time(:millisecond) - start_time
+      passed = Enum.count(results, &(&1[:passed]))
+      failed = length(results) - passed
+      failures = Enum.filter(results, &(!&1[:passed]))
 
-    result = %{
-      status: if(failed == 0, do: :verified, else: :unverified),
-      passed_tests: passed,
-      failed_tests: failed,
-      failures: failures,
-      execution_time_ms: execution_time
-    }
+      execution_time = System.monotonic_time(:millisecond) - start_time
 
-    {:ok, result}
+      result = %{
+        status: if(failed == 0, do: :verified, else: :unverified),
+        passed_tests: passed,
+        failed_tests: failed,
+        failures: failures,
+        execution_time_ms: execution_time
+      }
+
+      :otel_span.set_attributes(span_ctx, %{
+        "passed_tests" => passed,
+        "failed_tests" => failed,
+        "execution_time_ms" => execution_time,
+        "verification_status" => inspect(result.status)
+      })
+
+      {:ok, result}
+    end)
   end
 
   @doc """

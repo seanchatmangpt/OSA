@@ -105,14 +105,23 @@ defmodule OptimalSystemAgent.Healing.Fixer do
   @spec fix(map(), map(), map()) :: fix_result()
   def fix(failure, current_state, context \\ %{}) do
     mode = Map.get(failure, :mode)
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
+    process_id = Map.get(context, :process_id, "unknown")
+
+    span_attrs = %{
+      "failure_mode" => inspect(mode),
+      "process_id" => inspect(process_id),
+      "state_keys_count" => Enum.count(current_state)
+    }
 
     Logger.debug("Healing.Fixer.fix/3", %{
       mode: mode,
-      process_id: Map.get(context, :process_id),
+      process_id: process_id,
       state_keys: Map.keys(current_state)
     })
 
-    case mode do
+    :otel_tracer.with_span(tracer, "healing.fix", span_attrs, fn span_ctx ->
+      result = case mode do
       # ---- State-based failures ----
       :ashby_drift ->
         fix_state_repair(failure, current_state, context)
@@ -165,7 +174,11 @@ defmodule OptimalSystemAgent.Healing.Fixer do
 
       _unknown ->
         {:unrecoverable, "Unknown failure mode: #{inspect(mode)}"}
-    end
+      end
+
+      :otel_span.set_attributes(span_ctx, %{"fix_result" => inspect(result)})
+      result
+    end)
   end
 
   # ---- Strategy: State Repair ----

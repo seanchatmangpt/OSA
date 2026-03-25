@@ -272,38 +272,47 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   end
 
   defp execute_provider_failover(failed_provider) do
-    fallback_chain =
-      Application.get_env(:optimal_system_agent, :fallback_chain, [])
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    # Find the next available provider after the failed one
-    new_provider =
-      fallback_chain
-      |> Enum.drop_while(&(&1 != failed_provider))
-      |> Enum.drop(1)
-      |> Enum.find(&HealthChecker.is_available?/1)
+    :otel_tracer.with_span(tracer, "healing.reflex_provider_failover", %{
+      "failed_provider" => to_string(failed_provider)
+    }, fn span_ctx ->
+      fallback_chain =
+        Application.get_env(:optimal_system_agent, :fallback_chain, [])
 
-    if new_provider do
-      Logger.warning(
-        "[ReflexArc] Provider failover: #{failed_provider} -> #{new_provider} " <>
-          "(#{@provider_failure_threshold} consecutive failures)"
-      )
+      # Find the next available provider after the failed one
+      new_provider =
+        fallback_chain
+        |> Enum.drop_while(&(&1 != failed_provider))
+        |> Enum.drop(1)
+        |> Enum.find(&HealthChecker.is_available?/1)
 
-      Bus.emit(:system_event, %{
-        event: :reflex,
-        reflex: :provider_failover,
-        from: failed_provider,
-        to: new_provider
-      },
-      source: "healing.reflex_arcs")
+      if new_provider do
+        Logger.warning(
+          "[ReflexArc] Provider failover: #{failed_provider} -> #{new_provider} " <>
+            "(#{@provider_failure_threshold} consecutive failures)"
+        )
 
-      %{from: failed_provider, to: new_provider}
-    else
-      Logger.warning(
-        "[ReflexArc] Provider failover triggered for #{failed_provider} but no fallback available"
-      )
+        :otel_span.set_attributes(span_ctx, %{"new_provider" => to_string(new_provider)})
 
-      nil
-    end
+        Bus.emit(:system_event, %{
+          event: :reflex,
+          reflex: :provider_failover,
+          from: failed_provider,
+          to: new_provider
+        },
+        source: "healing.reflex_arcs")
+
+        %{from: failed_provider, to: new_provider}
+      else
+        Logger.warning(
+          "[ReflexArc] Provider failover triggered for #{failed_provider} but no fallback available"
+        )
+
+        :otel_span.set_attributes(span_ctx, %{"status" => "no_fallback_available"})
+        nil
+      end
+    end)
   end
 
   # ---------------------------------------------------------------------------
@@ -311,55 +320,70 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   # ---------------------------------------------------------------------------
 
   defp execute_context_relief(session_id, utilization) do
-    Logger.info(
-      "[ReflexArc] Context pressure relief triggered for session #{session_id} " <>
-        "(utilization: #{Float.round(utilization * 100, 1)}%)"
-    )
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    try do
-      # Try to get session messages and compact them
-      case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
-        [{pid, _}] ->
-          if function_export?(pid, :messages, 0) do
-            messages = GenServer.call(pid, :messages, 5_000)
+    :otel_tracer.with_span(tracer, "healing.reflex_context_relief", %{
+      "session_id" => session_id,
+      "utilization_pct" => Float.round(utilization * 100, 1)
+    }, fn span_ctx ->
+      Logger.info(
+        "[ReflexArc] Context pressure relief triggered for session #{session_id} " <>
+          "(utilization: #{Float.round(utilization * 100, 1)}%)"
+      )
 
-            if is_list(messages) and length(messages) > 0 do
-              Compactor.maybe_compact(messages)
+      try do
+        # Try to get session messages and compact them
+        case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+          [{pid, _}] ->
+            if function_export?(pid, :messages, 0) do
+              messages = GenServer.call(pid, :messages, 5_000)
 
-              Logger.info(
-                "[ReflexArc] Context compaction completed for session #{session_id}"
+              if is_list(messages) and length(messages) > 0 do
+                Compactor.maybe_compact(messages)
+
+                Logger.info(
+                  "[ReflexArc] Context compaction completed for session #{session_id}"
+                )
+
+                :otel_span.set_attributes(span_ctx, %{"compaction_status" => "completed"})
+              end
+            else
+              Logger.debug(
+                "[ReflexArc] Session #{session_id} does not expose messages/0, " <>
+                  "emitting event for downstream handling"
               )
+
+              :otel_span.set_attributes(span_ctx, %{"compaction_status" => "emitted_event"})
             end
-          else
+
+          [] ->
             Logger.debug(
-              "[ReflexArc] Session #{session_id} does not expose messages/0, " <>
+              "[ReflexArc] Session #{session_id} not found in registry, " <>
                 "emitting event for downstream handling"
             )
-          end
 
-        [] ->
-          Logger.debug(
-            "[ReflexArc] Session #{session_id} not found in registry, " <>
-              "emitting event for downstream handling"
+            :otel_span.set_attributes(span_ctx, %{"compaction_status" => "session_not_found"})
+        end
+      rescue
+        e ->
+          Logger.warning(
+            "[ReflexArc] Context relief failed for session #{session_id}: " <>
+              "#{Exception.message(e)}"
           )
+
+          :otel_span.set_attributes(span_ctx, %{"error" => Exception.message(e)})
       end
-    rescue
-      e ->
-        Logger.warning(
-          "[ReflexArc] Context relief failed for session #{session_id}: " <>
-            "#{Exception.message(e)}"
-        )
-    end
 
-    Bus.emit(:system_event, %{
-      event: :reflex,
-      reflex: :context_relief,
-      session_id: session_id,
-      utilization: Float.round(utilization * 100, 1)
-    },
-    source: "healing.reflex_arcs")
+      Bus.emit(:system_event, %{
+        event: :reflex,
+        reflex: :context_relief,
+        session_id: session_id,
+        utilization: Float.round(utilization * 100, 1)
+      },
+      source: "healing.reflex_arcs")
 
-    %{session_id: session_id, utilization: Float.round(utilization * 100, 1)}
+      %{session_id: session_id, utilization: Float.round(utilization * 100, 1)}
+    end)
   end
 
   # ---------------------------------------------------------------------------
@@ -444,46 +468,58 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   # ---------------------------------------------------------------------------
 
   defp execute_doom_loop_break(session_id, tool_name) do
-    Logger.warning(
-      "[ReflexArc] Doom loop break triggered for session #{session_id} " <>
-        "(tool: #{tool_name || "unknown"})"
-    )
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    try do
-      # Step 1: Kill the stuck session
-      case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
-        [{pid, _}] ->
-          if Process.alive?(pid) do
-            Logger.info("[ReflexArc] Terminating stuck session #{session_id} (pid: #{inspect(pid)})")
+    :otel_tracer.with_span(tracer, "healing.reflex_doom_loop_break", %{
+      "session_id" => session_id,
+      "tool_name" => tool_name || "unknown"
+    }, fn span_ctx ->
+      Logger.warning(
+        "[ReflexArc] Doom loop break triggered for session #{session_id} " <>
+          "(tool: #{tool_name || "unknown"})"
+      )
 
-            # Graceful stop with reason so supervisor doesn't immediately restart
-            GenServer.stop(pid, :doom_loop_break)
+      try do
+        # Step 1: Kill the stuck session
+        case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+          [{pid, _}] ->
+            if Process.alive?(pid) do
+              Logger.info("[ReflexArc] Terminating stuck session #{session_id} (pid: #{inspect(pid)})")
 
-            Logger.info("[ReflexArc] Session #{session_id} terminated")
-          end
+              :otel_span.set_attributes(span_ctx, %{"session_terminated" => true})
 
-        [] ->
-          Logger.debug("[ReflexArc] Session #{session_id} already gone, creating fresh session")
+              # Graceful stop with reason so supervisor doesn't immediately restart
+              GenServer.stop(pid, :doom_loop_break)
+
+              Logger.info("[ReflexArc] Session #{session_id} terminated")
+            end
+
+          [] ->
+            Logger.debug("[ReflexArc] Session #{session_id} already gone, creating fresh session")
+            :otel_span.set_attributes(span_ctx, %{"session_already_gone" => true})
+        end
+
+        # Step 2: Create a new session with modified context
+        create_recovery_session(session_id, tool_name)
+      rescue
+        e ->
+          Logger.error(
+            "[ReflexArc] Doom loop break failed for #{session_id}: #{Exception.message(e)}"
+          )
+
+          :otel_span.set_attributes(span_ctx, %{"error" => Exception.message(e)})
       end
 
-      # Step 2: Create a new session with modified context
-      create_recovery_session(session_id, tool_name)
-    rescue
-      e ->
-        Logger.error(
-          "[ReflexArc] Doom loop break failed for #{session_id}: #{Exception.message(e)}"
-        )
-    end
+      Bus.emit(:system_event, %{
+        event: :reflex,
+        reflex: :doom_loop_break,
+        session_id: session_id,
+        tool: tool_name || "unknown"
+      },
+      source: "healing.reflex_arcs")
 
-    Bus.emit(:system_event, %{
-      event: :reflex,
-      reflex: :doom_loop_break,
-      session_id: session_id,
-      tool: tool_name || "unknown"
-    },
-    source: "healing.reflex_arcs")
-
-    %{session_id: session_id, tool: tool_name || "unknown"}
+      %{session_id: session_id, tool: tool_name || "unknown"}
+    end)
   end
 
   defp create_recovery_session(original_session_id, tool_name) do
@@ -518,67 +554,73 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   # ---------------------------------------------------------------------------
 
   defp run_session_reaper(state) do
-    now = System.monotonic_time(:millisecond)
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    try do
-      sessions = Registry.select(OptimalSystemAgent.SessionRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])
+    :otel_tracer.with_span(tracer, "healing.reflex_session_reaper", %{}, fn span_ctx ->
+      now = System.monotonic_time(:millisecond)
 
-      {final_state, reaped_count} =
-        Enum.reduce(sessions, {state, 0}, fn session_id, {acc_state, count} ->
-          case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
-            [{pid, _}] ->
-              idle_ms = session_idle_time(pid, now)
+      try do
+        sessions = Registry.select(OptimalSystemAgent.SessionRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])
 
-              if idle_ms > @stale_session_threshold_ms do
-                idle_minutes = Float.round(idle_ms / 60_000, 1)
+        {final_state, reaped_count} =
+          Enum.reduce(sessions, {state, 0}, fn session_id, {acc_state, count} ->
+            case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+              [{pid, _}] ->
+                idle_ms = session_idle_time(pid, now)
 
-                Logger.info(
-                  "[ReflexArc] Reaping stale session #{session_id} " <>
-                    "(idle: #{idle_minutes} minutes)"
-                )
+                if idle_ms > @stale_session_threshold_ms do
+                  idle_minutes = Float.round(idle_ms / 60_000, 1)
 
-                if Process.alive?(pid) do
-                  GenServer.stop(pid, :stale_session_reaped)
+                  Logger.info(
+                    "[ReflexArc] Reaping stale session #{session_id} " <>
+                      "(idle: #{idle_minutes} minutes)"
+                  )
+
+                  if Process.alive?(pid) do
+                    GenServer.stop(pid, :stale_session_reaped)
+                  end
+
+                  # Emit reaped event
+                  Bus.emit(:system_event, %{
+                    event: :reflex,
+                    reflex: :session_reaped,
+                    session_id: session_id,
+                    idle_minutes: idle_minutes
+                  },
+                  source: "healing.reflex_arcs")
+
+                  # Log the reflex
+                  entry = %{
+                    reflex: :session_reaped,
+                    session_id: session_id,
+                    idle_minutes: idle_minutes,
+                    fired_at: DateTime.utc_now()
+                  }
+
+                  acc_state = log_reflex(acc_state, entry)
+                  {acc_state, count + 1}
+                else
+                  {acc_state, count}
                 end
 
-                # Emit reaped event
-                Bus.emit(:system_event, %{
-                  event: :reflex,
-                  reflex: :session_reaped,
-                  session_id: session_id,
-                  idle_minutes: idle_minutes
-                },
-                source: "healing.reflex_arcs")
-
-                # Log the reflex
-                entry = %{
-                  reflex: :session_reaped,
-                  session_id: session_id,
-                  idle_minutes: idle_minutes,
-                  fired_at: DateTime.utc_now()
-                }
-
-                acc_state = log_reflex(acc_state, entry)
-                {acc_state, count + 1}
-              else
+              [] ->
                 {acc_state, count}
-              end
+            end
+          end)
 
-            [] ->
-              {acc_state, count}
-          end
-        end)
+        if reaped_count > 0 do
+          Logger.info("[ReflexArc] Session reaper: #{reaped_count} sessions reaped")
+          :otel_span.set_attributes(span_ctx, %{"sessions_reaped" => reaped_count})
+        end
 
-      if reaped_count > 0 do
-        Logger.info("[ReflexArc] Session reaper: #{reaped_count} sessions reaped")
+        final_state
+      rescue
+        e ->
+          Logger.warning("[ReflexArc] Session reaper sweep failed: #{Exception.message(e)}")
+          :otel_span.set_attributes(span_ctx, %{"error" => Exception.message(e)})
+          state
       end
-
-      final_state
-    rescue
-      e ->
-        Logger.warning("[ReflexArc] Session reaper sweep failed: #{Exception.message(e)}")
-        state
-    end
+    end)
   end
 
   # Estimate idle time by querying the session's last activity.

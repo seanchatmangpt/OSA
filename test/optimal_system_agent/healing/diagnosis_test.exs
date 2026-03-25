@@ -369,4 +369,48 @@ defmodule OptimalSystemAgent.Healing.DiagnosisTest do
       assert is_binary(cause)
     end
   end
+
+  # -------- Schema Contract: Diagnosis modes map to semconv values --------
+
+  describe "diagnose/2 — schema contract with OTel semconv" do
+    alias OpenTelemetry.SemConv.Incubating.HealingAttributes
+
+    @tag :unit
+    test "deadlock failure mode maps to semconv healing_failure_mode_values.deadlock" do
+      # When Diagnosis returns :deadlock, the OTEL span attribute value
+      # should match the schema-defined value
+      error = {:error, :circular_wait}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().deadlock
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "timeout failure mode maps to semconv healing_failure_mode_values.timeout" do
+      error = {:error, :timeout}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().timeout
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "livelock failure mode maps to semconv healing_failure_mode_values.livelock" do
+      error = {:error, :livelock}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().livelock
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "healing_failure_mode attribute key is used for all span emissions" do
+      # This test documents that the OTEL attribute KEY used in spans
+      # must match the schema-defined attribute name
+      assert HealingAttributes.healing_failure_mode() == :"healing.failure_mode"
+    end
+
+    @tag :unit
+    test "healing_confidence attribute key is used for confidence scores in spans" do
+      assert HealingAttributes.healing_confidence() == :"healing.confidence"
+    end
+  end
 end

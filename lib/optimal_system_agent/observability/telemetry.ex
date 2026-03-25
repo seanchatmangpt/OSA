@@ -17,6 +17,15 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   - **Format**: JSON (metrics), structured (trace context headers)
   - **Weight**: importance level (DEBUG, INFO, WARN, ERROR)
 
+  ## Implementation
+
+  This module maintains a dual-backend approach:
+  - **ETS backend**: maintains backward compatibility with existing tests and callers
+    that inspect span/metric state via `:ets.lookup/2`
+  - **OpenTelemetry backend**: delegates to `opentelemetry_api` (`:otel_tracer`) for
+    standard distributed tracing. The OTEL calls are guarded — if the OpenTelemetry SDK
+    is not running (e.g., during unit tests), the ETS path continues to function correctly.
+
   ## Spans
 
   Spans are named time-bounded operations. Common OSA spans:
@@ -46,6 +55,11 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   """
 
   require Logger
+
+  # Typed span name constants generated from the semconv schema.
+  # Use these instead of bare string literals when calling start_span/2.
+  # Example: start_span(OpenTelemetry.SemConv.Incubating.SpanNames.agent_decision(), %{"agent_id" => id})
+  # See lib/osa/semconv/span_names.ex for the full constant list.
 
   @doc """
   Initialize tracer and metrics handlers.
@@ -83,6 +97,14 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     :ok
   end
 
+  # Span names are defined in the semconv schema.
+  # See lib/osa/semconv/span_names.ex for typed constants.
+  # Use SpanNames.healing_diagnosis() instead of "healing.diagnosis" string literals.
+  # Use SpanNames.agent_decision() instead of "agent.decision" string literals.
+  # Use SpanNames.consensus_round() instead of "consensus.round" string literals.
+  # Use SpanNames.mcp_call() instead of "mcp.call" string literals.
+  # Use SpanNames.a2a_call() instead of "a2a.call" string literals.
+  # Use SpanNames.agent_llm_predict() instead of "llm.predict" string literals.
   @doc """
   Start a named span with optional attributes.
 
@@ -90,9 +112,13 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   passed to child operations. Spans auto-generate unique IDs and track parent/child
   relationships via ETS tables.
 
+  Also starts a corresponding OpenTelemetry span via `opentelemetry_api` if the
+  OTEL SDK is available; otherwise falls back gracefully to the ETS-only path.
+
   ## Parameters
 
-    - `span_name`: atom or string, e.g. "agent.decision", "consensus.round"
+    - `span_name`: atom or string, e.g. `SpanNames.agent_decision()`, `SpanNames.consensus_round()`
+      Prefer typed constants from `OpenTelemetry.SemConv.Incubating.SpanNames` over raw strings.
     - `attributes`: map of span metadata, e.g. %{"agent_id" => "agent-1", "round_num" => 5}
 
   ## Returns
@@ -103,11 +129,12 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
       - `parent_span_id`: parent span ID if nested
       - `attributes`: enriched attributes including timestamp
       - `start_time_us`: microsecond timestamp
+      - `otel_ctx`: the raw OpenTelemetry span token (for end_span)
 
   ## Examples
 
       iex> {:ok, span} = OptimalSystemAgent.Observability.Telemetry.start_span("agent.decision", %{"agent_id" => "a1"})
-      iex> span.span_id != nil
+      iex> span["span_id"] != nil
       true
   """
   @spec start_span(String.t() | atom, map) :: {:ok, map} | {:error, term}
@@ -115,25 +142,34 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     span_id = generate_uuid()
     trace_id = get_or_create_trace_id()
     start_time_us = system_time_to_microseconds()
+    span_name_str = to_string(span_name)
+
+    enriched_attrs = enrich_attributes(attributes)
 
     span_ctx = %{
       "span_id" => span_id,
       "trace_id" => trace_id,
       "parent_span_id" => get_current_span_id(),
-      "span_name" => to_string(span_name),
-      "attributes" => enrich_attributes(attributes),
+      "span_name" => span_name_str,
+      "attributes" => enriched_attrs,
       "start_time_us" => start_time_us,
-      "status" => "active"
+      "status" => "active",
+      "otel_ctx" => nil
     }
 
-    # Store in ETS for parent/child traversal
+    # Start OpenTelemetry span via the opentelemetry_api (safe — no-ops if SDK absent)
+    otel_ctx = start_otel_span(span_name_str, enriched_attrs)
+
+    span_ctx = Map.put(span_ctx, "otel_ctx", otel_ctx)
+
+    # Store in ETS for parent/child traversal and backward-compatible test assertions
     :ets.insert(:telemetry_spans, {span_id, span_ctx})
 
     # Emit telemetry event for subscribers
     :telemetry.execute(
       [:osa, :span, :created],
       %{"span_id" => span_id, "trace_id" => trace_id},
-      %{"span_name" => span_ctx["span_name"], "attributes" => attributes}
+      %{"span_name" => span_name_str, "attributes" => attributes}
     )
 
     {:ok, span_ctx}
@@ -197,6 +233,8 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   End a span and record its duration.
 
   Marks a span as complete, calculates elapsed time, and emits a telemetry event.
+  Also ends the corresponding OpenTelemetry span if one was started.
+
   Should be called from finally/catch blocks to ensure recording.
 
   ## Parameters
@@ -220,16 +258,20 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     end_time_us = system_time_to_microseconds()
     duration_us = end_time_us - start_time_us
 
-    # Update span status
+    # Update span status in the ETS record
     updated_span = Map.put(span_ctx, "status", to_string(status))
 
-    updated_span = if error_message do
-      Map.put(updated_span, "error_message", error_message)
-    else
-      updated_span
-    end
+    updated_span =
+      if error_message do
+        Map.put(updated_span, "error_message", error_message)
+      else
+        updated_span
+      end
 
     :ets.insert(:telemetry_spans, {span_id, updated_span})
+
+    # End the OpenTelemetry span if one was started (safe — no-ops if ctx is nil)
+    end_otel_span(span_ctx["otel_ctx"], status, error_message)
 
     # Record latency metric
     record_metric(
@@ -249,76 +291,138 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   end
 
   # ============================================================================
+  # OpenTelemetry Backend — safe wrappers that no-op when SDK is unavailable
+  # ============================================================================
+
+  # Start an OTEL span using the low-level Erlang tracer API.
+  # Returns the OTEL span token (needed to end the span) or nil if unavailable.
+  defp start_otel_span(span_name, attributes) do
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
+    attrs = attrs_to_otel_list(attributes)
+
+    span_opts = %{
+      attributes: attrs,
+      kind: :internal
+    }
+
+    token = :otel_tracer.start_span(tracer, span_name, span_opts)
+    token
+  rescue
+    _ -> nil
+  catch
+    _, _ -> nil
+  end
+
+  # End an OTEL span, setting status and releasing the context token.
+  defp end_otel_span(nil, _status, _error_message), do: :ok
+
+  defp end_otel_span(otel_ctx, status, error_message) do
+    try do
+      otel_status =
+        case status do
+          :ok ->
+            :opentelemetry.status(:ok, "")
+
+          :error ->
+            msg = if is_binary(error_message), do: error_message, else: inspect(error_message)
+            :opentelemetry.status(:error, msg)
+
+          _ ->
+            :opentelemetry.status(:ok, "")
+        end
+
+      :otel_span.set_status(otel_ctx, otel_status)
+      :otel_span.end_span(otel_ctx)
+    rescue
+      _ -> :ok
+    catch
+      _, _ -> :ok
+    end
+  end
+
+  # Convert a map of attributes to the list-of-tuples format OTEL expects.
+  defp attrs_to_otel_list(attrs) when is_map(attrs) do
+    Enum.map(attrs, fn {k, v} -> {to_string(k), v} end)
+  end
+
+  defp attrs_to_otel_list(_), do: []
+
+  # ============================================================================
   # Private Functions
   # ============================================================================
 
   # Attach handler for agent decision events
   defp attach_agent_decision_handler do
-    :ok = :telemetry.attach(
-      "osa.agent.decision.handler",
-      [:osa, :agent, :decision],
-      fn _event_name, _measurements, _metadata ->
-        # Handler body is implemented by callers
-        :ok
-      end,
-      nil
-    )
+    :ok =
+      :telemetry.attach(
+        "osa.agent.decision.handler",
+        [:osa, :agent, :decision],
+        fn _event_name, _measurements, _metadata, _config ->
+          # Handler body is implemented by callers
+          :ok
+        end,
+        nil
+      )
   rescue
     _ -> :ok
   end
 
   # Attach handler for consensus round events
   defp attach_consensus_round_handler do
-    :ok = :telemetry.attach(
-      "osa.consensus.round.handler",
-      [:osa, :consensus, :round],
-      fn _event_name, _measurements, _metadata ->
-        :ok
-      end,
-      nil
-    )
+    :ok =
+      :telemetry.attach(
+        "osa.consensus.round.handler",
+        [:osa, :consensus, :round],
+        fn _event_name, _measurements, _metadata, _config ->
+          :ok
+        end,
+        nil
+      )
   rescue
     _ -> :ok
   end
 
   # Attach handler for LLM predict events
   defp attach_llm_predict_handler do
-    :ok = :telemetry.attach(
-      "osa.llm.predict.handler",
-      [:osa, :llm, :predict],
-      fn _event_name, _measurements, _metadata ->
-        :ok
-      end,
-      nil
-    )
+    :ok =
+      :telemetry.attach(
+        "osa.llm.predict.handler",
+        [:osa, :llm, :predict],
+        fn _event_name, _measurements, _metadata, _config ->
+          :ok
+        end,
+        nil
+      )
   rescue
     _ -> :ok
   end
 
   # Attach handler for tool execution events
   defp attach_tool_execute_handler do
-    :ok = :telemetry.attach(
-      "osa.tool.execute.handler",
-      [:osa, :tool, :execute],
-      fn _event_name, _measurements, _metadata ->
-        :ok
-      end,
-      nil
-    )
+    :ok =
+      :telemetry.attach(
+        "osa.tool.execute.handler",
+        [:osa, :tool, :execute],
+        fn _event_name, _measurements, _metadata, _config ->
+          :ok
+        end,
+        nil
+      )
   rescue
     _ -> :ok
   end
 
   # Attach handler for memory cache events
   defp attach_memory_cache_handler do
-    :ok = :telemetry.attach(
-      "osa.memory.cache.handler",
-      [:osa, :memory, :cache],
-      fn _event_name, _measurements, _metadata ->
-        :ok
-      end,
-      nil
-    )
+    :ok =
+      :telemetry.attach(
+        "osa.memory.cache.handler",
+        [:osa, :memory, :cache],
+        fn _event_name, _measurements, _metadata, _config ->
+          :ok
+        end,
+        nil
+      )
   rescue
     _ -> :ok
   end
@@ -387,7 +491,8 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   defp init_metric_data(metric_name, value) do
     metric_name_str = to_string(metric_name)
 
-    is_histogram = String.contains?(metric_name_str, ["_latency", "_duration", "latency_", "duration_"])
+    is_histogram =
+      String.contains?(metric_name_str, ["_latency", "_duration", "latency_", "duration_"])
 
     if is_histogram do
       # Histogram: store observations

@@ -70,7 +70,16 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
   # ---- Tuple patterns {type, reason} ----
 
   def diagnose({:error, reason}, context) when is_atom(reason) do
-    diagnose_reason(reason, context)
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
+
+    :otel_tracer.with_span(tracer, "diagnosis.classify", %{
+      "error_type" => "atom",
+      "reason" => inspect(reason)
+    }, fn span_ctx ->
+      result = diagnose_reason(reason, context)
+      :otel_span.set_attributes(span_ctx, %{"diagnosis_mode" => inspect(elem(result, 0))})
+      result
+    end)
   end
 
   def diagnose({:error, message}, _context) when is_binary(message) do

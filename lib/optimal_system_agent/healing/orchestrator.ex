@@ -114,44 +114,57 @@ defmodule OptimalSystemAgent.Healing.Orchestrator do
 
   @impl true
   def handle_call({:request_healing, agent_id, error, healing_context}, _from, state) do
-    {category, severity, retryable} = ErrorClassifier.classify(error)
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    classification = %{
-      category: category,
-      severity: severity,
-      retryable: retryable,
-      error: error
-    }
+    :otel_tracer.with_span(tracer, "healing.orchestrator.request_healing", %{
+      "agent_id" => agent_id
+    }, fn span_ctx ->
+      {category, severity, retryable} = ErrorClassifier.classify(error)
 
-    session =
-      Session.new(agent_id, classification,
-        budget_usd: Map.get(healing_context, :budget_usd, 0.50),
-        timeout_ms: Map.get(healing_context, :timeout_ms, 300_000),
-        max_attempts: Map.get(healing_context, :max_attempts, 1)
+      classification = %{
+        category: category,
+        severity: severity,
+        retryable: retryable,
+        error: error
+      }
+
+      session =
+        Session.new(agent_id, classification,
+          budget_usd: Map.get(healing_context, :budget_usd, 0.50),
+          timeout_ms: Map.get(healing_context, :timeout_ms, 300_000),
+          max_attempts: Map.get(healing_context, :max_attempts, 1)
+        )
+
+      full_context =
+        healing_context
+        |> Map.put(:agent_id, agent_id)
+        |> Map.put(:category, category)
+        |> Map.put(:severity, severity)
+        |> Map.put(:retryable, retryable)
+        |> Map.put(:error, error)
+        |> Map.put(:attempt_count, 0)
+
+      session = %{session | attempt_count: 1}
+      :ets.insert(@table, {session.id, session})
+
+      Logger.info(
+        "[Healing.Orchestrator] Session #{session.id} created for agent #{agent_id} " <>
+          "(#{category}/#{severity}, retryable=#{retryable})"
       )
 
-    full_context =
-      healing_context
-      |> Map.put(:agent_id, agent_id)
-      |> Map.put(:category, category)
-      |> Map.put(:severity, severity)
-      |> Map.put(:retryable, retryable)
-      |> Map.put(:error, error)
-      |> Map.put(:attempt_count, 0)
+      :otel_span.set_attributes(span_ctx, %{
+        "session_id" => session.id,
+        "category" => to_string(category),
+        "severity" => to_string(severity),
+        "retryable" => retryable
+      })
 
-    session = %{session | attempt_count: 1}
-    :ets.insert(@table, {session.id, session})
+      broadcast(:system_event, session, %{event: :healing_session_started})
 
-    Logger.info(
-      "[Healing.Orchestrator] Session #{session.id} created for agent #{agent_id} " <>
-        "(#{category}/#{severity}, retryable=#{retryable})"
-    )
+      state = start_diagnosis(session, full_context, state)
 
-    broadcast(:system_event, session, %{event: :healing_session_started})
-
-    state = start_diagnosis(session, full_context, state)
-
-    {:reply, {:ok, session.id}, state}
+      {:reply, {:ok, session.id}, state}
+    end)
   end
 
   # Diagnosis result from EphemeralAgent
@@ -277,79 +290,98 @@ defmodule OptimalSystemAgent.Healing.Orchestrator do
   # -- Phase execution --
 
   defp start_diagnosis(session, context, state) do
-    {:ok, session} = Session.transition(session, :diagnosing)
-    session = arm_session_timer(session)
-    :ets.insert(@table, {session.id, session})
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    budget = Session.diagnosis_budget(session)
+    :otel_tracer.with_span(tracer, "healing.orchestrator.start_diagnosis", %{
+      "session_id" => session.id
+    }, fn span_ctx ->
+      {:ok, session} = Session.transition(session, :diagnosing)
+      session = arm_session_timer(session)
+      :ets.insert(@table, {session.id, session})
 
-    opts = [
-      role: :diagnostician,
-      context: context,
-      parent_pid: self(),
-      budget_usd: budget,
-      provider: Map.get(context, :provider),
-      model: Map.get(context, :model)
-    ]
+      budget = Session.diagnosis_budget(session)
 
-    case EphemeralAgent.start_link(opts) do
-      {:ok, pid} ->
-        mon_ref = Process.monitor(pid)
-        session_updated = %{session | diagnostician_pid: pid}
-        :ets.insert(@table, {session.id, session_updated})
+      opts = [
+        role: :diagnostician,
+        context: context,
+        parent_pid: self(),
+        budget_usd: budget,
+        provider: Map.get(context, :provider),
+        model: Map.get(context, :model)
+      ]
 
-        monitors = Map.put(state.monitors, mon_ref, {session.id, :diagnostician})
-        pid_to_session = Map.put(state.pid_to_session, pid, session.id)
-        %{state | monitors: monitors, pid_to_session: pid_to_session}
+      case EphemeralAgent.start_link(opts) do
+        {:ok, pid} ->
+          mon_ref = Process.monitor(pid)
+          session_updated = %{session | diagnostician_pid: pid}
+          :ets.insert(@table, {session.id, session_updated})
 
-      {:error, reason} ->
-        Logger.error("[Healing.Orchestrator] Failed to start diagnostician for #{session.id}: #{inspect(reason)}")
-        notify_agent(session, {:healing_failed, {:diagnostician_start_error, reason}})
-        escalate_session(session, {:diagnostician_start_error, reason})
-        state
-    end
+          :otel_span.set_attributes(span_ctx, %{"diagnostician_pid" => inspect(pid)})
+
+          monitors = Map.put(state.monitors, mon_ref, {session.id, :diagnostician})
+          pid_to_session = Map.put(state.pid_to_session, pid, session.id)
+          %{state | monitors: monitors, pid_to_session: pid_to_session}
+
+        {:error, reason} ->
+          Logger.error("[Healing.Orchestrator] Failed to start diagnostician for #{session.id}: #{inspect(reason)}")
+          :otel_span.set_attributes(span_ctx, %{"error" => inspect(reason)})
+          notify_agent(session, {:healing_failed, {:diagnostician_start_error, reason}})
+          escalate_session(session, {:diagnostician_start_error, reason})
+          state
+      end
+    end)
   end
 
   defp start_fixing(session, diagnosis, context, state) do
-    {:ok, session} = Session.transition(session, :fixing)
-    session = %{session | diagnosis: diagnosis}
-    :ets.insert(@table, {session.id, session})
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    broadcast(:system_event, session, %{
-      event: :healing_diagnosis_complete,
-      root_cause: Map.get(diagnosis, "root_cause"),
-      confidence: Map.get(diagnosis, "confidence"),
-      strategy: Map.get(diagnosis, "remediation_strategy")
-    })
+    :otel_tracer.with_span(tracer, "healing.orchestrator.start_fixing", %{
+      "session_id" => session.id,
+      "root_cause" => Map.get(diagnosis, "root_cause", "unknown")
+    }, fn span_ctx ->
+      {:ok, session} = Session.transition(session, :fixing)
+      session = %{session | diagnosis: diagnosis}
+      :ets.insert(@table, {session.id, session})
 
-    budget = Session.fix_budget(session)
+      broadcast(:system_event, session, %{
+        event: :healing_diagnosis_complete,
+        root_cause: Map.get(diagnosis, "root_cause"),
+        confidence: Map.get(diagnosis, "confidence"),
+        strategy: Map.get(diagnosis, "remediation_strategy")
+      })
 
-    opts = [
-      role: :fixer,
-      context: context,
-      diagnosis: diagnosis,
-      parent_pid: self(),
-      budget_usd: budget,
-      provider: Map.get(context, :provider),
-      model: Map.get(context, :model)
-    ]
+      budget = Session.fix_budget(session)
 
-    case EphemeralAgent.start_link(opts) do
-      {:ok, pid} ->
-        mon_ref = Process.monitor(pid)
-        session_updated = %{session | fixer_pid: pid}
-        :ets.insert(@table, {session.id, session_updated})
+      opts = [
+        role: :fixer,
+        context: context,
+        diagnosis: diagnosis,
+        parent_pid: self(),
+        budget_usd: budget,
+        provider: Map.get(context, :provider),
+        model: Map.get(context, :model)
+      ]
 
-        monitors = Map.put(state.monitors, mon_ref, {session.id, :fixer})
-        pid_to_session = Map.put(state.pid_to_session, pid, session.id)
-        %{state | monitors: monitors, pid_to_session: pid_to_session}
+      case EphemeralAgent.start_link(opts) do
+        {:ok, pid} ->
+          mon_ref = Process.monitor(pid)
+          session_updated = %{session | fixer_pid: pid}
+          :ets.insert(@table, {session.id, session_updated})
 
-      {:error, reason} ->
-        Logger.error("[Healing.Orchestrator] Failed to start fixer for #{session.id}: #{inspect(reason)}")
-        notify_agent(session, {:healing_failed, {:fixer_start_error, reason}})
-        escalate_session(session, {:fixer_start_error, reason})
-        state
-    end
+          :otel_span.set_attributes(span_ctx, %{"fixer_pid" => inspect(pid)})
+
+          monitors = Map.put(state.monitors, mon_ref, {session.id, :fixer})
+          pid_to_session = Map.put(state.pid_to_session, pid, session.id)
+          %{state | monitors: monitors, pid_to_session: pid_to_session}
+
+        {:error, reason} ->
+          Logger.error("[Healing.Orchestrator] Failed to start fixer for #{session.id}: #{inspect(reason)}")
+          :otel_span.set_attributes(span_ctx, %{"error" => inspect(reason)})
+          notify_agent(session, {:healing_failed, {:fixer_start_error, reason}})
+          escalate_session(session, {:fixer_start_error, reason})
+          state
+      end
+    end)
   end
 
   # -- Result handlers --

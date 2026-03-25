@@ -412,6 +412,36 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   end
 
   # ============================================================
+  # Signal Theory domain — S=(M,G,T,F,W) classification
+  # ============================================================
+
+  describe "SignalAttributes — Signal Theory S=(M,G,T,F,W)" do
+    @tag :unit
+    test "signal_mode key is correct OTel attribute name" do
+      alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+      assert SignalAttributes.signal_mode() == :"signal.mode"
+    end
+
+    @tag :unit
+    test "signal_weight key is correct OTel attribute name" do
+      alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+      assert SignalAttributes.signal_weight() == :"signal.weight"
+    end
+
+    @tag :unit
+    test "signal_mode linguistic value matches schema" do
+      alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+      assert SignalAttributes.signal_mode_values().linguistic == :linguistic
+    end
+
+    @tag :unit
+    test "signal_type direct value matches schema" do
+      alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+      assert SignalAttributes.signal_type_values().direct == :direct
+    end
+  end
+
+  # ============================================================
   # ChatmanGPT common — budget and agent tier
   # ============================================================
 
@@ -424,6 +454,59 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     @tag :unit
     test "chatmangpt_service_tier key is correct OTel attribute name" do
       assert ChatmangptAttributes.chatmangpt_service_tier() == :"chatmangpt.service.tier"
+    end
+  end
+
+  # ============================================================
+  # SpanNames — span name constants from spans.yaml
+  # ============================================================
+
+  describe "SpanNames — span name constants from spans.yaml" do
+    alias OpenTelemetry.SemConv.Incubating.SpanNames
+
+    @tag :unit
+    test "healing_diagnosis span name matches schema" do
+      assert SpanNames.healing_diagnosis() == "healing.diagnosis"
+    end
+
+    @tag :unit
+    test "healing_reflex_arc span name matches schema" do
+      assert SpanNames.healing_reflex_arc() == "healing.reflex_arc"
+    end
+
+    @tag :unit
+    test "agent_decision span name matches schema" do
+      assert SpanNames.agent_decision() == "agent.decision"
+    end
+
+    @tag :unit
+    test "consensus_round span name matches schema" do
+      assert SpanNames.consensus_round() == "consensus.round"
+    end
+
+    @tag :unit
+    test "mcp_call span name matches schema" do
+      assert SpanNames.mcp_call() == "mcp.call"
+    end
+
+    @tag :unit
+    test "a2a_call span name matches schema" do
+      assert SpanNames.a2a_call() == "a2a.call"
+    end
+
+    @tag :unit
+    test "workflow_execute span name matches schema" do
+      assert SpanNames.workflow_execute() == "workflow.execute"
+    end
+
+    @tag :unit
+    test "process_mining_discovery span name matches schema" do
+      assert SpanNames.process_mining_discovery() == "process.mining.discovery"
+    end
+
+    @tag :unit
+    test "bos_compliance_check span name matches schema" do
+      assert SpanNames.bos_compliance_check() == "bos.compliance.check"
     end
   end
 end
