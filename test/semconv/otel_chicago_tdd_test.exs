@@ -886,4 +886,132 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   test "process mining replay precision attribute key matches schema" do
     assert :"process_mining.replay.precision" == :"process_mining.replay.precision"
   end
+
+  # === Wave 9 Iteration 12: Healing MTTR ===
+
+  @tag :unit
+  test "healing mttr ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter12Attributes
+    assert HealingIter12Attributes.healing_mttr_ms() == :"healing.mttr_ms"
+  end
+
+  @tag :unit
+  test "healing escalation level attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter12Attributes
+    assert HealingIter12Attributes.healing_escalation_level() == :"healing.escalation.level"
+  end
+
+  @tag :unit
+  test "healing repair strategy attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter12Attributes
+    assert HealingIter12Attributes.healing_repair_strategy() == :"healing.repair.strategy"
+  end
+
+  # === Wave 9 Iteration 12: Agent topology ===
+
+  @tag :unit
+  test "agent topology type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter12Attributes
+    assert AgentIter12Attributes.agent_topology_type() == :"agent.topology.type"
+  end
+
+  @tag :unit
+  test "agent task status attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter12Attributes
+    assert AgentIter12Attributes.agent_task_status() == :"agent.task.status"
+  end
+
+  # === Wave 9 Iteration 12: Process mining streaming ===
+
+  @tag :unit
+  test "process mining streaming window size attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter12Attributes
+    assert PmIter12Attributes.pm_streaming_window_size() == :"process_mining.streaming.window_size"
+  end
+
+  @tag :unit
+  test "process mining streaming lag ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter12Attributes
+    assert PmIter12Attributes.pm_streaming_lag_ms() == :"process_mining.streaming.lag_ms"
+  end
+
+  @tag :unit
+  test "process mining drift detected attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter12Attributes
+    assert PmIter12Attributes.pm_drift_detected() == :"process_mining.drift.detected"
+  end
+
+  @tag :unit
+  test "process mining drift severity attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter12Attributes
+    assert PmIter12Attributes.pm_drift_severity() == :"process_mining.drift.severity"
+  end
+
+  # === Wave 9 Iteration 12: Canopy protocol ===
+
+  @tag :unit
+  test "canopy protocol version attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter12Attributes
+    assert CanopyIter12Attributes.canopy_protocol_version() == :"canopy.protocol.version"
+  end
+
+  @tag :unit
+  test "canopy sync strategy attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter12Attributes
+    assert CanopyIter12Attributes.canopy_sync_strategy() == :"canopy.sync.strategy"
+  end
+
+  @tag :unit
+  test "canopy conflict count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter12Attributes
+    assert CanopyIter12Attributes.canopy_conflict_count() == :"canopy.conflict.count"
+  end
+
+  # === Wave 9 Iteration 12: LLM safety ===
+
+  @tag :unit
+  test "llm safety score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter12Attributes
+    assert LlmIter12Attributes.llm_safety_score() == :"llm.safety.score"
+  end
+
+  @tag :unit
+  test "llm guardrail triggered attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter12Attributes
+    assert LlmIter12Attributes.llm_guardrail_triggered() == :"llm.guardrail.triggered"
+  end
+
+  @tag :unit
+  test "llm guardrail type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter12Attributes
+    assert LlmIter12Attributes.llm_guardrail_type() == :"llm.guardrail.type"
+  end
+
+  @tag :unit
+  test "llm retry count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter12Attributes
+    assert LlmIter12Attributes.llm_retry_count() == :"llm.retry.count"
+  end
+
+  # === Wave 9 Iteration 12: Event and Signal attributes ===
+
+  @tag :unit
+  test "event delivery status attribute key matches schema" do
+    assert :"event.delivery.status" == :"event.delivery.status"
+  end
+
+  @tag :unit
+  test "event handler count attribute key matches schema" do
+    assert :"event.handler.count" == :"event.handler.count"
+  end
+
+  @tag :unit
+  test "signal compression ratio attribute key matches schema" do
+    assert :"signal.compression.ratio" == :"signal.compression.ratio"
+  end
+
+  @tag :unit
+  test "signal ttl ms attribute key matches schema" do
+    assert :"signal.ttl_ms" == :"signal.ttl_ms"
+  end
 end
