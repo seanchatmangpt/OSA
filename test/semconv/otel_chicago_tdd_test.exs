@@ -1280,4 +1280,148 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     alias OpenTelemetry.SemConv.CanopyIter14Attributes
     assert CanopyIter14Attributes.canopy_snapshot_compression_ratio() == :"canopy.snapshot.compression_ratio"
   end
+
+  # === Wave 9 Iteration 15: Agent Memory Federation ===
+
+  @tag :unit
+  test "agent memory federation id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter15Attributes
+    assert AgentIter15Attributes.agent_memory_federation_id() == :"agent.memory.federation_id"
+  end
+
+  @tag :unit
+  test "agent memory federation peer count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter15Attributes
+    assert AgentIter15Attributes.agent_memory_federation_peer_count() == :"agent.memory.federation.peer_count"
+  end
+
+  @tag :unit
+  test "agent memory sync latency ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter15Attributes
+    assert AgentIter15Attributes.agent_memory_sync_latency_ms() == :"agent.memory.sync.latency_ms"
+  end
+
+  @tag :unit
+  test "agent memory federation version attribute key matches schema" do
+    alias OpenTelemetry.SemConv.AgentIter15Attributes
+    assert AgentIter15Attributes.agent_memory_federation_version() == :"agent.memory.federation.version"
+  end
+
+  # === Wave 9 Iteration 15: PM Replay ===
+
+  @tag :unit
+  test "process mining replay enabled transitions attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter15Attributes
+    assert PMIter15Attributes.process_mining_replay_enabled_transitions() == :"process.mining.replay.enabled_transitions"
+  end
+
+  @tag :unit
+  test "process mining replay missing tokens attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter15Attributes
+    assert PMIter15Attributes.process_mining_replay_missing_tokens() == :"process.mining.replay.missing_tokens"
+  end
+
+  @tag :unit
+  test "process mining replay consumed tokens attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter15Attributes
+    assert PMIter15Attributes.process_mining_replay_consumed_tokens() == :"process.mining.replay.consumed_tokens"
+  end
+
+  @tag :unit
+  test "process mining case variant id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter15Attributes
+    assert PMIter15Attributes.process_mining_case_variant_id() == :"process.mining.case.variant_id"
+  end
+
+  # === Wave 9 Iteration 15: Consensus Liveness ===
+
+  @tag :unit
+  test "consensus liveness proof rounds attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter15Attributes
+    assert ConsensusIter15Attributes.consensus_liveness_proof_rounds() == :"consensus.liveness.proof_rounds"
+  end
+
+  @tag :unit
+  test "consensus network recovery ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter15Attributes
+    assert ConsensusIter15Attributes.consensus_network_recovery_ms() == :"consensus.network.recovery_ms"
+  end
+
+  @tag :unit
+  test "consensus view duration ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter15Attributes
+    assert ConsensusIter15Attributes.consensus_view_duration_ms() == :"consensus.view.duration_ms"
+  end
+
+  # === Wave 9 Iteration 15: Healing Self-Healing ===
+
+  @tag :unit
+  test "healing self healing trigger count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter15Attributes
+    assert HealingIter15Attributes.healing_self_healing_trigger_count() == :"healing.self_healing.trigger_count"
+  end
+
+  @tag :unit
+  test "healing self healing success rate attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter15Attributes
+    assert HealingIter15Attributes.healing_self_healing_success_rate() == :"healing.self_healing.success_rate"
+  end
+
+  @tag :unit
+  test "healing intervention type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter15Attributes
+    assert HealingIter15Attributes.healing_intervention_type() == :"healing.intervention.type"
+  end
+
+  @tag :unit
+  test "healing self healing enabled attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter15Attributes
+    assert HealingIter15Attributes.healing_self_healing_enabled() == :"healing.self_healing.enabled"
+  end
+
+  # === Wave 9 Iteration 15: LLM Evaluation ===
+
+  @tag :unit
+  test "llm evaluation score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter15Attributes
+    assert LLMIter15Attributes.llm_evaluation_score() == :"llm.evaluation.score"
+  end
+
+  @tag :unit
+  test "llm evaluation rubric attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter15Attributes
+    assert LLMIter15Attributes.llm_evaluation_rubric() == :"llm.evaluation.rubric"
+  end
+
+  @tag :unit
+  test "llm evaluation passes threshold attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter15Attributes
+    assert LLMIter15Attributes.llm_evaluation_passes_threshold() == :"llm.evaluation.passes_threshold"
+  end
+
+  # === Wave 9 Iteration 15: Events Routing + Signal Quality ===
+
+  @tag :unit
+  test "event routing strategy attribute key matches schema" do
+    alias OpenTelemetry.SemConv.EventsIter15Attributes
+    assert EventsIter15Attributes.event_routing_strategy() == :"event.routing.strategy"
+  end
+
+  @tag :unit
+  test "event routing filter count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.EventsIter15Attributes
+    assert EventsIter15Attributes.event_routing_filter_count() == :"event.routing.filter_count"
+  end
+
+  @tag :unit
+  test "event subscriber count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.EventsIter15Attributes
+    assert EventsIter15Attributes.event_subscriber_count() == :"event.subscriber.count"
+  end
+
+  @tag :unit
+  test "signal quality score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.EventsIter15Attributes
+    assert EventsIter15Attributes.signal_quality_score() == :"signal.quality.score"
+  end
 end
