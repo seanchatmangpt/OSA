@@ -651,4 +651,64 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   test "workflow.choice.condition attribute key matches schema" do
     assert WorkflowAttributes.workflow_choice_condition() == :"workflow.choice.condition"
   end
+
+  # === Wave 9 Iteration 9: A2A Deal Tracking ===
+
+  @tag :unit
+  test "a2a.deal.status attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_deal_status() == :"a2a.deal.status"
+  end
+
+  @tag :unit
+  test "a2a.deal.status completed value matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_deal_status_values().completed == :completed
+  end
+
+  @tag :unit
+  test "a2a.deal.currency attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_deal_currency() == :"a2a.deal.currency"
+  end
+
+  # === Wave 9 Iteration 9: Event Correlation ===
+
+  @tag :unit
+  test "event.correlation_id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.EventAttributes
+    assert EventAttributes.event_correlation_id() == :"event.correlation_id"
+  end
+
+  @tag :unit
+  test "event.causation_id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.EventAttributes
+    assert EventAttributes.event_causation_id() == :"event.causation_id"
+  end
+
+  @tag :unit
+  test "event.source.service attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.EventAttributes
+    assert EventAttributes.event_source_service() == :"event.source.service"
+  end
+
+  # === Wave 9 Iteration 9: Process Mining Advanced ===
+
+  @tag :unit
+  test "process.mining.variant_count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
+    assert ProcessAttributes.process_mining_variant_count() == :"process.mining.variant_count"
+  end
+
+  @tag :unit
+  test "process.mining.bottleneck.activity attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
+    assert ProcessAttributes.process_mining_bottleneck_activity() == :"process.mining.bottleneck.activity"
+  end
+
+  @tag :unit
+  test "process.mining.replay_fitness attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
+    assert ProcessAttributes.process_mining_replay_fitness() == :"process.mining.replay_fitness"
+  end
 end

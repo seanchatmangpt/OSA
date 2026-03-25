@@ -245,4 +245,82 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
 
   end
 
+  # === Wave 9 Iteration 9: A2A Deal Tracking ===
+
+  @doc """
+  Current lifecycle status of an A2A deal.
+
+  Attribute: `a2a.deal.status`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pending`, `active`, `completed`, `cancelled`, `disputed`
+  """
+  @spec a2a_deal_status() :: :"a2a.deal.status"
+  def a2a_deal_status, do: :"a2a.deal.status"
+
+  @doc """
+  Enumerated values for `a2a.deal.status`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `pending` | `"pending"` | Deal awaiting activation |
+  | `active` | `"active"` | Deal is active |
+  | `completed` | `"completed"` | Deal completed successfully |
+  | `cancelled` | `"cancelled"` | Deal was cancelled |
+  | `disputed` | `"disputed"` | Deal is under dispute |
+  """
+  @spec a2a_deal_status_values() :: %{
+    pending: :pending,
+    active: :active,
+    completed: :completed,
+    cancelled: :cancelled,
+    disputed: :disputed
+  }
+  def a2a_deal_status_values do
+    %{
+      pending: :pending,
+      active: :active,
+      completed: :completed,
+      cancelled: :cancelled,
+      disputed: :disputed
+    }
+  end
+
+  @doc """
+  ISO 4217 currency code for the A2A deal.
+
+  Attribute: `a2a.deal.currency`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `USD`, `EUR`, `GBP`
+  """
+  @spec a2a_deal_currency() :: :"a2a.deal.currency"
+  def a2a_deal_currency, do: :"a2a.deal.currency"
+
+  @doc """
+  Expiry duration of the A2A deal in milliseconds.
+
+  Attribute: `a2a.deal.expiry_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `3600000`, `86400000`
+  """
+  @spec a2a_deal_expiry_ms() :: :"a2a.deal.expiry_ms"
+  def a2a_deal_expiry_ms, do: :"a2a.deal.expiry_ms"
+
+  @doc """
+  Semantic version of the advertised capability.
+
+  Attribute: `a2a.capability.version`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.0.0`, `2.1.3`
+  """
+  @spec a2a_capability_version() :: :"a2a.capability.version"
+  def a2a_capability_version, do: :"a2a.capability.version"
+
 end

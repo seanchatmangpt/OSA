@@ -243,4 +243,66 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   @spec process_mining_variant_count() :: :"process.mining.variant_count"
   def process_mining_variant_count, do: :"process.mining.variant_count"
 
+  # === Wave 9 Iteration 9: Process Mining Advanced ===
+
+  @doc """
+  Average time (ms) for a case to complete end-to-end.
+
+  Attribute: `process.mining.throughput_time_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `120000`, `3600000`, `86400000`
+  """
+  @spec process_mining_throughput_time_ms() :: :"process.mining.throughput_time_ms"
+  def process_mining_throughput_time_ms, do: :"process.mining.throughput_time_ms"
+
+  @doc """
+  Name of the activity identified as the bottleneck in the process.
+
+  Attribute: `process.mining.bottleneck.activity`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `Examine Thoroughly`, `Await Lab Results`, `Manager Approval`
+  """
+  @spec process_mining_bottleneck_activity() :: :"process.mining.bottleneck.activity"
+  def process_mining_bottleneck_activity, do: :"process.mining.bottleneck.activity"
+
+  @doc """
+  Average wait time (ms) at the identified bottleneck activity.
+
+  Attribute: `process.mining.bottleneck.wait_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `30000`, `600000`, `7200000`
+  """
+  @spec process_mining_bottleneck_wait_ms() :: :"process.mining.bottleneck.wait_ms"
+  def process_mining_bottleneck_wait_ms, do: :"process.mining.bottleneck.wait_ms"
+
+  @doc """
+  Total number of events in the XES event log being analyzed.
+
+  Attribute: `process.mining.log.size`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `5000`, `150000`, `2000000`
+  """
+  @spec process_mining_log_size() :: :"process.mining.log.size"
+  def process_mining_log_size, do: :"process.mining.log.size"
+
+  @doc """
+  Token replay fitness score measuring how well traces fit the discovered model [0.0, 1.0].
+
+  Attribute: `process.mining.replay_fitness`
+  Type: `float`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.85`, `0.97`, `1.0`
+  """
+  @spec process_mining_replay_fitness() :: :"process.mining.replay_fitness"
+  def process_mining_replay_fitness, do: :"process.mining.replay_fitness"
+
 end

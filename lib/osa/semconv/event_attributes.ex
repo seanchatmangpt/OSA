@@ -180,4 +180,66 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   @spec event_source() :: :"event.source"
   def event_source, do: :"event.source"
 
+  # === Wave 9 Iteration 9: Event Correlation ===
+
+  @doc """
+  ID of the event that caused this event (parent event in causal chain).
+
+  Attribute: `event.causation_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `cause-abc-001`, `parent-event-xyz`
+  """
+  @spec event_causation_id() :: :"event.causation_id"
+  def event_causation_id, do: :"event.causation_id"
+
+  @doc """
+  Schema version of the event payload.
+
+  Attribute: `event.version`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.0`, `2.3`
+  """
+  @spec event_version() :: :"event.version"
+  def event_version, do: :"event.version"
+
+  @doc """
+  Service that is the source of this event.
+
+  Attribute: `event.source.service`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `osa`, `businessos`, `canopy`
+  """
+  @spec event_source_service() :: :"event.source.service"
+  def event_source_service, do: :"event.source.service"
+
+  @doc """
+  Service that is the intended target/consumer of this event.
+
+  Attribute: `event.target.service`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `osa`, `businessos`, `canopy`
+  """
+  @spec event_target_service() :: :"event.target.service"
+  def event_target_service, do: :"event.target.service"
+
+  @doc """
+  Whether this event is a replay of a previously emitted event.
+
+  Attribute: `event.replay`
+  Type: `boolean`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `true`, `false`
+  """
+  @spec event_replay() :: :"event.replay"
+  def event_replay, do: :"event.replay"
+
 end
