@@ -36,6 +36,7 @@ defmodule OptimalSystemAgent.Workflows.Definitions.AutonomousPI do
   """
   @spec new(String.t(), keyword()) :: t()
   def new(process_id, opts \\ []) do
+    opts = if is_list(opts), do: Map.new(opts), else: opts
     workflow_id = Map.get(opts, :workflow_id, "pi-#{process_id}-#{System.unique_integer([:positive])}")
     initial_state = Map.get(opts, :state, %{})
 

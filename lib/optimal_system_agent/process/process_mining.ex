@@ -248,8 +248,8 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
           severity_rank(a) >= severity_rank(b)
         end)
 
-      health_score = compute_health_score(warnings, length(metric_series))
-      risk_level = classify_risk(health_score)
+      health_score = compute_health_score_impl(warnings, length(metric_series))
+      risk_level = classify_risk_impl(health_score)
 
       %{
         warnings: warnings,
@@ -451,6 +451,51 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       [next | smoothed]
     end)
     |> Enum.reverse()
+  end
+
+  @doc """
+  Public wrapper for classify_risk.
+
+  Accepts a health score (float 0.0-1.0) or nil and returns a map with
+  risk_level and score. Delegates to the private classify_risk/1 implementation.
+  """
+  @spec classify_risk(number() | nil) :: %{risk_level: atom(), score: float()}
+  def classify_risk(nil), do: %{risk_level: :critical, score: 0.0}
+  def classify_risk(health_score) when is_number(health_score) do
+    %{risk_level: classify_risk_impl(health_score), score: health_score * 1.0}
+  end
+
+  @doc """
+  Public wrapper for compute_health_score.
+
+  Accepts a list of metric maps and a window size. Computes warnings and
+  delegates to the private compute_health_score/2 implementation.
+  Returns a map with health and score.
+  """
+  @spec compute_health_score([map()], number()) :: %{health: float(), score: float()}
+  def compute_health_score(metrics, window) when is_list(metrics) and is_number(window) do
+    # Build synthetic warnings from metrics for the private impl
+    warnings = build_warnings_from_metrics(metrics, window)
+    score = compute_health_score_impl(warnings, window)
+    %{health: score, score: score}
+  end
+
+  defp build_warnings_from_metrics(metrics, window) do
+    metrics
+    |> Enum.take(-window)
+    |> Enum.chunk_every(max(2, div(window, 10)), 1, :discard)
+    |> Enum.flat_map(fn chunk ->
+      values = Enum.map(chunk, fn m -> Map.get(m, :value, 0) end)
+      mean = Enum.sum(values) / length(values)
+      variance = Enum.reduce(values, 0.0, fn v, acc -> acc + :math.pow(v - mean, 2) end) / length(values)
+      std = :math.sqrt(variance)
+
+      if std > 20 do
+        [%{severity: :medium, type: :metric_variance, message: "High variance detected"}]
+      else
+        []
+      end
+    end)
   end
 
   @doc """
@@ -877,7 +922,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
     end
   end
 
-  defp compute_health_score(warnings, _metric_count) do
+  defp compute_health_score_impl(warnings, _metric_count) do
     if warnings == [] do
       1.0
     else
@@ -897,7 +942,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
     end
   end
 
-  defp classify_risk(health_score) do
+  defp classify_risk_impl(health_score) do
     cond do
       health_score >= 0.8 -> :healthy
       health_score >= 0.5 -> :moderate

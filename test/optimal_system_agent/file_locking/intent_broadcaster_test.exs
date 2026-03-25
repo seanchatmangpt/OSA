@@ -15,6 +15,9 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
   setup do
     # Initialize ETS tables
     IntentBroadcaster.init_tables()
+    # Clear any stale data from previous tests
+    :ets.delete_all_objects(:osa_file_subscriptions)
+    :ets.delete_all_objects(:osa_file_intents)
     :ok
   end
 
@@ -174,11 +177,12 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
     end
 
     test "sorts intents by timestamp" do
-      IntentBroadcaster.broadcast_intent("agent_1", "/tmp/test.txt", "first")
-      Process.sleep(10)
-      IntentBroadcaster.broadcast_intent("agent_2", "/tmp/test.txt", "second")
+      unique_path = "/tmp/intent_broadcaster_sort_test_#{System.unique_integer([:positive])}.txt"
+      IntentBroadcaster.broadcast_intent("agent_1", unique_path, "first")
+      Process.sleep(50)
+      IntentBroadcaster.broadcast_intent("agent_2", unique_path, "second")
 
-      intents = IntentBroadcaster.current_intents_for("/tmp/test.txt")
+      intents = IntentBroadcaster.current_intents_for(unique_path)
       # Should be sorted by timestamp
       if length(intents) >= 2 do
         assert hd(intents).agent_id == "agent_1"

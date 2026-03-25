@@ -173,7 +173,6 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapterTest do
       {:ok, workflow} = OptimalSystemAgent.Workflows.Definitions.AutonomousPI.advance_stage(workflow)
       {:ok, workflow} = OptimalSystemAgent.Workflows.Definitions.AutonomousPI.advance_stage(workflow)
       {:ok, workflow} = OptimalSystemAgent.Workflows.Definitions.AutonomousPI.advance_stage(workflow)
-      {:ok, workflow} = OptimalSystemAgent.Workflows.Definitions.AutonomousPI.advance_stage(workflow)
 
       # Should be 80% (4 of 5 stages complete, on final stage)
       assert OptimalSystemAgent.Workflows.Definitions.AutonomousPI.progress(workflow) == 80

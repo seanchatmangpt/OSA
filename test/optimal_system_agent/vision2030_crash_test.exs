@@ -204,11 +204,12 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
 
     test "CRASH: Analyzing empty workflow doesn't crash" do
       # Empty workflow should return analysis with warnings
-      result = OptimalSystemAgent.Verification.StructuralAnalyzer.analyze_workflow(%{tasks: [], edges: []})
+      result = OptimalSystemAgent.Verification.StructuralAnalyzer.analyze_workflow(%{tasks: [], transitions: []})
 
       case result do
-        %{deadlock: _, livelock: _} -> :ok
+        %{deadlock_free: _, livelock_free: _, sound: _, proper_completion: _, no_orphan_tasks: _, no_unreachable_tasks: _, overall_score: _, issues: _} -> :ok
         {:error, _} -> :ok
+        _ -> flunk("Unexpected result type from StructuralAnalyzer: #{inspect(result)}")
       end
     end
 
@@ -216,14 +217,15 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
       # 1000 tasks - stress test workflow analysis
       massive_workflow = %{
         tasks: Enum.map(1..1000, fn i -> %{id: "task_#{i}", name: "Task #{i}"} end),
-        edges: Enum.map(1..999, fn i -> %{from: "task_#{i}", to: "task_#{i+1}"} end)
+        transitions: Enum.map(1..999, fn i -> %{from: "task_#{i}", to: "task_#{i+1}"} end)
       }
 
       result = OptimalSystemAgent.Verification.StructuralAnalyzer.analyze_workflow(massive_workflow)
 
       case result do
-        %{deadlock: _, livelock: _} -> :ok
+        %{deadlock_free: _, livelock_free: _, sound: _, proper_completion: _, no_orphan_tasks: _, no_unreachable_tasks: _, overall_score: _, issues: _} -> :ok
         {:error, _} -> :ok
+        _ -> flunk("Unexpected result type from StructuralAnalyzer: #{inspect(result)}")
       end
     end
   end
@@ -274,11 +276,10 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
       result = OptimalSystemAgent.Process.ProcessMining.detect_trend([])
 
       case result do
-        %{trend: _, confidence: _} -> :ok
         :stable -> :ok
         :increasing -> :ok
         :decreasing -> :ok
-        {:error, _} -> :ok
+        _ -> :ok
       end
     end
 

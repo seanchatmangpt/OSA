@@ -100,6 +100,8 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
   def signal_workflow(workflow_id, signal) when is_binary(workflow_id) and (is_map(signal) or is_binary(signal)) do
     Logger.info("[TemporalAdapter] Sending signal to workflow: #{workflow_id}")
 
+    signal = if is_binary(signal), do: %{"name" => signal}, else: signal
+
     with :ok <- validate_required_params(signal, ["name"]),
          {:ok, base_url} <- build_base_url(),
          {:ok, body} <- build_signal_request(workflow_id, signal),
@@ -161,7 +163,7 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
 
     {:ok, base_url}
   rescue
-    e -> {:error, "Invalid Temporal configuration: #{inspect(e)}"}
+    e -> {:error, {:config_error, "Invalid Temporal configuration: #{inspect(e)}"}}
   end
 
   # ── Private: Validation ────────────────────────────────────────────────
@@ -175,7 +177,7 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
     if missing == [] do
       :ok
     else
-      {:error, "Missing required parameters: #{Enum.join(missing, ", ")}"}
+      {:error, {:validation_failed, "Missing required parameters: #{Enum.join(missing, ", ")}"}}
     end
   end
 
@@ -239,13 +241,13 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
         {:ok, response_body}
 
       {:ok, %Req.Response{status: status, body: response_body}} ->
-        {:error, "HTTP #{status}: #{inspect(response_body)}"}
+        {:error, {:http_error, "HTTP #{status}: #{inspect(response_body)}"}}
 
       {:error, %Req.TransportError{reason: reason}} ->
-        {:error, "Temporal connection error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
 
       {:error, reason} ->
-        {:error, "Temporal request error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
     end
   end
 
@@ -261,13 +263,13 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
         {:ok, :sent}
 
       {:ok, %Req.Response{status: status, body: response_body}} ->
-        {:error, "HTTP #{status}: #{inspect(response_body)}"}
+        {:error, {:http_error, "HTTP #{status}: #{inspect(response_body)}"}}
 
       {:error, %Req.TransportError{reason: reason}} ->
-        {:error, "Temporal connection error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
 
       {:error, reason} ->
-        {:error, "Temporal request error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
     end
   end
 
@@ -288,10 +290,10 @@ defmodule OptimalSystemAgent.Workflows.TemporalAdapter do
         {:error, "HTTP #{status}: #{inspect(response_body)}"}
 
       {:error, %Req.TransportError{reason: reason}} ->
-        {:error, "Temporal connection error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
 
       {:error, reason} ->
-        {:error, "Temporal request error: #{inspect(reason)}"}
+        {:error, {:connection_failed, reason}}
     end
   end
 
