@@ -1114,12 +1114,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   end
 
   @tag :unit
-  test "mcp tool version attribute key matches schema" do
+  test "mcp tool version iter13 attribute key matches schema" do
     assert :"mcp.tool.version" == :"mcp.tool.version"
   end
 
   @tag :unit
-  test "mcp tool schema hash attribute key matches schema" do
+  test "mcp tool schema hash iter13 attribute key matches schema" do
     assert :"mcp.tool.schema_hash" == :"mcp.tool.schema_hash"
   end
 
