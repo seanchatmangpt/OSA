@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Vision2030CrashTest do
   use ExUnit.Case, async: false
-  @moduletag :skip
   @moduledoc """
   Vision 2030 crash testing with Open Telemetry validation.
 

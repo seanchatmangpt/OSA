@@ -3,7 +3,6 @@ defmodule OptimalSystemAgent.Integration.PM4PyOSAE2ETest do
 
   alias OptimalSystemAgent.Providers.PM4PyCoordinator
 
-  @moduletag :skip
 
   # ──────────────────────────────────────────────────────────────────────────
   # Setup

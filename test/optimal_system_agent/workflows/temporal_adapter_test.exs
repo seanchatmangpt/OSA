@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Workflows.TemporalAdapterTest do
   use ExUnit.Case, async: false
-  @moduletag :skip
   alias OptimalSystemAgent.Workflows.TemporalAdapter
 
   @moduletag :temporal_adapter

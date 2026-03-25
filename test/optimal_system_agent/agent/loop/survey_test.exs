@@ -11,7 +11,6 @@ defmodule OptimalSystemAgent.Agent.Loop.SurveyTest do
 
   @moduletag :capture_log
 
-  @moduletag :skip
 
   setup do
     # Initialize ETS tables for tests - delete if they exist first

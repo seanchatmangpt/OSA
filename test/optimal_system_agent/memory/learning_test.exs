@@ -11,7 +11,6 @@ defmodule OptimalSystemAgent.Memory.LearningTest do
   alias OptimalSystemAgent.Memory.Learning
 
   @moduletag :capture_log
-  @moduletag :skip
 
   setup_all do
     # Guard against already-started GenServer from previous test runs
