@@ -99,4 +99,52 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   @spec mcp_tool_result_count() :: :"mcp.tool.result_count"
   def mcp_tool_result_count, do: :"mcp.tool.result_count"
 
+  @doc """
+  Size in bytes of the MCP tool input payload.
+
+  Attribute: `mcp.tool.input_size`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `128`, `1024`, `65536`
+  """
+  @spec mcp_tool_input_size() :: :"mcp.tool.input_size"
+  def mcp_tool_input_size, do: :"mcp.tool.input_size"
+
+  @doc """
+  Size in bytes of the MCP tool output payload.
+
+  Attribute: `mcp.tool.output_size`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `256`, `2048`, `131072`
+  """
+  @spec mcp_tool_output_size() :: :"mcp.tool.output_size"
+  def mcp_tool_output_size, do: :"mcp.tool.output_size"
+
+  @doc """
+  Number of retries attempted for this MCP tool invocation.
+
+  Attribute: `mcp.tool.retry_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec mcp_tool_retry_count() :: :"mcp.tool.retry_count"
+  def mcp_tool_retry_count, do: :"mcp.tool.retry_count"
+
+  @doc """
+  Timeout in milliseconds for this MCP tool invocation.
+
+  Attribute: `mcp.tool.timeout_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1000`, `5000`, `30000`
+  """
+  @spec mcp_tool_timeout_ms() :: :"mcp.tool.timeout_ms"
+  def mcp_tool_timeout_ms, do: :"mcp.tool.timeout_ms"
+
 end

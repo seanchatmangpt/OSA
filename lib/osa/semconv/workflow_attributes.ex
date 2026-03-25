@@ -401,6 +401,56 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   def workflow_total_branches, do: :"workflow.total_branches"
 
   @doc """
+  Number of outgoing branches from a parallel split pattern.
+
+  Attribute: `workflow.split.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2`, `3`, `5`
+  """
+  @spec workflow_split_count() :: :"workflow.split.count"
+  def workflow_split_count, do: :"workflow.split.count"
+
+  @doc """
+  Policy applied when merging concurrent workflow branches.
+
+  Attribute: `workflow.merge.policy`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `first`, `all`, `threshold`
+  """
+  @spec workflow_merge_policy() :: :"workflow.merge.policy"
+  def workflow_merge_policy, do: :"workflow.merge.policy"
+
+  @doc """
+  Enumerated values for `workflow.merge.policy`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `first` | `"first"` | Complete on first branch completing |
+  | `all` | `"all"` | Wait for all branches to complete |
+  | `threshold` | `"threshold"` | Complete when N-out-of-M branches complete |
+  """
+  @spec workflow_merge_policy_values() :: %{first: :first, all: :all, threshold: :threshold}
+  def workflow_merge_policy_values do
+    %{first: :first, all: :all, threshold: :threshold}
+  end
+
+  @doc """
+  Condition expression evaluated for an exclusive or deferred choice pattern.
+
+  Attribute: `workflow.choice.condition`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `amount > 1000`, `priority == :high`
+  """
+  @spec workflow_choice_condition() :: :"workflow.choice.condition"
+  def workflow_choice_condition, do: :"workflow.choice.condition"
+
+  @doc """
   The type of trigger that initiated the workflow transition.
 
   Attribute: `workflow.trigger_type`

@@ -26,6 +26,8 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   alias OpenTelemetry.SemConv.Incubating.BosAttributes
   alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
   alias OpenTelemetry.SemConv.Incubating.ChatmangptAttributes
+  alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+  alias OpenTelemetry.SemConv.Incubating.WorkspaceAttributes
 
   # ============================================================
   # Healing domain — OSA healing.diagnosis + healing.reflex_arc
@@ -533,5 +535,120 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     test "bos_compliance_check span name matches schema" do
       assert SpanNames.bos_compliance_check() == "bos.compliance.check"
     end
+  end
+
+  # ============================================================
+  # Wave 9 Iteration 8: Consensus BFT Liveness
+  # ============================================================
+
+  @tag :unit
+  test "consensus.quorum_size attribute key matches schema" do
+    assert ConsensusAttributes.consensus_quorum_size() == :"consensus.quorum_size"
+  end
+
+  @tag :unit
+  test "consensus.leader_id attribute key matches schema" do
+    assert ConsensusAttributes.consensus_leader_id() == :"consensus.leader.id"
+  end
+
+  @tag :unit
+  test "consensus.view_timeout_ms attribute key matches schema" do
+    assert ConsensusAttributes.consensus_view_timeout_ms() == :"consensus.view_timeout_ms"
+  end
+
+  # ============================================================
+  # Wave 9 Iteration 8: MCP Tool Schema
+  # ============================================================
+
+  @tag :unit
+  test "mcp.tool.retry_count attribute key matches schema" do
+    assert McpAttributes.mcp_tool_retry_count() == :"mcp.tool.retry_count"
+  end
+
+  @tag :unit
+  test "mcp.tool.timeout_ms attribute key matches schema" do
+    assert McpAttributes.mcp_tool_timeout_ms() == :"mcp.tool.timeout_ms"
+  end
+
+  # ============================================================
+  # Wave 9 Iteration 8: LLM Observability
+  # ============================================================
+
+  @tag :unit
+  test "llm.model attribute key matches schema" do
+    assert LlmAttributes.llm_model() == :"llm.model"
+  end
+
+  @tag :unit
+  test "llm.provider attribute key matches schema" do
+    assert LlmAttributes.llm_provider() == :"llm.provider"
+  end
+
+  @tag :unit
+  test "llm.token.input attribute key matches schema" do
+    assert LlmAttributes.llm_token_input() == :"llm.token.input"
+  end
+
+  @tag :unit
+  test "llm.token.output attribute key matches schema" do
+    assert LlmAttributes.llm_token_output() == :"llm.token.output"
+  end
+
+  @tag :unit
+  test "llm.stop_reason end_turn value matches schema" do
+    assert LlmAttributes.llm_stop_reason_values().end_turn == :end_turn
+  end
+
+  @tag :unit
+  test "llm.stop_reason tool_use value matches schema" do
+    assert LlmAttributes.llm_stop_reason_values().tool_use == :tool_use
+  end
+
+  # ============================================================
+  # Wave 9 Iteration 8: Workspace Session
+  # ============================================================
+
+  @tag :unit
+  test "workspace.session.id attribute key matches schema" do
+    assert WorkspaceAttributes.workspace_session_id() == :"workspace.session.id"
+  end
+
+  @tag :unit
+  test "workspace.context.size attribute key matches schema" do
+    assert WorkspaceAttributes.workspace_context_size() == :"workspace.context.size"
+  end
+
+  @tag :unit
+  test "workspace.agent.role planner value matches schema" do
+    assert WorkspaceAttributes.workspace_agent_role_values().planner == :planner
+  end
+
+  @tag :unit
+  test "workspace.phase active value matches schema" do
+    assert WorkspaceAttributes.workspace_phase_values().active == :active
+  end
+
+  # ============================================================
+  # Wave 9 Iteration 8: YAWL Basic Patterns
+  # ============================================================
+
+  @tag :unit
+  test "workflow.split.count attribute key matches schema" do
+    assert WorkflowAttributes.workflow_split_count() == :"workflow.split.count"
+  end
+
+  @tag :unit
+  test "workflow.merge.policy attribute key matches schema" do
+    assert WorkflowAttributes.workflow_merge_policy() == :"workflow.merge.policy"
+  end
+
+  @tag :unit
+  test "workflow.merge.policy all value matches schema" do
+    assert WorkflowAttributes.workflow_merge_policy_values().all == :all
+  end
+
+  @tag :unit
+  test "workflow.choice.condition attribute key matches schema" do
+    assert WorkflowAttributes.workflow_choice_condition() == :"workflow.choice.condition"
   end
 end

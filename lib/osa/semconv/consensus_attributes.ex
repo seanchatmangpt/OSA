@@ -233,4 +233,28 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   @spec consensus_vote_count() :: :"consensus.vote_count"
   def consensus_vote_count, do: :"consensus.vote_count"
 
+  @doc """
+  View timeout in milliseconds before triggering a view change.
+
+  Attribute: `consensus.view_timeout_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1000`, `5000`, `10000`
+  """
+  @spec consensus_view_timeout_ms() :: :"consensus.view_timeout_ms"
+  def consensus_view_timeout_ms, do: :"consensus.view_timeout_ms"
+
+  @doc """
+  Number of cryptographic signatures collected for this consensus round.
+
+  Attribute: `consensus.signature_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `3`, `5`, `7`
+  """
+  @spec consensus_signature_count() :: :"consensus.signature_count"
+  def consensus_signature_count, do: :"consensus.signature_count"
+
 end
