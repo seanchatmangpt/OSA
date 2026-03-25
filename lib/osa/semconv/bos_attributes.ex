@@ -23,6 +23,85 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   def bos_agent_service, do: :"bos.agent.service"
 
   @doc """
+  Identity of the actor performing the audited operation.
+
+  Attribute: `bos.audit.actor_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `user-123`, `service-account-bos`
+  """
+  @spec bos_audit_actor_id() :: :"bos.audit.actor_id"
+  def bos_audit_actor_id, do: :"bos.audit.actor_id"
+
+  @doc """
+  Type of audit event recorded.
+
+  Attribute: `bos.audit.event_type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `data_access`, `config_change`
+  """
+  @spec bos_audit_event_type() :: :"bos.audit.event_type"
+  def bos_audit_event_type, do: :"bos.audit.event_type"
+
+  @doc """
+  Enumerated values for `bos.audit.event_type`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `data_access` | `"data_access"` | data_access |
+  | `config_change` | `"config_change"` | config_change |
+  | `permission_grant` | `"permission_grant"` | permission_grant |
+  | `compliance_check` | `"compliance_check"` | compliance_check |
+  | `gap_detection` | `"gap_detection"` | gap_detection |
+  """
+  @spec bos_audit_event_type_values() :: %{
+    data_access: :data_access,
+    config_change: :config_change,
+    permission_grant: :permission_grant,
+    compliance_check: :compliance_check,
+    gap_detection: :gap_detection
+  }
+  def bos_audit_event_type_values do
+    %{
+      data_access: :data_access,
+      config_change: :config_change,
+      permission_grant: :permission_grant,
+      compliance_check: :compliance_check,
+      gap_detection: :gap_detection
+    }
+  end
+
+  defmodule BosAuditEventTypeValues do
+    @moduledoc """
+    Typed constants for the `bos.audit.event_type` attribute.
+    """
+
+    @doc "data_access"
+    @spec data_access() :: :data_access
+    def data_access, do: :data_access
+
+    @doc "config_change"
+    @spec config_change() :: :config_change
+    def config_change, do: :config_change
+
+    @doc "permission_grant"
+    @spec permission_grant() :: :permission_grant
+    def permission_grant, do: :permission_grant
+
+    @doc "compliance_check"
+    @spec compliance_check() :: :compliance_check
+    def compliance_check, do: :compliance_check
+
+    @doc "gap_detection"
+    @spec gap_detection() :: :gap_detection
+    def gap_detection, do: :gap_detection
+
+  end
+
+  @doc """
   Unique identifier for a compliance audit trail entry.
 
   Attribute: `bos.audit.trail.id`
@@ -35,13 +114,25 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   def bos_audit_trail_id, do: :"bos.audit.trail.id"
 
   @doc """
+  Control ID within the compliance framework.
+
+  Attribute: `bos.compliance.control_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `CC6.1`, `A3.2`
+  """
+  @spec bos_compliance_control_id() :: :"bos.compliance.control_id"
+  def bos_compliance_control_id, do: :"bos.compliance.control_id"
+
+  @doc """
   Compliance framework being evaluated or enforced.
 
   Attribute: `bos.compliance.framework`
   Type: `enum`
   Stability: `development`
   Requirement: `recommended`
-  Examples: `SOC2`, `HIPAA`
+  Examples: `SOC2`, `GDPR`
   """
   @spec bos_compliance_framework() :: :"bos.compliance.framework"
   def bos_compliance_framework, do: :"bos.compliance.framework"
@@ -55,19 +146,22 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   | `hipaa` | `"HIPAA"` | HIPAA |
   | `gdpr` | `"GDPR"` | GDPR |
   | `sox` | `"SOX"` | SOX |
+  | `custom` | `"CUSTOM"` | CUSTOM |
   """
   @spec bos_compliance_framework_values() :: %{
     soc2: :SOC2,
     hipaa: :HIPAA,
     gdpr: :GDPR,
-    sox: :SOX
+    sox: :SOX,
+    custom: :CUSTOM
   }
   def bos_compliance_framework_values do
     %{
       soc2: :SOC2,
       hipaa: :HIPAA,
       gdpr: :GDPR,
-      sox: :SOX
+      sox: :SOX,
+      custom: :CUSTOM
     }
   end
 
@@ -91,6 +185,10 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
     @doc "SOX"
     @spec sox() :: :SOX
     def sox, do: :SOX
+
+    @doc "CUSTOM"
+    @spec custom() :: :CUSTOM
+    def custom, do: :CUSTOM
 
   end
 
@@ -322,6 +420,78 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   def bos_gap_id, do: :"bos.gap.id"
 
   @doc """
+  Target days to remediate the detected gap.
+
+  Attribute: `bos.gap.remediation_days`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `7`, `30`, `90`
+  """
+  @spec bos_gap_remediation_days() :: :"bos.gap.remediation_days"
+  def bos_gap_remediation_days, do: :"bos.gap.remediation_days"
+
+  @doc """
+  Severity of the detected compliance gap.
+
+  Attribute: `bos.gap.severity`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `critical`, `high`
+  """
+  @spec bos_gap_severity() :: :"bos.gap.severity"
+  def bos_gap_severity, do: :"bos.gap.severity"
+
+  @doc """
+  Enumerated values for `bos.gap.severity`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `critical` | `"critical"` | critical |
+  | `high` | `"high"` | high |
+  | `medium` | `"medium"` | medium |
+  | `low` | `"low"` | low |
+  """
+  @spec bos_gap_severity_values() :: %{
+    critical: :critical,
+    high: :high,
+    medium: :medium,
+    low: :low
+  }
+  def bos_gap_severity_values do
+    %{
+      critical: :critical,
+      high: :high,
+      medium: :medium,
+      low: :low
+    }
+  end
+
+  defmodule BosGapSeverityValues do
+    @moduledoc """
+    Typed constants for the `bos.gap.severity` attribute.
+    """
+
+    @doc "critical"
+    @spec critical() :: :critical
+    def critical, do: :critical
+
+    @doc "high"
+    @spec high() :: :high
+    def high, do: :high
+
+    @doc "medium"
+    @spec medium() :: :medium
+    def medium, do: :medium
+
+    @doc "low"
+    @spec low() :: :low
+    def low, do: :low
+
+  end
+
+  @doc """
   The current status of a compliance gap.
 
   Attribute: `bos.gap.status`
@@ -416,43 +586,5 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   """
   @spec bos_workspace_name() :: :"bos.workspace.name"
   def bos_workspace_name, do: :"bos.workspace.name"
-
-  # --- iter11: BusinessOS compliance and audit ---
-
-  @doc """
-  Compliance framework being evaluated (e.g., SOC2, HIPAA, GDPR).
-
-  Attribute: `business_os.compliance.framework`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `SOC2`, `HIPAA`, `GDPR`, `SOX`
-  """
-  @spec business_os_compliance_framework() :: :"business_os.compliance.framework"
-  def business_os_compliance_framework, do: :"business_os.compliance.framework"
-
-  @doc """
-  Type of audit event recorded in BusinessOS.
-
-  Attribute: `business_os.audit.event_type`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `login`, `config_change`, `data_export`, `permission_grant`
-  """
-  @spec business_os_audit_event_type() :: :"business_os.audit.event_type"
-  def business_os_audit_event_type, do: :"business_os.audit.event_type"
-
-  @doc """
-  Type of integration registered in BusinessOS.
-
-  Attribute: `business_os.integration.type`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `webhook`, `oauth`, `api_key`, `mcp`
-  """
-  @spec business_os_integration_type() :: :"business_os.integration.type"
-  def business_os_integration_type, do: :"business_os.integration.type"
 
 end
