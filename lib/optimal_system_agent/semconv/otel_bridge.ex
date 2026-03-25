@@ -14,6 +14,12 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
   def healing_confidence, do: :"healing.confidence"
   def healing_agent_id, do: :"healing.agent_id"
 
+  # Healing soundness (iteration 7 — WvdA deadlock/liveness proof)
+  def healing_timeout_ms, do: :"healing.timeout_ms"
+  def healing_max_iterations, do: :"healing.max_iterations"
+  def healing_iteration, do: :"healing.iteration"
+  def healing_recovery_complete, do: :"healing.recovery_complete"
+
   # A2A domain
   def a2a_operation, do: :"a2a.operation"
   def a2a_deal_id, do: :"a2a.deal.id"
@@ -26,6 +32,21 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
   def a2a_negotiation_status, do: :"a2a.negotiation.status"
   def a2a_source_service, do: :"a2a.source.service"
   def a2a_target_service, do: :"a2a.target.service"
+
+  # A2A negotiation state machine (iteration 7)
+  def a2a_negotiation_state, do: :"a2a.negotiation.state"
+  def a2a_negotiation_timeout_ms, do: :"a2a.negotiation.timeout_ms"
+  def a2a_deal_value, do: :"a2a.deal.value"
+
+  def a2a_negotiation_state_values do
+    %{
+      proposed: :"proposed",
+      counter: :"counter",
+      accepted: :"accepted",
+      rejected: :"rejected",
+      expired: :"expired"
+    }
+  end
 
   def a2a_task_priority_values do
     %{
@@ -58,6 +79,28 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
   def signal_sn_ratio, do: :"signal.sn_ratio"
   def signal_mode, do: :"signal.mode"
   def signal_genre, do: :"signal.genre"
+  def signal_format, do: :"signal.format"
+  def signal_quality_threshold, do: :"signal.quality.threshold"
+  def signal_weight, do: :"signal.weight"
+
+  def signal_genre_values do
+    %{
+      spec: :spec,
+      brief: :brief,
+      report: :report,
+      plan: :plan,
+      decision: :decision
+    }
+  end
+
+  def signal_format_values do
+    %{
+      markdown: :markdown,
+      json: :json,
+      yaml: :yaml,
+      code: :code
+    }
+  end
 
   # Consensus domain
   def consensus_round_num, do: :"consensus.round_num"
@@ -131,6 +174,9 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
   def process_mining_petri_net_place_count, do: :"process.mining.petri_net.place_count"
   def process_mining_petri_net_transition_count, do: :"process.mining.petri_net.transition_count"
   def process_mining_conformance_deviation_type, do: :"process.mining.conformance.deviation_type"
+  def process_mining_conformance_score, do: :"process.mining.conformance.score"
+  def process_mining_conformance_deviation_count, do: :"process.mining.conformance.deviation_count"
+  def process_mining_model_type, do: :"process.mining.model_type"
 
   def process_mining_algorithm_values do
     %{
@@ -146,6 +192,15 @@ defmodule OptimalSystemAgent.Semconv.OtelBridge do
       extra_activity: :extra_activity,
       wrong_order: :wrong_order,
       loop_violation: :loop_violation
+    }
+  end
+
+  def process_mining_model_type_values do
+    %{
+      petri_net: :"petri_net",
+      bpmn: :"bpmn",
+      declare: :"declare",
+      dfg: :"dfg"
     }
   end
 

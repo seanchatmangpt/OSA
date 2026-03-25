@@ -12,6 +12,13 @@ defmodule OptimalSystemAgent.Semconv.OtelBridgeTest do
     assert OtelBridge.healing_agent_id() == :"healing.agent_id"
   end
 
+  test "healing soundness constants match semconv schema" do
+    assert OtelBridge.healing_timeout_ms() == :"healing.timeout_ms"
+    assert OtelBridge.healing_max_iterations() == :"healing.max_iterations"
+    assert OtelBridge.healing_iteration() == :"healing.iteration"
+    assert OtelBridge.healing_recovery_complete() == :"healing.recovery_complete"
+  end
+
   test "a2a domain constants match semconv schema" do
     assert OtelBridge.a2a_operation() == :"a2a.operation"
     assert OtelBridge.a2a_deal_id() == :"a2a.deal.id"
@@ -24,6 +31,27 @@ defmodule OptimalSystemAgent.Semconv.OtelBridgeTest do
     assert OtelBridge.a2a_negotiation_status() == :"a2a.negotiation.status"
     assert OtelBridge.a2a_source_service() == :"a2a.source.service"
     assert OtelBridge.a2a_target_service() == :"a2a.target.service"
+  end
+
+  test "a2a_negotiation_state returns correct atom" do
+    assert OtelBridge.a2a_negotiation_state() == :"a2a.negotiation.state"
+  end
+
+  test "a2a_negotiation_timeout_ms returns correct atom" do
+    assert OtelBridge.a2a_negotiation_timeout_ms() == :"a2a.negotiation.timeout_ms"
+  end
+
+  test "a2a_deal_value returns correct atom" do
+    assert OtelBridge.a2a_deal_value() == :"a2a.deal.value"
+  end
+
+  test "a2a_negotiation_state_values includes all states" do
+    values = OtelBridge.a2a_negotiation_state_values()
+    assert values.proposed == :"proposed"
+    assert values.counter == :"counter"
+    assert values.accepted == :"accepted"
+    assert values.rejected == :"rejected"
+    assert values.expired == :"expired"
   end
 
   test "a2a_task_priority_values returns task priority enum" do
@@ -57,6 +85,26 @@ defmodule OptimalSystemAgent.Semconv.OtelBridgeTest do
     assert OtelBridge.signal_sn_ratio() == :"signal.sn_ratio"
     assert OtelBridge.signal_mode() == :"signal.mode"
     assert OtelBridge.signal_genre() == :"signal.genre"
+    assert OtelBridge.signal_format() == :"signal.format"
+    assert OtelBridge.signal_quality_threshold() == :"signal.quality.threshold"
+    assert OtelBridge.signal_weight() == :"signal.weight"
+  end
+
+  test "signal_genre_values includes all signal genres" do
+    values = OtelBridge.signal_genre_values()
+    assert values.spec == :spec
+    assert values.brief == :brief
+    assert values.report == :report
+    assert values.plan == :plan
+    assert values.decision == :decision
+  end
+
+  test "signal_format_values includes all signal formats" do
+    values = OtelBridge.signal_format_values()
+    assert values.markdown == :markdown
+    assert values.json == :json
+    assert values.yaml == :yaml
+    assert values.code == :code
   end
 
   test "consensus domain constants match semconv schema" do
@@ -128,6 +176,20 @@ defmodule OptimalSystemAgent.Semconv.OtelBridgeTest do
     assert OtelBridge.process_mining_petri_net_place_count() == :"process.mining.petri_net.place_count"
     assert OtelBridge.process_mining_petri_net_transition_count() == :"process.mining.petri_net.transition_count"
     assert OtelBridge.process_mining_conformance_deviation_type() == :"process.mining.conformance.deviation_type"
+  end
+
+  test "process mining conformance iteration 7 constants match semconv schema" do
+    assert OtelBridge.process_mining_conformance_score() == :"process.mining.conformance.score"
+    assert OtelBridge.process_mining_conformance_deviation_count() == :"process.mining.conformance.deviation_count"
+    assert OtelBridge.process_mining_model_type() == :"process.mining.model_type"
+  end
+
+  test "process_mining_model_type_values includes all model types" do
+    values = OtelBridge.process_mining_model_type_values()
+    assert values.petri_net == :"petri_net"
+    assert values.bpmn == :"bpmn"
+    assert values.declare == :"declare"
+    assert values.dfg == :"dfg"
   end
 
   test "process_mining_algorithm_values returns discovery algorithm enum" do
