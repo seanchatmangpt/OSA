@@ -1014,4 +1014,132 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   test "signal ttl ms attribute key matches schema" do
     assert :"signal.ttl_ms" == :"signal.ttl_ms"
   end
+
+  # === Wave 9 Iteration 13: Workspace orchestration, A2A match, consensus safety, healing cascade, LLM CoT ===
+
+  @tag :unit
+  test "workspace orchestration pattern attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter13Attributes
+    assert WorkspaceIter13Attributes.workspace_orchestration_pattern() == :"workspace.orchestration.pattern"
+  end
+
+  @tag :unit
+  test "workspace task queue depth attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter13Attributes
+    assert WorkspaceIter13Attributes.workspace_task_queue_depth() == :"workspace.task.queue.depth"
+  end
+
+  @tag :unit
+  test "workspace iteration count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter13Attributes
+    assert WorkspaceIter13Attributes.workspace_iteration_count() == :"workspace.iteration.count"
+  end
+
+  @tag :unit
+  test "a2a capability match score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter13Attributes
+    assert A2AIter13Attributes.a2a_capability_match_score() == :"a2a.capability.match_score"
+  end
+
+  @tag :unit
+  test "a2a capability required attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter13Attributes
+    assert A2AIter13Attributes.a2a_capability_required() == :"a2a.capability.required"
+  end
+
+  @tag :unit
+  test "a2a routing strategy attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter13Attributes
+    assert A2AIter13Attributes.a2a_routing_strategy() == :"a2a.routing.strategy"
+  end
+
+  @tag :unit
+  test "consensus safety threshold attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter13Attributes
+    assert ConsensusIter13Attributes.consensus_safety_threshold() == :"consensus.safety.threshold"
+  end
+
+  @tag :unit
+  test "consensus liveness timeout ratio attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter13Attributes
+    assert ConsensusIter13Attributes.consensus_liveness_timeout_ratio() == :"consensus.liveness.timeout_ratio"
+  end
+
+  @tag :unit
+  test "consensus network partition detected attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter13Attributes
+    assert ConsensusIter13Attributes.consensus_network_partition_detected() == :"consensus.network.partition_detected"
+  end
+
+  @tag :unit
+  test "healing cascade detected attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter13Attributes
+    assert HealingIter13Attributes.healing_cascade_detected() == :"healing.cascade.detected"
+  end
+
+  @tag :unit
+  test "healing cascade depth attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter13Attributes
+    assert HealingIter13Attributes.healing_cascade_depth() == :"healing.cascade.depth"
+  end
+
+  @tag :unit
+  test "healing root cause id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter13Attributes
+    assert HealingIter13Attributes.healing_root_cause_id() == :"healing.root_cause.id"
+  end
+
+  @tag :unit
+  test "llm chain of thought steps attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter13Attributes
+    assert LlmIter13Attributes.llm_chain_of_thought_steps() == :"llm.chain_of_thought.steps"
+  end
+
+  @tag :unit
+  test "llm chain of thought enabled attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter13Attributes
+    assert LlmIter13Attributes.llm_chain_of_thought_enabled() == :"llm.chain_of_thought.enabled"
+  end
+
+  @tag :unit
+  test "llm tool call count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter13Attributes
+    assert LlmIter13Attributes.llm_tool_call_count() == :"llm.tool.call_count"
+  end
+
+  @tag :unit
+  test "llm cache hit attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter13Attributes
+    assert LlmIter13Attributes.llm_cache_hit() == :"llm.cache.hit"
+  end
+
+  @tag :unit
+  test "mcp tool version attribute key matches schema" do
+    assert :"mcp.tool.version" == :"mcp.tool.version"
+  end
+
+  @tag :unit
+  test "mcp tool schema hash attribute key matches schema" do
+    assert :"mcp.tool.schema_hash" == :"mcp.tool.schema_hash"
+  end
+
+  @tag :unit
+  test "process mining conformance visualization type attribute key matches schema" do
+    assert :"process.mining.conformance.visualization_type" == :"process.mining.conformance.visualization_type"
+  end
+
+  @tag :unit
+  test "a2a capability offered attribute key matches schema" do
+    assert :"a2a.capability.offered" == :"a2a.capability.offered"
+  end
+
+  @tag :unit
+  test "process mining case throughput ms attribute key matches schema" do
+    assert :"process.mining.case.throughput_ms" == :"process.mining.case.throughput_ms"
+  end
+
+  @tag :unit
+  test "consensus safety check span exists in schema" do
+    assert :"span.consensus.safety.check" == :"span.consensus.safety.check"
+  end
 end
