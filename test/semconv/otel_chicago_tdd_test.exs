@@ -1142,4 +1142,142 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   test "consensus safety check span exists in schema" do
     assert :"span.consensus.safety.check" == :"span.consensus.safety.check"
   end
+
+  # === Wave 9 Iteration 14: A2A Trust ===
+
+  @tag :unit
+  test "a2a trust score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter14Attributes
+    assert A2AIter14Attributes.a2a_trust_score() == :"a2a.trust.score"
+  end
+
+  @tag :unit
+  test "a2a reputation history length attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter14Attributes
+    assert A2AIter14Attributes.a2a_reputation_history_length() == :"a2a.reputation.history_length"
+  end
+
+  @tag :unit
+  test "a2a trust decay factor attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter14Attributes
+    assert A2AIter14Attributes.a2a_trust_decay_factor() == :"a2a.trust.decay_factor"
+  end
+
+  @tag :unit
+  test "a2a trust updated at ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter14Attributes
+    assert A2AIter14Attributes.a2a_trust_updated_at_ms() == :"a2a.trust.updated_at_ms"
+  end
+
+  # === Wave 9 Iteration 14: PM Simulation ===
+
+  @tag :unit
+  test "process mining simulation cases attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter14Attributes
+    assert PmIter14Attributes.process_mining_simulation_cases() == :"process_mining.simulation.cases"
+  end
+
+  @tag :unit
+  test "process mining simulation noise rate attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter14Attributes
+    assert PmIter14Attributes.process_mining_simulation_noise_rate() == :"process_mining.simulation.noise_rate"
+  end
+
+  @tag :unit
+  test "process mining simulation duration ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter14Attributes
+    assert PmIter14Attributes.process_mining_simulation_duration_ms() == :"process_mining.simulation.duration_ms"
+  end
+
+  @tag :unit
+  test "process mining replay token count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PmIter14Attributes
+    assert PmIter14Attributes.process_mining_replay_token_count() == :"process_mining.replay.token_count"
+  end
+
+  # === Wave 9 Iteration 14: Consensus Fault Tolerance ===
+
+  @tag :unit
+  test "consensus byzantine faults attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter14Attributes
+    assert ConsensusIter14Attributes.consensus_byzantine_faults() == :"consensus.byzantine.faults"
+  end
+
+  @tag :unit
+  test "consensus replica lag ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter14Attributes
+    assert ConsensusIter14Attributes.consensus_replica_lag_ms() == :"consensus.replica.lag_ms"
+  end
+
+  @tag :unit
+  test "consensus replica count iter14 attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter14Attributes
+    assert ConsensusIter14Attributes.consensus_replica_count() == :"consensus.replica.count"
+  end
+
+  # === Wave 9 Iteration 14: Healing Pattern ===
+
+  @tag :unit
+  test "healing pattern id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter14Attributes
+    assert HealingIter14Attributes.healing_pattern_id() == :"healing.pattern.id"
+  end
+
+  @tag :unit
+  test "healing pattern library size attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter14Attributes
+    assert HealingIter14Attributes.healing_pattern_library_size() == :"healing.pattern.library_size"
+  end
+
+  @tag :unit
+  test "healing pattern match confidence attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter14Attributes
+    assert HealingIter14Attributes.healing_pattern_match_confidence() == :"healing.pattern.match_confidence"
+  end
+
+  # === Wave 9 Iteration 14: LLM Token Budget ===
+
+  @tag :unit
+  test "llm token prompt count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter14Attributes
+    assert LlmIter14Attributes.llm_token_prompt_count() == :"llm.token.prompt_count"
+  end
+
+  @tag :unit
+  test "llm token completion count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter14Attributes
+    assert LlmIter14Attributes.llm_token_completion_count() == :"llm.token.completion_count"
+  end
+
+  @tag :unit
+  test "llm token budget remaining attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter14Attributes
+    assert LlmIter14Attributes.llm_token_budget_remaining() == :"llm.token.budget_remaining"
+  end
+
+  @tag :unit
+  test "llm model version attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LlmIter14Attributes
+    assert LlmIter14Attributes.llm_model_version() == :"llm.model.version"
+  end
+
+  # === Wave 9 Iteration 14: Canopy Snapshot ===
+
+  @tag :unit
+  test "canopy snapshot id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter14Attributes
+    assert CanopyIter14Attributes.canopy_snapshot_id() == :"canopy.snapshot.id"
+  end
+
+  @tag :unit
+  test "canopy snapshot size bytes attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter14Attributes
+    assert CanopyIter14Attributes.canopy_snapshot_size_bytes() == :"canopy.snapshot.size_bytes"
+  end
+
+  @tag :unit
+  test "canopy snapshot compression ratio attribute key matches schema" do
+    alias OpenTelemetry.SemConv.CanopyIter14Attributes
+    assert CanopyIter14Attributes.canopy_snapshot_compression_ratio() == :"canopy.snapshot.compression_ratio"
+  end
 end
