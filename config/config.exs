@@ -205,7 +205,10 @@ config :optimal_system_agent, budget_event_emitter: OptimalSystemAgent.BudgetEmi
 config :logger,
   level: :warning
 
-# OpenTelemetry configuration
-import_config "otel.exs"
+# OpenTelemetry — `test.exs` defines the full stack for MIX_ENV=test (avoids Mix merging
+# processors from otel.exs with test overrides, which would run batch + simple together).
+if config_env() != :test do
+  import_config "otel.exs"
+end
 
 import_config "#{config_env()}.exs"
