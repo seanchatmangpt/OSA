@@ -439,4 +439,46 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   @spec signal_weight() :: :"signal.weight"
   def signal_weight, do: :"signal.weight"
 
+  @doc """
+  Dispatch priority of the signal through the routing layer.
+
+  Attribute: `signal.priority`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `critical`, `high`, `normal`, `low`
+  """
+  @spec signal_priority :: :"signal.priority"
+  def signal_priority, do: :"signal.priority"
+
+  @doc """
+  Enumerated values for `signal.priority`.
+  """
+  @spec signal_priority_values() :: %{critical: :critical, high: :high, normal: :normal, low: :low}
+  def signal_priority_values, do: %{critical: :critical, high: :high, normal: :normal, low: :low}
+
+  @doc """
+  Encoding scheme applied to the signal payload.
+
+  Attribute: `signal.encoding`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `utf8`, `base64`, `msgpack`
+  """
+  @spec signal_encoding :: :"signal.encoding"
+  def signal_encoding, do: :"signal.encoding"
+
+  @doc """
+  Number of hops the signal has traversed across routing layers.
+
+  Attribute: `signal.hop_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `3`, `7`
+  """
+  @spec signal_hop_count :: :"signal.hop_count"
+  def signal_hop_count, do: :"signal.hop_count"
+
 end

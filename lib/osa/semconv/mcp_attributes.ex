@@ -147,4 +147,40 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   @spec mcp_tool_timeout_ms() :: :"mcp.tool.timeout_ms"
   def mcp_tool_timeout_ms, do: :"mcp.tool.timeout_ms"
 
+  @doc """
+  Number of tools registered in the MCP registry.
+
+  Attribute: `mcp.registry.tool_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `5`, `25`, `100`
+  """
+  @spec mcp_registry_tool_count :: :"mcp.registry.tool_count"
+  def mcp_registry_tool_count, do: :"mcp.registry.tool_count"
+
+  @doc """
+  Transport type used for this MCP connection.
+
+  Attribute: `mcp.connection.transport`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `stdio`, `http`, `sse`
+  """
+  @spec mcp_connection_transport :: :"mcp.connection.transport"
+  def mcp_connection_transport, do: :"mcp.connection.transport"
+
+  @doc """
+  Version of the MCP protocol in use.
+
+  Attribute: `mcp.protocol.version`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2024-11-05`, `2025-03-26`
+  """
+  @spec mcp_protocol_version :: :"mcp.protocol.version"
+  def mcp_protocol_version, do: :"mcp.protocol.version"
+
 end

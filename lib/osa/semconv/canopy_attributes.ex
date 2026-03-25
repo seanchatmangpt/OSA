@@ -257,4 +257,52 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   @spec canopy_workspace_id() :: :"canopy.workspace.id"
   def canopy_workspace_id, do: :"canopy.workspace.id"
 
+  @doc """
+  Heartbeat round-trip latency in milliseconds.
+
+  Attribute: `canopy.heartbeat.latency_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `5`, `22`, `150`
+  """
+  @spec canopy_heartbeat_latency_ms :: :"canopy.heartbeat.latency_ms"
+  def canopy_heartbeat_latency_ms, do: :"canopy.heartbeat.latency_ms"
+
+  @doc """
+  Monotonically-increasing heartbeat sequence number.
+
+  Attribute: `canopy.heartbeat.sequence_num`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `42`, `10001`
+  """
+  @spec canopy_heartbeat_sequence_num :: :"canopy.heartbeat.sequence_num"
+  def canopy_heartbeat_sequence_num, do: :"canopy.heartbeat.sequence_num"
+
+  @doc """
+  Number of consecutive missed heartbeats.
+
+  Attribute: `canopy.heartbeat.missed_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec canopy_heartbeat_missed_count :: :"canopy.heartbeat.missed_count"
+  def canopy_heartbeat_missed_count, do: :"canopy.heartbeat.missed_count"
+
+  @doc """
+  Unique identifier for the Canopy session (distinct from workspace).
+
+  Attribute: `canopy.session.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `sess-001`, `sess-abc123`
+  """
+  @spec canopy_session_id :: :"canopy.session.id"
+  def canopy_session_id, do: :"canopy.session.id"
+
 end

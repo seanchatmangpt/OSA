@@ -711,4 +711,72 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
     assert ProcessAttributes.process_mining_replay_fitness() == :"process.mining.replay_fitness"
   end
+
+  # === Wave 9 Iteration 10: Signal Theory ===
+
+  @tag :unit
+  test "signal.latency_ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+    assert SignalAttributes.signal_latency_ms() == :"signal.latency_ms"
+  end
+
+  @tag :unit
+  test "signal.priority attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+    assert SignalAttributes.signal_priority() == :"signal.priority"
+  end
+
+  @tag :unit
+  test "signal.priority critical value matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.SignalAttributes
+    assert SignalAttributes.signal_priority_values().critical == :critical
+  end
+
+  # === Wave 9 Iteration 10: Canopy Heartbeat ===
+
+  @tag :unit
+  test "canopy.heartbeat.latency_ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.CanopyAttributes
+    assert CanopyAttributes.canopy_heartbeat_latency_ms() == :"canopy.heartbeat.latency_ms"
+  end
+
+  @tag :unit
+  test "canopy.session.id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.CanopyAttributes
+    assert CanopyAttributes.canopy_session_id() == :"canopy.session.id"
+  end
+
+  # === Wave 9 Iteration 10: Conversation ===
+
+  @tag :unit
+  test "conversation.id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConversationAttributes
+    assert ConversationAttributes.conversation_id() == :"conversation.id"
+  end
+
+  @tag :unit
+  test "conversation.model attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConversationAttributes
+    assert ConversationAttributes.conversation_model() == :"conversation.model"
+  end
+
+  @tag :unit
+  test "conversation.phase complete value matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConversationAttributes
+    assert ConversationAttributes.conversation_phase_values().complete == :complete
+  end
+
+  # === Wave 9 Iteration 10: YAWL WP-6/7 ===
+
+  @tag :unit
+  test "workflow.active_branches attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.WorkflowAttributes
+    assert WorkflowAttributes.workflow_active_branches() == :"workflow.active_branches"
+  end
+
+  @tag :unit
+  test "workflow.fired_branches attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.WorkflowAttributes
+    assert WorkflowAttributes.workflow_fired_branches() == :"workflow.fired_branches"
+  end
 end

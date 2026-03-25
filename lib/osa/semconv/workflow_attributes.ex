@@ -510,4 +510,40 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
 
   end
 
+  @doc """
+  Number of currently active (running) branches in a parallel split.
+
+  Attribute: `workflow.active_branches`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `3`, `5`
+  """
+  @spec workflow_active_branches :: :"workflow.active_branches"
+  def workflow_active_branches, do: :"workflow.active_branches"
+
+  @doc """
+  Number of branches that have fired (completed) in a parallel pattern.
+
+  Attribute: `workflow.fired_branches`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `2`, `4`
+  """
+  @spec workflow_fired_branches :: :"workflow.fired_branches"
+  def workflow_fired_branches, do: :"workflow.fired_branches"
+
+  @doc """
+  Timeout in milliseconds before a synchronization join is abandoned.
+
+  Attribute: `workflow.sync.timeout_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `5000`, `30000`, `60000`
+  """
+  @spec workflow_sync_timeout_ms :: :"workflow.sync.timeout_ms"
+  def workflow_sync_timeout_ms, do: :"workflow.sync.timeout_ms"
+
 end
