@@ -15,6 +15,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
   use ExUnit.Case
 
+
   import ExUnit.CaptureLog
 
   setup do

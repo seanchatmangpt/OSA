@@ -89,13 +89,13 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   @doc "Return the reflex log -- list of recent reflex arc firings."
   @spec log() :: [map()]
   def log do
-    GenServer.call(__MODULE__, :log)
+    GenServer.call(__MODULE__, :log, 15000)
   end
 
   @doc "Return current state including cooldowns and provider failure counts."
   @spec status() :: map()
   def status do
-    GenServer.call(__MODULE__, :status)
+    GenServer.call(__MODULE__, :status, 15000)
   end
 
   @doc "Manually trigger a session reaper sweep (useful in tests)."
