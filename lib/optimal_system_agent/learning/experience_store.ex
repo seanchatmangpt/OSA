@@ -101,7 +101,9 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   """
   @spec find_similar(String.t(), tuple(), non_neg_integer()) ::
           {:ok, [{tuple(), float()}]} | {:error, term()}
-  def find_similar(agent_id, {_action, _context, _outcome} = query, top_k \\ 5)
+  def find_similar(agent_id, query, top_k \\ 5)
+
+  def find_similar(agent_id, {_action, _context, _outcome} = query, top_k)
       when is_binary(agent_id) and is_integer(top_k) do
     GenServer.call(__MODULE__, {:find_similar, agent_id, query, top_k}, :infinity)
   end
@@ -152,8 +154,8 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
       try do
         experiences =
           @ets_table
-          |> :ets.match({agent_id_pattern(agent_id), :_})
-          |> Enum.map(fn [{_key, exp}] -> exp end)
+          |> :ets.match_object({agent_id_pattern(agent_id), :_})
+          |> Enum.map(fn {{_aid, _key}, exp} -> exp end)
           |> Enum.reverse()
           |> Enum.take(limit)
 
@@ -166,7 +168,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   end
 
   @impl true
-  def handle_call({:embedding, agent_id, action, context, outcome}, _from, state) do
+  def handle_call({:embedding, _agent_id, action, context, outcome}, _from, state) do
     result =
       try do
         embedding_vector = compute_embedding(action, context, outcome)
@@ -186,12 +188,12 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
 
         experiences =
           @ets_table
-          |> :ets.match({agent_id_pattern(agent_id), :_})
-          |> Enum.map(fn [{_key, exp}] -> exp end)
+          |> :ets.match_object({agent_id_pattern(agent_id), :_})
+          |> Enum.map(fn {{_aid, _key}, exp} -> exp end)
 
         similar =
           experiences
-          |> Enum.map(fn {action, context, outcome, feedback, timestamp} = exp ->
+          |> Enum.map(fn {action, context, outcome, _feedback, _timestamp} = exp ->
             exp_embedding = compute_embedding(action, context, outcome)
             similarity = cosine_similarity(query_embedding, exp_embedding)
             {exp, similarity}
@@ -213,8 +215,8 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
       try do
         experiences =
           @ets_table
-          |> :ets.match({agent_id_pattern(agent_id), :_})
-          |> Enum.map(fn [{_key, exp}] -> exp end)
+          |> :ets.match_object({agent_id_pattern(agent_id), :_})
+          |> Enum.map(fn {{_aid, _key}, exp} -> exp end)
 
         signals =
           experiences
