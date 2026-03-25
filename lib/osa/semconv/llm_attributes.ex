@@ -124,4 +124,66 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmAttributes do
     }
   end
 
+  # --- iter11: LLM cost tracking ---
+
+  @doc """
+  Total cost of the LLM invocation in USD (input + output).
+
+  Attribute: `llm.cost.total`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.0025`, `0.12`, `1.50`
+  """
+  @spec llm_cost_total() :: :"llm.cost.total"
+  def llm_cost_total, do: :"llm.cost.total"
+
+  @doc """
+  Cost of input tokens for this LLM invocation in USD.
+
+  Attribute: `llm.cost.input`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.0010`, `0.05`
+  """
+  @spec llm_cost_input() :: :"llm.cost.input"
+  def llm_cost_input, do: :"llm.cost.input"
+
+  @doc """
+  Cost of output tokens for this LLM invocation in USD.
+
+  Attribute: `llm.cost.output`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.0015`, `0.07`
+  """
+  @spec llm_cost_output() :: :"llm.cost.output"
+  def llm_cost_output, do: :"llm.cost.output"
+
+  @doc """
+  Model family grouping (e.g., claude, gpt, llama).
+
+  Attribute: `llm.model_family`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `claude`, `gpt`, `llama`, `gemini`
+  """
+  @spec llm_model_family() :: :"llm.model_family"
+  def llm_model_family, do: :"llm.model_family"
+
+  @doc """
+  Unique request identifier returned by the LLM provider.
+
+  Attribute: `llm.request.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `req_abc123`, `chatcmpl-xyz789`
+  """
+  @spec llm_request_id() :: :"llm.request.id"
+  def llm_request_id, do: :"llm.request.id"
+
 end

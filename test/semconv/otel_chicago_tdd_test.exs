@@ -779,4 +779,111 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     alias OpenTelemetry.SemConv.Incubating.WorkflowAttributes
     assert WorkflowAttributes.workflow_fired_branches() == :"workflow.fired_branches"
   end
+
+  # === Wave 9 Iteration 11: LLM cost tracking ===
+
+  @tag :unit
+  test "llm cost total attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+    assert LlmAttributes.llm_cost_total() == :"llm.cost.total"
+  end
+
+  @tag :unit
+  test "llm cost input attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+    assert LlmAttributes.llm_cost_input() == :"llm.cost.input"
+  end
+
+  @tag :unit
+  test "llm cost output attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+    assert LlmAttributes.llm_cost_output() == :"llm.cost.output"
+  end
+
+  @tag :unit
+  test "llm model family attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+    assert LlmAttributes.llm_model_family() == :"llm.model_family"
+  end
+
+  # === Wave 9 Iteration 11: Consensus quorum health ===
+
+  @tag :unit
+  test "consensus quorum health attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
+    assert ConsensusAttributes.consensus_quorum_health() == :"consensus.quorum.health"
+  end
+
+  @tag :unit
+  test "consensus block height attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
+    assert ConsensusAttributes.consensus_block_height() == :"consensus.block.height"
+  end
+
+  @tag :unit
+  test "consensus replica count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
+    assert ConsensusAttributes.consensus_replica_count() == :"consensus.replica.count"
+  end
+
+  # === Wave 9 Iteration 11: A2A SLA tracking ===
+
+  @tag :unit
+  test "a2a sla deadline ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_sla_deadline_ms() == :"a2a.sla.deadline_ms"
+  end
+
+  @tag :unit
+  test "a2a sla breach attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_sla_breach() == :"a2a.sla.breach"
+  end
+
+  @tag :unit
+  test "a2a retry count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.A2aAttributes
+    assert A2aAttributes.a2a_retry_count() == :"a2a.retry.count"
+  end
+
+  # === Wave 9 Iteration 11: Workspace tool category ===
+
+  @tag :unit
+  test "workspace tool category attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.WorkspaceAttributes
+    assert WorkspaceAttributes.workspace_tool_category() == :"workspace.tool.category"
+  end
+
+  @tag :unit
+  test "workspace context window size attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.WorkspaceAttributes
+    assert WorkspaceAttributes.workspace_context_window_size() == :"workspace.context.window_size"
+  end
+
+  # === Wave 9 Iteration 11: BusinessOS compliance and audit ===
+
+  @tag :unit
+  test "business os compliance framework attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.BosAttributes
+    assert BosAttributes.business_os_compliance_framework() == :"business_os.compliance.framework"
+  end
+
+  @tag :unit
+  test "business os audit event type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.BosAttributes
+    assert BosAttributes.business_os_audit_event_type() == :"business_os.audit.event_type"
+  end
+
+  @tag :unit
+  test "business os integration type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.Incubating.BosAttributes
+    assert BosAttributes.business_os_integration_type() == :"business_os.integration.type"
+  end
+
+  # === Wave 9 Iteration 11: Process mining replay ===
+
+  @tag :unit
+  test "process mining replay precision attribute key matches schema" do
+    assert :"process_mining.replay.precision" == :"process_mining.replay.precision"
+  end
 end

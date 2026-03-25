@@ -417,4 +417,42 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   @spec bos_workspace_name() :: :"bos.workspace.name"
   def bos_workspace_name, do: :"bos.workspace.name"
 
+  # --- iter11: BusinessOS compliance and audit ---
+
+  @doc """
+  Compliance framework being evaluated (e.g., SOC2, HIPAA, GDPR).
+
+  Attribute: `business_os.compliance.framework`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `SOC2`, `HIPAA`, `GDPR`, `SOX`
+  """
+  @spec business_os_compliance_framework() :: :"business_os.compliance.framework"
+  def business_os_compliance_framework, do: :"business_os.compliance.framework"
+
+  @doc """
+  Type of audit event recorded in BusinessOS.
+
+  Attribute: `business_os.audit.event_type`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `login`, `config_change`, `data_export`, `permission_grant`
+  """
+  @spec business_os_audit_event_type() :: :"business_os.audit.event_type"
+  def business_os_audit_event_type, do: :"business_os.audit.event_type"
+
+  @doc """
+  Type of integration registered in BusinessOS.
+
+  Attribute: `business_os.integration.type`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `webhook`, `oauth`, `api_key`, `mcp`
+  """
+  @spec business_os_integration_type() :: :"business_os.integration.type"
+  def business_os_integration_type, do: :"business_os.integration.type"
+
 end

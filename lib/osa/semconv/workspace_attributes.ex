@@ -137,4 +137,30 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
     }
   end
 
+  # --- iter11: workspace tool category and context window size ---
+
+  @doc """
+  Category of the tool being invoked in the workspace.
+
+  Attribute: `workspace.tool.category`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `file`, `search`, `execution`, `communication`
+  """
+  @spec workspace_tool_category() :: :"workspace.tool.category"
+  def workspace_tool_category, do: :"workspace.tool.category"
+
+  @doc """
+  Maximum number of tokens or items the workspace context window can hold.
+
+  Attribute: `workspace.context.window_size`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `8192`, `32768`, `200000`
+  """
+  @spec workspace_context_window_size() :: :"workspace.context.window_size"
+  def workspace_context_window_size, do: :"workspace.context.window_size"
+
 end

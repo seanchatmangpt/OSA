@@ -323,4 +323,54 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   @spec a2a_capability_version() :: :"a2a.capability.version"
   def a2a_capability_version, do: :"a2a.capability.version"
 
+  # --- iter11: A2A SLA tracking ---
+
+  @doc """
+  Maximum allowable latency for this A2A call in milliseconds (SLA deadline).
+
+  Attribute: `a2a.sla.deadline_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `100`, `500`, `5000`
+  """
+  @spec a2a_sla_deadline_ms() :: :"a2a.sla.deadline_ms"
+  def a2a_sla_deadline_ms, do: :"a2a.sla.deadline_ms"
+
+  @doc """
+  Whether the A2A call breached its SLA deadline.
+
+  Attribute: `a2a.sla.breach`
+  Type: `boolean`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `true`, `false`
+  """
+  @spec a2a_sla_breach() :: :"a2a.sla.breach"
+  def a2a_sla_breach, do: :"a2a.sla.breach"
+
+  @doc """
+  Observed end-to-end latency of the A2A call in milliseconds.
+
+  Attribute: `a2a.sla.latency_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `45`, `320`, `1200`
+  """
+  @spec a2a_sla_latency_ms() :: :"a2a.sla.latency_ms"
+  def a2a_sla_latency_ms, do: :"a2a.sla.latency_ms"
+
+  @doc """
+  Number of retry attempts made for this A2A call.
+
+  Attribute: `a2a.retry.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec a2a_retry_count() :: :"a2a.retry.count"
+  def a2a_retry_count, do: :"a2a.retry.count"
+
 end

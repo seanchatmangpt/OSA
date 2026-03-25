@@ -257,4 +257,54 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   @spec consensus_signature_count() :: :"consensus.signature_count"
   def consensus_signature_count, do: :"consensus.signature_count"
 
+  # --- iter11: consensus quorum health ---
+
+  @doc """
+  Health status of the quorum (healthy, degraded, failed).
+
+  Attribute: `consensus.quorum.health`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `healthy`, `degraded`, `failed`
+  """
+  @spec consensus_quorum_health() :: :"consensus.quorum.health"
+  def consensus_quorum_health, do: :"consensus.quorum.health"
+
+  @doc """
+  Height of the most recently committed block.
+
+  Attribute: `consensus.block.height`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `100`, `42000`
+  """
+  @spec consensus_block_height() :: :"consensus.block.height"
+  def consensus_block_height, do: :"consensus.block.height"
+
+  @doc """
+  Total number of replicas participating in consensus.
+
+  Attribute: `consensus.replica.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `3`, `5`, `7`
+  """
+  @spec consensus_replica_count() :: :"consensus.replica.count"
+  def consensus_replica_count, do: :"consensus.replica.count"
+
+  @doc """
+  Number of replica failures detected in the current epoch.
+
+  Attribute: `consensus.failure.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `2`
+  """
+  @spec consensus_failure_count() :: :"consensus.failure.count"
+  def consensus_failure_count, do: :"consensus.failure.count"
+
 end
