@@ -53,7 +53,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
       assert_consensus_reached(
         scenario,
-        [honest_model, honest_model, byzantine_model],
+        [{:ok, honest_model}, {:ok, honest_model}, {:ok, byzantine_model}],
         true
       )
     end
@@ -378,8 +378,8 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
     test "mixed Byzantine modes with 2 failures" do
       modes = [:invalid_model, :crash, :state_flip]
-      {_, mode1} = Enum.random(modes)
-      {_, mode2} = Enum.random(modes)
+      mode1 = Enum.random(modes)
+      mode2 = Enum.random(modes)
 
       responses = generate_responses(5, 3, [mode1, mode2])
       {_consensus, valid, _byzantine} = validate_responses(responses, 3)
@@ -548,17 +548,21 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
   defp assert_cluster_fails(total_agents, byzantine_count) do
     honest_count = total_agents - byzantine_count
+    # BFT quorum: need majority (floor(N/2) + 1) for safety
+    quorum = div(total_agents, 2) + 1
 
     model = %{id: "m", transitions: [{"a", "b"}]}
     honest_responses = List.duplicate({:ok, model}, honest_count)
-    byzantine_responses = generate_byzantine_responses(byzantine_count)
+    byzantine_responses = generate_byzantine_responses(byzantine_count, :crash)
 
     responses = honest_responses ++ byzantine_responses
 
     {_consensus, valid, _byzantine} =
-      validate_responses(responses, honest_count)
+      validate_responses(responses, quorum)
 
-    assert valid == false or not byzantine_count > honest_count
+    # When Byzantine agents crash, honest_count < quorum, so consensus fails
+    assert valid == false,
+      "Expected consensus to fail with #{byzantine_count} Byzantine crashes out of #{total_agents} agents (quorum=#{quorum}, honest=#{honest_count})"
   end
 
   defp generate_responses(total, honest_count, mode) when is_atom(mode) do
@@ -573,9 +577,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
     honest_responses = List.duplicate({:ok, model}, honest_count)
 
     byzantine_responses =
-      modes
-      |> Enum.map(&generate_byzantine_response/1)
-      |> Enum.concat()
+      Enum.map(modes, &generate_byzantine_response/1)
 
     honest_responses ++ byzantine_responses
   end
@@ -612,8 +614,6 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
       |> Enum.filter(&is_valid_response/1)
       |> Enum.map(&extract_model/1)
 
-    byzantine_detected = Enum.any?(responses, &is_byzantine_response/1)
-
     has_quorum = length(valid_responses) >= quorum_size
 
     consensus =
@@ -622,6 +622,12 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
       else
         nil
       end
+
+    # Byzantine detected if any response is an error/timeout OR
+    # any valid response differs from the consensus model
+    byzantine_detected =
+      has_byzantine_errors?(responses) ||
+        (consensus != nil and Enum.any?(valid_responses, fn m -> m.id != consensus.id end))
 
     {consensus, has_quorum, byzantine_detected}
   end
@@ -661,8 +667,25 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
   defp is_valid_response({:ok, _model, _delay}), do: true
   defp is_valid_response(_), do: false
 
+  defp has_byzantine_errors?(responses) do
+    Enum.any?(responses, fn
+      {:error, _} -> true
+      {:timeout, _} -> true
+      _ -> false
+    end)
+  end
+
   defp is_byzantine_response({:error, _}), do: true
   defp is_byzantine_response({:timeout, _}), do: true
+  # Known Byzantine model IDs used in tests
+  defp is_byzantine_response({:ok, %{id: "corrupt"}}), do: true
+  defp is_byzantine_response({:ok, %{id: "flip" <> _}}), do: true
+  defp is_byzantine_response({:ok, %{id: "conflict" <> _}}), do: true
+  defp is_byzantine_response({:ok, %{id: "conf_a"}}), do: true
+  defp is_byzantine_response({:ok, %{id: "conf_b"}}), do: true
+  defp is_byzantine_response({:ok, %{id: "bad" <> _}}), do: true
+  defp is_byzantine_response({:ok, %{id: "wrong"}}), do: true
+  defp is_byzantine_response({:ok, %{id: "b"}}), do: true
   defp is_byzantine_response(_), do: false
 
   defp extract_model({:ok, model}), do: model

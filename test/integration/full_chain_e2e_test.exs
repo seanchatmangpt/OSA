@@ -1,7 +1,7 @@
 defmodule OptimalSystemAgent.Integration.FullChainE2ETest do
   use ExUnit.Case, async: false
 
-  @moduletag :skip
+  @moduletag :integration
 
   alias OptimalSystemAgent.Providers.PM4PyCoordinator
 

@@ -18,10 +18,9 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.ExecutorTest do
     end
 
     test "run/1 and run/2 are exported" do
-      # SKIPPED: Requires full app start to detect function arity correctly.
-      # When running with `mix test --no-start`, default-argument variants
-      # (like def run(goal, opts \\ []) -> run/2) are not visible to function_exported?.
-      # This test needs `async: false` and full app boot to pass.
+      # Default-argument variants (def run(goal, opts \\ [])) may not be visible
+      # to function_exported? on first load. Ensure module is fully compiled first.
+      {:module, Executor} = Code.ensure_compiled(Executor)
       assert function_exported?(Executor, :run, 1) or function_exported?(Executor, :run, 2)
     end
   end

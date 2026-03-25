@@ -93,7 +93,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
     end
 
     # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
-    @tag :skip
+    @tag :requires_llm
     test "continues to iteration when below max and not cancelled" do
       # This test requires actual LLM integration (LLMClient.llm_chat_stream/3)
       # which is not available in test environment. Skip to avoid timeout.
@@ -118,7 +118,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
 
   describe "cancel flag handling" do
     # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
-    @tag :skip
+    @tag :requires_llm
     test "returns :execute_tools when cancel flag not set" do
       # This test requires actual LLM integration which is not available in test
       session_id = "no_cancel_session"
@@ -220,7 +220,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
 
   describe "max_response_tokens" do
     # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
-    @tag :skip
+    @tag :requires_llm
     test "has configurable max_response_tokens" do
       # This test requires actual LLM integration which is not available in test
       Application.put_env(:optimal_system_agent, :max_response_tokens, 4096)
@@ -291,7 +291,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
     end
 
     # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
-    @tag :skip
+    @tag :requires_llm
     test "handles zero iteration" do
       # Test for iteration 0 would require LLM integration (skipped)
       # Early exit tests (cancel flag, max iterations) are covered in other tests
@@ -311,7 +311,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
     end
 
     # REQUIRES: LLM integration (LLMClient.llm_chat_stream/3 calls real LLM)
-    @tag :skip
+    @tag :requires_llm
     test "handles negative iteration (edge case)" do
       # Test for negative iteration would require LLM integration (skipped)
       # The code treats negative iteration as < max_iterations, proceeds to LLM
