@@ -238,6 +238,21 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     test "a2a_target_service key is correct OTel attribute name" do
       assert A2aAttributes.a2a_target_service() == :"a2a.target.service"
     end
+
+    @tag :unit
+    test "a2a negotiation status key is correct otel name" do
+      assert A2aAttributes.a2a_negotiation_status() == :"a2a.negotiation.status"
+    end
+
+    @tag :unit
+    test "a2a negotiation status accepted value matches schema" do
+      assert A2aAttributes.a2a_negotiation_status_values().accepted == :accepted
+    end
+
+    @tag :unit
+    test "a2a task priority key is correct otel name" do
+      assert A2aAttributes.a2a_task_priority() == :"a2a.task.priority"
+    end
   end
 
   # ============================================================
@@ -268,6 +283,16 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     @tag :unit
     test "canopy_heartbeat_tier low value matches schema" do
       assert CanopyAttributes.canopy_heartbeat_tier_values().low == :low
+    end
+
+    @tag :unit
+    test "canopy workspace id key is correct otel name" do
+      assert CanopyAttributes.canopy_workspace_id() == :"canopy.workspace.id"
+    end
+
+    @tag :unit
+    test "canopy command type enum has agent_dispatch value" do
+      assert CanopyAttributes.canopy_command_type_values().agent_dispatch == :agent_dispatch
     end
   end
 

@@ -50,6 +50,12 @@ defmodule OpenTelemetry.SemConv.Incubating.SpanNames do
   @spec a2a_create_deal() :: binary()
   def a2a_create_deal, do: "a2a.create_deal"
 
+  @spec a2a_negotiate() :: binary()
+  def a2a_negotiate, do: "a2a.negotiate"
+
+  @spec a2a_task_delegate() :: binary()
+  def a2a_task_delegate, do: "a2a.task.delegate"
+
   # Canopy domain
 
   @spec canopy_heartbeat() :: binary()
@@ -57,6 +63,9 @@ defmodule OpenTelemetry.SemConv.Incubating.SpanNames do
 
   @spec canopy_adapter_call() :: binary()
   def canopy_adapter_call, do: "canopy.adapter_call"
+
+  @spec canopy_command() :: binary()
+  def canopy_command, do: "canopy.command"
 
   # Workflow domain (YAWL)
 
