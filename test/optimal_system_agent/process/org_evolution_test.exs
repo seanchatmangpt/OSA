@@ -9,6 +9,13 @@ defmodule OptimalSystemAgent.Process.OrgEvolutionTest do
 
   alias OptimalSystemAgent.Process.OrgEvolution
 
+  setup_all do
+    if Process.whereis(OrgEvolution) == nil do
+      start_supervised!(OrgEvolution)
+    end
+    :ok
+  end
+
   describe "detect_drift/1" do
     test "returns drift analysis with score and drifts list" do
       org_config = %{

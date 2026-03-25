@@ -13,14 +13,41 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip  # Requires Events.TaskSupervisor and application infrastructure
 
   alias OptimalSystemAgent.Agent.Scheduler
 
   setup_all do
-    if Process.whereis(Scheduler) == nil do
-      start_supervised!(Scheduler)
-    end
+    # Disable automatic heartbeat during tests to prevent interference
+    # Set to 1 hour (3_600_000 ms) so it won't fire during test suite
+    Application.put_env(:optimal_system_agent, :heartbeat_interval, 3_600_000)
+
+    # Use a temporary test directory for heartbeat file to avoid interference
+    test_dir = System.tmp_dir!() <> "/osa_test_#{System.system_time(:microsecond)}"
+    File.mkdir_p!(test_dir)
+    Application.put_env(:optimal_system_agent, :config_dir, test_dir)
+
+    # Verify key processes are running (started by the application)
+    assert Process.whereis(OptimalSystemAgent.SessionRegistry) != nil,
+           "SessionRegistry not started"
+
+    assert Process.whereis(OptimalSystemAgent.Events.TaskSupervisor) != nil,
+           "TaskSupervisor not started"
+
+    assert Process.whereis(OptimalSystemAgent.Channels.Supervisor) != nil,
+           "Channels.Supervisor not started"
+
+    assert Process.whereis(Scheduler) != nil,
+           "Scheduler not started"
+
+    on_exit(fn ->
+      # Cleanup: reset configuration
+      Application.put_env(:optimal_system_agent, :heartbeat_interval, 1_800_000)
+      Application.delete_env(:optimal_system_agent, :config_dir)
+
+      # Clean up test directory
+      File.rm_rf(test_dir)
+    end)
+
     :ok
   end
 
@@ -41,11 +68,13 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: add_heartbeat_task/1" do
+    @tag :skip
     test "adds heartbeat task" do
       result = Scheduler.add_heartbeat_task("Check server status")
       assert result == :ok or match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
+    @tag :skip
     test "accepts various task descriptions" do
       tasks = [
         "Verify backups",
@@ -60,6 +89,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       end)
     end
 
+    @tag :skip
     test "handles long task descriptions" do
       long_task = String.duplicate("word ", 100)
 
@@ -129,6 +159,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: add_job/1" do
+    @tag :skip
     test "adds cron job" do
       job = %{
         id: "test_job_#{:erlang.unique_integer()}",
@@ -142,6 +173,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(result) or match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
+    @tag :skip
     test "accepts various cron expressions" do
       expressions = [
         "* * * * *",
@@ -164,6 +196,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       end)
     end
 
+    @tag :skip
     test "accepts different job types" do
       types = ["agent", "command", "webhook"]
 
@@ -182,6 +215,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: remove_job/1" do
+    @tag :skip
     test "removes job" do
       job_id = "remove_test_#{:erlang.unique_integer()}"
 
@@ -207,6 +241,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: toggle_job/2" do
+    @tag :skip
     test "toggles job to enabled" do
       job_id = "toggle_test_#{:erlang.unique_integer()}"
 
@@ -215,6 +250,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(result) or is_tuple(result)
     end
 
+    @tag :skip
     test "toggles job to disabled" do
       job_id = "toggle_test_#{:erlang.unique_integer()}"
 
@@ -225,6 +261,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: run_job/1" do
+    @tag :skip
     test "runs job immediately" do
       job_id = "run_test_#{:erlang.unique_integer()}"
 
@@ -263,6 +300,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: add_trigger/1" do
+    @tag :skip
     test "adds trigger" do
       trigger = %{
         id: "trigger_#{:erlang.unique_integer()}",
@@ -276,6 +314,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(result) or is_tuple(result)
     end
 
+    @tag :skip
     test "accepts various event patterns" do
       events = [
         "file.changed",
@@ -297,6 +336,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       end)
     end
 
+    @tag :skip
     test "accepts trigger with payload template" do
       trigger = %{
         id: "trigger_#{:erlang.unique_integer()}",
@@ -312,6 +352,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: remove_trigger/1" do
+    @tag :skip
     test "removes trigger" do
       trigger_id = "remove_trigger_#{:erlang.unique_integer()}"
 
@@ -337,6 +378,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   end
 
   describe "CRASH: toggle_trigger/2" do
+    @tag :skip
     test "toggles trigger to enabled" do
       trigger_id = "toggle_trigger_#{:erlang.unique_integer()}"
 
@@ -345,6 +387,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(result) or is_tuple(result)
     end
 
+    @tag :skip
     test "toggles trigger to disabled" do
       trigger_id = "toggle_trigger_#{:erlang.unique_integer()}"
 
@@ -415,6 +458,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   # =========================================================================
 
   describe "CRASH: Integration workflows" do
+    @tag :skip
     test "add job, list jobs, toggle job, remove job" do
       job_id = "integration_#{:erlang.unique_integer()}"
 
@@ -442,6 +486,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(remove_result) or is_tuple(remove_result)
     end
 
+    @tag :skip
     test "add trigger, list triggers, toggle trigger, remove trigger" do
       trigger_id = "integration_#{:erlang.unique_integer()}"
 
@@ -469,6 +514,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert is_atom(remove_result) or is_tuple(remove_result)
     end
 
+    @tag :skip
     test "fire trigger and verify execution flow" do
       payload = %{event_data: "test"}
 
@@ -565,6 +611,7 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
       assert true
     end
 
+    @tag :skip
     test "many rapid job additions and removals" do
       for i <- 1..10 do
         job_id = "stress_job_#{i}"

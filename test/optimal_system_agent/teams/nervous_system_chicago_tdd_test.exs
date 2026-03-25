@@ -19,7 +19,6 @@ defmodule OptimalSystemAgent.Teams.NervousSystemChicagoTDDTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip  # Requires application/supervisor to be running
 
   alias OptimalSystemAgent.Teams.NervousSystem
 

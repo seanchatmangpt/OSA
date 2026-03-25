@@ -14,10 +14,8 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip  # Requires database/Ecto
 
   alias OptimalSystemAgent.Signal.Persistence
-  alias OptimalSystemAgent.Store.Signal
 
   setup_all do
     if Process.whereis(Persistence) == nil do
@@ -35,10 +33,10 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "session_123",
         channel: "http",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
         type: "inform",
-        format: "json",
+        format: "text",
         weight: 0.85,
         input_preview: "test input",
         confidence: "high",
@@ -53,9 +51,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "minimal_session",
         channel: "cli",
-        mode: "code",
-        genre: "brief",
-        type: "direct"
+        mode: "build",
+        genre: "direct",
+        format: "code"
       }
 
       result = Persistence.persist_signal(attrs)
@@ -63,16 +61,16 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
     end
 
     test "persists signal with various modes" do
-      modes = ["linguistic", "code", "data", "visual", "mixed"]
+      modes = ["build", "execute", "analyze", "maintain", "assist"]
 
       results = Enum.map(modes, fn mode ->
         attrs = %{
           session_id: "mode_test",
           channel: "test",
           mode: mode,
-          genre: "spec",
+          genre: "inform",
           type: "inform",
-          format: "json",
+          format: "text",
           weight: 0.5
         }
         Persistence.persist_signal(attrs)
@@ -85,14 +83,15 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
     end
 
     test "persists signal with various genres" do
-      genres = ["spec", "brief", "report", "analysis", "chat"]
+      genres = ["direct", "inform", "commit", "decide", "express"]
 
       Enum.each(genres, fn genre ->
         attrs = %{
           session_id: "genre_test",
           channel: "test",
-          mode: "linguistic",
+          mode: "execute",
           genre: genre,
+          format: "text",
           type: "inform",
           weight: 0.6
         }
@@ -109,8 +108,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
         attrs = %{
           session_id: "weight_test",
           channel: "test",
-          mode: "linguistic",
-          genre: "spec",
+          mode: "execute",
+          genre: "inform",
+          format: "text",
           type: "inform",
           weight: weight
         }
@@ -126,8 +126,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "long_preview",
         channel: "test",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform",
         input_preview: long_text
       }
@@ -140,8 +141,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "metadata_test",
         channel: "test",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform",
         metadata: %{
           source: "api",
@@ -181,12 +183,12 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
     end
 
     test "lists signals with mode filter" do
-      result = Persistence.list_signals(mode: "linguistic")
+      result = Persistence.list_signals(mode: "execute")
       assert is_list(result)
 
       # If results exist, all should have matching mode
       Enum.each(result, fn record ->
-        assert record.mode == "linguistic" or is_nil(record.mode)
+        assert record.mode == "execute" or is_nil(record.mode)
       end)
     end
 
@@ -196,7 +198,7 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
     end
 
     test "lists signals with genre filter" do
-      result = Persistence.list_signals(genre: "spec")
+      result = Persistence.list_signals(genre: "inform")
       assert is_list(result)
     end
 
@@ -221,18 +223,23 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
 
       # Check if ordered (descending by inserted_at)
       if length(result) > 1 do
-        pairs = Enum.chunk_every(result, 2, 1) |> Enum.take(3)
-        Enum.each(pairs, fn [a, b] ->
-          # First should be newer than or equal to second
-          assert a.inserted_at >= b.inserted_at or is_nil(a.inserted_at) or is_nil(b.inserted_at)
+        Enum.chunk_every(result, 2, 1)
+        |> Enum.take(3)
+        |> Enum.each(fn
+          [a, b] ->
+            # First should be newer than or equal to second
+            assert a.inserted_at >= b.inserted_at or is_nil(a.inserted_at) or is_nil(b.inserted_at)
+          [_a] ->
+            # Single element, no comparison needed
+            :ok
         end)
       end
     end
 
     test "lists signals with combined filters" do
       result = Persistence.list_signals(
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
         limit: 20
       )
 
@@ -274,9 +281,14 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
 
       if length(result) > 1 do
         # Should be ordered newest first
-        Enum.each(Enum.chunk_every(result, 2, 1), fn [a, b] ->
-          assert a.inserted_at >= b.inserted_at or
-                   is_nil(a.inserted_at) or is_nil(b.inserted_at)
+        Enum.chunk_every(result, 2, 1)
+        |> Enum.each(fn
+          [a, b] ->
+            assert a.inserted_at >= b.inserted_at or
+                     is_nil(a.inserted_at) or is_nil(b.inserted_at)
+          [_a] ->
+            # Single element at end, no comparison needed
+            :ok
         end)
       end
     end
@@ -450,8 +462,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "integration_#{:erlang.unique_integer()}",
         channel: "test_channel",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform",
         weight: 0.75
       }
@@ -472,8 +485,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "stats_test",
         channel: "stats_test_ch",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform"
       }
 
@@ -500,7 +514,7 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       all = Persistence.list_signals(limit: 100)
 
       # List filtered
-      filtered = Persistence.list_signals(limit: 100, mode: "linguistic")
+      filtered = Persistence.list_signals(limit: 100, mode: "execute")
 
       # Filtered should be <= all
       assert length(filtered) <= length(all)
@@ -545,8 +559,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "contract_test",
         channel: "test",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform"
       }
 
@@ -594,8 +609,9 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
       attrs = %{
         session_id: "nil_test",
         channel: "test",
-        mode: "linguistic",
-        genre: "spec",
+        mode: "execute",
+        genre: "inform",
+        format: "text",
         type: "inform",
         weight: nil,
         confidence: nil,

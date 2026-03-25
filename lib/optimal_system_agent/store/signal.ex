@@ -50,7 +50,7 @@ defmodule OptimalSystemAgent.Store.Signal do
 
   @valid_modes ~w(build execute analyze maintain assist)
   @valid_genres ~w(direct inform commit decide express)
-  @valid_formats ~w(command message notification document text)
+  @valid_formats ~w(text code json markdown binary)
   @valid_tiers ~w(haiku sonnet opus)
   @valid_confidence ~w(high low)
 

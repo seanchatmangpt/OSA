@@ -86,7 +86,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
       }
   """
   def scan_sensor_suite(opts \\ []) do
-    GenServer.call(__MODULE__, {:scan_suite, opts})
+    GenServer.call(__MODULE__, {:scan_suite, opts}, 15000)
   end
 
   @doc """
@@ -95,7 +95,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
   Returns `{:ok, fingerprint}` or `{:error, reason}`.
   """
   def current_fingerprint do
-    GenServer.call(__MODULE__, :current_fingerprint)
+    GenServer.call(__MODULE__, :current_fingerprint, 15000)
   end
 
   @doc """
@@ -104,7 +104,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
   Returns `true` if sensors need refresh.
   """
   def stale?(max_age_ms \\ 300_000) do
-    GenServer.call(__MODULE__, {:stale?, max_age_ms})
+    GenServer.call(__MODULE__, {:stale?, max_age_ms}, 15000)
   end
 
   # ---------------------------------------------------------------------------

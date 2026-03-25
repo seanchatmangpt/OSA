@@ -9,7 +9,7 @@ defmodule OptimalSystemAgent.Signal.PersistenceTest do
     mode: "execute",
     genre: "direct",
     type: "request",
-    format: "command",
+    format: "code",
     weight: 0.7,
     session_id: "test_signal_#{:erlang.unique_integer([:positive])}",
     input_preview: "test message",

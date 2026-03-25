@@ -10,7 +10,6 @@ defmodule OptimalSystemAgent.Agent.CompactorChicagoTDDTest do
   """
 
   use ExUnit.Case, async: false
-  @moduletag :skip  # Requires PromptLoader and provider infrastructure
 
   alias OptimalSystemAgent.Agent.Compactor
 

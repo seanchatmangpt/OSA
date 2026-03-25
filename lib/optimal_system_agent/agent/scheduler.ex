@@ -86,7 +86,7 @@ defmodule OptimalSystemAgent.Agent.Scheduler do
 
   @doc "Return the list of currently loaded cron jobs with their state."
   def list_jobs do
-    GenServer.call(__MODULE__, :list_jobs)
+    GenServer.call(__MODULE__, :list_jobs, 15000)
   end
 
   @doc "Fire a named trigger with a payload map (called by the webhook HTTP endpoint)."
@@ -96,17 +96,17 @@ defmodule OptimalSystemAgent.Agent.Scheduler do
 
   @doc "Add a new cron job. Validates, persists to CRONS.json, and reloads."
   def add_job(job_map) when is_map(job_map) do
-    GenServer.call(__MODULE__, {:add_job, job_map})
+    GenServer.call(__MODULE__, {:add_job, job_map}, 15000)
   end
 
   @doc "Remove a cron job by ID."
   def remove_job(job_id) when is_binary(job_id) do
-    GenServer.call(__MODULE__, {:remove_job, job_id})
+    GenServer.call(__MODULE__, {:remove_job, job_id}, 15000)
   end
 
   @doc "Enable or disable a cron job."
   def toggle_job(job_id, enabled?) when is_binary(job_id) and is_boolean(enabled?) do
-    GenServer.call(__MODULE__, {:toggle_job, job_id, enabled?})
+    GenServer.call(__MODULE__, {:toggle_job, job_id, enabled?}, 15000)
   end
 
   @doc "Execute a cron job immediately, bypassing schedule check."
@@ -116,37 +116,37 @@ defmodule OptimalSystemAgent.Agent.Scheduler do
 
   @doc "Add a new trigger. Validates, persists to TRIGGERS.json, and reloads."
   def add_trigger(trigger_map) when is_map(trigger_map) do
-    GenServer.call(__MODULE__, {:add_trigger, trigger_map})
+    GenServer.call(__MODULE__, {:add_trigger, trigger_map}, 15000)
   end
 
   @doc "Remove a trigger by ID."
   def remove_trigger(trigger_id) when is_binary(trigger_id) do
-    GenServer.call(__MODULE__, {:remove_trigger, trigger_id})
+    GenServer.call(__MODULE__, {:remove_trigger, trigger_id}, 15000)
   end
 
   @doc "Enable or disable a trigger."
   def toggle_trigger(trigger_id, enabled?) when is_binary(trigger_id) and is_boolean(enabled?) do
-    GenServer.call(__MODULE__, {:toggle_trigger, trigger_id, enabled?})
+    GenServer.call(__MODULE__, {:toggle_trigger, trigger_id, enabled?}, 15000)
   end
 
   @doc "Return the list of currently loaded triggers with their state."
   def list_triggers do
-    GenServer.call(__MODULE__, :list_triggers)
+    GenServer.call(__MODULE__, :list_triggers, 15000)
   end
 
   @doc "Append an unchecked task to HEARTBEAT.md."
   def add_heartbeat_task(text) when is_binary(text) do
-    GenServer.call(__MODULE__, {:add_heartbeat_task, text})
+    GenServer.call(__MODULE__, {:add_heartbeat_task, text}, 15000)
   end
 
   @doc "Return the DateTime of the next heartbeat tick."
   def next_heartbeat_at do
-    GenServer.call(__MODULE__, :next_heartbeat_at)
+    GenServer.call(__MODULE__, :next_heartbeat_at, 15000)
   end
 
   @doc "Return scheduler status overview."
   def status do
-    GenServer.call(__MODULE__, :status)
+    GenServer.call(__MODULE__, :status, 15000)
   end
 
   @doc "Get the path to the HEARTBEAT.md file."

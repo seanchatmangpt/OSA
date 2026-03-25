@@ -14,7 +14,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
 
   @valid_modes ~w(build execute analyze maintain assist)
   @valid_genres ~w(direct inform commit decide express)
-  @valid_formats ~w(command message notification document text)
+  @valid_formats ~w(text code json markdown binary)
   @valid_tiers ~w(haiku sonnet opus)
   @valid_confidence ~w(high low)
 
@@ -24,7 +24,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test_channel",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -35,7 +35,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
       attrs = %{
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -46,7 +46,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
       attrs = %{
         channel: "test",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -57,7 +57,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
       attrs = %{
         channel: "test",
         mode: "build",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -85,7 +85,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
           channel: "test",
           mode: mode,
           genre: "direct",
-          format: "command",
+          format: "code",
           weight: 0.5
         }
         changeset = Signal.changeset(%Signal{}, attrs)
@@ -98,7 +98,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "invalid_mode",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -111,7 +111,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
           channel: "test",
           mode: "build",
           genre: genre,
-          format: "command",
+          format: "code",
           weight: 0.5
         }
         changeset = Signal.changeset(%Signal{}, attrs)
@@ -124,7 +124,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "invalid_genre",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -163,7 +163,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
           channel: "test",
           mode: "build",
           genre: "direct",
-          format: "command",
+          format: "code",
           weight: 0.5,
           tier: tier
         }
@@ -177,7 +177,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         tier: "invalid_tier"
       }
@@ -191,7 +191,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
           channel: "test",
           mode: "build",
           genre: "direct",
-          format: "command",
+          format: "code",
           weight: 0.5,
           confidence: confidence
         }
@@ -205,7 +205,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         confidence: "invalid_confidence"
       }
@@ -218,7 +218,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -230,7 +230,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 1.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -242,7 +242,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: -0.1
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -254,7 +254,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command"
+        format: "code"
       }
       changeset = Signal.changeset(%Signal{}, attrs)
       assert Ecto.Changeset.get_change(changeset, :weight) == 0.5
@@ -265,7 +265,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -277,7 +277,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -289,7 +289,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -303,7 +303,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.3
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -315,7 +315,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -327,7 +327,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.7
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -339,7 +339,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 1.0
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -351,7 +351,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.35
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -363,7 +363,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.65
       }
       changeset = Signal.changeset(%Signal{}, attrs)
@@ -373,62 +373,62 @@ defmodule OptimalSystemAgent.Store.SignalTest do
 
   describe "struct fields" do
     test "has session_id field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, session_id: "session_1"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, session_id: "session_1"}
       assert signal.session_id == "session_1"
     end
 
     test "has channel field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5}
       assert signal.channel == "test"
     end
 
     test "has mode field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5}
       assert signal.mode == "build"
     end
 
     test "has genre field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5}
       assert signal.genre == "direct"
     end
 
     test "has type field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, type: "custom"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, type: "custom"}
       assert signal.type == "custom"
     end
 
     test "has format field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5}
-      assert signal.format == "command"
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5}
+      assert signal.format == "code"
     end
 
     test "has weight field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.8}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.8}
       assert signal.weight == 0.8
     end
 
     test "has tier field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, tier: "haiku"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, tier: "haiku"}
       assert signal.tier == "haiku"
     end
 
     test "has input_preview field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, input_preview: "preview"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, input_preview: "preview"}
       assert signal.input_preview == "preview"
     end
 
     test "has agent_name field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, agent_name: "agent_1"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, agent_name: "agent_1"}
       assert signal.agent_name == "agent_1"
     end
 
     test "has confidence field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, confidence: "high"}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, confidence: "high"}
       assert signal.confidence == "high"
     end
 
     test "has metadata field" do
-      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "command", weight: 0.5, metadata: %{key: "value"}}
+      signal = %Signal{channel: "test", mode: "build", genre: "direct", format: "code", weight: 0.5, metadata: %{key: "value"}}
       assert signal.metadata == %{key: "value"}
     end
   end
@@ -438,7 +438,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
     # empty strings with "can't be blank". The original test comment was incorrect.
 
     test "handles unicode in channel" do
-      attrs = %{channel: "渠道", mode: "build", genre: "direct", format: "command", weight: 0.5}
+      attrs = %{channel: "渠道", mode: "build", genre: "direct", format: "code", weight: 0.5}
       changeset = Signal.changeset(%Signal{}, attrs)
       assert changeset.valid?
     end
@@ -448,7 +448,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         input_preview: "预览"
       }
@@ -461,7 +461,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         agent_name: "代理_1"
       }
@@ -474,7 +474,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         metadata: %{"标签" => "值"}
       }
@@ -487,7 +487,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         channel: "test",
         mode: "build",
         genre: "direct",
-        format: "command",
+        format: "code",
         weight: 0.5,
         metadata: %{
           "nested" => %{"key" => "value"},
@@ -508,7 +508,7 @@ defmodule OptimalSystemAgent.Store.SignalTest do
         mode: "execute",
         genre: "inform",
         type: "task_update",
-        format: "message",
+        format: "text",
         weight: 0.75,
         input_preview: "Task completed successfully",
         agent_name: "agent_1",
