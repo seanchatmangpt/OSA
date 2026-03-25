@@ -1424,4 +1424,150 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     alias OpenTelemetry.SemConv.EventsIter15Attributes
     assert EventsIter15Attributes.signal_quality_score() == :"signal.quality.score"
   end
+
+  # === Wave 9 Iteration 16: ChatmanGPT Session ===
+
+  @tag :unit
+  test "chatmangpt session id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ChatmangptIter16Attributes
+    assert ChatmangptIter16Attributes.chatmangpt_session_id() == :"chatmangpt.session.id"
+  end
+
+  @tag :unit
+  test "chatmangpt session token count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ChatmangptIter16Attributes
+    assert ChatmangptIter16Attributes.chatmangpt_session_token_count() == :"chatmangpt.session.token_count"
+  end
+
+  @tag :unit
+  test "chatmangpt session model switches attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ChatmangptIter16Attributes
+    assert ChatmangptIter16Attributes.chatmangpt_session_model_switches() == :"chatmangpt.session.model_switches"
+  end
+
+  @tag :unit
+  test "chatmangpt session turn count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ChatmangptIter16Attributes
+    assert ChatmangptIter16Attributes.chatmangpt_session_turn_count() == :"chatmangpt.session.turn_count"
+  end
+
+  # === Wave 9 Iteration 16: A2A Message Routing ===
+
+  @tag :unit
+  test "a2a message priority attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter16Attributes
+    assert A2AIter16Attributes.a2a_message_priority() == :"a2a.message.priority"
+  end
+
+  @tag :unit
+  test "a2a message size bytes attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter16Attributes
+    assert A2AIter16Attributes.a2a_message_size_bytes() == :"a2a.message.size_bytes"
+  end
+
+  @tag :unit
+  test "a2a message encoding attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2AIter16Attributes
+    assert A2AIter16Attributes.a2a_message_encoding() == :"a2a.message.encoding"
+  end
+
+  # === Wave 9 Iteration 16: Process Mining Decision Mining ===
+
+  @tag :unit
+  test "process mining decision point id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter16Attributes
+    assert PMIter16Attributes.process_mining_decision_point_id() == :"process.mining.decision.point_id"
+  end
+
+  @tag :unit
+  test "process mining decision outcome attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter16Attributes
+    assert PMIter16Attributes.process_mining_decision_outcome() == :"process.mining.decision.outcome"
+  end
+
+  @tag :unit
+  test "process mining decision confidence attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMIter16Attributes
+    assert PMIter16Attributes.process_mining_decision_confidence() == :"process.mining.decision.confidence"
+  end
+
+  # === Wave 9 Iteration 16: Consensus Leader Rotation ===
+
+  @tag :unit
+  test "consensus leader rotation count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter16Attributes
+    assert ConsensusIter16Attributes.consensus_leader_rotation_count() == :"consensus.leader.rotation_count"
+  end
+
+  @tag :unit
+  test "consensus leader tenure ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter16Attributes
+    assert ConsensusIter16Attributes.consensus_leader_tenure_ms() == :"consensus.leader.tenure_ms"
+  end
+
+  @tag :unit
+  test "consensus leader score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter16Attributes
+    assert ConsensusIter16Attributes.consensus_leader_score() == :"consensus.leader.score"
+  end
+
+  # === Wave 9 Iteration 16: Healing Prediction ===
+
+  @tag :unit
+  test "healing prediction horizon ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter16Attributes
+    assert HealingIter16Attributes.healing_prediction_horizon_ms() == :"healing.prediction.horizon_ms"
+  end
+
+  @tag :unit
+  test "healing prediction confidence attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter16Attributes
+    assert HealingIter16Attributes.healing_prediction_confidence() == :"healing.prediction.confidence"
+  end
+
+  @tag :unit
+  test "healing prediction model attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter16Attributes
+    assert HealingIter16Attributes.healing_prediction_model() == :"healing.prediction.model"
+  end
+
+  # === Wave 9 Iteration 16: LLM Streaming ===
+
+  @tag :unit
+  test "llm streaming chunk count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter16Attributes
+    assert LLMIter16Attributes.llm_streaming_chunk_count() == :"llm.streaming.chunk_count"
+  end
+
+  @tag :unit
+  test "llm streaming first token ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter16Attributes
+    assert LLMIter16Attributes.llm_streaming_first_token_ms() == :"llm.streaming.first_token_ms"
+  end
+
+  @tag :unit
+  test "llm streaming tokens per second attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter16Attributes
+    assert LLMIter16Attributes.llm_streaming_tokens_per_second() == :"llm.streaming.tokens_per_second"
+  end
+
+  # === Wave 9 Iteration 16: Workspace Context Snapshot ===
+
+  @tag :unit
+  test "workspace context snapshot id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter16Attributes
+    assert WorkspaceIter16Attributes.workspace_context_snapshot_id() == :"workspace.context.snapshot_id"
+  end
+
+  @tag :unit
+  test "workspace context compression ratio attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter16Attributes
+    assert WorkspaceIter16Attributes.workspace_context_compression_ratio() == :"workspace.context.compression_ratio"
+  end
+
+  @tag :unit
+  test "workspace context size tokens attribute key matches schema" do
+    alias OpenTelemetry.SemConv.WorkspaceIter16Attributes
+    assert WorkspaceIter16Attributes.workspace_context_size_tokens() == :"workspace.context.size_tokens"
+  end
 end
