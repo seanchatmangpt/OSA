@@ -49,6 +49,13 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
   @duration_increase_threshold 0.1
   @success_rate_drop_threshold 0.05
 
+  # Deadlock detection and prevention timeouts
+  @score_computation_timeout_ms 5000
+  @retry_initial_backoff_ms 100
+  @retry_max_backoff_ms 1000
+  @retry_max_attempts 3
+  @stalled_process_threshold_ms 3000
+
   # ---------------------------------------------------------------------------
   # Snapshot struct
   # ---------------------------------------------------------------------------
@@ -300,7 +307,7 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       last_improvement = find_last_improvement(sorted)
 
       # Stagnation score: 0.0 (evolving) to 1.0 (fully stagnant)
-      # Wrapped in Task.async/Task.yield with 5s timeout for deadlock protection
+      # Wrapped in Task.async/Task.yield with timeout for deadlock protection
       stagnation_score =
         case compute_stagnation_score_with_timeout(velocity) do
           {:ok, score} ->
@@ -309,7 +316,9 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
           {:timeout, _} ->
             # Fallback on timeout: conservative estimate
             Logger.warning(
-              "[Temporal] stagnation_detect timeout for process=#{process_id}, returning fallback score"
+              "[Temporal] stagnation_detect timeout for process=#{process_id}, " <>
+                "velocity=#{Float.round(velocity, 3)}/wk, span_weeks=#{span_weeks}, " <>
+                "snapshots=#{length(snapshots)}, returning fallback score=0.5"
             )
 
             0.5
@@ -337,16 +346,25 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
   end
 
   # Private helper: Compute stagnation score with timeout protection
+  # Returns {:ok, score} on success or {:timeout, nil} on timeout.
+  # Wraps the computation in Task.async/Task.yield with configurable timeout
+  # to prevent hangs when velocity < 0.1 AND span_weeks < 2 (pathological case).
   defp compute_stagnation_score_with_timeout(velocity) do
+    start_time = System.monotonic_time(:millisecond)
     task = Task.async(fn -> compute_stagnation_score(velocity) end)
 
-    case Task.yield(task, 5000) do
+    case Task.yield(task, @score_computation_timeout_ms) do
       {:ok, score} ->
         {:ok, score}
 
       nil ->
-        # Timeout occurred
+        # Timeout occurred - cleanup task and return fallback
+        elapsed = System.monotonic_time(:millisecond) - start_time
         Task.shutdown(task, :brutal_kill)
+        Logger.debug(
+          "[Temporal] compute_stagnation_score_with_timeout exceeded " <>
+            "#{@score_computation_timeout_ms}ms (elapsed: #{elapsed}ms)"
+        )
         {:timeout, nil}
     end
   end
@@ -359,6 +377,90 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       velocity < 0.5 -> 0.3 * (1.0 - velocity / 0.5)
       true -> 0.0
     end
+  end
+
+  @doc """
+  Stagnation detection with exponential backoff retry on timeout.
+
+  Wraps `stagnation_detect/1` with retry logic and exponential backoff.
+  Uses increasing delays (100ms → 500ms → 1000ms) to prevent cascade failures.
+
+  Returns the detection result or a conservative fallback after all retries exhausted.
+  """
+  @spec stagnation_detect_with_backoff(String.t()) :: map()
+  def stagnation_detect_with_backoff(process_id) do
+    retry_with_backoff(process_id, attempt: 1, backoff_ms: @retry_initial_backoff_ms)
+  end
+
+  # Recursive retry with exponential backoff
+  defp retry_with_backoff(process_id, attempt: attempt, backoff_ms: backoff_ms)
+       when attempt <= @retry_max_attempts do
+    try do
+      stagnation_detect(process_id)
+    rescue
+      error ->
+        Logger.warning(
+          "[Temporal] stagnation_detect_with_backoff attempt #{attempt} failed: #{inspect(error)}, " <>
+            "retrying in #{backoff_ms}ms"
+        )
+
+        Process.sleep(backoff_ms)
+        next_backoff = min(backoff_ms * 2, @retry_max_backoff_ms)
+        retry_with_backoff(process_id, attempt: attempt + 1, backoff_ms: next_backoff)
+    end
+  end
+
+  # Final fallback when all retries exhausted
+  defp retry_with_backoff(process_id, attempt: _attempt, backoff_ms: _backoff_ms) do
+    Logger.warning(
+      "[Temporal] stagnation_detect_with_backoff exhausted all #{@retry_max_attempts} attempts " <>
+        "for process=#{process_id}, returning conservative fallback"
+    )
+
+    %{
+      is_stagnant: false,
+      stagnation_score: 0.5,
+      last_improvement: nil,
+      recommended_action: "Unable to compute stagnation -- internal timeout, using conservative estimate"
+    }
+  end
+
+  @doc """
+  Safe stagnation detection with comprehensive monitoring.
+
+  Detects stalled processes by monitoring elapsed time and snapshot count.
+  Returns a detailed map including:
+  - `:result` - the stagnation detection output
+  - `:elapsed_ms` - how long the operation took
+  - `:stalled` - true if operation exceeded stalled threshold
+  - `:snapshot_count` - number of snapshots analyzed
+
+  Useful for observability and detecting pathological cases where computation stalls.
+  """
+  @spec stagnation_detect_safe(String.t()) :: map()
+  def stagnation_detect_safe(process_id) do
+    start_time = System.monotonic_time(:millisecond)
+    snapshots = get_snapshots(process_id)
+
+    result = stagnation_detect(process_id)
+
+    elapsed = System.monotonic_time(:millisecond) - start_time
+    stalled = elapsed > @stalled_process_threshold_ms
+
+    if stalled do
+      Logger.warning(
+        "[Temporal] stagnation_detect_safe operation stalled: process=#{process_id}, " <>
+          "elapsed=#{elapsed}ms, threshold=#{@stalled_process_threshold_ms}ms, " <>
+          "snapshots=#{length(snapshots)}"
+      )
+    end
+
+    %{
+      result: result,
+      elapsed_ms: elapsed,
+      stalled: stalled,
+      snapshot_count: length(snapshots)
+    }
   end
 
   @doc """
