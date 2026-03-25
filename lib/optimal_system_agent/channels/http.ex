@@ -377,6 +377,10 @@ defmodule OptimalSystemAgent.Channels.HTTP do
     end
   end
 
+  # ── Prometheus metrics (no auth required) ───────────────────────────────
+
+  forward("/metrics", to: OptimalSystemAgent.Channels.HTTP.API.MetricsRoutes)
+
   # ── All /api routes require JWT ─────────────────────────────────────
 
   forward("/api/v1", to: OptimalSystemAgent.Channels.HTTP.API)

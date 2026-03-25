@@ -338,4 +338,37 @@ end
 config :optimal_system_agent,
   jwt_secret: System.get_env("JWT_SECRET"),
   amqp_url: System.get_env("AMQP_URL"),
+  amqp_queue_enabled: System.get_env("USE_AMQP_QUEUE") == "true",
   platform_enabled: database_url != nil
+
+# ── BEAM Memory Limit ─────────────────────────────────────────────────────
+# Set +hms flag to enforce max heap size. Default 2GB.
+# Override with BEAM_MAX_HEAP_SIZE env var (in bytes, e.g., "4_000_000_000" for 4GB).
+# Set BEAM_MAX_HEAP_SIZE=0 to disable limit.
+if config_env() != :test do
+  beam_max_heap_mb = 2_000  # Default 2GB in MB
+  beam_max_heap_bytes = parse_int.(System.get_env("BEAM_MAX_HEAP_SIZE"), nil)
+
+  max_heap_bytes =
+    cond do
+      is_integer(beam_max_heap_bytes) and beam_max_heap_bytes > 0 ->
+        beam_max_heap_bytes
+
+      # Parse from env var if it contains MB suffix (legacy compat)
+      beam_max_heap_bytes_str = System.get_env("BEAM_MAX_HEAP_SIZE") ->
+        case Integer.parse(beam_max_heap_bytes_str) do
+          {num, ""} -> num
+          {num, "MB"} -> num * 1_000_000
+          {num, "GB"} -> num * 1_000_000_000
+          :error -> beam_max_heap_mb * 1_000_000
+        end
+
+      true ->
+        beam_max_heap_mb * 1_000_000
+    end
+
+  # Apply BEAM flag only if explicitly enabled or if limit > 0
+  if max_heap_bytes > 0 do
+    :erlang.system_flag(:max_heap_size, max_heap_bytes)
+  end
+end
