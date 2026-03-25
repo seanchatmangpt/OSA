@@ -61,6 +61,16 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmSpanNames do
   def llm_context_compress, do: "llm.context.compress"
 
   @doc """
+  Processing a single context compression operation — validates compression ratio and token savings.
+
+  Span: `span.llm.context.compress.process`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec llm_context_compress_process() :: String.t()
+  def llm_context_compress_process, do: "llm.context.compress.process"
+
+  @doc """
   Context window management — handles overflow by applying the configured strategy.
 
   Span: `span.llm.context.manage`
@@ -281,6 +291,7 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmSpanNames do
       llm_cache_lookup(),
       llm_chain_of_thought(),
       llm_context_compress(),
+      llm_context_compress_process(),
       llm_context_manage(),
       llm_cost_record(),
       llm_distillation_train(),

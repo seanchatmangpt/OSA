@@ -11,24 +11,12 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   """
 
   @doc """
-  Unique identifier for this MCP client-server connection.
-
-  Attribute: `mcp.connection.id`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `conn-abc123`, `mcp-conn-001`
-  """
-  @spec mcp_connection_id() :: :"mcp.connection.id"
-  def mcp_connection_id, do: :"mcp.connection.id"
-
-  @doc """
   Number of currently active connections in the pool.
 
   Attribute: `mcp.connection.pool.active_count`
   Type: `int`
   Stability: `development`
-  Requirement: `recommended`
+  Requirement: `required`
   Examples: `0`, `3`, `10`
   """
   @spec mcp_connection_pool_active_count() :: :"mcp.connection.pool.active_count"
@@ -40,7 +28,7 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Attribute: `mcp.connection.pool.idle_count`
   Type: `int`
   Stability: `development`
-  Requirement: `recommended`
+  Requirement: `required`
   Examples: `0`, `2`, `5`
   """
   @spec mcp_connection_pool_idle_count() :: :"mcp.connection.pool.idle_count"
@@ -52,7 +40,7 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Attribute: `mcp.connection.pool.size`
   Type: `int`
   Stability: `development`
-  Requirement: `recommended`
+  Requirement: `required`
   Examples: `5`, `10`, `50`
   """
   @spec mcp_connection_pool_size() :: :"mcp.connection.pool.size"
@@ -64,11 +52,23 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Attribute: `mcp.connection.pool.wait_ms`
   Type: `double`
   Stability: `development`
-  Requirement: `recommended`
+  Requirement: `required`
   Examples: `0.0`, `50.5`, `500.0`
   """
   @spec mcp_connection_pool_wait_ms() :: :"mcp.connection.pool.wait_ms"
   def mcp_connection_pool_wait_ms, do: :"mcp.connection.pool.wait_ms"
+
+  @doc """
+  Unique identifier for this MCP client-server connection.
+
+  Attribute: `mcp.connection.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `conn-abc123`, `mcp-conn-001`
+  """
+  @spec mcp_connection_id() :: :"mcp.connection.id"
+  def mcp_connection_id, do: :"mcp.connection.id"
 
   @doc """
   Transport protocol used for this MCP connection.

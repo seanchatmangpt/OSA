@@ -11,6 +11,143 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   """
 
   @doc """
+  Variant of the inductive miner algorithm applied.
+
+  Attribute: `process.mining.inductive.algorithm`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `inductive_miner_base`, `inductive_miner_dfg`
+  """
+  @spec process_mining_inductive_algorithm() :: :"process.mining.inductive.algorithm"
+  def process_mining_inductive_algorithm, do: :"process.mining.inductive.algorithm"
+
+  @doc """
+  Enumerated values for `process.mining.inductive.algorithm`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `inductive_miner_base` | `"inductive_miner_base"` | inductive_miner_base |
+  | `inductive_miner_dfg` | `"inductive_miner_dfg"` | inductive_miner_dfg |
+  | `inductive_miner_imdfa` | `"inductive_miner_imdfa"` | inductive_miner_imdfa |
+  """
+  @spec process_mining_inductive_algorithm_values() :: %{
+    inductive_miner_base: :inductive_miner_base,
+    inductive_miner_dfg: :inductive_miner_dfg,
+    inductive_miner_imdfa: :inductive_miner_imdfa
+  }
+  def process_mining_inductive_algorithm_values do
+    %{
+      inductive_miner_base: :inductive_miner_base,
+      inductive_miner_dfg: :inductive_miner_dfg,
+      inductive_miner_imdfa: :inductive_miner_imdfa
+    }
+  end
+
+  defmodule ProcessMiningInductiveAlgorithmValues do
+    @moduledoc """
+    Typed constants for the `process.mining.inductive.algorithm` attribute.
+    """
+
+    @doc "inductive_miner_base"
+    @spec inductive_miner_base() :: :inductive_miner_base
+    def inductive_miner_base, do: :inductive_miner_base
+
+    @doc "inductive_miner_dfg"
+    @spec inductive_miner_dfg() :: :inductive_miner_dfg
+    def inductive_miner_dfg, do: :inductive_miner_dfg
+
+    @doc "inductive_miner_imdfa"
+    @spec inductive_miner_imdfa() :: :inductive_miner_imdfa
+    def inductive_miner_imdfa, do: :inductive_miner_imdfa
+
+  end
+
+  @doc """
+  Number of cuts made during inductive mining.
+
+  Attribute: `process.mining.inductive.cut_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `1`, `5`, `20`
+  """
+  @spec process_mining_inductive_cut_count() :: :"process.mining.inductive.cut_count"
+  def process_mining_inductive_cut_count, do: :"process.mining.inductive.cut_count"
+
+  @doc """
+  Type of split in inductive miner tree.
+
+  Attribute: `process.mining.inductive.split_type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `exclusive`, `parallel`, `loop`, `sequence`
+  """
+  @spec process_mining_inductive_split_type() :: :"process.mining.inductive.split_type"
+  def process_mining_inductive_split_type, do: :"process.mining.inductive.split_type"
+
+  @doc """
+  Enumerated values for `process.mining.inductive.split_type`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `exclusive` | `"exclusive"` | exclusive |
+  | `parallel` | `"parallel"` | parallel |
+  | `loop` | `"loop"` | loop |
+  | `sequence` | `"sequence"` | sequence |
+  """
+  @spec process_mining_inductive_split_type_values() :: %{
+    exclusive: :exclusive,
+    parallel: :parallel,
+    loop: :loop,
+    sequence: :sequence
+  }
+  def process_mining_inductive_split_type_values do
+    %{
+      exclusive: :exclusive,
+      parallel: :parallel,
+      loop: :loop,
+      sequence: :sequence
+    }
+  end
+
+  defmodule ProcessMiningInductiveSplitTypeValues do
+    @moduledoc """
+    Typed constants for the `process.mining.inductive.split_type` attribute.
+    """
+
+    @doc "exclusive"
+    @spec exclusive() :: :exclusive
+    def exclusive, do: :exclusive
+
+    @doc "parallel"
+    @spec parallel() :: :parallel
+    def parallel, do: :parallel
+
+    @doc "loop"
+    @spec loop() :: :loop
+    def loop, do: :loop
+
+    @doc "sequence"
+    @spec sequence() :: :sequence
+    def sequence, do: :sequence
+
+  end
+
+  @doc """
+  Maximum depth of inductive miner tree.
+
+  Attribute: `process.mining.inductive.tree_depth`
+  Type: `int`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `0`, `3`, `10`
+  """
+  @spec process_mining_inductive_tree_depth() :: :"process.mining.inductive.tree_depth"
+  def process_mining_inductive_tree_depth, do: :"process.mining.inductive.tree_depth"
+
+  @doc """
   Name of the process activity (event class) from the XES log.
 
   Attribute: `process.mining.activity`
@@ -1389,90 +1526,6 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   """
   @spec process_mining_hierarchy_parent_process_id() :: :"process.mining.hierarchy.parent_process_id"
   def process_mining_hierarchy_parent_process_id, do: :"process.mining.hierarchy.parent_process_id"
-
-  @doc """
-  Number of cuts made during inductive mining.
-
-  Attribute: `process.mining.inductive.cut_count`
-  Type: `int`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `1`, `5`, `20`
-  """
-  @spec process_mining_inductive_cut_count() :: :"process.mining.inductive.cut_count"
-  def process_mining_inductive_cut_count, do: :"process.mining.inductive.cut_count"
-
-  @doc """
-  Type of split in inductive miner tree.
-
-  Attribute: `process.mining.inductive.split_type`
-  Type: `enum`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `exclusive`, `parallel`, `loop`, `sequence`
-  """
-  @spec process_mining_inductive_split_type() :: :"process.mining.inductive.split_type"
-  def process_mining_inductive_split_type, do: :"process.mining.inductive.split_type"
-
-  @doc """
-  Enumerated values for `process.mining.inductive.split_type`.
-
-  | Key | Value | Description |
-  |-----|-------|-------------|
-  | `exclusive` | `"exclusive"` | exclusive |
-  | `parallel` | `"parallel"` | parallel |
-  | `loop` | `"loop"` | loop |
-  | `sequence` | `"sequence"` | sequence |
-  """
-  @spec process_mining_inductive_split_type_values() :: %{
-    exclusive: :exclusive,
-    parallel: :parallel,
-    loop: :loop,
-    sequence: :sequence
-  }
-  def process_mining_inductive_split_type_values do
-    %{
-      exclusive: :exclusive,
-      parallel: :parallel,
-      loop: :loop,
-      sequence: :sequence
-    }
-  end
-
-  defmodule ProcessMiningInductiveSplitTypeValues do
-    @moduledoc """
-    Typed constants for the `process.mining.inductive.split_type` attribute.
-    """
-
-    @doc "exclusive"
-    @spec exclusive() :: :exclusive
-    def exclusive, do: :exclusive
-
-    @doc "parallel"
-    @spec parallel() :: :parallel
-    def parallel, do: :parallel
-
-    @doc "loop"
-    @spec loop() :: :loop
-    def loop, do: :loop
-
-    @doc "sequence"
-    @spec sequence() :: :sequence
-    def sequence, do: :sequence
-
-  end
-
-  @doc """
-  Maximum depth of inductive miner tree.
-
-  Attribute: `process.mining.inductive.tree_depth`
-  Type: `int`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `0`, `3`, `10`
-  """
-  @spec process_mining_inductive_tree_depth() :: :"process.mining.inductive.tree_depth"
-  def process_mining_inductive_tree_depth, do: :"process.mining.inductive.tree_depth"
 
   @doc """
   Unique identifier of the event log being processed.
