@@ -97,7 +97,11 @@ defmodule OptimalSystemAgent.MixProject do
       serve: ["run --no-halt"],
       tui: ["cmd ./scripts/osa-tui.sh"],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"]
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      # Weaver live-check: emits OTLP spans during tests to validate against semconv schema.
+      # Requires Weaver receiver running: make -C ../semconv/live-check start
+      # Usage: mix weaver.live_check
+      "weaver.live_check": ["cmd WEAVER_LIVE_CHECK=true WEAVER_OTLP_ENDPOINT=http://localhost:4317 mix test"]
     ]
   end
 
