@@ -10,6 +10,21 @@ defmodule OptimalSystemAgent.Tools.Registry.PM4PyRegisterTest do
 
   alias OptimalSystemAgent.Tools.Registry
 
+  setup_all do
+    # Ensure Registry GenServer has started and seeded :persistent_term
+    case Process.whereis(Registry) do
+      nil ->
+        {:ok, _} = Registry.start_link([])
+      pid ->
+        # Already started, ensure :persistent_term is populated
+        if :persistent_term.get({Registry, :builtin_tools}, :not_set) == :not_set do
+          # GenServer started but init may not have completed — wait
+          GenServer.call(pid, :list_tools, 5000)
+        end
+    end
+    :ok
+  end
+
   # ──────────────────────────────────────────────────────────────────────────
   # Test 1: Registry Resolution
   # ──────────────────────────────────────────────────────────────────────────

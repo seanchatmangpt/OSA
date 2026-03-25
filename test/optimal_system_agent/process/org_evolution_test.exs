@@ -286,10 +286,11 @@ defmodule OptimalSystemAgent.Process.OrgEvolutionTest do
       assert is_list(proposals)
     end
 
-    test "org_health with nil teams and workflows crashes GenServer (pre-existing)" do
-      # Pre-existing bug: compute_role_utilization calls map_size(nil) which crashes
-      # the GenServer. The function should handle nil gracefully but currently does not.
-      assert catch_exit(OrgEvolution.org_health(%{teams: nil, workflows: nil, execution_data: nil}))
+    test "org_health with nil teams and workflows handles gracefully" do
+      # Fixed: nil teams/workflows no longer crash the GenServer
+      result = OrgEvolution.org_health(%{teams: nil, workflows: nil, execution_data: nil})
+      assert result.overall_health >= 0.0
+      assert result.overall_health <= 1.0
     end
 
     test "org_health with execution_data as empty list handles gracefully" do

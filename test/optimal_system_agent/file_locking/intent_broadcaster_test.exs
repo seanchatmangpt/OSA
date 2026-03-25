@@ -179,13 +179,15 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
     test "sorts intents by timestamp" do
       unique_path = "/tmp/intent_broadcaster_sort_test_#{System.unique_integer([:positive])}.txt"
       IntentBroadcaster.broadcast_intent("agent_1", unique_path, "first")
-      Process.sleep(50)
+      Process.sleep(100)
       IntentBroadcaster.broadcast_intent("agent_2", unique_path, "second")
 
       intents = IntentBroadcaster.current_intents_for(unique_path)
       # Should be sorted by timestamp
       if length(intents) >= 2 do
-        assert hd(intents).agent_id == "agent_1"
+        [first, _second | _] = intents
+        assert first.agent_id == "agent_1"
+        assert DateTime.compare(first.at, List.last(intents).at) != :gt
       end
     end
 

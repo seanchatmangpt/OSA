@@ -943,6 +943,10 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
 
   # ── Org Health ────────────────────────────────────────────────────────
 
+  defp compute_org_health(org_config) when not is_map(org_config), do: %{
+    overall_health: 0.0, dimensions: %{}, recommendations: [], assessed_at: DateTime.utc_now() |> DateTime.to_iso8601()
+  }
+
   defp compute_org_health(org_config) do
     teams = Map.get(org_config, :teams, %{})
     workflows = Map.get(org_config, :workflows, %{})
@@ -987,7 +991,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp compute_workflow_efficiency(workflows, execution_data) do
-    if map_size(workflows) == 0 do
+    if !is_map(workflows) or map_size(workflows) == 0 do
       0.5
     else
       efficiencies =
@@ -1012,6 +1016,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
 
   defp compute_communication_flow(org_config, execution_data) do
     teams = Map.get(org_config, :teams, %{})
+    teams = if is_map(teams), do: teams, else: %{}
 
     if map_size(teams) < 2 do
       0.8
@@ -1030,7 +1035,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp compute_process_compliance(workflows, execution_data) do
-    if map_size(workflows) == 0 do
+    if !is_map(workflows) or map_size(workflows) == 0 do
       0.5
     else
       compliances =

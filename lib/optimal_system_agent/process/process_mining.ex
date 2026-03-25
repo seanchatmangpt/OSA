@@ -266,6 +266,13 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
   Stagnation is defined as velocity < #{@stagnation_velocity_threshold} changes/week
   for > #{@stagnation_duration_weeks} weeks. Stagnant processes carry high risk
   of decay.
+
+  ## Deadlock Protection
+
+  The stagnation detection uses a timeout mechanism (Task.yield with 5s timeout)
+  to prevent hangs when velocity < 0.1 AND span_weeks < 2. If the condition
+  check exceeds the timeout, a fallback state is returned with conservative
+  assumptions (is_stagnant: false, stagnation_score: 0.5).
   """
   @spec stagnation_detect(String.t()) :: map()
   def stagnation_detect(process_id) do
@@ -293,12 +300,19 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       last_improvement = find_last_improvement(sorted)
 
       # Stagnation score: 0.0 (evolving) to 1.0 (fully stagnant)
+      # Wrapped in Task.async/Task.yield with 5s timeout for deadlock protection
       stagnation_score =
-        cond do
-          velocity <= 0.0 -> 1.0
-          velocity < @stagnation_velocity_threshold -> 0.7 + 0.3 * (1.0 - velocity / @stagnation_velocity_threshold)
-          velocity < 0.5 -> 0.3 * (1.0 - velocity / 0.5)
-          true -> 0.0
+        case compute_stagnation_score_with_timeout(velocity) do
+          {:ok, score} ->
+            score
+
+          {:timeout, _} ->
+            # Fallback on timeout: conservative estimate
+            Logger.warning(
+              "[Temporal] stagnation_detect timeout for process=#{process_id}, returning fallback score"
+            )
+
+            0.5
         end
 
       recommended_action =
@@ -319,6 +333,31 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
         last_improvement: last_improvement,
         recommended_action: recommended_action
       }
+    end
+  end
+
+  # Private helper: Compute stagnation score with timeout protection
+  defp compute_stagnation_score_with_timeout(velocity) do
+    task = Task.async(fn -> compute_stagnation_score(velocity) end)
+
+    case Task.yield(task, 5000) do
+      {:ok, score} ->
+        {:ok, score}
+
+      nil ->
+        # Timeout occurred
+        Task.shutdown(task, :brutal_kill)
+        {:timeout, nil}
+    end
+  end
+
+  # Private helper: Core stagnation score computation
+  defp compute_stagnation_score(velocity) do
+    cond do
+      velocity <= 0.0 -> 1.0
+      velocity < @stagnation_velocity_threshold -> 0.7 + 0.3 * (1.0 - velocity / @stagnation_velocity_threshold)
+      velocity < 0.5 -> 0.3 * (1.0 - velocity / 0.5)
+      true -> 0.0
     end
   end
 
