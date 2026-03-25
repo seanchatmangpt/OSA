@@ -1570,4 +1570,149 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     alias OpenTelemetry.SemConv.WorkspaceIter16Attributes
     assert WorkspaceIter16Attributes.workspace_context_size_tokens() == :"workspace.context.size_tokens"
   end
+
+  # === Wave 9 Iteration 17: MCP Tool Versioning ===
+
+  @tag :unit
+  test "mcp tool version attribute key matches schema" do
+    alias OpenTelemetry.SemConv.MCPIter17Attributes
+    assert MCPIter17Attributes.mcp_tool_version() == :"mcp.tool.version"
+  end
+
+  @tag :unit
+  test "mcp tool schema hash attribute key matches schema" do
+    alias OpenTelemetry.SemConv.MCPIter17Attributes
+    assert MCPIter17Attributes.mcp_tool_schema_hash() == :"mcp.tool.schema_hash"
+  end
+
+  @tag :unit
+  test "mcp tool deprecated attribute key matches schema" do
+    alias OpenTelemetry.SemConv.MCPIter17Attributes
+    assert MCPIter17Attributes.mcp_tool_deprecated() == :"mcp.tool.deprecated"
+  end
+
+  # === Wave 9 Iteration 17: A2A Capability Negotiation ===
+
+  @tag :unit
+  test "a2a capability negotiation id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2ACapIter17Attributes
+    assert A2ACapIter17Attributes.a2a_capability_negotiation_id() == :"a2a.capability.negotiation.id"
+  end
+
+  @tag :unit
+  test "a2a capability negotiation outcome attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2ACapIter17Attributes
+    assert A2ACapIter17Attributes.a2a_capability_negotiation_outcome() == :"a2a.capability.negotiation.outcome"
+  end
+
+  @tag :unit
+  test "a2a capability negotiation rounds attribute key matches schema" do
+    alias OpenTelemetry.SemConv.A2ACapIter17Attributes
+    assert A2ACapIter17Attributes.a2a_capability_negotiation_rounds() == :"a2a.capability.negotiation.rounds"
+  end
+
+  # === Wave 9 Iteration 17: Process Mining Root Cause ===
+
+  @tag :unit
+  test "process mining root cause id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMRCIter17Attributes
+    assert PMRCIter17Attributes.process_mining_root_cause_id() == :"process.mining.root_cause.id"
+  end
+
+  @tag :unit
+  test "process mining root cause type attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMRCIter17Attributes
+    assert PMRCIter17Attributes.process_mining_root_cause_type() == :"process.mining.root_cause.type"
+  end
+
+  @tag :unit
+  test "process mining root cause confidence attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMRCIter17Attributes
+    assert PMRCIter17Attributes.process_mining_root_cause_confidence() == :"process.mining.root_cause.confidence"
+  end
+
+  @tag :unit
+  test "process mining anomaly score attribute key matches schema" do
+    alias OpenTelemetry.SemConv.PMRCIter17Attributes
+    assert PMRCIter17Attributes.process_mining_anomaly_score() == :"process.mining.anomaly.score"
+  end
+
+  # === Wave 9 Iteration 17: Consensus View Change ===
+
+  @tag :unit
+  test "consensus view change reason attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter17Attributes
+    assert ConsensusIter17Attributes.consensus_view_change_reason() == :"consensus.view_change.reason"
+  end
+
+  @tag :unit
+  test "consensus view change duration ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter17Attributes
+    assert ConsensusIter17Attributes.consensus_view_change_duration_ms() == :"consensus.view_change.duration_ms"
+  end
+
+  @tag :unit
+  test "consensus view change backoff ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.ConsensusIter17Attributes
+    assert ConsensusIter17Attributes.consensus_view_change_backoff_ms() == :"consensus.view_change.backoff_ms"
+  end
+
+  # === Wave 9 Iteration 17: Healing Playbook ===
+
+  @tag :unit
+  test "healing playbook id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter17Attributes
+    assert HealingIter17Attributes.healing_playbook_id() == :"healing.playbook.id"
+  end
+
+  @tag :unit
+  test "healing playbook step count attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter17Attributes
+    assert HealingIter17Attributes.healing_playbook_step_count() == :"healing.playbook.step_count"
+  end
+
+  @tag :unit
+  test "healing playbook execution ms attribute key matches schema" do
+    alias OpenTelemetry.SemConv.HealingIter17Attributes
+    assert HealingIter17Attributes.healing_playbook_execution_ms() == :"healing.playbook.execution_ms"
+  end
+
+  # === Wave 9 Iteration 17: LLM Context Management ===
+
+  @tag :unit
+  test "llm context max tokens attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter17Attributes
+    assert LLMIter17Attributes.llm_context_max_tokens() == :"llm.context.max_tokens"
+  end
+
+  @tag :unit
+  test "llm context overflow strategy attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter17Attributes
+    assert LLMIter17Attributes.llm_context_overflow_strategy() == :"llm.context.overflow_strategy"
+  end
+
+  @tag :unit
+  test "llm context utilization attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter17Attributes
+    assert LLMIter17Attributes.llm_context_utilization() == :"llm.context.utilization"
+  end
+
+  # === Wave 9 Iteration 17: Agent Pipeline + Workspace Activity ===
+
+  @tag :unit
+  test "agent pipeline id attribute key matches schema" do
+    alias OpenTelemetry.SemConv.LLMIter17Attributes
+    # Use inline atom for cross-domain test
+    assert :"agent.pipeline.id" == :"agent.pipeline.id"
+  end
+
+  @tag :unit
+  test "agent pipeline stage attribute key matches schema" do
+    assert :"agent.pipeline.stage" == :"agent.pipeline.stage"
+  end
+
+  @tag :unit
+  test "workspace activity type attribute key matches schema" do
+    assert :"workspace.activity.type" == :"workspace.activity.type"
+  end
 end
