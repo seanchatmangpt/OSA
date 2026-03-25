@@ -46,6 +46,9 @@ defmodule OptimalSystemAgent.Workspace.Session do
     ArgumentError -> :ok
   end
 
+  @doc "Return the ETS table name."
+  def table_name, do: @session_table
+
   # ── Client API ────────────────────────────────────────────────────────────
 
   @doc """

@@ -502,4 +502,38 @@ defmodule OptimalSystemAgent.Agent.Progress do
       _ -> :ok
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Utility functions (for tests and external use)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Calculate progress percentage from a state map.
+
+  Returns a float between 0.0 and 1.0.
+  """
+  def calculate_progress(state) do
+    total = Map.get(state, :total_tasks, 1)
+    completed = Map.get(state, :completed_tasks, 0)
+
+    if total > 0 do
+      completed / total
+    else
+      0.0
+    end
+  end
+
+  @doc """
+  Format a state map into a human-readable status string.
+  """
+  @impl true
+  def format_status(state) do
+    total = Map.get(state, :total_tasks, 1)
+    completed = Map.get(state, :completed_tasks, 0)
+    percentage = calculate_progress(state)
+
+    pct = trunc(percentage * 100)
+    "#{completed}/#{total} tasks (#{pct}%)"
+  end
 end
+

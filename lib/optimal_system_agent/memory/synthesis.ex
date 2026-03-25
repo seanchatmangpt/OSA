@@ -99,6 +99,10 @@ defmodule OptimalSystemAgent.Memory.Synthesis do
     end
   end
 
+  def compact(nil, _current_tokens, _max_tokens) do
+    {:ok, []}
+  end
+
   @doc """
   Classify the current token usage against configured thresholds.
 
@@ -106,7 +110,8 @@ defmodule OptimalSystemAgent.Memory.Synthesis do
   """
   @spec check_threshold(non_neg_integer(), pos_integer()) ::
           :ok | :warn | :compact | :emergency
-  def check_threshold(current_tokens, max_tokens) when max_tokens > 0 do
+  def check_threshold(current_tokens, max_tokens)
+      when is_integer(current_tokens) and is_integer(max_tokens) and max_tokens > 0 do
     ratio = current_tokens / max_tokens
 
     emergency  = Application.get_env(:optimal_system_agent, :compaction_emergency, 0.95)

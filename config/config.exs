@@ -205,4 +205,7 @@ config :optimal_system_agent, budget_event_emitter: OptimalSystemAgent.BudgetEmi
 config :logger,
   level: :warning
 
+# OpenTelemetry configuration
+import_config "otel.exs"
+
 import_config "#{config_env()}.exs"

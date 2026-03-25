@@ -1,0 +1,545 @@
+defmodule OptimalSystemAgent.Healing.DiagnosisTest do
+  @moduledoc """
+  Unit tests for Diagnosis — verifies classification of errors into 11 failure modes.
+
+  Maps errors to Shannon/Ashby/Beer/Wiener + 7 derived combinations:
+  1. Shannon: Information loss
+  2. Ashby: Regulatory failure
+  3. Beer: Complexity overload
+  4. Wiener: Feedback instability
+  5. Deadlock: Circular wait condition
+  6. Cascade: Failure spreads downstream
+  7. Byzantine: Compromised/malicious component
+  8. Starvation: Resource exhaustion
+  9. Livelock: Agents conflict without progress
+  10. Timeout: Operation exceeds deadline
+  11. Inconsistent: State mismatch across systems
+  """
+  use ExUnit.Case, async: true
+
+  alias OptimalSystemAgent.Healing.Diagnosis
+
+  # -------- Shannon: Information Loss --------
+
+  describe "diagnose/2 — Shannon (information loss)" do
+    @tag :unit
+    test "detects missing key as information loss" do
+      error = {:error, "field 'x' not found"}
+      {mode, desc, cause} = Diagnosis.diagnose(error)
+      assert mode == :shannon
+      assert desc == "information loss"
+      assert String.contains?(cause, "not found") or String.contains?(cause, "missing")
+    end
+
+    @tag :unit
+    test "detects truncation as information loss" do
+      error = {:error, :truncated_message}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :shannon
+      assert desc == "information loss"
+    end
+
+    @tag :unit
+    test "detects incomplete data as information loss" do
+      error = %{error: "incomplete response"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :shannon
+      assert desc == "information loss"
+    end
+
+    @tag :unit
+    test "detects missing data as information loss" do
+      error = %{error: :missing_data}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :shannon
+      assert desc == "information loss"
+    end
+  end
+
+  # -------- Ashby: Regulatory Failure --------
+
+  describe "diagnose/2 — Ashby (regulatory failure)" do
+    @tag :unit
+    test "detects drift as regulatory failure" do
+      error = {:error, :drift_detected}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :ashby
+      assert desc == "regulatory failure"
+    end
+
+    @tag :unit
+    test "detects oscillation as regulatory failure" do
+      error = %{error: :oscillation}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :ashby
+      assert desc == "regulatory failure"
+    end
+
+    @tag :unit
+    test "detects wrong setpoint as regulatory failure" do
+      error = %{reason: :wrong_setpoint}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :ashby
+      assert desc == "regulatory failure"
+    end
+  end
+
+  # -------- Beer: Complexity Overload --------
+
+  describe "diagnose/2 — Beer (complexity overload)" do
+    @tag :unit
+    test "detects state explosion as complexity overload" do
+      error = {:error, :state_explosion}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :beer
+      assert desc == "complexity overload"
+    end
+
+    @tag :unit
+    test "detects too many variables as complexity overload" do
+      error = %{error: :too_many_vars}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :beer
+      assert desc == "complexity overload"
+    end
+
+    @tag :unit
+    test "detects state explosion in message as complexity overload" do
+      error = %{message: "state explosion detected in loop"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :beer
+      assert desc == "complexity overload"
+    end
+  end
+
+  # -------- Wiener: Feedback Instability --------
+
+  describe "diagnose/2 — Wiener (feedback instability)" do
+    @tag :unit
+    test "detects overcorrection as feedback instability" do
+      error = {:error, :overcorrection}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :wiener
+      assert desc == "feedback instability"
+    end
+
+    @tag :unit
+    test "detects hunting as feedback instability" do
+      error = %{error: :hunting}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :wiener
+      assert desc == "feedback instability"
+    end
+
+    @tag :unit
+    test "detects oscillatory behavior as feedback instability" do
+      error = %{message: "hunting detected in control loop"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :wiener
+      assert desc == "feedback instability"
+    end
+  end
+
+  # -------- Deadlock --------
+
+  describe "diagnose/2 — Deadlock (circular wait)" do
+    @tag :unit
+    test "detects circular wait as deadlock" do
+      error = {:error, :circular_wait}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :deadlock
+      assert desc == "circular wait condition"
+    end
+
+    @tag :unit
+    test "detects deadlock message as deadlock" do
+      error = %{error: "deadlock detected in agent coordination"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :deadlock
+      assert desc == "circular wait condition"
+    end
+  end
+
+  # -------- Cascade --------
+
+  describe "diagnose/2 — Cascade (failure spread)" do
+    @tag :unit
+    test "detects cascading failure as cascade" do
+      error = {:error, :cascading_failure}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :cascade
+      assert desc == "failure spreads to downstream components"
+    end
+
+    @tag :unit
+    test "detects cascade in message as cascade" do
+      error = %{message: "cascade detected: component B failed after A"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :cascade
+      assert desc == "failure spreads to downstream components"
+    end
+  end
+
+  # -------- Byzantine --------
+
+  describe "diagnose/2 — Byzantine (compromised component)" do
+    @tag :unit
+    test "detects malicious input as byzantine" do
+      error = {:error, :malicious_input}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :byzantine
+      assert desc == "compromised or malicious component"
+    end
+
+    @tag :unit
+    test "detects compromised component as byzantine" do
+      error = %{error: :compromised}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :byzantine
+      assert desc == "compromised or malicious component"
+    end
+
+    @tag :unit
+    test "detects byzantine in message as byzantine" do
+      error = %{message: "byzantine fault detected in consensus"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :byzantine
+      assert desc == "compromised or malicious component"
+    end
+  end
+
+  # -------- Starvation --------
+
+  describe "diagnose/2 — Starvation (resource exhaustion)" do
+    @tag :unit
+    test "detects starvation as starvation" do
+      error = {:error, :starvation}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :starvation
+      assert desc == "resource exhaustion or priority inversion"
+    end
+
+    @tag :unit
+    test "detects priority inversion as starvation" do
+      error = %{error: :priority_inversion}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :starvation
+      assert desc == "resource exhaustion or priority inversion"
+    end
+
+    @tag :unit
+    test "detects resource exhaustion in message as starvation" do
+      error = %{message: "resource exhaustion: no available threads"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :starvation
+      assert desc == "resource exhaustion or priority inversion"
+    end
+  end
+
+  # -------- Livelock --------
+
+  describe "diagnose/2 — Livelock (conflict without progress)" do
+    @tag :unit
+    test "detects livelock as livelock" do
+      error = {:error, :livelock}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :livelock
+      assert desc == "agents conflict without making progress"
+    end
+
+    @tag :unit
+    test "detects livelock in message as livelock" do
+      error = %{message: "livelock detected: agents continuously retry"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :livelock
+      assert desc == "agents conflict without making progress"
+    end
+  end
+
+  # -------- Timeout --------
+
+  describe "diagnose/2 — Timeout (exceeds deadline)" do
+    @tag :unit
+    test "detects timeout as timeout" do
+      error = {:error, :timeout}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :timeout
+      assert desc == "operation exceeds deadline"
+    end
+
+    @tag :unit
+    test "detects deadline exceeded as timeout" do
+      error = %{error: :deadline_exceeded}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :timeout
+      assert desc == "operation exceeds deadline"
+    end
+
+    @tag :unit
+    test "detects timeout in message as timeout" do
+      error = %{message: "operation timed out after 30s"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :timeout
+      assert desc == "operation exceeds deadline"
+    end
+  end
+
+  # -------- Inconsistent --------
+
+  describe "diagnose/2 — Inconsistent (state mismatch)" do
+    @tag :unit
+    test "detects state mismatch as inconsistent" do
+      error = {:error, :state_mismatch}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :inconsistent
+      assert desc == "state mismatch across systems"
+    end
+
+    @tag :unit
+    test "detects consistency violation as inconsistent" do
+      error = %{error: :consistency_violation}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :inconsistent
+      assert desc == "state mismatch across systems"
+    end
+
+    @tag :unit
+    test "detects state mismatch in message as inconsistent" do
+      error = %{message: "state mismatch between replica A and B"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :inconsistent
+      assert desc == "state mismatch across systems"
+    end
+  end
+
+  # -------- Unknown/Fallback --------
+
+  describe "diagnose/2 — Unknown errors" do
+    @tag :unit
+    test "returns unknown for unrecognized error atoms" do
+      error = {:error, :some_random_error}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :unknown
+      assert is_binary(desc) and is_binary(_cause)
+    end
+
+    @tag :unit
+    test "returns unknown for completely unrecognized messages" do
+      error = %{message: "something went sideways"}
+      {mode, desc, _cause} = Diagnosis.diagnose(error)
+      assert mode == :unknown
+      assert is_binary(desc) and is_binary(_cause)
+    end
+  end
+
+  # -------- Context usage --------
+
+  describe "diagnose/2 with context" do
+    @tag :unit
+    test "includes context in diagnosis when provided" do
+      error = {:error, :timeout}
+      context = %{component: "scheduler", attempt: 3}
+      {mode, _desc, cause} = Diagnosis.diagnose(error, context)
+      assert mode == :timeout
+      # Context may be included in the cause string
+      assert is_binary(cause)
+    end
+
+    @tag :unit
+    test "works without context (uses empty map by default)" do
+      error = {:error, :shannon}
+      result = Diagnosis.diagnose(error)
+      assert is_tuple(result)
+      assert tuple_size(result) == 3
+    end
+  end
+
+  # -------- Return type verification --------
+
+  describe "diagnose/2 — return structure" do
+    @tag :unit
+    test "always returns {mode, description, root_cause} tuple" do
+      error = {:error, :timeout}
+      result = Diagnosis.diagnose(error)
+      assert is_tuple(result)
+      assert tuple_size(result) == 3
+      {mode, desc, cause} = result
+      assert is_atom(mode)
+      assert is_binary(desc)
+      assert is_binary(cause)
+    end
+  end
+
+  # -------- Schema Contract: Diagnosis modes map to semconv values --------
+
+  describe "diagnose/2 — schema contract with OTel semconv" do
+    alias OpenTelemetry.SemConv.Incubating.HealingAttributes
+
+    @tag :unit
+    test "deadlock failure mode maps to semconv healing_failure_mode_values.deadlock" do
+      # When Diagnosis returns :deadlock, the OTEL span attribute value
+      # should match the schema-defined value
+      error = {:error, :circular_wait}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().deadlock
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "timeout failure mode maps to semconv healing_failure_mode_values.timeout" do
+      error = {:error, :timeout}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().timeout
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "livelock failure mode maps to semconv healing_failure_mode_values.livelock" do
+      error = {:error, :livelock}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      semconv_value = HealingAttributes.healing_failure_mode_values().livelock
+      assert to_string(mode) == to_string(semconv_value)
+    end
+
+    @tag :unit
+    test "healing_failure_mode attribute key is used for all span emissions" do
+      # This test documents that the OTEL attribute KEY used in spans
+      # must match the schema-defined attribute name
+      assert HealingAttributes.healing_failure_mode() == :"healing.failure_mode"
+    end
+
+    @tag :unit
+    test "healing_confidence attribute key is used for confidence scores in spans" do
+      assert HealingAttributes.healing_confidence() == :"healing.confidence"
+    end
+  end
+
+  # -------- Schema Contract: Chicago TDD semconv validation --------
+
+  describe "schema contract — semconv validation" do
+    alias OpenTelemetry.SemConv.Incubating.HealingAttributes
+    alias OpenTelemetry.SemConv.Incubating.SpanNames
+
+    # --- failure mode atom identity contracts ---
+
+    @tag :unit
+    test "deadlock failure_mode matches semconv schema" do
+      error = {:error, :circular_wait}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().deadlock
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "timeout failure_mode matches semconv schema" do
+      error = {:error, :timeout}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().timeout
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "race_condition semconv constant is the atom :race_condition" do
+      # Validates the semconv registry constant itself is schema-correct.
+      # Diagnosis does not expose :race_condition internally; this test
+      # enforces that any code emitting spans uses the typed constant.
+      expected = HealingAttributes.healing_failure_mode_values().race_condition
+      assert expected == :race_condition
+    end
+
+    @tag :unit
+    test "memory_leak semconv constant is the atom :memory_leak" do
+      # Same schema-enforcement contract for :memory_leak.
+      expected = HealingAttributes.healing_failure_mode_values().memory_leak
+      assert expected == :memory_leak
+    end
+
+    @tag :unit
+    test "livelock failure_mode matches semconv schema" do
+      error = {:error, :livelock}
+      {mode, _desc, _cause} = Diagnosis.diagnose(error)
+      expected = HealingAttributes.healing_failure_mode_values().livelock
+      assert mode == expected
+    end
+
+    @tag :unit
+    test "cascading_failure semconv constant is the atom :cascading_failure" do
+      # Diagnosis maps :cascading_failure input to :cascade internally;
+      # this test validates the semconv schema constant remains :cascading_failure.
+      expected = HealingAttributes.healing_failure_mode_values().cascading_failure
+      assert expected == :cascading_failure
+    end
+
+    @tag :unit
+    test "stagnation semconv constant is the atom :stagnation" do
+      expected = HealingAttributes.healing_failure_mode_values().stagnation
+      assert expected == :stagnation
+    end
+
+    # --- attribute key contracts ---
+
+    @tag :unit
+    test ~s(healing_failure_mode attribute key matches schema :"healing.failure_mode") do
+      assert HealingAttributes.healing_failure_mode() == :"healing.failure_mode"
+    end
+
+    @tag :unit
+    test ~s(healing_confidence attribute key matches schema :"healing.confidence") do
+      assert HealingAttributes.healing_confidence() == :"healing.confidence"
+    end
+
+    @tag :unit
+    test ~s(healing_agent_id attribute key matches schema :"healing.agent_id") do
+      assert HealingAttributes.healing_agent_id() == :"healing.agent_id"
+    end
+
+    @tag :unit
+    test ~s(healing_mttr_ms attribute key matches schema :"healing.mttr_ms") do
+      assert HealingAttributes.healing_mttr_ms() == :"healing.mttr_ms"
+    end
+
+    @tag :unit
+    test ~s(healing_recovery_action attribute key matches schema :"healing.recovery_action") do
+      assert HealingAttributes.healing_recovery_action() == :"healing.recovery_action"
+    end
+
+    @tag :unit
+    test ~s(healing_reflex_arc attribute key matches schema :"healing.reflex_arc") do
+      assert HealingAttributes.healing_reflex_arc() == :"healing.reflex_arc"
+    end
+
+    # --- span name contracts ---
+
+    @tag :unit
+    test "healing diagnosis span name matches semconv schema" do
+      assert SpanNames.healing_diagnosis() == "healing.diagnosis"
+    end
+
+    @tag :unit
+    test "healing reflex arc span name matches semconv schema" do
+      assert SpanNames.healing_reflex_arc() == "healing.reflex_arc"
+    end
+
+    # --- completeness: all semconv failure_mode values are present in schema map ---
+
+    @tag :unit
+    test "healing_failure_mode_values contains all 7 required schema keys" do
+      values = HealingAttributes.healing_failure_mode_values()
+      required_keys = [:deadlock, :timeout, :race_condition, :memory_leak, :cascading_failure, :stagnation, :livelock]
+      for key <- required_keys do
+        assert Map.has_key?(values, key), "semconv schema missing key: #{key}"
+      end
+    end
+
+    @tag :unit
+    test "all healing_failure_mode_values entries are atoms matching their key" do
+      # Schema contract: every value in the map is an atom equal to its key.
+      # This prevents silent string/atom type mismatches in span attribute emission.
+      values = HealingAttributes.healing_failure_mode_values()
+      for {key, value} <- values do
+        assert is_atom(value), "semconv value for #{key} must be an atom, got: #{inspect(value)}"
+        assert key == value, "semconv map key #{key} must equal value #{value}"
+      end
+    end
+  end
+end

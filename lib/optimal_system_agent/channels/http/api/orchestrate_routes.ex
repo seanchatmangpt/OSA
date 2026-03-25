@@ -35,7 +35,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.OrchestrateRoutes do
   end
 
   # Ensure a Loop GenServer exists for this session, start one if not.
-  defp ensure_loop(session_id, user_id \\ "anonymous", channel \\ :http) do
+  defp ensure_loop(session_id, user_id, channel) do
+    user_id = user_id || "anonymous"
+    channel = channel || :http
     case DynamicSupervisor.start_child(
            OptimalSystemAgent.SessionSupervisor,
            {Loop, session_id: session_id, user_id: user_id, channel: channel}
@@ -69,7 +71,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.OrchestrateRoutes do
       end
 
       # Ensure a Loop GenServer is running for this session
-      case ensure_loop(session_id, user_id) do
+      case ensure_loop(session_id, user_id, :http) do
         :ok ->
           # Register Bus handlers that bridge events to PubSub for SSE delivery.
           # The SSE stream (agent_routes.ex) listens on "osa:session:{id}" for {:osa_event, event}.
@@ -157,7 +159,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.OrchestrateRoutes do
         session_id = conn.body_params["session_id"] || "complex-#{System.unique_integer([:positive])}"
         user_id = conn.assigns[:user_id] || "anonymous"
 
-        case ensure_loop(session_id, user_id) do
+        case ensure_loop(session_id, user_id, :http) do
           :ok ->
             Task.Supervisor.async_nolink(OptimalSystemAgent.Events.TaskSupervisor, fn ->
               try do
@@ -231,7 +233,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.OrchestrateRoutes do
             # Launch in background
             Task.start(fn ->
               try do
-                case ensure_loop(session_id, user_id) do
+                case ensure_loop(session_id, user_id, :http) do
                   :ok ->
                     Loop.process_message(session_id, task)
 

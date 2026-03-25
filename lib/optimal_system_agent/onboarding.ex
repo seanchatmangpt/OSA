@@ -125,7 +125,7 @@ defmodule OptimalSystemAgent.Onboarding do
           %{id: "nemotron-3-super:cloud", name: "Nemotron 3 Super", ctx: 1_048_576, tools: true, recommended: true, note: "1M ctx, 120B MoE — best agentic"},
           %{id: "kimi-k2.5:cloud", name: "Kimi K2.5", ctx: 262_144, tools: true, note: "multimodal + vision + thinking"},
           %{id: "qwen3.5:cloud", name: "Qwen 3.5", ctx: 262_144, tools: true, note: "multimodal, vision + tools"},
-          %{id: "llama4:cloud", name: "Llama 4 Scout", ctx: 10_485_760, tools: true, note: "10M ctx, 109B MoE"},
+          %{id: "openai/gpt-oss-20b", name: "GPT-OSS 20B", ctx: 131_072, tools: true, note: "131K ctx, 20B params"},
           %{id: "glm-5:cloud", name: "GLM-5", ctx: 262_144, tools: true, note: "744B MoE — reasoning + agentic"},
           %{id: "deepseek-r1:cloud", name: "DeepSeek R1", ctx: 163_840, tools: false, note: "reasoning only, no tools"}
         ]
@@ -157,7 +157,7 @@ defmodule OptimalSystemAgent.Onboarding do
           %{id: "anthropic/claude-opus-4-6", name: "Claude Opus 4.6", ctx: 1_000_000, tools: true, note: "1M ctx — strongest reasoning"},
           %{id: "openai/gpt-5.4-pro", name: "GPT-5.4 Pro", ctx: 1_050_000, tools: true, note: "1M ctx — latest frontier"},
           %{id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", ctx: 1_000_000, tools: true, note: "1M context"},
-          %{id: "meta-llama/llama-4-maverick", name: "Llama 4 Maverick", ctx: 1_000_000, tools: true, note: "400B MoE, 1M ctx"},
+          %{id: "openai/gpt-oss-20b", name: "GPT-OSS 20B", ctx: 131_072, tools: true, note: "131K ctx, 20B params"},
           %{id: "deepseek/deepseek-r1", name: "DeepSeek R1", ctx: 163_840, tools: false, note: "reasoning only"}
         ]
       },
@@ -800,7 +800,7 @@ defmodule OptimalSystemAgent.Onboarding do
         headers = [{"content-type", "application/json"}]
 
         body = %{
-          model: model || "llama3.2",
+          model: model || "openai/gpt-oss-20b",
           messages: [%{role: "user", content: "hi"}],
           stream: false,
           options: %{num_predict: 5}

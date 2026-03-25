@@ -64,6 +64,8 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
   end
 
   defp do_chat(base_url, api_key, model, messages, opts) do
+    start_time = System.monotonic_time(:millisecond)
+
     formatted = format_messages(messages)
     {system_msgs, chat_msgs} = Enum.split_with(formatted, &(&1["role"] == "system"))
     system_text = Enum.map_join(system_msgs, "\n\n", & &1["content"])
@@ -90,33 +92,83 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
              receive_timeout: timeout
            ) do
         {:ok, %{status: 200, body: resp}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
           content = extract_content(resp)
           tool_calls = extract_tool_calls(resp)
           usage = extract_usage(resp)
           thinking_blocks = extract_thinking(resp)
+
+          # Emit telemetry for successful chat completion
+          :telemetry.execute(
+            [:osa, :providers, :chat, :complete],
+            %{duration: duration_ms},
+            %{provider: :anthropic, model: model}
+          )
+
+          # Emit telemetry for tool calls if present
+          if tool_calls != [] do
+            :telemetry.execute(
+              [:osa, :providers, :tool_call, :complete],
+              %{count: length(tool_calls)},
+              %{provider: :anthropic, model: model}
+            )
+          end
 
           result = %{content: content, tool_calls: tool_calls, usage: usage}
           result = if thinking_blocks != [], do: Map.put(result, :thinking_blocks, thinking_blocks), else: result
           {:ok, result}
 
         {:ok, %{status: 429, headers: headers, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           retry_after = parse_retry_after(headers)
           error_msg = extract_error(resp_body)
           Logger.warning("Anthropic rate limited. retry-after: #{retry_after}s — #{error_msg}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :anthropic, model: model, reason: :rate_limited}
+          )
+
           {:error, {:rate_limited, retry_after}}
 
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           error_msg = extract_error(resp_body)
           Logger.warning("Anthropic returned #{status}: #{error_msg}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :anthropic, model: model, reason: :http_error, status: status}
+          )
+
           {:error, "Anthropic returned #{status}: #{error_msg}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.error("Anthropic connection failed: #{inspect(reason)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :anthropic, model: model, reason: :connection_failed}
+          )
+
           {:error, "Anthropic connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         Logger.error("Anthropic unexpected error: #{Exception.message(e)}")
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :anthropic, model: model, reason: :exception}
+        )
+
         {:error, "Anthropic unexpected error: #{Exception.message(e)}"}
     end
   end

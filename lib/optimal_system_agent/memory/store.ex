@@ -68,6 +68,193 @@ defmodule OptimalSystemAgent.Memory.Store do
   end
 
   # ---------------------------------------------------------------------------
+  # Public API wrapper functions for direct ETS operations
+  # (no GenServer startup required)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Initialize an ETS table with the given name.
+  Returns {:ok, table_name} or {:ok, table_name} if already exists.
+  """
+  def init_table(table_name, _db_path) when is_atom(table_name) do
+    try do
+      :ets.new(table_name, [:named_table, :set, :public])
+      {:ok, table_name}
+    rescue
+      ArgumentError ->
+        # Table already exists
+        case whereis_table(table_name) do
+          :undefined -> {:error, :init_failed}
+          _ -> {:ok, table_name}
+        end
+    end
+  end
+
+  @doc """
+  Insert an entry into an ETS table.
+  Returns {:ok, id} on success, {:error, reason} on failure.
+  """
+  def insert(table_name, id, entry) when is_atom(table_name) and is_map(entry) do
+    table_name = table_name
+    id = id || generate_id(entry[:content] || entry["content"] || "")
+
+    # Prevent duplicate IDs
+    case whereis_table(table_name) do
+      :undefined ->
+        {:error, :table_not_found}
+
+      _ ->
+        case :ets.lookup(table_name, id) do
+          [{^id, _}] ->
+            {:error, :exists}
+
+          [] ->
+            entry_with_timestamps = add_timestamps_to_entry(entry, id)
+
+            try do
+              :ets.insert(table_name, {id, entry_with_timestamps})
+              {:ok, id}
+            rescue
+              ArgumentError -> {:error, :insert_failed}
+            end
+        end
+    end
+  end
+
+  @doc """
+  Retrieve an entry by ID from an ETS table.
+  Returns {:ok, entry} or {:error, :not_found}.
+  """
+  def get(table_name, id) when is_atom(table_name) do
+    if id == nil do
+      {:error, :not_found}
+    else
+      try do
+        case :ets.lookup(table_name, id) do
+          [{^id, entry}] -> {:ok, entry}
+          [] -> {:error, :not_found}
+        end
+      rescue
+        ArgumentError -> {:error, :not_found}
+      end
+    end
+  end
+
+  @doc """
+  Update an entry by merging new values with existing data.
+  Returns {:ok, updated_entry} or {:error, :not_found}.
+  """
+  def update(table_name, id, updates) when is_atom(table_name) and is_map(updates) do
+    try do
+      case :ets.lookup(table_name, id) do
+        [{^id, existing}] ->
+          merged = Map.merge(existing, updates)
+          merged_with_timestamp = Map.put(merged, :updated_at, DateTime.utc_now() |> DateTime.to_iso8601())
+          :ets.insert(table_name, {id, merged_with_timestamp})
+          {:ok, merged_with_timestamp}
+
+        [] ->
+          {:error, :not_found}
+      end
+    rescue
+      ArgumentError -> {:error, :not_found}
+    end
+  end
+
+  @doc """
+  Delete an entry by ID from an ETS table.
+  Returns :ok (always succeeds, even for non-existent IDs).
+  """
+  def delete(table_name, id) when is_atom(table_name) do
+    try do
+      :ets.delete(table_name, id)
+      :ok
+    rescue
+      ArgumentError -> :ok
+    end
+  end
+
+  @doc """
+  List all entries in an ETS table.
+  Returns a list of entries (values only, without keys).
+  """
+  def list(table_name) when is_atom(table_name) do
+    try do
+      :ets.tab2list(table_name)
+      |> Enum.map(fn {_id, entry} -> entry end)
+    rescue
+      ArgumentError -> []
+    end
+  end
+
+  @doc """
+  Search entries by keyword with similarity threshold.
+  Returns list of entries that match query keywords above threshold.
+  """
+  def search(table_name, query, threshold) when is_atom(table_name) and is_number(threshold) do
+    try do
+      query_keywords = extract_keywords(query)
+
+      :ets.tab2list(table_name)
+      |> Enum.map(fn {_id, entry} ->
+        entry_keywords = parse_keywords(entry[:keywords] || entry["keywords"] || "")
+        score = keyword_overlap_score(entry_keywords, query_keywords)
+        {score, entry}
+      end)
+      |> Enum.filter(fn {score, _} -> score >= threshold end)
+      |> Enum.sort_by(&elem(&1, 0), :desc)
+      |> Enum.map(&elem(&1, 1))
+    rescue
+      ArgumentError -> []
+    end
+  end
+
+  @doc """
+  Count the number of entries in an ETS table.
+  """
+  def count(table_name) when is_atom(table_name) do
+    try do
+      :ets.info(table_name, :size) || 0
+    rescue
+      ArgumentError -> 0
+    end
+  end
+
+  @doc """
+  Clear all entries from an ETS table.
+  Returns :ok.
+  """
+  def clear(table_name) when is_atom(table_name) do
+    try do
+      :ets.delete_all_objects(table_name)
+      :ok
+    rescue
+      ArgumentError -> :ok
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Helper functions for public API
+  # ---------------------------------------------------------------------------
+
+  defp whereis_table(table_name) do
+    try do
+      :ets.whereis(table_name)
+    rescue
+      ArgumentError -> :undefined
+    end
+  end
+
+  defp add_timestamps_to_entry(entry, _id) do
+    now = DateTime.utc_now() |> DateTime.to_iso8601()
+
+    entry
+    |> Map.put_new(:created_at, now)
+    |> Map.put_new(:accessed_at, now)
+    |> Map.put_new(:updated_at, now)
+  end
+
+  # ---------------------------------------------------------------------------
   # GenServer callbacks
   # ---------------------------------------------------------------------------
 

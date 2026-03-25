@@ -38,11 +38,20 @@ defmodule OptimalSystemAgent.Store.DecisionEdge do
   def changeset(edge \\ %__MODULE__{}, attrs) do
     edge
     |> cast(attrs, @required_fields ++ @optional_fields)
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :weight, 1.0))
     |> validate_required(@required_fields)
     |> validate_inclusion(:type, @valid_types)
     |> validate_number(:weight,
       greater_than_or_equal_to: 0.0,
       less_than_or_equal_to: 1.0
     )
+  end
+
+  defp put_default_if_not_in_attrs(changeset, attrs, field, default) do
+    if Map.has_key?(attrs, field) or Map.has_key?(attrs, to_string(field)) do
+      changeset
+    else
+      Ecto.Changeset.force_change(changeset, field, default)
+    end
   end
 end

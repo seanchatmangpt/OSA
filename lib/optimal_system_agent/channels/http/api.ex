@@ -39,6 +39,10 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /dashboard   → DashboardRoutes   GET /
     /classify    → inline            POST / (signal classification)
     /config      → ConfigRoutes      GET /revisions/:type/:id, GET /revisions/:type/:id/:n, POST /revisions/:type/:id/rollback, GET /revisions/:type/:id/diff
+    /verify      → VerificationRoutes POST /workflow, GET /certificate/:id, POST /batch
+    /marketplace → MarketplaceRoutes  POST /publish, GET /search, GET /skills, GET /skills/:id, POST /skills/:id/acquire, POST /skills/:id/rate, GET /stats, GET /revenue/:publisher_id
+    /audit-trail → AuditRoutes       GET /:session_id, GET /:session_id/verify, GET /:session_id/merkle
+    /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -151,6 +155,57 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   # ── Config revisions ─────────────────────────────────────────────────
   forward "/config", to: API.ConfigRoutes
 
+  # ── Formal Correctness as a Service (Innovation 8) ───────────────────
+  forward "/verify", to: API.VerificationRoutes
+
+  # ── Agent Commerce Marketplace (Innovation 9) ───────────────────────
+  forward "/marketplace", to: API.MarketplaceRoutes
+
+  # ── Audit trail (Innovation 3 — hash-chain compliance) ───────────────
+  forward "/audit-trail", to: API.AuditRoutes
+
+  # ── Process intelligence (Innovations 2, 4, 7) ───────────────────────
+  forward "/process", to: API.ProcessRoutes
+
+  # ── A2A (Agent-to-Agent) protocol ────────────────────────────────────
+  forward "/a2a", to: API.A2ARoutes
+
+  # ── Health check (no auth required — forwarded before authenticate) ─────
+  get "/health/fortune5" do
+    # Fortune 5 health check - reports status of all layers
+    sensors_status = check_sensors_health()
+    rdf_status = check_rdf_health()
+    sparql_status = check_sparql_health()
+
+    overall_status = case {sensors_status, rdf_status, sparql_status} do
+      {:healthy, :healthy, :healthy} -> :healthy
+      _ -> :degraded
+    end
+
+    body = Jason.encode!(%{
+      status: overall_status,
+      timestamp: System.system_time(:millisecond),
+      components: %{
+        sensors: sensors_status,
+        rdf: rdf_status,
+        sparql: sparql_status
+      },
+      fortune5_layers: %{
+        layer1_signal_collection: sensors_status,
+        layer2_signal_synchronization: check_pre_commit_health(),
+        layer3_data_recording: rdf_status,
+        layer4_correlation: sparql_status,
+        layer5_reconstruction: :not_implemented,
+        layer6_verification: :not_implemented,
+        layer7_event_horizon: :not_implemented
+      }
+    })
+
+    conn
+    |> Plug.Conn.put_resp_content_type("application/json")
+    |> Plug.Conn.send_resp(200, body)
+  end
+
   # ── Signal classification (inline — single endpoint) ─────────────────
   post "/classify" do
     with %{"message" => message} when is_binary(message) and message != "" <- conn.body_params do
@@ -252,6 +307,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   defp authenticate(%{request_path: "/api/v1/auth/" <> _} = conn, _opts), do: conn
   defp authenticate(%{request_path: "/api/v1/channels/" <> _} = conn, _opts), do: conn
   defp authenticate(%{request_path: "/api/v1/platform/auth/" <> _} = conn, _opts), do: conn
+  defp authenticate(%{request_path: "/api/v1/health/" <> _} = conn, _opts), do: conn
 
   defp authenticate(conn, _opts) do
     case get_req_header(conn, "authorization") do
@@ -294,5 +350,90 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
           |> assign(:claims, %{})
         end
     end
+  end
+
+  # ── Fortune 5 Health Check Helpers ─────────────────────────────────────
+
+  def check_sensors_health do
+    # Check if SensorRegistry is accessible and has recent scans
+    case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+      nil -> :unavailable
+      _pid ->
+        # Check if we can get fingerprint (has scan data)
+        case OptimalSystemAgent.Sensors.SensorRegistry.current_fingerprint() do
+          {:ok, _fingerprint} -> :healthy
+          {:error, :no_scan_data} -> :degraded
+          _ -> :unhealthy
+        end
+    end
+  rescue
+    _ -> :unhealthy
+  end
+
+  def check_rdf_health do
+    # Check if workspace.ttl exists and has data
+    workspace_ttl_path = Path.join([
+      Application.app_dir(:optimal_system_agent),
+      "priv",
+      "sensors",
+      "workspace.ttl"
+    ])
+
+    case File.exists?(workspace_ttl_path) do
+      false -> :unavailable
+      true ->
+        # Check if file has content (at least 100 bytes)
+        case File.stat(workspace_ttl_path) do
+          {:ok, %{size: size}} when size > 100 -> :healthy
+          _ -> :degraded
+        end
+    end
+  rescue
+    _ -> :unhealthy
+  end
+
+  def check_sparql_health do
+    # Check if SPARQL correlator (ggen) exists and has queries
+    ggen_sparql_dir = Path.join(["ggen", "sparql"])
+
+    case File.dir?(ggen_sparql_dir) do
+      false -> :unavailable
+      true ->
+        # Check for CONSTRUCT queries
+        sparql_files = Path.wildcard(Path.join([ggen_sparql_dir, "*.rq"]))
+
+        if length(sparql_files) > 0 do
+          :healthy
+        else
+          :degraded
+        end
+    end
+  rescue
+    _ -> :unhealthy
+  end
+
+  def check_pre_commit_health do
+    # Check if pre-commit hook exists and is executable
+    {git_dir, 0} = System.cmd("git", ["rev-parse", "--git-dir"])
+
+    hook_path = Path.join([String.trim(git_dir), "hooks", "pre-commit"])
+
+    case File.exists?(hook_path) do
+      false -> :unavailable
+      true ->
+        # Check if hook is executable
+        case File.stat(hook_path) do
+          {:ok, %{mode: mode}} ->
+            # Check execute bit (owner, group, or other)
+            if Bitwise.band(mode, 0o111) > 0 do
+              :healthy
+            else
+              :degraded
+            end
+          _ -> :unhealthy
+        end
+    end
+  rescue
+    _ -> :unhealthy
   end
 end

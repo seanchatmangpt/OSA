@@ -138,7 +138,7 @@ defmodule OptimalSystemAgent.Providers.OllamaTest do
   # ---------------------------------------------------------------------------
 
   describe "process_ndjson_line/3" do
-    defp make_acc, do: %{buffer: "", content: "", tool_calls: []}
+    defp make_acc, do: %{buffer: "", content: "", tool_calls: [], usage: %{}}
 
     test "emits :text_delta for content field and accumulates" do
       tokens = []
@@ -248,12 +248,12 @@ defmodule OptimalSystemAgent.Providers.OllamaTest do
       refute_received {:cb, _}
     end
 
-    test "ignores done chunk without crashing" do
+    test "captures usage stats from done chunk" do
       cb = fn event -> send(self(), {:cb, event}) end
       acc = make_acc()
 
-      new_acc = Ollama.process_ndjson_line(~s|{"done":true,"done_reason":"stop"}|, cb, acc)
-      assert new_acc == acc
+      new_acc = Ollama.process_ndjson_line(~s|{"done":true,"prompt_eval_count":10,"eval_count":20}|, cb, acc)
+      assert new_acc.usage == %{input_tokens: 10, output_tokens: 20, total_tokens: 30}
       refute_received {:cb, _}
     end
   end

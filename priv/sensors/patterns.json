@@ -1,0 +1,4457 @@
+{
+  "timestamp": 1774388263238,
+  "type": "inform",
+  "mode": "data",
+  "format": "json",
+  "patterns": [
+    {
+      "count": 4,
+      "file": "miosa/shims.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 9,
+      "file": "miosa/shims.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 4,
+      "file": "miosa/shims.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "miosa/shims.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "mix/tasks/osa.sandbox.setup.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 3,
+      "file": "mix/tasks/osa.sandbox.setup.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "mix/tasks/osa.sandbox.setup.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "mix/tasks/osa.setup.wizard.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "mix/tasks/osa.setup.wizard.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/a2a/config_validator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/a2a/config_validator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/a2a/task_stream.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/a2a/task_stream.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/a2a/task_stream.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/budget.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/budget.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/agent/budget.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/budget.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/compactor.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/compactor.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/agent/compactor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 25,
+      "file": "optimal_system_agent/agent/compactor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/agent/context.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 22,
+      "file": "optimal_system_agent/agent/context.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/agent/debate.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/debate.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/debate.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/hooks.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/agent/hooks.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/hooks/audit_trail.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/agent/hooks/audit_trail.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/hooks/pre_commit.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/agent/loop.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/loop.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/loop.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop/checkpoint.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/loop/checkpoint.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop/doom_loop.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/loop/doom_loop.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/loop/genre_router.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/loop/genre_router.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop/guardrails.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 25,
+      "file": "optimal_system_agent/agent/loop/guardrails.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/loop/llm_client.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/loop/llm_client.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/loop/message_handler.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop/message_handler.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/agent/loop/react_loop.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/loop/react_loop.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/loop/survey.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/loop/telemetry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/agent/loop/tool_executor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/loop/tool_executor.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/loop/tool_executor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/loop/tool_filter.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/memory/episodic.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 24,
+      "file": "optimal_system_agent/agent/memory/episodic.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/memory/sqlite_bridge.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/agent/memory/sqlite_bridge.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/orchestrator/goal_dispatch.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 20,
+      "file": "optimal_system_agent/agent/orchestrator/goal_dispatch.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/progress.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/progress.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/agent/progress.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/agent/progress.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/agent/scheduler.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/agent/scheduler.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/agent/scheduler.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/scheduler.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/scheduler/cron_engine.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/scheduler/cron_presets.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/scheduler/job_executor.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/agent/scheduler/job_executor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/scheduler/job_executor.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/scheduler/job_executor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/agent/scheduler/persistence.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/agent/scheduler/persistence.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/scheduler/sqlite_store.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/agent/scheduler/sqlite_store.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/scratchpad.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/task_queue.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/task_queue.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/task_queue.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 21,
+      "file": "optimal_system_agent/agent/task_queue.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/agent/task_tracker.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/agent/task_tracker.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/agent/task_tracker.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/task_tracker.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 25,
+      "file": "optimal_system_agent/agent/tasks.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 26,
+      "file": "optimal_system_agent/agent/tasks.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/agent/tasks.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/tasks/persistence.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/tasks/persistence.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/tasks/queue.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 22,
+      "file": "optimal_system_agent/agent/tasks/queue.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agent/tasks/tracker.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/agent/tasks/tracker.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/agent/tasks/workflow.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 30,
+      "file": "optimal_system_agent/agent/tasks/workflow.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/agent/tier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/agent/tier.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/agent/workflow.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/agent/workflow.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/agent/workflow.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 32,
+      "file": "optimal_system_agent/agent/workflow.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/agents/registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/agents/registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/application.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/application.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/budget/budget.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/budget/budget.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/budget/budget.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/budget/budget.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/budget/treasury.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/budget/treasury.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/budget/treasury.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/behaviour.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/behaviour.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/cli.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/cli.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/cli.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/cli/computer_use_dispatch.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/cli/computer_use_dispatch.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/cli/events.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/cli/events.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/cli/line_editor.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 19,
+      "file": "optimal_system_agent/channels/cli/line_editor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/cli/line_editor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/cli/markdown.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/cli/plan_review.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/cli/plan_review.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/cli/renderer.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/cli/renderer.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/cli/session.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/cli/session.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/cli/session.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 19,
+      "file": "optimal_system_agent/channels/cli/session.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/cli/spinner.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/cli/spinner.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/discord.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/channels/http.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 70,
+      "file": "optimal_system_agent/channels/http.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/channels/http/api.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 35,
+      "file": "optimal_system_agent/channels/http/api.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/channels/http/api/a2a_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 30,
+      "file": "optimal_system_agent/channels/http/api/a2a_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/http/api/agent_management_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/http/api/agent_management_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/agent_routes.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/http/api/agent_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/channels/http/api/agent_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/agent_state_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/channels/http/api/agent_state_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/http/api/approval_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/channels/http/api/approval_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/audit_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/http/api/audit_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/auth_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/http/api/auth_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/channels/http/api/canopy_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/channels/http/api/canopy_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/channel_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/channel_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/channels/http/api/cost_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/cost_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/channels/http/api/dashboard_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/data_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 42,
+      "file": "optimal_system_agent/channels/http/api/data_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/http/api/debate_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/channels/http/api/debate_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/http/api/issue_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/http/api/issue_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/http/api/marketplace_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/channels/http/api/marketplace_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/orchestrate_routes.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/channels/http/api/orchestrate_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 33,
+      "file": "optimal_system_agent/channels/http/api/orchestrate_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 33,
+      "file": "optimal_system_agent/channels/http/api/process_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/channels/http/api/process_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/channels/http/api/project_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/channels/http/api/project_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/http/api/provider_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/provider_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/channels/http/api/scheduler_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 21,
+      "file": "optimal_system_agent/channels/http/api/scheduler_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/session_routes.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/session_routes.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/session_routes.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/channels/http/api/session_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 60,
+      "file": "optimal_system_agent/channels/http/api/session_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/settings_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/settings_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/http/api/shared.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/channels/http/api/shared.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/api/tool_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/channels/http/api/tool_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 21,
+      "file": "optimal_system_agent/channels/http/api/verification_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 70,
+      "file": "optimal_system_agent/channels/http/api/verification_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/http/api/webhook_verify.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/http/api/webhook_verify.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/http/api/workspace_routes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/http/api/workspace_routes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/http/auth.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/channels/http/auth.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/channels/http/integrity.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/http/integrity.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/http/rate_limiter.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/http/rate_limiter.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/channels/manager.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/channels/manager.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/manager.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/channels/noise_filter.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/noise_filter.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/session.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/channels/session.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/signal.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/signal.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/channels/signal.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/channels/slack.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/channels/telegram.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/cli.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/cli.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/cli/doctor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/cli/doctor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/cli/prompt.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/cli/prompt.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/cli/prompt.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/commerce/marketplace.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/commerce/marketplace.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/commerce/marketplace.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 57,
+      "file": "optimal_system_agent/commerce/marketplace.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/consensus/hot_stuff.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/consensus/hot_stuff.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/consensus/proposal.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/context_mesh/archiver.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/context_mesh/archiver.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/context_mesh/archiver.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/context_mesh/archiver.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/context_mesh/keeper.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/context_mesh/keeper.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/context_mesh/keeper.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/context_mesh/keeper.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/context_mesh/registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/context_mesh/registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/context_mesh/staleness.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/context_mesh/staleness.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/context_mesh/supervisor.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/context_mesh/supervisor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/context_mesh/supervisor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/conversations/debate.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/conversations/debate.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/conversations/persona.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/conversations/server.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/conversations/server.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/conversations/server.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/conversations/server.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/conversations/strategies/facilitator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/conversations/strategies/facilitator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 19,
+      "file": "optimal_system_agent/conversations/strategies/weighted.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/conversations/tools/spawn_conversation.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/conversations/tools/spawn_conversation.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/conversations/weaver.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/conversations/weaver.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/decisions/cascade.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/decisions/cascade.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/decisions/graph.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 20,
+      "file": "optimal_system_agent/decisions/graph.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/decisions/merge.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/decisions/merge.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/decisions/narrative.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/decisions/narrative.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/decisions/pivot.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 27,
+      "file": "optimal_system_agent/decisions/pivot.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/decisions/pulse.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/decisions/pulse.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/event_stream.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/event_stream.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/event_stream.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/events/bus.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/events/bus.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/events/bus.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/events/bus.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/events/bus.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/events/classifier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/events/classifier.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/events/dlq.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/events/dlq.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/events/dlq.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/events/dlq.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/events/event.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/events/failure_modes.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/events/failure_modes.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/events/stream.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/events/stream.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/events/stream.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/events/stream.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/file_locking/intent_broadcaster.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/file_locking/region_lock.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/file_locking/region_lock.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/file_locking/region_lock.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/file_locking/region_lock.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/healing/ephemeral_agent.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/healing/ephemeral_agent.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/healing/error_classifier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/healing/error_classifier.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/healing/orchestrator.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/healing/orchestrator.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/healing/orchestrator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/healing/orchestrator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/healing/prompts.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/healing/prompts.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/healing/reflex_arcs.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/healing/reflex_arcs.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/healing/reflex_arcs.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/healing/reflex_arcs.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/healing/session.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/machines.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/machines.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/machines.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/machines.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/mcp/client.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/mcp/client.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/mcp/client.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/mcp/client.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/mcp/client.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/mcp/config_validator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/mcp/config_validator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/mcp/server.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/mcp/server.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/mcp/server.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 20,
+      "file": "optimal_system_agent/mcp/server.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/mcp/server.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/memory.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/memory/consolidator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 50,
+      "file": "optimal_system_agent/memory/consolidator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/memory/learning.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/memory/learning.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/memory/learning.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/memory/learning.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/memory/observation.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/memory/scoring.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/memory/scoring.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/memory/skill_generator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/memory/skill_generator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/memory/store.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/memory/store.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 23,
+      "file": "optimal_system_agent/memory/store.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 74,
+      "file": "optimal_system_agent/memory/store.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/memory/synthesis.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 16,
+      "file": "optimal_system_agent/memory/synthesis.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/memory/vigil.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 23,
+      "file": "optimal_system_agent/onboarding.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 27,
+      "file": "optimal_system_agent/onboarding.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/orchestrator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/os/manifest.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 30,
+      "file": "optimal_system_agent/os/manifest.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/os/registry.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/os/registry.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/os/registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/os/registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/os/scanner.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/os/scanner.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/peer/discovery.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/peer/discovery.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/peer/negotiation.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/peer/protocol.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/peer/protocol.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/peer/review.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/peer/review.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/process/fingerprint.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/process/fingerprint.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/process/fingerprint.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 43,
+      "file": "optimal_system_agent/process/fingerprint.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/process/org_evolution.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/process/org_evolution.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/process/org_evolution.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 135,
+      "file": "optimal_system_agent/process/org_evolution.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/process/process_mining.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 43,
+      "file": "optimal_system_agent/process/process_mining.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/prompt_loader.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/prompt_loader.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/protocol/cloud_event.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/protocol/cloud_event.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/providers/anthropic.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/providers/anthropic.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/providers/anthropic.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/providers/cohere.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/providers/cohere.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/providers/google.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/providers/google.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/providers/health_checker.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/providers/health_checker.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/providers/health_checker.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/providers/ollama.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/providers/ollama.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/providers/ollama.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 35,
+      "file": "optimal_system_agent/providers/openai_compat.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 40,
+      "file": "optimal_system_agent/providers/openai_compat.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/providers/openai_compat_provider.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/providers/openai_compat_provider.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/providers/registry.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/providers/registry.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 20,
+      "file": "optimal_system_agent/providers/registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/providers/registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/providers/replicate.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/providers/replicate.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/providers/tool_call_parsers.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 32,
+      "file": "optimal_system_agent/providers/tool_call_parsers.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/sandbox/docker.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/sandbox/e2b.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/sandbox/host.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/sandbox/router.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/sandbox/router.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/sdk.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/sdk.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/sensors/rdf_generator.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/sensors/rdf_generator.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 27,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 43,
+      "file": "optimal_system_agent/sensors/sensor_registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/sensors/spr_migration.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/signal/classifier.ex",
+      "pattern": "multiple_instance",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.Supervisor.start_child"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/signal/classifier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/signal/classifier.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/signal/message_classifier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/signal/persistence.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 45,
+      "file": "optimal_system_agent/signal/persistence.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/signal/signal.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/soul.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 18,
+      "file": "optimal_system_agent/soul.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/speculative/assumption.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/speculative/assumption.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/speculative/executor.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/speculative/executor.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/speculative/executor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/speculative/executor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/speculative/tools/start_speculative.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/speculative/work_product.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/store/decision_edge.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/store/decision_node.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/store/memory_entry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/store/message.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/store/pattern.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/store/repo.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/store/signal.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/store/signal.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/store/task.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/supervisors/agent_services.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/supervisors/infrastructure.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/supervisors/sessions.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/swarm/patterns.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 21,
+      "file": "optimal_system_agent/swarm/patterns.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 24,
+      "file": "optimal_system_agent/swarm/roberts_rules.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/system/updater.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/system/updater.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/system/updater.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/system/updater.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/team.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/team.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/teams/agent_state.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/teams/agent_state.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/teams/cost_tracker.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/teams/cost_tracker.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/teams/cost_tracker.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/teams/manager.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/teams/manager.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/teams/manager.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/teams/nervous_system.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/teams/nervous_system.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/teams/nervous_system.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/teams/nervous_system.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/teams/nervous_system.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/teams/supervisor.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/teams/supervisor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/teams/supervisor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/teams/table_registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/a2a_call.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/ask_user.ex",
+      "pattern": "deferred_choice",
+      "yawl_category": "control_flow",
+      "evidence": "receive/do"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/ask_user.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/businessos_api.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/businessos_api.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/tools/builtins/code_symbols.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 19,
+      "file": "optimal_system_agent/tools/builtins/code_symbols.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/tools/builtins/computer_use.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/computer_use.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/computer_use/accessibility.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/computer_use/accessibility.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapter.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/docker.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/macos.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/macos.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/platform_vm.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/tools/builtins/computer_use/adapters/remote_ssh.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/tools/builtins/computer_use/executor.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/tools/builtins/computer_use/executor.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/computer_use/keyframe.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/tools/builtins/computer_use/keyframe.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/computer_use/planner.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/computer_use/server.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/computer_use/server.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/computer_use/server.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/computer_use/shared.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/create_agent.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/create_skill.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/create_skill.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/cross_team_query.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/cross_team_query.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/delegate.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/dir_list.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/dir_list.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/tools/builtins/download.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/download.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/file_edit.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/tools/builtins/file_edit.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/file_glob.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/file_glob.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/tools/builtins/file_grep.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 12,
+      "file": "optimal_system_agent/tools/builtins/file_grep.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/file_read.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/tools/builtins/file_read.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/file_write.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/file_write.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/tools/builtins/git.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/git.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/help.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/help.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/list_agents.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/list_agents.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/list_skills.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/tools/builtins/list_skills.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/memory_recall.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/memory_recall.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/memory_save.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/memory_save.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/multi_file_edit.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/multi_file_edit.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/builtins/peer_claim_region.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/peer_negotiate_task.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/peer_negotiate_task.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/peer_review.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/session_search.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/session_search.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/shell_execute.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/builtins/shell_execute.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/tools/builtins/shell_execute.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/tools/builtins/task_write.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/task_write.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/builtins/team_tasks.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/builtins/web_fetch.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 22,
+      "file": "optimal_system_agent/tools/builtins/web_fetch.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/builtins/web_search.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 17,
+      "file": "optimal_system_agent/tools/builtins/web_search.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/cache.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/tools/cache.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/cache.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/instruction.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/middleware.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/pipeline.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 7,
+      "file": "optimal_system_agent/tools/pipeline.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/pipeline.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/tools/registry.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/tools/registry.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/tools/registry.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 10,
+      "file": "optimal_system_agent/tools/registry.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/tools/registry/search.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 13,
+      "file": "optimal_system_agent/tools/registry/search.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 11,
+      "file": "optimal_system_agent/tools/registry/skill_loader.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/tools/registry/skill_loader.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/utils.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 15,
+      "file": "optimal_system_agent/utils.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/verification/checkpoint.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/verification/checkpoint.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/verification/confidence.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/verification/confidence.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/verification/loop.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/verification/loop.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/verification/loop.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/verification/loop.ex",
+      "pattern": "parallel_split",
+      "yawl_category": "multiple_instance",
+      "evidence": "Task.async"
+    },
+    {
+      "count": 8,
+      "file": "optimal_system_agent/verification/loop.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/verification/structural_analyzer.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 65,
+      "file": "optimal_system_agent/verification/structural_analyzer.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/verification/tools/verify_loop.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/verification/tools/verify_loop.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/verification/tools/verify_loop.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/verification/upstream_verifier.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 2,
+      "file": "optimal_system_agent/verification/upstream_verifier.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/workflows/definitions/autonomous_pi.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/workflows/definitions/autonomous_pi.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/workflows/temporal_adapter.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 3,
+      "file": "optimal_system_agent/workflows/temporal_adapter.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/workspace/session.ex",
+      "pattern": "interleaved_routing",
+      "yawl_category": "advanced_branching",
+      "evidence": "DynamicSupervisor"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/workspace/session.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/workspace/session.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/workspace/store.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 4,
+      "file": "optimal_system_agent/workspace/store.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 6,
+      "file": "optimal_system_agent/workspace/task_journal.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 9,
+      "file": "optimal_system_agent/workspace/task_journal.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/workspace/workspace.ex",
+      "pattern": "structured_loop",
+      "yawl_category": "control_flow",
+      "evidence": "GenServer.handle_call"
+    },
+    {
+      "count": 1,
+      "file": "optimal_system_agent/workspace/workspace.ex",
+      "pattern": "synchronization",
+      "yawl_category": "control_flow",
+      "evidence": "Task.await/GenServer.call"
+    },
+    {
+      "count": 5,
+      "file": "optimal_system_agent/workspace/workspace.ex",
+      "pattern": "exclusive_choice",
+      "yawl_category": "control_flow",
+      "evidence": "case/cond"
+    },
+    {
+      "count": 14,
+      "file": "optimal_system_agent/workspace/workspace.ex",
+      "pattern": "sequence",
+      "yawl_category": "control_flow",
+      "evidence": "pipe_operator"
+    }
+  ],
+  "scan_type": "patterns",
+  "genre": "analysis",
+  "structure": "list",
+  "total_patterns": 635
+}

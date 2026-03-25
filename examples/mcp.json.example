@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
+      "env": {}
+    },
+    "fetch": {
+      "transport": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": {}
+    },
+    "remote-api": {
+      "transport": "http",
+      "url": "http://localhost:3001/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_API_TOKEN}"
+      }
+    }
+  }
+}

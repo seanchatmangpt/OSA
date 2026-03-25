@@ -57,7 +57,8 @@ defmodule OptimalSystemAgent.Budget.Treasury do
   end
 
   @doc "Return `true` when `amount` exceeds the approval `threshold`."
-  @spec needs_approval?(float(), float()) :: boolean()
+  @spec needs_approval?(float(), float() | :infinity) :: boolean()
+  def needs_approval?(_amount, :infinity), do: false
   def needs_approval?(amount, threshold) when is_number(amount) and is_number(threshold) do
     amount > threshold
   end
@@ -192,6 +193,11 @@ defmodule OptimalSystemAgent.Budget.Treasury do
   @impl true
   def handle_call(:audit_log, _from, state) do
     {:reply, {:ok, state.ledger}, state}
+  end
+
+  @impl true
+  def handle_call(_unknown, _from, state) do
+    {:reply, {:error, :unknown_request}, state}
   end
 
   # ---------------------------------------------------------------------------

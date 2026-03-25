@@ -98,10 +98,10 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DashboardRoutes do
 
   defp fetch_model do
     (Application.get_env(:optimal_system_agent, :default_model) ||
-       Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest"))
+       Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b"))
     |> to_string()
   rescue
-    _ -> "llama3.2:latest"
+    _ -> "openai/gpt-oss-20b"
   end
 
   defp fetch_uptime_seconds do

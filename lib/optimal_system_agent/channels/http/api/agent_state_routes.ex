@@ -80,7 +80,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.AgentStateRoutes do
 
     model =
       Application.get_env(:optimal_system_agent, :default_model) ||
-        Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest")
+        Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b")
 
     {provider, to_string(model)}
   end

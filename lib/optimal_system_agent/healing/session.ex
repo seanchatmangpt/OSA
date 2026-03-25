@@ -95,6 +95,7 @@ defmodule OptimalSystemAgent.Healing.Session do
       updated =
         session
         |> Map.put(:status, new_status)
+        |> maybe_increment_attempt(new_status)
         |> maybe_set_completed_at(new_status)
 
       {:ok, updated}
@@ -138,6 +139,12 @@ defmodule OptimalSystemAgent.Healing.Session do
   end
 
   defp maybe_set_completed_at(session, _status), do: session
+
+  defp maybe_increment_attempt(session, :failed) do
+    %{session | attempt_count: session.attempt_count + 1}
+  end
+
+  defp maybe_increment_attempt(session, _status), do: session
 
   defp generate_id do
     ts = System.system_time(:microsecond)

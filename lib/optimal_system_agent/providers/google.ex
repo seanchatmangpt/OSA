@@ -47,6 +47,8 @@ defmodule OptimalSystemAgent.Providers.Google do
   end
 
   defp do_chat(base_url, api_key, model, messages, opts) do
+    start_time = System.monotonic_time(:millisecond)
+
     formatted = format_messages(messages)
     {system_instruction, contents} = extract_system(formatted)
 
@@ -64,22 +66,65 @@ defmodule OptimalSystemAgent.Providers.Google do
     try do
       case Req.post(url, json: body, headers: headers, receive_timeout: timeout) do
         {:ok, %{status: 200, body: resp}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
           content = extract_content(resp)
           tool_calls = extract_tool_calls(resp)
+
+          # Emit telemetry for successful chat completion
+          :telemetry.execute(
+            [:osa, :providers, :chat, :complete],
+            %{duration: duration_ms},
+            %{provider: :google, model: model}
+          )
+
+          # Emit telemetry for tool calls if present
+          if tool_calls != [] do
+            :telemetry.execute(
+              [:osa, :providers, :tool_call, :complete],
+              %{count: length(tool_calls)},
+              %{provider: :google, model: model}
+            )
+          end
+
           {:ok, %{content: content, tool_calls: tool_calls}}
 
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           error_msg = extract_error(resp_body)
           Logger.warning("Google Gemini returned #{status}: #{error_msg}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :google, model: model, reason: :http_error, status: status}
+          )
+
           {:error, "Google Gemini returned #{status}: #{error_msg}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.error("Google Gemini connection failed: #{inspect(reason)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :google, model: model, reason: :connection_failed}
+          )
+
           {:error, "Google Gemini connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         Logger.error("Google Gemini unexpected error: #{Exception.message(e)}")
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :google, model: model, reason: :exception}
+        )
+
         {:error, "Google Gemini unexpected error: #{Exception.message(e)}"}
     end
   end

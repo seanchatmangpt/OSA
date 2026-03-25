@@ -143,6 +143,14 @@ defmodule OptimalSystemAgent.Speculative.Executor do
     _ -> []
   end
 
+  @doc "Alias for list_active/0 (test compatibility)."
+  @spec list() :: [map()]
+  def list, do: list_active()
+
+  @doc "Alias for get/1 (test compatibility)."
+  @spec get_status(String.t()) :: {:ok, map()} | {:error, :not_found}
+  def get_status(speculative_id), do: get(speculative_id)
+
   @doc "Add a work product artifact after start (e.g. from inside the agent)."
   @spec update_work_product(String.t(), (WorkProduct.t() -> WorkProduct.t())) ::
           :ok | {:error, term()}
@@ -316,6 +324,10 @@ defmodule OptimalSystemAgent.Speculative.Executor do
       [] ->
         {:reply, {:error, :not_found}, state}
     end
+  end
+
+  def handle_call(_unknown, _from, state) do
+    {:reply, {:error, :unknown_call}, state}
   end
 
   # ── Private ────────────────────────────────────────────────────────────────

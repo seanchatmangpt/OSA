@@ -46,7 +46,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ToolRoutes do
   post "/create" do
     with %{"name" => name, "description" => desc, "instructions" => instructions}
          when is_binary(name) and is_binary(desc) and is_binary(instructions) <- conn.body_params do
-      tools = conn.body_params["tools"] || []
+      _tools = conn.body_params["tools"] || []
 
       json_error(conn, 501, "not_implemented", "Skill creation not available in this build")
     else

@@ -19,6 +19,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
   @doc """
   Execute a chat completion against any OpenAI-compatible endpoint.
 
+  Full form with all parameters.
   Returns `{:ok, %{content: String.t(), tool_calls: list()}}` or `{:error, reason}`.
   """
   @spec chat(String.t(), String.t() | nil, String.t(), list(), keyword()) ::
@@ -28,6 +29,29 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       {:error, "API key not configured"}
     else
       do_chat(base_url, api_key, model, messages, opts)
+    end
+  end
+
+  @doc """
+  Simplified chat completion using application config defaults.
+
+  Uses:
+  - API key from `:openai_api_key` config
+  - Base URL from `:openai_base_url` config (default: OpenAI)
+  - Model from `:openai_model` config (default: "gpt-4o-mini")
+
+  Returns `{:ok, %{content: String.t(), tool_calls: list()}}` or `{:error, reason}`.
+  """
+  @spec chat(list()) :: {:ok, map()} | {:error, String.t()}
+  def chat(messages) do
+    api_key = Application.get_env(:optimal_system_agent, :openai_api_key)
+
+    unless api_key do
+      {:error, "OPENAI_API_KEY not configured"}
+    else
+      base_url = Application.get_env(:optimal_system_agent, :openai_base_url, "https://api.openai.com/v1")
+      model = Application.get_env(:optimal_system_agent, :openai_model, default_model())
+      chat(base_url, api_key, model, messages, [])
     end
   end
 
@@ -49,16 +73,30 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
+  @doc "Get the provider name."
+  @spec name() :: :openai_compat
+  def name, do: :openai_compat
+
+  @doc "Get the default model name."
+  @spec default_model() :: String.t()
+  def default_model, do: "gpt-4o-mini"
+
   defp do_chat(base_url, api_key, model, messages, opts) do
+    start_time = System.monotonic_time(:millisecond)
+
+    # Inject model into opts so maybe_add_tools can check parallel_tool_calls support
+    opts_with_model = Keyword.put(opts, :model, model)
+
     body =
       %{
         model: model,
         messages: format_messages(messages),
         temperature: Keyword.get(opts, :temperature, 0.7)
       }
-      |> maybe_add_tools(opts)
+      |> maybe_add_tools(opts_with_model)
       |> maybe_add_max_tokens(opts)
       |> maybe_add_reasoning(model, opts)
+      |> maybe_add_response_format(opts)
 
     extra_headers = Keyword.get(opts, :extra_headers, [])
 
@@ -75,8 +113,26 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     try do
       case Req.post(url, json: body, headers: headers, receive_timeout: timeout) do
         {:ok, %{status: 200, body: %{"choices" => [%{"message" => msg} | _]} = resp}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
+          # Emit telemetry for successful chat completion
+          :telemetry.execute(
+            [:osa, :providers, :chat, :complete],
+            %{duration: duration_ms},
+            %{provider: provider_from_url(base_url), model: model}
+          )
+
           raw_content = msg["content"] || ""
           tool_calls = parse_tool_calls(msg, model)
+
+          # Emit telemetry for tool calls if present
+          if tool_calls != [] do
+            :telemetry.execute(
+              [:osa, :providers, :tool_call, :complete],
+              %{count: length(tool_calls)},
+              %{provider: provider_from_url(base_url), model: model}
+            )
+          end
           # Strip XML tool-call markup from content when calls were parsed from text (not tool_calls field)
           content =
             if tool_calls != [] and not Map.has_key?(msg, "tool_calls") do
@@ -89,20 +145,83 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           {:ok, %{content: content, tool_calls: tool_calls, usage: usage}}
 
         {:ok, %{status: 429, body: resp_body, headers: resp_headers}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           retry_after = parse_retry_after(resp_headers)
           error_msg = extract_error_message(resp_body)
           Logger.warning("Rate limited by provider (HTTP 429): #{error_msg}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: provider_from_url(base_url), model: model, reason: :rate_limited}
+          )
+
           {:error, {:rate_limited, retry_after}}
 
+        {:ok, %{status: status, body: %{"error" => %{"code" => "tool_use_failed"} = error} = resp_body}} ->
+          # Some OpenAI-compatible providers return this when the model generates XML-style
+          # tool calls instead of JSON. The failed_generation field contains the XML tool
+          # call that we can parse and recover (e.g., <function=name>...</function>)
+          case Map.get(error, "failed_generation") do
+            nil ->
+              # No failed_generation field, fall through to generic error handling
+              error_msg = extract_error_message(resp_body)
+              {:error, "HTTP #{status}: #{error_msg}"}
+
+            failed_gen ->
+              # Parse the XML tool call using existing infrastructure
+              parsed_calls = parse_tool_calls_from_content(failed_gen)
+
+              if parsed_calls == [] do
+                # Failed to parse, return generic error
+                Logger.warning("[OpenAICompat] Failed to parse tool_use_failed failed_generation")
+                error_msg = extract_error_message(resp_body)
+                {:error, "HTTP #{status}: #{error_msg}"}
+              else
+                # Return structured error with parsed tool calls for recovery
+                Logger.info("[OpenAICompat] Recovered #{length(parsed_calls)} tool calls from failed_generation")
+                {:error, {:tool_call_format_failed, %{
+                  original_error: Map.get(error, "message"),
+                  failed_generation: failed_gen,
+                  recovered_tool_calls: parsed_calls
+                }}}
+              end
+          end
+
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           error_msg = extract_error_message(resp_body)
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: provider_from_url(base_url), model: model, reason: :http_error, status: status}
+          )
+
           {:error, "HTTP #{status}: #{error_msg}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: provider_from_url(base_url), model: model, reason: :connection_failed}
+          )
+
           {:error, "Connection failed: #{inspect(reason)}"}
       end
     rescue
-      e -> {:error, "Unexpected error: #{Exception.message(e)}"}
+      e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: provider_from_url(base_url), model: model, reason: :exception}
+        )
+
+        {:error, "Unexpected error: #{Exception.message(e)}"}
     end
   end
 
@@ -236,10 +355,15 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           acc
       end
 
-    # Reasoning/thinking content (DeepSeek and some providers)
+    # Reasoning/thinking content (DeepSeek, Groq gpt-oss, and some providers)
+    # Groq gpt-oss models send "reasoning" field with optional "channel" key
     acc =
       case delta do
         %{"reasoning_content" => text} when is_binary(text) and text != "" ->
+          callback.({:thinking_delta, text})
+          acc
+
+        %{"reasoning" => text} when is_binary(text) and text != "" ->
           callback.({:thinking_delta, text})
           acc
 
@@ -375,18 +499,59 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end)
   end
 
-  @doc "Format tools into the OpenAI function-calling format."
+  @doc """
+  Format tools into the OpenAI function-calling format.
+
+  Accepts:
+  - Structs with .name, .description, .parameters fields
+  - Plain maps with atom or string keys
+  - Already-formatted OpenAI tool maps (passed through as-is)
+  """
   def format_tools(tools) do
-    Enum.map(tools, fn tool ->
-      %{
-        "type" => "function",
-        "function" => %{
-          "name" => tool.name,
-          "description" => tool.description,
-          "parameters" => tool.parameters
+    Enum.map(tools, fn
+      # Already formatted — has "function" key with nested structure
+      %{"type" => "function", "function" => %{}} = tool ->
+        tool
+
+      %{type: "function", function: %{}} = tool ->
+        stringify_keys(tool)
+
+      # Struct or flat map — needs wrapping
+      tool ->
+        name = access_field(tool, :name)
+        description = access_field(tool, :description)
+        parameters = access_field(tool, :parameters)
+
+        %{
+          "type" => "function",
+          "function" => %{
+            "name" => name,
+            "description" => description,
+            "parameters" => parameters
+          }
         }
-      }
     end)
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {to_string(k), stringify_keys(v)}
+      {k, v} -> {k, stringify_keys(v)}
+    end)
+  end
+
+  defp stringify_keys(other), do: other
+
+  # Access field from struct (dot access) or map (atom/string key access)
+  defp access_field(tool, field) when is_map(tool) do
+    case Map.fetch(tool, field) do
+      {:ok, val} -> val
+      :error ->
+        # Try string key
+        Map.get(tool, to_string(field))
+    end
+  rescue
+    _ -> Access.get(tool, field)
   end
 
   @doc "Parse tool_calls from an OpenAI-style message map."
@@ -624,9 +789,30 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       nil -> body
       [] -> body
       tools ->
-        body
+        body = body
         |> Map.put(:tools, format_tools(tools))
         |> Map.put(:tool_choice, "auto")
+
+        # Only enable parallel tool calls for models that support it.
+        # openai/gpt-oss-* models do NOT support parallel tool calls.
+        model = Keyword.get(opts, :model, "")
+        if supports_parallel_tool_calls?(model) do
+          Map.put(body, :parallel_tool_calls, true)
+        else
+          body
+        end
+    end
+  end
+
+  defp supports_parallel_tool_calls?(model) do
+    name = String.downcase(to_string(model))
+    not String.contains?(name, "gpt-oss")
+  end
+
+  defp maybe_add_response_format(body, opts) do
+    case Keyword.get(opts, :response_format) do
+      nil -> body
+      format -> Map.put(body, :response_format, format)
     end
   end
 
@@ -665,7 +851,9 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
       String.starts_with?(name, "o4") or
       String.starts_with?(name, "o1") or
       name == "deepseek-reasoner" or
-      String.contains?(name, "kimi")
+      String.contains?(name, "kimi") or
+      # Groq-hosted OpenAI open-source reasoning models (e.g. openai/gpt-oss-20b)
+      String.contains?(name, "gpt-oss")
   end
 
   defp parse_usage(%{"usage" => %{"prompt_tokens" => inp, "completion_tokens" => out}}),
@@ -745,6 +933,27 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
+  @doc """
+  Generate a unique tool call ID.
+
+  Public for use in error recovery when reconstructing assistant messages
+  from failed_generation content.
+  """
+  def generate_tool_call_id, do: OptimalSystemAgent.Utils.ID.generate()
+
   defp generate_id,
-    do: OptimalSystemAgent.Utils.ID.generate()
+    do: generate_tool_call_id()
+
+  # Extract provider name from base URL for telemetry metadata
+  defp provider_from_url(url) when is_binary(url) do
+    cond do
+      String.contains?(url, "groq.com") -> :groq
+      String.contains?(url, "api.openai.com") -> :openai
+      String.contains?(url, "api.anthropic.com") -> :anthropic
+      String.contains?(url, "openrouter.ai") -> :openrouter
+      String.contains?(url, "ollama") -> :ollama
+      true -> :unknown
+    end
+  end
+  defp provider_from_url(_), do: :unknown
 end

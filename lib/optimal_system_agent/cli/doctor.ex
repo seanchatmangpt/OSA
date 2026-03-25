@@ -51,7 +51,8 @@ defmodule OptimalSystemAgent.CLI.Doctor do
 
   # ── Check Implementations ──────────────────────────────────────
 
-  defp check_runtime do
+  @doc "Check OTP runtime version."
+  def check_runtime do
     otp_release = :erlang.system_info(:otp_release) |> to_string()
     {:pass, "Runtime", "OTP #{otp_release}"}
   end
@@ -96,7 +97,8 @@ defmodule OptimalSystemAgent.CLI.Doctor do
     end
   end
 
-  defp check_provider do
+  @doc "Check LLM provider availability (Ollama, Anthropic, OpenAI, etc.)."
+  def check_provider do
     # Try Ollama first (most common local provider)
     ollama_url = System.get_env("OLLAMA_HOST") || "http://localhost:11434"
 
@@ -128,28 +130,30 @@ defmodule OptimalSystemAgent.CLI.Doctor do
     end
   end
 
-  defp check_event_router do
+  @doc "Check if GoldRush event router (glc) is compiled."
+  def check_event_router do
     # Check if :glc (goldrush) is available and the router module can be loaded
     case Code.ensure_loaded(:glc) do
       {:module, :glc} ->
-        {:pass, "Event router", "compiled"}
+        {:pass, "Event Router", "compiled"}
 
       {:error, _} ->
-        {:fail, "Event router", "goldrush not compiled"}
+        {:fail, "Event Router", "goldrush not compiled"}
     end
   end
 
-  defp check_working_directory do
+  @doc "Check if ~/.osa/workspace exists."
+  def check_working_directory do
     workspace = Path.expand("~/.osa/workspace")
 
     cond do
       File.dir?(workspace) ->
         # Abbreviate home directory for display
         display = abbreviate_home(workspace)
-        {:pass, "Working directory", display}
+        {:pass, "Working Directory", display}
 
       true ->
-        {:fail, "Working directory", "~/.osa/workspace not found"}
+        {:fail, "Working Directory", "~/.osa/workspace not found"}
     end
   end
 
@@ -173,12 +177,14 @@ defmodule OptimalSystemAgent.CLI.Doctor do
 
   # ── Helpers ────────────────────────────────────────────────────
 
-  defp print_check({status, name, detail}) do
+  @doc "Print a single health check result to IO."
+  def print_check({status, name, detail}) do
     icon =
       case status do
         :pass -> "\u2713"
         :fail -> "\u2717"
         :optional -> "\u25CB"
+        :warn -> "\u26A0"
       end
 
     # Pad name + dots to 24 chars for alignment
@@ -188,7 +194,8 @@ defmodule OptimalSystemAgent.CLI.Doctor do
     IO.puts("#{icon}#{padded} #{detail}")
   end
 
-  defp find_priv_dir do
+  @doc "Find the priv directory for the application."
+  def find_priv_dir do
     case :code.priv_dir(@app) do
       {:error, _} ->
         # Fallback for dev mode
@@ -199,7 +206,8 @@ defmodule OptimalSystemAgent.CLI.Doctor do
     end
   end
 
-  defp executable?(path) do
+  @doc "Check if a file has executable permission."
+  def executable?(path) do
     case File.stat(path) do
       {:ok, %{access: access}} when access in [:read_write, :read] ->
         # Check execute permission via the mode bits
@@ -213,13 +221,14 @@ defmodule OptimalSystemAgent.CLI.Doctor do
     end
   end
 
-  defp tui_version(path) do
+  @doc "Get TUI version string from binary."
+  def tui_version(path) do
     case System.cmd(path, ["--version"], stderr_to_stdout: true) do
       {output, 0} -> String.trim(output)
-      _ -> "found"
+      _ -> "unknown"
     end
   rescue
-    _ -> "found"
+    _ -> "unknown"
   end
 
   defp resolve_http_port do

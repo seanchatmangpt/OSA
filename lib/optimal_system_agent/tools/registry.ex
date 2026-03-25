@@ -44,6 +44,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
     GenServer.call(__MODULE__, :list_tools)
   end
 
+  @doc "Alias for list_tools/0 — returns list of available tools."
+  def list do
+    list_tools()
+  end
+
   @doc """
   List all available tools without going through the GenServer.
 
@@ -79,6 +84,28 @@ defmodule OptimalSystemAgent.Tools.Registry do
   end
 
   @doc """
+  Get the schema (parameters) for a specific tool.
+
+  Returns a map with the tool's parameter schema, or {:error, :not_found} if the tool doesn't exist.
+  """
+  def get_tool_schema(tool_name) when is_binary(tool_name) do
+    builtin_tools = :persistent_term.get({__MODULE__, :builtin_tools}, %{})
+
+    case Map.get(builtin_tools, tool_name) do
+      nil ->
+        mcp_tools = :persistent_term.get({__MODULE__, :mcp_tools}, %{})
+
+        case Map.get(mcp_tools, tool_name) do
+          nil -> {:error, :not_found}
+          info -> {:ok, Map.get(info, :input_schema, %{"type" => "object", "properties" => %{}})}
+        end
+
+      mod ->
+        {:ok, mod.parameters()}
+    end
+  end
+
+  @doc """
   Execute a tool by name without going through the GenServer.
 
   Uses :persistent_term for tool lookup. Safe to call from inside GenServer
@@ -95,7 +122,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
         case Map.get(mcp_tools, tool_name) do
           nil -> {:error, "Unknown tool: #{tool_name}"}
-          _mcp_info -> {:error, "MCP tools not available in this build"}
+          %{
+            server_name: server_name,
+            original_name: original_name
+          } ->
+            OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
         end
 
       mod ->
@@ -121,7 +152,12 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
         case Map.get(mcp_tools, tool_name) do
           nil -> {:error, "Unknown tool: #{tool_name}"}
-          _mcp_info -> {:error, "MCP tools not available in this build"}
+
+          %{
+            server_name: server_name,
+            original_name: original_name
+          } ->
+            OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
         end
 
       mod ->
@@ -173,8 +209,10 @@ defmodule OptimalSystemAgent.Tools.Registry do
     end
   end
 
-  @doc "Discover MCP tools from all running servers and register them. No-op in this build."
-  def register_mcp_tools, do: :ok
+  @doc "Discover MCP tools from all running servers and register them."
+  def register_mcp_tools do
+    OptimalSystemAgent.MCP.Client.register_tools()
+  end
 
   @doc "List tool and skill documentation (for context injection)."
   def list_docs do
@@ -436,7 +474,12 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
           case Map.get(mcp_tools, tool_name) do
             nil -> {:error, "Unknown tool: #{tool_name}"}
-            _mcp_info -> {:error, "MCP tools not available in this build"}
+
+            %{
+              server_name: server_name,
+              original_name: original_name
+            } ->
+              OptimalSystemAgent.MCP.Client.call_tool(server_name, original_name, arguments)
           end
 
         mod ->
@@ -458,6 +501,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
   defp load_builtin_tools do
     %{
+      "help" => OptimalSystemAgent.Tools.Builtins.Help,
       "file_read" => OptimalSystemAgent.Tools.Builtins.FileRead,
       "file_write" => OptimalSystemAgent.Tools.Builtins.FileWrite,
       "file_edit" => OptimalSystemAgent.Tools.Builtins.FileEdit,
@@ -474,6 +518,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "multi_file_edit" => OptimalSystemAgent.Tools.Builtins.MultiFileEdit,
       "web_fetch" => OptimalSystemAgent.Tools.Builtins.WebFetch,
       "web_search" => OptimalSystemAgent.Tools.Builtins.WebSearch,
+      "businessos_api" => OptimalSystemAgent.Tools.Builtins.BusinessOSAPI,
       "download" => OptimalSystemAgent.Tools.Builtins.Download,
       "code_symbols" => OptimalSystemAgent.Tools.Builtins.CodeSymbols,
       "create_skill" => OptimalSystemAgent.Tools.Builtins.CreateSkill,
@@ -490,7 +535,9 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "peer_review" => OptimalSystemAgent.Tools.Builtins.PeerReview,
       "peer_claim_region" => OptimalSystemAgent.Tools.Builtins.PeerClaimRegion,
       "peer_negotiate_task" => OptimalSystemAgent.Tools.Builtins.PeerNegotiateTask,
-      "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery
+      "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery,
+      "a2a_call" => OptimalSystemAgent.Tools.Builtins.A2ACall,
+      "pm4py_discover" => OptimalSystemAgent.Tools.Builtins.PM4PyDiscover
     }
   end
 

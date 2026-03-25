@@ -14,23 +14,8 @@ defmodule OptimalSystemAgent.Orchestrator do
   alias OptimalSystemAgent.Agent.Loop
   alias OptimalSystemAgent.Agent.Tier
   alias OptimalSystemAgent.Agent.Hooks
-
-  @doc """
-  Run a subagent to completion and return its result.
-
-  Config map keys:
-    - :task (required) — the task description sent to the subagent
-    - :parent_session_id (required) — routes events to parent's SSE stream
-    - :role — display name (e.g., "architect", "backend")
-    - :tier — :elite | :specialist | :utility (default :specialist)
-    - :model — explicit model override (otherwise resolved from tier)
-    - :provider — provider override (otherwise uses app default)
-    - :max_iterations — override tier default
-    - :system_prompt — override from AGENT.md
-    - :tools_allowed — allowlist from AGENT.md (nil = all)
-    - :tools_blocked — denylist from AGENT.md
-  """
   alias OptimalSystemAgent.Team
+
 
   @doc """
   Run multiple subagents in parallel and collect all results.
@@ -124,6 +109,21 @@ defmodule OptimalSystemAgent.Orchestrator do
     all_results
   end
 
+  @doc """
+  Run a subagent to completion and return its result.
+
+  Config map keys:
+    - :task (required) -- the task description sent to the subagent
+    - :parent_session_id (required) -- routes events to parent's SSE stream
+    - :role -- display name (e.g., "architect", "backend")
+    - :tier -- :elite | :specialist | :utility (default :specialist)
+    - :model -- explicit model override (otherwise resolved from tier)
+    - :provider -- provider override (otherwise uses app default)
+    - :max_iterations -- override tier default
+    - :system_prompt -- override from AGENT.md
+    - :tools_allowed -- allowlist from AGENT.md (nil = all)
+    - :tools_blocked -- denylist from AGENT.md
+  """
   @spec run_subagent(map()) :: {:ok, String.t()} | {:error, term()}
   def run_subagent(config) do
     task = Map.fetch!(config, :task)
@@ -453,4 +453,235 @@ defmodule OptimalSystemAgent.Orchestrator do
     # Node-unique monotonic integer — no ETS ownership issues, no race conditions.
     System.unique_integer([:positive, :monotonic])
   end
+
+  # ---------------------------------------------------------------------------
+  # Temporal Integration for Long-Running Operations
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Detect if a task is long-running (>5 minutes estimated duration).
+
+  Returns true if task complexity indicates >300 second duration.
+  """
+  @spec long_running_task?(String.t()) :: boolean()
+  def long_running_task?(task) when is_binary(task) do
+    # Check for keywords indicating complex/long-running tasks
+    long_running_keywords = [
+      "comprehensive", "complete", "full", "end to end",
+      "production", "enterprise", "scalable", "distributed",
+      "multiple stages", "multi-phase", "complex",
+      "analyze all", "process all", "scan entire"
+    ]
+
+    task_lower = String.downcase(task)
+    Enum.any?(long_running_keywords, &String.contains?(task_lower, &1))
+  end
+
+  @doc """
+  Route task to appropriate execution backend (Temporal or in-memory).
+
+  Returns {:temporal, workflow_id} for long-running tasks,
+          {:in_memory, nil} for short-running tasks.
+  """
+  @spec route_task_execution(String.t(), String.t(), keyword()) :: {:temporal, String.t()} | {:in_memory, nil}
+  def route_task_execution(task, parent_id, opts \\ []) do
+    # Check for explicit override
+    force_temporal = Keyword.get(opts, :force_temporal, false)
+    force_in_memory = Keyword.get(opts, :force_in_memory, false)
+
+    cond do
+      force_temporal ->
+        start_temporal_workflow(task, parent_id, opts)
+
+      force_in_memory ->
+        {:in_memory, nil}
+
+      long_running_task?(task) ->
+        start_temporal_workflow(task, parent_id, opts)
+
+      true ->
+        {:in_memory, nil}
+    end
+  end
+
+  @doc """
+  Start a Temporal workflow for long-running task execution.
+
+  Returns {:temporal, workflow_id} on success, {:error, reason} on failure.
+  """
+  @spec start_temporal_workflow(String.t(), String.t(), keyword()) :: {:temporal, String.t()} | {:error, term()}
+  def start_temporal_workflow(task, parent_id, opts \\ []) do
+    # Check if TemporalAdapter is available
+    if Code.ensure_loaded?(OptimalSystemAgent.Workflows.TemporalAdapter) do
+      workflow_id = "workflow-#{parent_id}-#{System.unique_integer([:positive])}"
+
+      case OptimalSystemAgent.Workflows.TemporalAdapter.start_workflow(
+             workflow_id,
+             %{
+               "task" => task,
+               "parent_session_id" => parent_id,
+               "options" => opts
+             }
+           ) do
+        {:ok, _execution_id} ->
+          Logger.info("[Orchestrator] Started Temporal workflow #{workflow_id} for long-running task")
+          {:temporal, workflow_id}
+
+        {:error, reason} ->
+          Logger.warning("[Orchestrator] Failed to start Temporal workflow: #{inspect(reason)}")
+          {:error, reason}
+      end
+    else
+      Logger.warning("[Orchestrator] TemporalAdapter not available, falling back to in-memory execution")
+      {:in_memory, nil}
+    end
+  end
+
+  @doc """
+  Check status of a Temporal workflow.
+
+  Returns {:ok, status} or {:error, reason}.
+  """
+  @spec check_temporal_workflow(String.t()) :: {:ok, map()} | {:error, term()}
+  def check_temporal_workflow(workflow_id) do
+    if Code.ensure_loaded?(OptimalSystemAgent.Workflows.TemporalAdapter) do
+      OptimalSystemAgent.Workflows.TemporalAdapter.query_workflow(workflow_id)
+    else
+      {:error, :temporal_not_available}
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # BFT Consensus Integration
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Run BFT consensus for critical decisions requiring fault tolerance.
+
+  Fleet of agents votes on a proposal, requiring 2/3 supermajority.
+  Uses HotStuff-BFT protocol for Byzantine fault tolerance.
+
+  Returns {:ok, results} or {:error, reason}.
+  """
+  @spec run_bft_consensus(String.t(), [map()], keyword()) :: {:ok, [term()]} | {:error, term()}
+  def run_bft_consensus(parent_id, configs, opts \\ []) do
+    Logger.info("[Orchestrator] Running BFT consensus with #{length(configs)} agents")
+
+    # Check if HotStuff-BFT is available
+    if Code.ensure_loaded?(OptimalSystemAgent.Consensus.HotStuff) do
+      proposal_type = Keyword.get(opts, :proposal_type, :decision)
+      proposal_content = Keyword.get(opts, :proposal_content, %{})
+      proposer_id = Keyword.get(opts, :proposer_id, "orchestrator")
+
+      # Create proposal
+      proposal = OptimalSystemAgent.Consensus.Proposal.new(proposal_type, proposal_content, proposer_id)
+      fleet_id = "fleet-#{parent_id}"
+
+      # Propose vote
+      case OptimalSystemAgent.Consensus.HotStuff.propose_vote(fleet_id, proposal, configs) do
+        {:ok, _proposal} ->
+          # Collect votes from all agents
+          vote_results = Enum.map(configs, fn config ->
+            agent_id = Map.get(config, :role, "agent")
+            task = build_bft_voting_task(proposal, config)
+
+            result = config
+                     |> Map.put(:parent_session_id, parent_id)
+                     |> Map.put(:task, task)
+                     |> run_subagent()
+
+            {agent_id, result}
+          end)
+
+              # Tally votes
+              votes = Enum.reduce(vote_results, %{}, fn {agent_id, result}, acc ->
+                vote = extract_vote_from_result(result)
+                Map.put(acc, agent_id, vote)
+              end)
+
+              # Update proposal with votes
+              proposal_with_votes = Enum.reduce(votes, proposal, fn {agent_id, vote}, prop ->
+                OptimalSystemAgent.Consensus.Proposal.add_vote(prop, agent_id, vote)
+              end)
+
+              # Check consensus result
+              case OptimalSystemAgent.Consensus.Proposal.calculate_result(proposal_with_votes) do
+                {:ok, :approved} ->
+                  OptimalSystemAgent.Consensus.HotStuff.commit(fleet_id, proposal_with_votes)
+                  Logger.info("[Orchestrator] BFT consensus: APPROVED")
+                  {:ok, Enum.map(vote_results, fn {_agent_id, result} -> result end)}
+
+                {:ok, :rejected} ->
+                  Logger.info("[Orchestrator] BFT consensus: REJECTED")
+                  {:ok, Enum.map(vote_results, fn {_agent_id, result} -> result end)}
+
+                {:pending, _ratio} ->
+                  Logger.warning("[Orchestrator] BFT consensus: PENDING (no supermajority)")
+                  {:ok, Enum.map(vote_results, fn {_agent_id, result} -> result end)}
+              end
+
+            {:error, reason} ->
+              Logger.error("[Orchestrator] BFT propose failed: #{inspect(reason)}")
+              {:error, reason}
+          end
+    else
+      Logger.warning("[Orchestrator] HotStuff-BFT not available, using parallel fallback")
+      # Fall back to parallel execution
+      Enum.map(configs, fn config ->
+        run_subagent(Map.put(config, :parent_session_id, parent_id))
+      end)
+    end
+  end
+
+  @doc """
+  Check if a decision should use BFT consensus based on criticality.
+
+  Returns true if decision is marked as critical or involves high-value operations.
+  """
+  @spec should_use_bft?(keyword()) :: boolean()
+  def should_use_bft?(opts) do
+    Keyword.get(opts, :critical, false) or
+      Keyword.get(opts, :bft_consensus, false) or
+      Keyword.get(opts, :fault_tolerance_required, false)
+  end
+
+  # Private helpers for BFT integration
+
+  defp build_bft_voting_task(proposal, config) do
+    original_task = Map.get(config, :task, "")
+
+    """
+## Proposal for Byzantine Fault Tolerant Consensus
+
+**Type:** #{proposal.type}
+**Proposal ID:** #{proposal.workflow_id}
+**Proposer:** #{proposal.proposer}
+**Content:** #{inspect(proposal.content)}
+
+#{original_task}
+
+---
+**Voting Instructions:**
+This is a critical decision requiring Byzantine fault tolerance.
+Evaluate the proposal and vote by starting your response with either:
+- "APPROVE:" if you support the proposal
+- "REJECT:" if you oppose the proposal
+
+Provide your reasoning after the vote keyword.
+"""
+  end
+
+  defp extract_vote_from_result({:ok, response}) when is_binary(response) do
+    response_upper = String.upcase(response)
+
+    cond do
+      String.contains?(response_upper, "APPROVE:") -> :approve
+      String.contains?(response_upper, "REJECT:") -> :reject
+      String.contains?(response_upper, "APPROVE") and not String.contains?(response_upper, "REJECT") -> :approve
+      true -> :reject
+    end
+  end
+
+  defp extract_vote_from_result(_), do: :reject
+
 end

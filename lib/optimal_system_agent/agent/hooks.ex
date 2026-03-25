@@ -117,6 +117,10 @@ defmodule OptimalSystemAgent.Agent.Hooks do
     ArgumentError -> %{}
   end
 
+  @doc "Alias for list_hooks/0 — returns list of registered hooks."
+  @spec list() :: %{hook_event() => [%{name: String.t(), priority: integer()}]}
+  def list, do: list_hooks()
+
   @doc "Get hook execution metrics."
   @spec metrics() :: map()
   def metrics do

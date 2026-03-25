@@ -111,7 +111,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
         |> put_resp_content_type("application/json")
         |> send_resp(201, body)
 
-      {:error, _reason} ->
+      other ->
+        Logger.error("[SessionRoutes] Unexpected Session.create result: #{inspect(other)}")
         json_error(conn, 500, "session_create_failed", "An internal error occurred while creating the session")
     end
   end
@@ -474,6 +475,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
         [{pid, _}] ->
           case GenServer.call(pid, {:swap_provider, provider, model}) do
             :ok ->
+              # Invalidate prompt cache so next call uses provider-aware tool definitions
+              OptimalSystemAgent.Soul.invalidate_cache_for_provider_change()
+
               resp =
                 Jason.encode!(%{
                   status: "ok",

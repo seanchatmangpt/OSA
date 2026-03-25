@@ -34,11 +34,23 @@ defmodule OptimalSystemAgent.Store.Task do
   def changeset(task \\ %__MODULE__{}, attrs) do
     task
     |> cast(attrs, @required ++ @optional)
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :payload, %{}))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :status, "pending"))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :attempts, 0))
+    |> then(&put_default_if_not_in_attrs(&1, attrs, :max_attempts, 3))
     |> validate_required(@required)
     |> validate_inclusion(:status, @valid_statuses)
     |> validate_number(:attempts, greater_than_or_equal_to: 0)
     |> validate_number(:max_attempts, greater_than: 0)
     |> unique_constraint(:task_id)
+  end
+
+  defp put_default_if_not_in_attrs(changeset, attrs, field, default) do
+    if Map.has_key?(attrs, field) or Map.has_key?(attrs, to_string(field)) do
+      changeset
+    else
+      Ecto.Changeset.force_change(changeset, field, default)
+    end
   end
 
   @doc "Convert a DB record to the in-memory task map used by TaskQueue GenServer."

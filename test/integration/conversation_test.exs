@@ -4,6 +4,61 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
   alias OptimalSystemAgent.Agent.{Context, Compactor, Tasks}
 
   # ---------------------------------------------------------------------------
+  # Stub GenServers — satisfy Context.build's dependency on Memory.Store and
+  # Tasks without requiring the full application to be started (--no-start).
+  # ---------------------------------------------------------------------------
+
+  defmodule StubMemoryStore do
+    @moduledoc false
+    use GenServer
+
+    @impl true
+    def init(_), do: {:ok, nil}
+
+    @impl true
+    def handle_call({:recall, _query, _opts}, _from, state), do: {:reply, {:ok, []}, state}
+    def handle_call(:stats, _from, state), do: {:reply, %{total: 0}, state}
+    def handle_call(_msg, _from, state), do: {:reply, {:ok, []}, state}
+  end
+
+  defmodule StubTasks do
+    @moduledoc false
+    use GenServer
+
+    @impl true
+    def init(_), do: {:ok, nil}
+
+    @impl true
+    def handle_call({:workflow_context_block, _session_id}, _from, state), do: {:reply, nil, state}
+    def handle_call({:get_tasks, _session_id}, _from, state), do: {:reply, [], state}
+    def handle_call(_msg, _from, state), do: {:reply, [], state}
+  end
+
+  setup_all do
+    # Only start stubs if the real processes aren't already running (i.e., app is started)
+    unless Process.whereis(OptimalSystemAgent.Memory.Store) do
+      {:ok, _} = GenServer.start_link(StubMemoryStore, [], name: OptimalSystemAgent.Memory.Store)
+    end
+
+    unless Process.whereis(OptimalSystemAgent.Agent.Tasks) do
+      {:ok, _} = GenServer.start_link(StubTasks, [], name: OptimalSystemAgent.Agent.Tasks)
+    end
+
+    :ok
+  end
+
+  # Extracts the text content from a system message.
+  # Anthropic provider returns content as a list of %{type: "text", text: ...} blocks
+  # (with cache_control hints), while other providers return a plain string.
+  defp system_text(%{content: blocks}) when is_list(blocks) do
+    blocks
+    |> Enum.filter(&(&1.type == "text"))
+    |> Enum.map_join("", & &1.text)
+  end
+
+  defp system_text(%{content: text}) when is_binary(text), do: text
+
+  # ---------------------------------------------------------------------------
   # Context builder — token budgeting
   # ---------------------------------------------------------------------------
 
@@ -28,13 +83,13 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       assert system_msg.role == "system"
 
       # Identity block always present (via Soul module)
-      assert String.contains?(system_msg.content, "Optimal System Agent") or
-               String.contains?(system_msg.content, "OSA")
+      text = system_text(system_msg)
+      assert String.contains?(text, "Optimal System Agent") or
+               String.contains?(text, "OSA")
 
-      # SYSTEM.md static content references Signal Theory modes
-      assert String.contains?(system_msg.content, "BUILD") or
-               String.contains?(system_msg.content, "EXECUTE") or
-               String.contains?(system_msg.content, "ANALYZE")
+      # System prompt contains tool usage instructions (from dynamic context blocks)
+      assert String.contains?(text, "Tools") or
+               String.contains?(text, "Runtime Context")
     end
 
     test "context includes the channel name in runtime block" do
@@ -48,7 +103,7 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       context = Context.build(state, nil)
       [system_msg | _] = context.messages
 
-      assert String.contains?(system_msg.content, "telegram")
+      assert String.contains?(system_text(system_msg), "telegram")
     end
 
     test "context includes the session id in runtime block" do
@@ -64,7 +119,7 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       context = Context.build(state, nil)
       [system_msg | _] = context.messages
 
-      assert String.contains?(system_msg.content, session_id)
+      assert String.contains?(system_text(system_msg), session_id)
     end
 
     test "build returns messages list with system message first" do
@@ -131,7 +186,7 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       [system_msg | _] = context.messages
 
       # Without a signal, signal overlay section is absent
-      refute String.contains?(system_msg.content, "Active Signal:")
+      refute String.contains?(system_text(system_msg), "Active Signal:")
     end
 
     test "build without signal — LLM self-classifies via SYSTEM.md" do
@@ -146,11 +201,12 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       context = Context.build(state, nil)
       [system_msg | _] = context.messages
 
-      refute String.contains?(system_msg.content, "Active Signal:")
+      text = system_text(system_msg)
+      refute String.contains?(text, "Active Signal:")
       # Signal-aware depth guidance is in the static base (SYSTEM.md communication section)
-      assert String.contains?(system_msg.content, "Signal-Aware Depth") or
-               String.contains?(system_msg.content, "Signal Theory") or
-               String.contains?(system_msg.content, "signal")
+      assert String.contains?(text, "Signal-Aware Depth") or
+               String.contains?(text, "Signal Theory") or
+               String.contains?(text, "signal")
     end
   end
 

@@ -151,6 +151,9 @@ defmodule OptimalSystemAgent.Speculative.WorkProduct do
   Returns `{:error, reason}` if any file copy fails.
   """
   @spec promote(t()) :: {:ok, t()} | {:error, String.t()}
+  def promote(%__MODULE__{status: :pending, temp_dir: nil}),
+    do: {:error, "Cannot promote — temp_dir is nil"}
+
   def promote(%__MODULE__{status: :pending} = wp) do
     with :ok <- copy_files(wp.files_created),
          :ok <- copy_files(wp.files_modified) do
@@ -226,6 +229,8 @@ defmodule OptimalSystemAgent.Speculative.WorkProduct do
       end
     end)
   end
+
+  defp cleanup_temp_dir(nil), do: nil
 
   defp cleanup_temp_dir(temp_dir) do
     File.rm_rf!(temp_dir)

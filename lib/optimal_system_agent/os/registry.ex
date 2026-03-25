@@ -128,18 +128,27 @@ defmodule OptimalSystemAgent.OS.Registry do
   end
 
   def handle_call({:connect, path}, _from, state) do
-    expanded = Path.expand(path)
+    cond do
+      is_nil(path) ->
+        {:reply, {:error, "Path cannot be nil"}, state}
 
-    case Scanner.scan(expanded) do
-      {:ok, manifest} ->
-        name = manifest.name
-        persist(manifest)
-        connected = Map.put(state.connected, name, manifest)
-        Logger.info("OS Registry: connected '#{name}' at #{expanded}")
-        {:reply, {:ok, manifest}, %{state | connected: connected}}
+      is_binary(path) and byte_size(path) == 0 ->
+        {:reply, {:error, "Path cannot be empty"}, state}
 
-      {:error, reason} ->
-        {:reply, {:error, reason}, state}
+      true ->
+        expanded = Path.expand(path)
+
+        case Scanner.scan(expanded) do
+          {:ok, manifest} ->
+            name = manifest.name
+            persist(manifest)
+            connected = Map.put(state.connected, name, manifest)
+            Logger.info("OS Registry: connected '#{name}' at #{expanded}")
+            {:reply, {:ok, manifest}, %{state | connected: connected}}
+
+          {:error, reason} ->
+            {:reply, {:error, reason}, state}
+        end
     end
   end
 
@@ -189,6 +198,11 @@ defmodule OptimalSystemAgent.OS.Registry do
 
   def handle_call(:discovered, _from, state) do
     {:reply, Map.values(state.discovered), state}
+  end
+
+  def handle_call(unknown, _from, state) do
+    Logger.warning("OS Registry: unknown call received: #{inspect(unknown)}")
+    {:reply, {:error, "Unknown call: #{inspect(unknown)}"}, state}
   end
 
   # --- Persistence ---

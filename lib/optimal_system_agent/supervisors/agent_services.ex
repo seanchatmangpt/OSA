@@ -39,6 +39,19 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       # Self-Healing — autonomous error diagnosis and repair
       OptimalSystemAgent.Healing.Orchestrator,
 
+      # Autonomic Nervous System — fast reflex arcs for common failure patterns
+      OptimalSystemAgent.Healing.ReflexArcs,
+
+      # Armstrong Fault Tolerance — autonomous healer for system-wide recovery
+      OptimalSystemAgent.FaultTolerance.AutonomousHealer,
+
+      # Process Intelligence — fingerprinting, temporal mining, org evolution
+      OptimalSystemAgent.Process.Fingerprint,
+      OptimalSystemAgent.Process.OrgEvolution,
+
+      # Agent Commerce Marketplace — skill publishing, discovery, trading
+      OptimalSystemAgent.Commerce.Marketplace,
+
       # File Locking — region-level concurrent file editing
       OptimalSystemAgent.FileLocking.RegionLock,
 

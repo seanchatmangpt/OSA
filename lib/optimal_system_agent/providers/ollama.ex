@@ -10,7 +10,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   Config keys:
     :ollama_url   — base URL (default: http://localhost:11434)
-    :ollama_model — model name (default: auto-detected or llama3.2:latest)
+    :ollama_model — model name (default: auto-detected or openai/gpt-oss-20b)
   """
 
   @behaviour OptimalSystemAgent.Providers.Behaviour
@@ -22,7 +22,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   # Models known to handle tool calling well (name prefix → min size in GB)
   # Include both hyphenated and non-hyphenated variants (glm-4 AND glm4)
-  @tool_capable_prefixes ~w(qwen3 qwen2.5 qwen2 qwen llama3.3 llama3.2 llama3.1 llama3 llama2 llama gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin)
+  @tool_capable_prefixes ~w(gpt-oss qwen3 qwen2.5 qwen2 qwen gemma3 gemma2 gemma glm-5 glm5 glm-4 glm4 glm4.7 mistral mixtral deepseek command-r kimi kimi-k2 minimax nemotron phi3 phi2 phi hermes nous openchat vicuna falcon orca solar yi internlm codellama starcoder wizardcoder dolphin llama3 llama2 llama)
 
   # Minimum model size (in bytes) to enable tool calling — ~14B params ≈ 8GB on disk
   @tool_min_size 7_000_000_000
@@ -33,7 +33,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
   @impl true
   def default_model do
     # Return whatever auto-detect found, not a hardcoded small model
-    Application.get_env(:optimal_system_agent, :ollama_model, "llama3.2:latest")
+    Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b")
   end
 
   @impl true
@@ -128,6 +128,8 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
   @impl true
   def chat(messages, opts \\ []) do
+    start_time = System.monotonic_time(:millisecond)
+
     url = Application.get_env(:optimal_system_agent, :ollama_url, "http://localhost:11434")
 
     model =
@@ -158,20 +160,63 @@ defmodule OptimalSystemAgent.Providers.Ollama do
       req = Req.new(req_opts) |> Req.merge(url: "#{url}/api/chat")
       case Req.post(req) do
         {:ok, %{status: 200, body: %{"message" => %{"content" => content} = msg}}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
+
           tool_calls = parse_tool_calls(msg, model)
+
+          # Emit telemetry for successful chat completion
+          :telemetry.execute(
+            [:osa, :providers, :chat, :complete],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model}
+          )
+
+          # Emit telemetry for tool calls if present
+          if tool_calls != [] do
+            :telemetry.execute(
+              [:osa, :providers, :tool_call, :complete],
+              %{count: length(tool_calls)},
+              %{provider: :ollama, model: model}
+            )
+          end
+
           {:ok, %{content: Text.strip_thinking_tokens(content || ""), tool_calls: tool_calls}}
 
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.warning("Ollama returned #{status}: #{inspect(resp_body)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model, reason: :http_error, status: status}
+          )
+
           {:error, "Ollama returned #{status}: #{inspect(resp_body)}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.error("Ollama connection failed: #{inspect(reason)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :ollama, model: model, reason: :connection_failed}
+          )
+
           {:error, "Ollama connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         Logger.error("Ollama unexpected error: #{Exception.message(e)}")
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :ollama, model: model, reason: :exception}
+        )
+
         {:error, "Ollama unexpected error: #{Exception.message(e)}"}
     end
   end
@@ -437,7 +482,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
           end)
 
         content = Map.get(msg, :content, "") || ""
-        %{"role" => "assistant", "content" => to_string(content), "tool_calls" => formatted_calls}
+        %{"role" => "assistant", "content" => extract_content(content), "tool_calls" => formatted_calls}
 
       # Tool result messages — must carry tool_call_id and name so the model
       # can attribute the result to the correct call on iteration 2+.
@@ -447,13 +492,13 @@ defmodule OptimalSystemAgent.Providers.Ollama do
         name = Map.get(msg, :name, "")
         %{
           "role" => "tool",
-          "content" => to_string(content),
+          "content" => extract_content(content),
           "tool_call_id" => to_string(id),
           "name" => to_string(name)
         }
 
       %{role: role, content: content} ->
-        %{"role" => to_string(role), "content" => to_string(content)}
+        %{"role" => to_string(role), "content" => extract_content(content)}
 
       %{"role" => _} = msg ->
         msg
@@ -462,6 +507,27 @@ defmodule OptimalSystemAgent.Providers.Ollama do
         msg
     end)
   end
+
+  # Extract text content from structured format or return plain string
+  # Handles both plain strings and Anthropic-style content blocks:
+  #   - "plain text"
+  #   - [%{type: "text", text: "..."}]
+  #   - [%{type: "image", source: %{...}}]
+  defp extract_content(content) when is_binary(content), do: content
+  defp extract_content(content) when is_list(content) do
+    content
+    |> Enum.filter(fn
+      %{type: "text"} -> true
+      _ -> false
+    end)
+    |> Enum.map(fn
+      %{type: "text", text: text} -> text
+      text when is_binary(text) -> text
+      _ -> ""
+    end)
+    |> Enum.join("")
+  end
+  defp extract_content(_), do: ""
 
   defp maybe_add_tools(body, model, opts) do
     case Keyword.get(opts, :tools) do
@@ -473,7 +539,9 @@ defmodule OptimalSystemAgent.Providers.Ollama do
 
       tools ->
         if model_supports_tools?(model) do
-          Map.put(body, :tools, format_tools(tools))
+          body
+          |> Map.put(:tools, format_tools(tools))
+          |> Map.put(:tool_choice, "auto")
         else
           Logger.debug("[Ollama] Skipping tools for #{model} (too small / not tool-capable)")
           body

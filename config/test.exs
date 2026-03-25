@@ -19,3 +19,17 @@ config :optimal_system_agent, http_port: 0
 # Per-run test secret — no hardcoded secrets
 config :optimal_system_agent,
   shared_secret: "osa-test-#{:crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)}"
+
+# Point at Weaver live-check receiver during test runs (future weaver live-check)
+config :opentelemetry_exporter,
+  otlp_protocol: :http_protobuf,
+  otlp_endpoint: "http://localhost:4318"
+
+# Disable OTEL span processors during tests to keep output clean.
+# When WEAVER_LIVE_CHECK=true, weaver.exs re-enables the batch processor
+# so spans are exported to the Weaver receiver for schema conformance checking.
+config :opentelemetry, :processors, []
+
+if System.get_env("WEAVER_LIVE_CHECK") == "true" do
+  import_config "weaver.exs"
+end

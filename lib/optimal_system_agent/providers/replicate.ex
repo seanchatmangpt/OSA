@@ -47,6 +47,8 @@ defmodule OptimalSystemAgent.Providers.Replicate do
   end
 
   defp do_chat(base_url, api_key, model, messages, opts) do
+    start_time = System.monotonic_time(:millisecond)
+
     {system_prompt, user_prompt} = build_prompt(messages)
 
     input =
@@ -66,29 +68,53 @@ defmodule OptimalSystemAgent.Providers.Replicate do
              receive_timeout: 30_000
            ) do
         {:ok, %{status: status, body: %{"id" => prediction_id}}} when status in [200, 201] ->
-          poll_prediction(base_url, api_key, prediction_id, headers, 0)
+          poll_prediction(base_url, api_key, prediction_id, headers, 0, start_time, model)
 
         {:ok, %{status: status, body: resp_body}} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.warning("Replicate create prediction returned #{status}: #{inspect(resp_body)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :replicate, model: model, reason: :http_error, status: status}
+          )
+
           {:error, "Replicate returned #{status}: #{inspect(resp_body)}"}
 
         {:error, reason} ->
+          duration_ms = System.monotonic_time(:millisecond) - start_time
           Logger.error("Replicate connection failed: #{inspect(reason)}")
+
+          :telemetry.execute(
+            [:osa, :providers, :chat, :error],
+            %{duration: duration_ms},
+            %{provider: :replicate, model: model, reason: :connection_failed}
+          )
+
           {:error, "Replicate connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         Logger.error("Replicate unexpected error: #{Exception.message(e)}")
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :replicate, model: model, reason: :exception}
+        )
+
         {:error, "Replicate unexpected error: #{Exception.message(e)}"}
     end
   end
 
-  defp poll_prediction(_base_url, _api_key, _id, _headers, polls)
+  defp poll_prediction(_base_url, _api_key, _id, _headers, polls, _start_time, _model)
        when polls >= @max_polls do
     {:error, "Replicate prediction timed out after #{@max_polls} polls"}
   end
 
-  defp poll_prediction(base_url, api_key, id, headers, polls) do
+  defp poll_prediction(base_url, api_key, id, headers, polls, start_time, model) do
     Process.sleep(@poll_interval_ms)
 
     case Req.get("#{base_url}/predictions/#{id}",
@@ -96,21 +122,54 @@ defmodule OptimalSystemAgent.Providers.Replicate do
            receive_timeout: 30_000
          ) do
       {:ok, %{status: 200, body: %{"status" => "succeeded", "output" => output}}} ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
         content = parse_output(output)
+
+        # Emit telemetry for successful chat completion
+        :telemetry.execute(
+          [:osa, :providers, :chat, :complete],
+          %{duration: duration_ms},
+          %{provider: :replicate, model: model, polls: polls + 1}
+        )
+
         {:ok, %{content: content, tool_calls: []}}
 
       {:ok, %{status: 200, body: %{"status" => "failed", "error" => error}}} ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :replicate, model: model, polls: polls + 1, reason: :prediction_failed}
+        )
+
         {:error, "Replicate prediction failed: #{error}"}
 
       {:ok, %{status: 200, body: %{"status" => status}}}
       when status in ["starting", "processing"] ->
         Logger.debug("Replicate prediction #{id} status: #{status} (poll #{polls + 1})")
-        poll_prediction(base_url, api_key, id, headers, polls + 1)
+        poll_prediction(base_url, api_key, id, headers, polls + 1, start_time, model)
 
       {:ok, %{status: status, body: resp_body}} ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :replicate, model: model, polls: polls + 1, reason: :http_error, status: status}
+        )
+
         {:error, "Replicate poll returned #{status}: #{inspect(resp_body)}"}
 
       {:error, reason} ->
+        duration_ms = System.monotonic_time(:millisecond) - start_time
+
+        :telemetry.execute(
+          [:osa, :providers, :chat, :error],
+          %{duration: duration_ms},
+          %{provider: :replicate, model: model, polls: polls + 1, reason: :connection_failed}
+        )
+
         {:error, "Replicate poll connection failed: #{inspect(reason)}"}
     end
   end

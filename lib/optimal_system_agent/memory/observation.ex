@@ -54,13 +54,17 @@ defmodule OptimalSystemAgent.Memory.Observation do
     type = Map.get(attrs, :type) || Map.get(attrs, "type")
 
     with {:ok, validated_type} <- validate_type(type) do
+      context = Map.get(attrs, :context) || Map.get(attrs, "context") || %{}
+      # Merge string and atom key access: add string versions for atom keys
+      context_dual_access = dual_key_context(context)
+
       obs = %__MODULE__{
-        id: System.monotonic_time(:nanosecond),
+        id: System.unique_integer([:positive, :monotonic]),
         type: validated_type,
         tool_name: to_string(Map.get(attrs, :tool_name) || Map.get(attrs, "tool_name") || "unknown"),
         error_message: string_or_nil(Map.get(attrs, :error_message) || Map.get(attrs, "error_message")),
         duration_ms: Map.get(attrs, :duration_ms) || Map.get(attrs, "duration_ms"),
-        context: Map.get(attrs, :context) || Map.get(attrs, "context") || %{},
+        context: context_dual_access,
         recorded_at: DateTime.utc_now()
       }
 
@@ -95,4 +99,24 @@ defmodule OptimalSystemAgent.Memory.Observation do
   defp string_or_nil(nil), do: nil
   defp string_or_nil(s) when is_binary(s), do: s
   defp string_or_nil(other), do: to_string(other)
+
+  # Support both atom and string key access
+  defp dual_key_context(map) when is_map(map) do
+    Map.new(map, fn {k, v} ->
+      atom_key = if is_binary(k), do: String.to_atom(k), else: k
+      {atom_key, v}
+    end)
+    |> then(fn atom_map ->
+      # Add string versions for all atom keys
+      Enum.reduce(atom_map, atom_map, fn {k, v}, acc ->
+        if is_atom(k) do
+          Map.put(acc, to_string(k), v)
+        else
+          acc
+        end
+      end)
+    end)
+  end
+
+  defp dual_key_context(other), do: other
 end

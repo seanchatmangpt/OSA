@@ -109,6 +109,11 @@ defmodule OptimalSystemAgent.EventStream do
     {:noreply, %{state | seq: next_seq}}
   end
 
+  @impl true
+  def handle_call(_msg, _from, state) do
+    {:reply, {:error, :unknown_call}, state}
+  end
+
   # ── Private ─────────────────────────────────────────────────────────
 
   defp sse_loop(conn) do

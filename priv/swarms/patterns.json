@@ -1,0 +1,75 @@
+{
+  "code_review_three_agent": {
+    "name": "Code Review (Three Agents)",
+    "description": "Reviewer pair with author for code review",
+    "pattern": "review_loop",
+    "max_iterations": 3,
+    "agents": [
+      {
+        "role": "author",
+        "task": "You are the code author. Address the reviewer's feedback and revise the code accordingly."
+      },
+      {
+        "role": "reviewer",
+        "task": "You are a code reviewer. Check for: correctness, style, security, performance. Start with 'APPROVED:' if ready to merge, otherwise provide specific feedback."
+      }
+    ]
+  },
+  "feature_debate": {
+    "name": "Feature Debate",
+    "description": "Multiple proposers debate, final critic decides",
+    "pattern": "debate",
+    "agents": [
+      {
+        "role": "proposer_a",
+        "task": "Propose an approach for this feature from perspective A"
+      },
+      {
+        "role": "proposer_b",
+        "task": "Propose an approach for this feature from perspective B"
+      },
+      {
+        "role": "critic",
+        "task": "Evaluate the proposals and recommend the best approach with rationale"
+      }
+    ]
+  },
+  "parallel_research": {
+    "name": "Parallel Research",
+    "description": "Multiple researchers work in parallel",
+    "pattern": "parallel",
+    "agents": [
+      {
+        "role": "researcher_1",
+        "task": "Research this topic from angle 1"
+      },
+      {
+        "role": "researcher_2",
+        "task": "Research this topic from angle 2"
+      },
+      {
+        "role": "researcher_3",
+        "task": "Research this topic from angle 3"
+      }
+    ]
+  },
+  "pipeline_builder": {
+    "name": "Pipeline Builder",
+    "description": "Chain of agents where each builds on previous output",
+    "pattern": "pipeline",
+    "agents": [
+      {
+        "role": "architect",
+        "task": "Design the architecture for this feature"
+      },
+      {
+        "role": "implementer",
+        "task": "Implement the feature based on the architecture above"
+      },
+      {
+        "role": "tester",
+        "task": "Write comprehensive tests for the implementation above"
+      }
+    ]
+  }
+}

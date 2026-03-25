@@ -1,0 +1,1740 @@
+{
+  "scan_type": "modules",
+  "timestamp": 1774333355847,
+  "total_modules": 288,
+  "modules": [
+    {
+      "name": "OSA",
+      "file": "lib/osa_sdk.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "MiosaTools",
+      "file": "lib/miosa/shims.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "Mix",
+      "file": "lib/mix/tasks/osa.serve.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "Mix",
+      "file": "lib/mix/tasks/osa.sandbox.setup.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "Mix",
+      "file": "lib/mix/tasks/osa.setup.wizard.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "Mix",
+      "file": "lib/mix/tasks/osa.setup.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "Mix",
+      "file": "lib/mix/tasks/osa.chat.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/machines.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/onboarding.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/soul.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/team.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sdk.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/prompt_loader.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/application.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/cli.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/utils.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/event_stream.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/orchestrator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/commerce/marketplace.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/consensus/proposal.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/consensus/hot_stuff.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/swarm/patterns.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sensors/rdf_generator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sensors/sensor_registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sensors/application.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/cache.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/instruction.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/middleware.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/behaviour.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/pipeline.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/web_fetch.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/file_edit.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/shell_execute.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/file_grep.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/download.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/ask_user.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/create_skill.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/delegate.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/memory_recall.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/git.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/businessos_api.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/file_write.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/task_write.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/peer_negotiate_task.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/message_agent.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/multi_file_edit.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/peer_review.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/list_agents.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/a2a_call.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/create_agent.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/file_read.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/web_search.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/code_symbols.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/list_skills.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/memory_save.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/cross_team_query.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/session_search.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/team_tasks.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/peer_claim_region.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/file_glob.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/dir_list.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/keyframe.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/server.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/planner.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/accessibility.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/executor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/shared.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapters/docker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapters/macos.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapters/remote_ssh.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapters/platform_vm.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/builtins/computer_use/adapters/linux_x11.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/registry/skill_loader.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/tools/registry/search.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/scoring.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/store.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/consolidator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/vigil.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/observation.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/learning.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/skill_generator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/memory/synthesis.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/a2a/config_validator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/a2a/task_stream.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/context_mesh/supervisor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/context_mesh/archiver.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/context_mesh/registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/context_mesh/keeper.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/context_mesh/staleness.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/replicate.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/openai_compat_provider.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/google.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/tool_call_parsers.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/cohere.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/ollama.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/behaviour.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/openai_compat.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/anthropic.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/providers/health_checker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workspace/session.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workspace/task_journal.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workspace/store.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workspace/workspace.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workflows/temporal_adapter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/workflows/definitions/autonomous_pi.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agents/registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/budget.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/debate.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scratchpad.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/hooks.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/compactor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/task_queue.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tasks.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/progress.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/workflow.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/task_tracker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/context.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tasks/queue.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tasks/persistence.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tasks/workflow.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/tasks/tracker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/memory/sqlite_bridge.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/memory/episodic.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/job_executor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/sqlite_store.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/persistence.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/cron_presets.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/heartbeat.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/cron_engine.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/scheduler/heartbeat_executor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/hooks/audit_trail.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/telemetry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/doom_loop.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/tool_filter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/survey.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/message_handler.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/checkpoint.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/tool_executor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/react_loop.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/genre_router.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/guardrails.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/loop/llm_client.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/agent/orchestrator/goal_dispatch.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/mcp/config_validator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/mcp/client.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/mcp/server.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/protocol/cloud_event.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/cli/prompt.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/cli/doctor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/peer/protocol.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/peer/review.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/peer/discovery.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/peer/negotiation.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/file_locking/intent_broadcaster.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/file_locking/region_lock.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/graph.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/narrative.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/pulse.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/merge.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/pivot.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/decisions/cascade.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/supervisors/infrastructure.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/supervisors/agent_services.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/supervisors/sessions.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/supervisors/extensions.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/checkpoint.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/confidence.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/structural_analyzer.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/upstream_verifier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/loop.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/verification/tools/verify_loop.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/system/updater.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sandbox/host.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sandbox/docker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sandbox/e2b.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sandbox/router.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/sandbox/behaviour.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/debate.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/persona.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/server.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/weaver.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/turn_strategy.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/tools/spawn_conversation.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/strategies/round_robin.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/strategies/weighted.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/conversations/strategies/facilitator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/supervisor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/agent_state.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/table_registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/nervous_system.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/cost_tracker.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/teams/manager.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/os/registry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/os/scanner.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/os/manifest.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/error_classifier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/session.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/prompts.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/ephemeral_agent.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/orchestrator.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/healing/reflex_arcs.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/speculative/work_product.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/speculative/executor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/speculative/assumption.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/speculative/tools/start_speculative.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/stream.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/event.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/classifier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/failure_modes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/dlq.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/events/bus.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/signal/signal.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/signal/message_classifier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/signal/persistence.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/signal/classifier.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/process/fingerprint.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/process/process_mining.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/process/org_evolution.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/pattern.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/message.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/decision_node.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/task.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/signal.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/memory_entry.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/decision_edge.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/store/repo.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/telegram.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/discord.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/session.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/signal.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/manager.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/slack.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/starter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/behaviour.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/noise_filter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/events.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/renderer.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/session.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/plan_review.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/task_display.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/line_editor.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/spinner.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/computer_use_dispatch.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/cli/markdown.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/rate_limiter.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/auth.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/integrity.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/config_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/tool_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/approval_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/verification_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/provider_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/canopy_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/agent_state_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/data_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/dashboard_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/webhook_verify.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/audit_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/settings_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/session_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/a2a_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/marketplace_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/issue_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/agent_management_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/debate_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/shared.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/auth_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/scheduler_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/orchestrate_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/workspace_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/cost_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/channel_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/process_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/agent_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/channels/http/api/project_routes.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/budget/budget.ex",
+      "type": "module",
+      "line": 1
+    },
+    {
+      "name": "OptimalSystemAgent",
+      "file": "lib/optimal_system_agent/budget/treasury.ex",
+      "type": "module",
+      "line": 1
+    }
+  ],
+  "mode": "data",
+  "genre": "spec",
+  "type": "inform",
+  "format": "json",
+  "structure": "list"
+}

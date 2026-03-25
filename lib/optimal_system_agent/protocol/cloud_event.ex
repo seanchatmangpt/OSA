@@ -29,22 +29,22 @@ defmodule OptimalSystemAgent.Protocol.CloudEvent do
   @doc "Build a CloudEvent from an attribute map. Raises KeyError if :type or :source is missing."
   @spec new(map()) :: t()
   def new(attrs) when is_map(attrs) do
-    # Raises KeyError when key is absent — matches test expectations
-    type = Map.fetch!(attrs, :type)
-    source = Map.fetch!(attrs, :source)
+    # Check both atom and string keys for compatibility
+    type = fetch_key!(attrs, :type)
+    source = fetch_key!(attrs, :source)
 
     id = Map.get(attrs, :id) || Map.get(attrs, "id") || generate_id()
     raw_time = Map.get(attrs, :time) || Map.get(attrs, "time") || DateTime.utc_now()
     time = format_time(raw_time)
 
     %__MODULE__{
-      specversion: Map.get(attrs, :specversion, "1.0"),
+      specversion: Map.get(attrs, :specversion) || Map.get(attrs, "specversion") || "1.0",
       type: to_string(type),
       source: to_string(source),
       subject: Map.get(attrs, :subject) || Map.get(attrs, "subject"),
       id: to_string(id),
       time: time,
-      datacontenttype: Map.get(attrs, :datacontenttype, "application/json"),
+      datacontenttype: Map.get(attrs, :datacontenttype) || Map.get(attrs, "datacontenttype") || "application/json",
       data: Map.get(attrs, :data) || Map.get(attrs, "data")
     }
   end
@@ -146,6 +146,14 @@ defmodule OptimalSystemAgent.Protocol.CloudEvent do
   end
 
   # ── Private helpers ────────────────────────────────────────────────────
+
+  defp fetch_key!(map, atom_key) when is_map(map) do
+    string_key = to_string(atom_key)
+    case Map.get(map, atom_key) || Map.get(map, string_key) do
+      nil -> raise KeyError, key: atom_key, term: map
+      value -> value
+    end
+  end
 
   defp generate_id do
     "evt_" <> (:crypto.strong_rand_bytes(8) |> Base.url_encode64(padding: false))

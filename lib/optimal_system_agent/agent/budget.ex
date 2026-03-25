@@ -373,4 +373,42 @@ defmodule OptimalSystemAgent.Agent.Budget do
         end
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Utility functions for budget checking (for tests and external use)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Check if a state can afford a given cost and token count.
+
+  Returns `:ok` if under budget, `:exceeded` if over limit.
+  """
+  def check_budget(state, estimated_cost, estimated_tokens) do
+    new_spent = state.spent_cents + estimated_cost
+    new_tokens = state.input_tokens + estimated_tokens
+
+    cond do
+      state.budget_cents && new_spent > state.budget_cents ->
+        :exceeded
+
+      state.token_budget && new_tokens > state.token_budget ->
+        :exceeded
+
+      true ->
+        :ok
+    end
+  end
+
+  @doc """
+  Check if the state has enough token budget for a request.
+
+  Returns true if under limit, false otherwise.
+  """
+  def can_afford?(state, input_tokens) do
+    if state.token_budget do
+      state.input_tokens + input_tokens <= state.token_budget
+    else
+      true
+    end
+  end
 end

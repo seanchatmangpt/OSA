@@ -6,7 +6,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatProvider do
   configs and dispatches to OpenAICompat.chat/5 with the correct URL, API key, and model.
 
   Covers: openai, groq, deepseek, together, fireworks, perplexity, mistral,
-  openrouter, qwen, moonshot, zhipu, volcengine, baichuan.
+  openrouter, qwen, moonshot, zai, volcengine, baichuan.
   """
 
   alias OptimalSystemAgent.Providers.OpenAICompat
@@ -19,8 +19,8 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatProvider do
     },
     groq: %{
       default_url: "https://api.groq.com/openai/v1",
-      default_model: "llama-3.3-70b-versatile",
-      available_models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"]
+      default_model: "openai/gpt-oss-20b",
+      available_models: ["openai/gpt-oss-20b"]
     },
     deepseek: %{
       default_url: "https://api.deepseek.com/v1",
@@ -59,9 +59,9 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatProvider do
       default_url: "https://api.moonshot.cn/v1",
       default_model: "moonshot-v1-128k"
     },
-    zhipu: %{
-      default_url: "https://open.bigmodel.cn/api/paas/v4",
-      default_model: "glm-4-plus"
+    zai: %{
+      default_url: "https://api.z.ai/api/paas/v4",
+      default_model: "glm-5"
     },
     volcengine: %{
       default_url: "https://ark.cn-beijing.volces.com/api/v3",

@@ -41,6 +41,9 @@ defmodule OptimalSystemAgent.MixProject do
       # HTTP client for LLM APIs
       {:req, "~> 0.5"},
 
+      # HTTP client for integration tests
+      {:httpoison, "~> 2.0", only: :test},
+
       # JSON
       {:jason, "~> 1.4"},
 
@@ -74,6 +77,12 @@ defmodule OptimalSystemAgent.MixProject do
       {:telemetry, "~> 1.2"},
       {:telemetry_metrics, "~> 1.0"},
 
+      # OpenTelemetry — distributed tracing and metrics
+      {:opentelemetry_api, "~> 1.4"},
+      {:opentelemetry, "~> 1.4"},
+      {:opentelemetry_exporter, "~> 1.7"},
+      {:grpc, "~> 0.9", only: :dev},
+
       # OTP 28: rustler removed — nif.ex uses pure Elixir fallbacks
       # {:rustler, "~> 0.37", optional: true}
 
@@ -88,7 +97,11 @@ defmodule OptimalSystemAgent.MixProject do
       serve: ["run --no-halt"],
       tui: ["cmd ./scripts/osa-tui.sh"],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"]
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      # Weaver live-check: emits OTLP spans during tests to validate against semconv schema.
+      # Requires Weaver receiver running: make -C ../semconv/live-check start
+      # Usage: mix weaver.live_check
+      "weaver.live_check": ["cmd WEAVER_LIVE_CHECK=true WEAVER_OTLP_ENDPOINT=http://localhost:4317 mix test"]
     ]
   end
 

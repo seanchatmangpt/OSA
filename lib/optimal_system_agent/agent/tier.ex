@@ -57,8 +57,8 @@ defmodule OptimalSystemAgent.Agent.Tier do
 
     # --- Fast inference providers (all 70B+ for tool calling) ---
     groq: %{
-      elite: "llama-3.3-70b-versatile",
-      specialist: "llama-3.3-70b-versatile",
+      elite: "openai/gpt-oss-20b",
+      specialist: "openai/gpt-oss-20b",
       utility: "qwen-qwq-32b"
     },
     fireworks: %{
@@ -95,9 +95,9 @@ defmodule OptimalSystemAgent.Agent.Tier do
       specialist: "qwen3-coder-30b",
       utility: "qwen-plus"
     },
-    zhipu: %{
-      elite: "glm-4.5-air",
-      specialist: "glm-4-plus",
+    zai: %{
+      elite: "glm-5",
+      specialist: "glm-4.6v",
       utility: "glm-4-flash"
     },
     moonshot: %{
@@ -145,7 +145,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 40_000,
       buffer: 5_000,
       thinking: 10_000,
-      total: 250_000
+      total: 260_000
     },
     specialist: %{
       system: 15_000,
@@ -156,7 +156,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 30_000,
       buffer: 5_000,
       thinking: 5_000,
-      total: 200_000
+      total: 205_000
     },
     utility: %{
       system: 8_000,
@@ -167,7 +167,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
       reasoning: 12_000,
       buffer: 5_000,
       thinking: 2_000,
-      total: 100_000
+      total: 102_000
     }
   }
 

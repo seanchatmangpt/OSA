@@ -31,6 +31,11 @@ defmodule OptimalSystemAgent.Channels.HTTP do
   plug(:security_headers)
   plug(:cors_headers)
   plug(Plug.Logger, log: :debug)
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :json],
+    pass: ["*/*"],
+    json_decoder: Jason
+  )
   plug(:match)
   plug(:dispatch)
 
@@ -82,6 +87,46 @@ defmodule OptimalSystemAgent.Channels.HTTP do
   end
 
   # ── Health (no auth) ────────────────────────────────────────────────
+
+  # ── BusinessOS webhook receiver (no JWT — HMAC verified) ─────────────
+
+  post "/webhooks/businessos" do
+    event_type = conn.body_params["event_type"]
+    payload = conn.body_params["data"] || %{}
+
+    Logger.info("[Webhook] BusinessOS event: #{event_type}")
+
+    # Broadcast to OSA event bus for agent workflows
+    topic = "osa:webhook:businessos"
+    Phoenix.PubSub.broadcast(OptimalSystemAgent.PubSub, topic, {:businessos_event, event_type, payload})
+
+    # Store in ETS for polling
+    :ets.insert(:osa_webhook_events, {
+      System.system_time(:nanosecond),
+      %{event_type: event_type, data: payload, received_at: DateTime.utc_now()}
+    })
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{status: "accepted", event_type: event_type}))
+  end
+
+  # Get pending BusinessOS webhook events
+  get "/webhooks/businessos/events" do
+    events =
+      try do
+        :ets.tab2list(:osa_webhook_events)
+        |> Enum.sort_by(fn {ts, _} -> ts end, :desc)
+        |> Enum.take(50)
+        |> Enum.map(fn {_, event} -> event end)
+      rescue
+        ArgumentError -> []
+      end
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{events: events, count: length(events)}))
+  end
 
   get "/health" do
     provider =
@@ -331,6 +376,10 @@ defmodule OptimalSystemAgent.Channels.HTTP do
         |> send_resp(400, Jason.encode!(%{error: "read_error"}))
     end
   end
+
+  # ── Prometheus metrics (no auth required) ───────────────────────────────
+
+  forward("/metrics", to: OptimalSystemAgent.Channels.HTTP.API.MetricsRoutes)
 
   # ── All /api routes require JWT ─────────────────────────────────────
 
