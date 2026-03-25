@@ -42,6 +42,9 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       # Autonomic Nervous System — fast reflex arcs for common failure patterns
       OptimalSystemAgent.Healing.ReflexArcs,
 
+      # Armstrong Fault Tolerance — autonomous healer for system-wide recovery
+      OptimalSystemAgent.FaultTolerance.AutonomousHealer,
+
       # Process Intelligence — fingerprinting, temporal mining, org evolution
       OptimalSystemAgent.Process.Fingerprint,
       OptimalSystemAgent.Process.OrgEvolution,
