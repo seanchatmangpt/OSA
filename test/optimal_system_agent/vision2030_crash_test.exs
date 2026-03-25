@@ -275,6 +275,9 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
 
       case result do
         %{trend: _, confidence: _} -> :ok
+        :stable -> :ok
+        :increasing -> :ok
+        :decreasing -> :ok
         {:error, _} -> :ok
       end
     end

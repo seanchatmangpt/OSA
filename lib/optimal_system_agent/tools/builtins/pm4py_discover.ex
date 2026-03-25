@@ -7,7 +7,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.PM4PyDiscover do
   optional conformance checking.
 
   Configuration via environment variables:
-    PM4PY_HTTP_URL — Base URL (default: http://localhost:8089)
+    PM4PY_HTTP_URL — Base URL (default: http://localhost:8090)
     PM4PY_TIMEOUT  — Request timeout in ms (default: 60_000)
 
   Budget integration: Reports discovery cost for agent planning.
@@ -17,7 +17,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.PM4PyDiscover do
 
   require Logger
 
-  @default_pm4py_url "http://localhost:8089"
+  @default_pm4py_url "http://localhost:8090"
   @default_timeout 60_000
 
   @valid_algorithms [

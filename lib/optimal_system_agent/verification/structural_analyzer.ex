@@ -808,8 +808,10 @@ defmodule OptimalSystemAgent.Verification.StructuralAnalyzer do
   # ===========================================================================
 
   @spec normalize_workflow(workflow()) :: workflow()
-  defp normalize_workflow(workflow) do
-    tasks = Map.get(workflow, :tasks, %{})
+  defp normalize_workflow(workflow) when is_map(workflow) do
+    tasks_raw = Map.get(workflow, :tasks, %{})
+    # Convert list of tasks to map format if needed
+    tasks = if is_list(tasks_raw), do: Map.new(Enum.map(tasks_raw, &{&1[:id], &1})), else: tasks_raw
     transitions = Map.get(workflow, :transitions, [])
     start_node = Map.get(workflow, :start_node)
     end_node = Map.get(workflow, :end_node)
@@ -853,6 +855,17 @@ defmodule OptimalSystemAgent.Verification.StructuralAnalyzer do
       start_node: start_node,
       end_node: end_node,
       metadata: metadata
+    }
+  end
+
+  # Handle non-map workflow inputs gracefully
+  defp normalize_workflow(_workflow) do
+    %{
+      tasks: %{},
+      transitions: [],
+      start_node: nil,
+      end_node: nil,
+      metadata: %{}
     }
   end
 end

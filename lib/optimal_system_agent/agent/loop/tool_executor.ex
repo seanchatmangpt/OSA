@@ -18,6 +18,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ToolExecutor do
     code_symbols web_fetch web_search list_skills
     list_dir read_file grep_search
     a2a_call list_agents businessos_api
+    pm4py_discover
   )
 
   # Additional tools unlocked in :workspace mode (local writes only)

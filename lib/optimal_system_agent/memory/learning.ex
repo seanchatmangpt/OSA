@@ -101,7 +101,13 @@ defmodule OptimalSystemAgent.Memory.Learning do
   def record_pattern(pattern) when is_map(pattern) do
     if Map.has_key?(pattern, :content) and Map.has_key?(pattern, :keywords) do
       pattern_id = System.unique_integer([:positive, :monotonic]) |> to_string()
-      Consolidator.upsert(Map.put(pattern, :id, pattern_id))
+      # Ensure required fields for Consolidator.upsert
+      consolidated = pattern
+        |> Map.put(:id, pattern_id)
+        |> Map.put_new(:trigger, "pattern:#{pattern_id}")
+        |> Map.put_new(:description, pattern[:content] || "")
+        |> Map.put_new(:response, "")
+      Consolidator.upsert(consolidated)
       {:ok, pattern_id}
     else
       {:error, :invalid_pattern}
@@ -127,7 +133,18 @@ defmodule OptimalSystemAgent.Memory.Learning do
   @spec list_patterns() :: [map()]
   def list_patterns do
     {:ok, patterns} = patterns()
-    patterns |> Enum.sort_by(& &1[:created_at] || DateTime.utc_now(), {:desc, DateTime}) |> Enum.reverse()
+    patterns
+    |> Enum.sort_by(fn p ->
+      case p[:created_at] do
+        nil -> DateTime.utc_now()
+        dt when is_binary(dt) ->
+          case DateTime.from_iso8601(dt) do
+            {:ok, parsed, _} -> parsed
+            :error -> DateTime.utc_now()
+          end
+        dt -> dt
+      end
+    end, {:desc, DateTime})
   end
 
   @doc "Find similar patterns by keyword."

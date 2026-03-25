@@ -968,7 +968,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolution do
   end
 
   defp compute_role_utilization(teams, execution_data) do
-    if map_size(teams) == 0 do
+    if !is_map(teams) or map_size(teams) == 0 do
       0.5
     else
       utilizations =

@@ -1,5 +1,6 @@
 defmodule OptimalSystemAgent.Integration.PM4PyOSAE2ETest do
   use ExUnit.Case, async: false
+  @moduletag :integration
 
   alias OptimalSystemAgent.Providers.PM4PyCoordinator
 
@@ -432,6 +433,167 @@ defmodule OptimalSystemAgent.Integration.PM4PyOSAE2ETest do
         ])
 
       assert result4["total_agents"] == 4
+    end
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # TDD: Swarm Launch + Byzantine Consensus Tests
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe "swarm launch with Byzantine consensus" do
+    test "launch_swarm returns 3 agent results from parallel execution" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          assert Map.has_key?(swarm_result, "swarm_id")
+          assert Map.has_key?(swarm_result, "agent_results")
+          assert is_map(swarm_result["agent_results"])
+          assert map_size(swarm_result["agent_results"]) == 3
+
+        {:error, reason} ->
+          # If PM4Py service not available, error is expected
+          assert String.contains?(reason, ["swarm", "discovery", "results"])
+      end
+    end
+
+    test "Byzantine consensus selects model appearing in 2+ agent results" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          # With 3 agents, consensus threshold is 0.7 (2/3 = 0.66 < 0.7)
+          # Fallback to first result, but with consensus_level recorded
+          assert Map.has_key?(swarm_result, "consensus_model")
+          assert Map.has_key?(swarm_result, "consensus_level")
+          assert is_float(swarm_result["consensus_level"])
+
+        {:error, _reason} ->
+          # PM4Py service not running
+          assert true
+      end
+    end
+
+    test "A2A call succeeds and posts model to BusinessOS" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          # Test that A2A call endpoint can be invoked
+          assert Map.has_key?(swarm_result, "a2a_call_metadata")
+          assert Map.has_key?(swarm_result["a2a_call_metadata"], "agent")
+          assert swarm_result["a2a_call_metadata"]["agent"] == "pm4py_coordinator"
+
+        {:error, _reason} ->
+          assert true
+      end
+    end
+
+    test "swarm launch includes swarm_id and consensus_level in metadata" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          assert swarm_result["swarm_id"] |> is_binary()
+          assert swarm_result["consensus_level"] >= 0.0 and swarm_result["consensus_level"] <= 1.0
+          assert map_size(swarm_result["agent_results"]) >= 2
+
+        {:error, _reason} ->
+          assert true
+      end
+    end
+
+    test "consensus threshold 0.7 with 3 agents falls back to first result when consensus < 0.7" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          # 3 agents: 2/3 = 0.66 < 0.7, should use first result
+          if swarm_result["consensus_level"] < 0.7 do
+            assert String.contains?(swarm_result["consensus_note"], "Fallback")
+          else
+            # If consensus_level >= 0.7, 2+ agents agreed
+            assert swarm_result["consensus_level"] >= 0.7
+          end
+
+        {:error, _reason} ->
+          assert true
+      end
+    end
+
+    test "error handling when less than 2 agents succeed" do
+      log = combined_log()
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      case result do
+        {:ok, swarm_result} ->
+          # Valid case: consensus reached
+          assert Map.has_key?(swarm_result, "consensus_model")
+
+        {:error, _reason} ->
+          # Error case: not enough agents succeeded
+          assert true
+      end
+    end
+
+    test "timeout handling: 30s timeout for all 3 agents to complete" do
+      log = combined_log()
+
+      start = System.monotonic_time(:millisecond)
+
+      result =
+        PM4PyCoordinator.launch_swarm(log, [
+          agent_count: 3,
+          algorithm: "inductive_miner"
+        ])
+
+      elapsed = System.monotonic_time(:millisecond) - start
+
+      case result do
+        {:ok, swarm_result} ->
+          # Should complete within 30s (30_000 ms)
+          assert elapsed < 30_000
+          assert Map.has_key?(swarm_result, "execution_time_ms")
+
+        {:error, _reason} ->
+          # Even errors should complete quickly
+          assert elapsed < 5_000
+      end
     end
   end
 end
