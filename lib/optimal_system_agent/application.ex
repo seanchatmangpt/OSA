@@ -104,6 +104,12 @@ defmodule OptimalSystemAgent.Application do
     :ets.new(:osa_demo_agents, [:named_table, :public, :set])
     :ets.new(:osa_quickstart_sessions, [:named_table, :public, :set])
 
+    # HotStuff consensus ETS tables (proposals, views, audit trail)
+    OptimalSystemAgent.Consensus.HotStuff.init_tables()
+
+    # Decisions graph ETS table (decision tree tracking)
+    OptimalSystemAgent.Decisions.Graph.init_tables()
+
     children =
       platform_repo_children() ++
       [
