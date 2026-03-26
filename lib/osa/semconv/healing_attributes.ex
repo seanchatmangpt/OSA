@@ -635,6 +635,18 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   def healing_confidence, do: :"healing.confidence"
 
   @doc """
+  The diagnosis mode or strategy used in the healing classify operation.
+
+  Attribute: `healing.diagnosis.mode`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `deterministic`, `probabilistic`, `adaptive`
+  """
+  @spec healing_diagnosis_mode() :: :"healing.diagnosis.mode"
+  def healing_diagnosis_mode, do: :"healing.diagnosis.mode"
+
+  @doc """
   The current stage of the healing diagnosis pipeline.
 
   Attribute: `healing.diagnosis_stage`
@@ -954,6 +966,59 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   """
   @spec healing_fingerprint() :: :"healing.fingerprint"
   def healing_fingerprint, do: :"healing.fingerprint"
+
+  @doc """
+  The outcome result of the healing fix operation.
+
+  Attribute: `healing.fix.result`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `success`, `partial`, `failed`
+  """
+  @spec healing_fix_result() :: :"healing.fix.result"
+  def healing_fix_result, do: :"healing.fix.result"
+
+  @doc """
+  Enumerated values for `healing.fix.result`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `success` | `"success"` | success |
+  | `partial` | `"partial"` | partial |
+  | `failed` | `"failed"` | failed |
+  """
+  @spec healing_fix_result_values() :: %{
+    success: :success,
+    partial: :partial,
+    failed: :failed
+  }
+  def healing_fix_result_values do
+    %{
+      success: :success,
+      partial: :partial,
+      failed: :failed
+    }
+  end
+
+  defmodule HealingFixResultValues do
+    @moduledoc """
+    Typed constants for the `healing.fix.result` attribute.
+    """
+
+    @doc "success"
+    @spec success() :: :success
+    def success, do: :success
+
+    @doc "partial"
+    @spec partial() :: :partial
+    def partial, do: :partial
+
+    @doc "failed"
+    @spec failed() :: :failed
+    def failed, do: :failed
+
+  end
 
   @doc """
   Duration of the healing intervention in milliseconds.
@@ -1960,6 +2025,95 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   """
   @spec healing_timeout_ms() :: :"healing.timeout_ms"
   def healing_timeout_ms, do: :"healing.timeout_ms"
+
+  @doc """
+  Execution time in milliseconds for the healing verification operation.
+
+  Attribute: `healing.verification.execution_time_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `100`, `500`, `2000`
+  """
+  @spec healing_verification_execution_time_ms() :: :"healing.verification.execution_time_ms"
+  def healing_verification_execution_time_ms, do: :"healing.verification.execution_time_ms"
+
+  @doc """
+  Number of tests that failed during healing verification.
+
+  Attribute: `healing.verification.failed_tests`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `1`, `3`
+  """
+  @spec healing_verification_failed_tests() :: :"healing.verification.failed_tests"
+  def healing_verification_failed_tests, do: :"healing.verification.failed_tests"
+
+  @doc """
+  Number of tests that passed during healing verification.
+
+  Attribute: `healing.verification.passed_tests`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0`, `5`, `10`
+  """
+  @spec healing_verification_passed_tests() :: :"healing.verification.passed_tests"
+  def healing_verification_passed_tests, do: :"healing.verification.passed_tests"
+
+  @doc """
+  Overall verification status for the healing operation.
+
+  Attribute: `healing.verification.status`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pass`, `fail`
+  """
+  @spec healing_verification_status() :: :"healing.verification.status"
+  def healing_verification_status, do: :"healing.verification.status"
+
+  @doc """
+  Enumerated values for `healing.verification.status`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `pass` | `"pass"` | pass |
+  | `fail` | `"fail"` | fail |
+  | `inconclusive` | `"inconclusive"` | inconclusive |
+  """
+  @spec healing_verification_status_values() :: %{
+    pass: :pass,
+    fail: :fail,
+    inconclusive: :inconclusive
+  }
+  def healing_verification_status_values do
+    %{
+      pass: :pass,
+      fail: :fail,
+      inconclusive: :inconclusive
+    }
+  end
+
+  defmodule HealingVerificationStatusValues do
+    @moduledoc """
+    Typed constants for the `healing.verification.status` attribute.
+    """
+
+    @doc "pass"
+    @spec pass() :: :pass
+    def pass, do: :pass
+
+    @doc "fail"
+    @spec fail() :: :fail
+    def fail, do: :fail
+
+    @doc "inconclusive"
+    @spec inconclusive() :: :inconclusive
+    def inconclusive, do: :inconclusive
+
+  end
 
   @doc """
   Unique identifier for the warm standby replica.

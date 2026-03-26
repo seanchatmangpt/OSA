@@ -148,6 +148,18 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   def process_mining_inductive_tree_depth, do: :"process.mining.inductive.tree_depth"
 
   @doc """
+  Name of the executable process.
+
+  Attribute: `process.executable.name`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pm4py-rust`, `go`
+  """
+  @spec process_executable_name() :: :"process.executable.name"
+  def process_executable_name, do: :"process.executable.name"
+
+  @doc """
   Name of the process activity (event class) from the XES log.
 
   Attribute: `process.mining.activity`
@@ -2168,5 +2180,17 @@ defmodule OpenTelemetry.SemConv.Incubating.ProcessAttributes do
   """
   @spec process_mining_variant_count() :: :"process.mining.variant_count"
   def process_mining_variant_count, do: :"process.mining.variant_count"
+
+  @doc """
+  Process ID of the service.
+
+  Attribute: `process.pid`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1234`, `5678`
+  """
+  @spec process_pid() :: :"process.pid"
+  def process_pid, do: :"process.pid"
 
 end

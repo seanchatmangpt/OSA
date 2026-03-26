@@ -738,6 +738,18 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   end
 
   @doc """
+  Node identifier for the consensus round (hostname, cluster node, etc).
+
+  Attribute: `consensus.node`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `node-1`, `worker-0`, `compute-42`
+  """
+  @spec consensus_node() :: :"consensus.node"
+  def consensus_node, do: :"consensus.node"
+
+  @doc """
   Identifier of the consensus node.
 
   Attribute: `consensus.node_id`
@@ -1584,6 +1596,30 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   """
   @spec consensus_timeout_ms() :: :"consensus.timeout_ms"
   def consensus_timeout_ms, do: :"consensus.timeout_ms"
+
+  @doc """
+  Timestamp when the consensus round occurred (ISO 8601 format).
+
+  Attribute: `consensus.timestamp`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2026-03-25T12:00:00Z`, `2026-03-25T12:00:00.123Z`
+  """
+  @spec consensus_timestamp() :: :"consensus.timestamp"
+  def consensus_timestamp, do: :"consensus.timestamp"
+
+  @doc """
+  Version of the consensus protocol/implementation being executed.
+
+  Attribute: `consensus.version`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.0.0`, `hotstuff-v2.3.1`, `2026-03-25`
+  """
+  @spec consensus_version() :: :"consensus.version"
+  def consensus_version, do: :"consensus.version"
 
   @doc """
   Duration of the current consensus view in milliseconds.

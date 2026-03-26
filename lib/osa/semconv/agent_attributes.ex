@@ -563,6 +563,18 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   def agent_message_count, do: :"agent.message.count"
 
   @doc """
+  Node identifier for the agent (hostname, cluster node, etc).
+
+  Attribute: `agent.node`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `node-1`, `worker-0`, `compute-42`
+  """
+  @spec agent_node() :: :"agent.node"
+  def agent_node, do: :"agent.node"
+
+  @doc """
   Identifier of the orchestrating agent supervising this agent (Armstrong supervision tree).
 
   Attribute: `agent.orchestrator.id`
@@ -927,6 +939,18 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   end
 
   @doc """
+  Timestamp when the agent decision was made (ISO 8601 format).
+
+  Attribute: `agent.timestamp`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2026-03-25T12:00:00Z`, `2026-03-25T12:00:00.123Z`
+  """
+  @spec agent_timestamp() :: :"agent.timestamp"
+  def agent_timestamp, do: :"agent.timestamp"
+
+  @doc """
   Total token count for the agent inference.
 
   Attribute: `agent.token_count`
@@ -1004,6 +1028,18 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
     def star, do: :star
 
   end
+
+  @doc """
+  Version of the agent code/model being executed.
+
+  Attribute: `agent.version`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1.0.0`, `v2.3.1-beta`, `2026-03-25`
+  """
+  @spec agent_version() :: :"agent.version"
+  def agent_version, do: :"agent.version"
 
   @doc """
   Unique identifier for the workflow checkpoint.
