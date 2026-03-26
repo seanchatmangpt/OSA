@@ -11,6 +11,16 @@ defmodule OpenTelemetry.SemConv.Incubating.ConformanceSpanNames do
   """
 
   @doc """
+  Conformance checking span
+
+  Span: `span.conformance`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec conformance() :: String.t()
+  def conformance, do: "conformance"
+
+  @doc """
   Conformance checking — comparing a process trace against a discovered model.
 
   Span: `span.conformance.check`
@@ -26,6 +36,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ConformanceSpanNames do
   @spec all() :: [String.t()]
   def all do
     [
+      conformance(),
       conformance_check()
     ]
   end
