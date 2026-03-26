@@ -182,7 +182,7 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
       OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.step_total", 1)
       OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.outcome", "success")
       OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.system", "osa")
-      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.wave", 12)
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.wave", "wave12")
       OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.latency_ms", latency_ms)
       OpenTelemetry.Tracer.set_attribute(:"chatmangpt.run.correlation_id", cid)
     end

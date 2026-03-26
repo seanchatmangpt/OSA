@@ -123,6 +123,16 @@ defmodule OptimalSystemAgent.Board.Delivery do
     with {:ok, envelope} <- Auth.encrypt_briefing(briefing_text),
          encrypted_blob <- Jason.encode!(envelope) do
       attempt_email(encrypted_blob, retries_remaining)
+    else
+      {:error, :no_board_chair_configured} ->
+        Logger.info(
+          "[Board.Delivery] No board chair key configured — storing unencrypted to CLI fallback"
+        )
+        store_for_cli(briefing_text)
+        {:ok, :stored_for_cli}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

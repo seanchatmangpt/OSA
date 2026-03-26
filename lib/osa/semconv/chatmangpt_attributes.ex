@@ -100,6 +100,19 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   end
 
   @doc """
+  Shared identifier for a single Weaver live-check or CI run so spans across projects (OSA, Canopy, BusinessOS, pm4py-rust) can be filtered as one audit story.
+
+
+  Attribute: `chatmangpt.run.correlation_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `550e8400-e29b-41d4-a716-446655440000`, `20260326T120000Z-abc123`
+  """
+  @spec chatmangpt_run_correlation_id() :: :"chatmangpt.run.correlation_id"
+  def chatmangpt_run_correlation_id, do: :"chatmangpt.run.correlation_id"
+
+  @doc """
   Priority tier of the operation, used for budget enforcement.
 
   Attribute: `chatmangpt.service.tier`

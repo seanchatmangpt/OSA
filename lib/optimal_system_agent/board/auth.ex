@@ -55,7 +55,7 @@ defmodule OptimalSystemAgent.Board.Auth do
   Returns {:ok, key_bytes} where key_bytes is a 32-byte binary, or
   {:error, :key_not_configured} when the file is absent or malformed.
   """
-  @spec load_public_key() :: {:ok, binary()} | {:error, :key_not_configured}
+  @spec load_public_key() :: {:ok, binary()} | {:error, :key_not_configured | :no_board_chair_configured}
   def load_public_key do
     with {:file, {:ok, raw}} <- {:file, File.read(@pub_key_path)},
          trimmed = String.trim(raw),
@@ -63,6 +63,10 @@ defmodule OptimalSystemAgent.Board.Auth do
          {:length, true} <- {:length, byte_size(key_bytes) == 32} do
       {:ok, key_bytes}
     else
+      {:file, {:error, :enoent}} ->
+        Logger.warning("[Board.Auth] No board chair public key. Run: mix osa.board.setup")
+        {:error, :no_board_chair_configured}
+
       {:file, {:error, reason}} ->
         Logger.warning("[Board.Auth] Public key file not found at #{@pub_key_path}: #{reason}")
         {:error, :key_not_configured}

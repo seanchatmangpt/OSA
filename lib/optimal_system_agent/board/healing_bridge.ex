@@ -159,12 +159,41 @@ defmodule OptimalSystemAgent.Board.HealingBridge do
             })
             Telemetry.end_span(escalation_span, :ok)
 
-            OptimalSystemAgent.Events.Bus.emit(:board_escalation, %{
-              process_id: process_id,
-              escalation_type: :conway_violation,
-              conway_score: score,
-              message: "Org boundary consuming #{pct}% of cycle time in #{process_id}. Requires org restructuring decision."
-            }, source: "healing.bridge")
+            # Dedup: check ConwayLittleMonitor's shared ETS table before emitting.
+            # Prevents double escalation when both monitors detect the same violation.
+            cooldown_key = {:escalation_cooldown, process_id}
+            now_ms = System.monotonic_time(:millisecond)
+            cooldown_ms = 30 * 60 * 1000
+
+            already_escalated =
+              case :ets.whereis(:osa_conway_little_status) do
+                :undefined ->
+                  false
+                _ ->
+                  case :ets.lookup(:osa_conway_little_status, cooldown_key) do
+                    [{_, last_ms}] when now_ms - last_ms < cooldown_ms -> true
+                    _ -> false
+                  end
+              end
+
+            unless already_escalated do
+              if :ets.whereis(:osa_conway_little_status) != :undefined do
+                :ets.insert(:osa_conway_little_status, {cooldown_key, now_ms})
+              end
+
+              # Use :system_event with event: :board_escalation — :board_escalation is
+              # not a registered Bus event type; :system_event is the correct channel.
+              Bus.emit(:system_event, %{
+                event: :board_escalation,
+                process_id: process_id,
+                escalation_type: :conway_violation,
+                conway_score: score,
+                message: "Org boundary consuming #{pct}% of cycle time in #{process_id}. Requires org restructuring decision.",
+                timestamp: DateTime.utc_now()
+              }, source: "healing.bridge")
+            else
+              Logger.debug("[HealingBridge] Skipping duplicate board escalation for #{process_id} (within cooldown)")
+            end
 
           _ ->
             # Record deviation in ETS

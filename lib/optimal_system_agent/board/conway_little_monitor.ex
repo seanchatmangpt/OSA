@@ -48,6 +48,7 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
   @query_timeout_ms 10_000
   @oxigraph_url Application.compile_env(:optimal_system_agent, :oxigraph_url, "http://localhost:7878")
   @ets_table :osa_conway_little_status
+  @escalation_cooldown_ms 30 * 60 * 1000
 
   # Public API
 
@@ -188,10 +189,10 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
           Map.get(m, :stability_ratio, 1.0) > @littles_law_critical
         end)
 
-        # Route Conway violations to board escalation (NOT healing)
+        # Route Conway violations to board escalation (NOT healing).
+        # emit_board_escalation/1 returns true if emitted, false if deduped.
         escalations = Enum.count(conway_violations, fn violation ->
           emit_board_escalation(violation)
-          true
         end)
 
         # Route Little's Law criticals to healing
@@ -310,18 +311,36 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
   end
 
   defp emit_board_escalation(%{department: dept, conway_score: score} = _violation) do
-    pct = if score, do: round(score * 100), else: "?"
+    # ETS-backed dedup: skip if same department was escalated within cooldown window
+    cooldown_key = {:escalation_cooldown, dept}
+    now_ms = System.monotonic_time(:millisecond)
 
-    Logger.info("[ConwayLittleMonitor] Conway violation in #{dept} (score=#{score}), escalating to board")
+    should_emit =
+      case :ets.lookup(@ets_table, cooldown_key) do
+        [{_, last_ms}] when now_ms - last_ms < @escalation_cooldown_ms -> false
+        _ -> true
+      end
 
-    Bus.emit(:system_event, %{
-      event: :board_escalation,
-      process_id: dept,
-      escalation_type: :conway_violation,
-      conway_score: score,
-      message: "Org boundary consuming #{pct}% of cycle time in #{dept}. Requires org restructuring decision.",
-      timestamp: DateTime.utc_now()
-    }, source: "conway_little_monitor")
+    if should_emit do
+      :ets.insert(@ets_table, {cooldown_key, now_ms})
+      pct = if score, do: round(score * 100), else: "?"
+
+      Logger.info("[ConwayLittleMonitor] Conway violation in #{dept} (score=#{score}), escalating to board")
+
+      Bus.emit(:system_event, %{
+        event: :board_escalation,
+        process_id: dept,
+        escalation_type: :conway_violation,
+        conway_score: score,
+        message: "Org boundary consuming #{pct}% of cycle time in #{dept}. Requires org restructuring decision.",
+        timestamp: DateTime.utc_now()
+      }, source: "conway_little_monitor")
+
+      true
+    else
+      Logger.debug("[ConwayLittleMonitor] Skipping duplicate escalation for #{dept} (within #{@escalation_cooldown_ms}ms cooldown)")
+      false
+    end
   end
 
   defp emit_littles_law_healing(%{department: dept, stability_ratio: ratio, wip_count: wip, littles_law_wip: predicted} = _alert) do
