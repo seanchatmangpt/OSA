@@ -61,6 +61,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       # MCP client — starts MCP server child processes, depends on Registry + DynamicSupervisor above
       {OptimalSystemAgent.MCP.Client, []},
 
+      # pm4py-rust health monitor — Armstrong-compliant with 30s ping interval and 2s timeout
+      # Emits telemetry events on status change (ok/degraded/down)
+      {OptimalSystemAgent.Health.PM4PyMonitor, []},
+
       # Metrics collection GenServer — collects tool, provider, noise filter, and signal weight metrics
       OptimalSystemAgent.Telemetry.Metrics
     ]

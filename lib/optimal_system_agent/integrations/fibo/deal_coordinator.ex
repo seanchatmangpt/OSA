@@ -175,14 +175,7 @@ defmodule OptimalSystemAgent.Integrations.FIBO.DealCoordinator do
   """
   @spec get_deal(String.t()) :: {:ok, deal()} | {:error, atom() | String.t()}
   def get_deal(deal_id) do
-    case GenServer.call(__MODULE__, {:get_deal, deal_id}, @operation_timeout_ms) do
-      result ->
-        result
-
-      :timeout ->
-        Logger.error("[FIBO.DealCoordinator] get_deal timeout for deal_id=#{deal_id}")
-        {:error, :timeout}
-    end
+    GenServer.call(__MODULE__, {:get_deal, deal_id}, @operation_timeout_ms)
   catch
     :exit, {:timeout, _} ->
       Logger.error("[FIBO.DealCoordinator] get_deal genserver timeout")
@@ -218,14 +211,7 @@ defmodule OptimalSystemAgent.Integrations.FIBO.DealCoordinator do
   """
   @spec verify_compliance(String.t()) :: {:ok, deal()} | {:error, atom() | String.t()}
   def verify_compliance(deal_id) do
-    case GenServer.call(__MODULE__, {:verify_compliance, deal_id}, @operation_timeout_ms) do
-      result ->
-        result
-
-      :timeout ->
-        Logger.error("[FIBO.DealCoordinator] verify_compliance timeout for deal_id=#{deal_id}")
-        {:error, :timeout}
-    end
+    GenServer.call(__MODULE__, {:verify_compliance, deal_id}, @operation_timeout_ms)
   catch
     :exit, {:timeout, _} ->
       Logger.error("[FIBO.DealCoordinator] verify_compliance genserver timeout")
