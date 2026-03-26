@@ -1,34 +1,34 @@
 defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
   @moduledoc ~S"""
-  Chicago TDD: Quickstart Onboarding Orchestrator Tests
+    Chicago TDD: Quickstart Onboarding Orchestrator Tests
 
-  **RED Phase**: Tests for the complete user onboarding workflow.
-  **GREEN Phase**: Minimal GenServer implementation.
-  **REFACTOR Phase**: Extract step helpers, improve error handling.
+    **RED Phase**: Tests for the complete user onboarding workflow.
+    **GREEN Phase**: Minimal GenServer implementation.
+    **REFACTOR Phase**: Extract step helpers, improve error handling.
 
-  **WvdA Properties (Soundness):**
-    1. **Deadlock Freedom**: All blocking operations have timeout_ms + fallback
-    2. **Liveness**: All steps have bounded iteration; no infinite loops
-    3. **Boundedness**: ETS tables have max_items; no unbounded memory growth
+    **WvdA Properties (Soundness):**
+      1. **Deadlock Freedom**: All blocking operations have timeout_ms + fallback
+      2. **Liveness**: All steps have bounded iteration; no infinite loops
+      3. **Boundedness**: ETS tables have max_items; no unbounded memory growth
 
-  **Armstrong Principles (Fault Tolerance):**
-    1. **Let-It-Crash**: Errors propagate; supervisor restarts
-    2. **Supervision**: GenServer supervised by Onboarding supervisor
-    3. **No Shared State**: Communication via messages + ETS registry
-    4. **Budget Constraints**: Each operation has timeout budget
+    **Armstrong Principles (Fault Tolerance):**
+      1. **Let-It-Crash**: Errors propagate; supervisor restarts
+      2. **Supervision**: GenServer supervised by Onboarding supervisor
+      3. **No Shared State**: Communication via messages + ETS registry
+      4. **Budget Constraints**: Each operation has timeout budget
 
-  **FIRST Principles:**
-    - Fast: <100ms per test (no real HTTP to providers)
-    - Independent: Each test owns its ETS setup/teardown
-    - Repeatable: Deterministic; no timing dependencies
-    - Self-Checking: Assert on exact workflow state + telemetry events
-    - Timely: Tests written before implementation (RED phase)
+    **FIRST Principles:**
+      - Fast: <100ms per test (no real HTTP to providers)
+      - Independent: Each test owns its ETS setup/teardown
+      - Repeatable: Deterministic; no timing dependencies
+      - Self-Checking: Assert on exact workflow state + telemetry events
+      - Timely: Tests written before implementation (RED phase)
 
-  **Chicago TDD (Black-Box Testing):**
-    - Focus on behavior: user gets workspace + agent + health check
-    - Minimal mocking: use real GenServer, real ETS
-    - Tests immune to internal refactoring (public API only)
-    """
+    **Chicago TDD (Black-Box Testing):**
+      - Focus on behavior: user gets workspace + agent + health check
+      - Minimal mocking: use real GenServer, real ETS
+      - Tests immune to internal refactoring (public API only)
+  """
 
   use ExUnit.Case, async: false
 
