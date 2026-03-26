@@ -385,7 +385,7 @@ defmodule OptimalSystemAgent.MCP.Client do
 
               # Emit telemetry event
               duration_us = System.monotonic_time(:microsecond) - start_time
-              duration_ms = div(duration_us, 1000)
+              _duration_ms = div(duration_us, 1000)
 
               :telemetry.execute(
                 [:osa, :mcp, :tool_call],
@@ -398,7 +398,7 @@ defmodule OptimalSystemAgent.MCP.Client do
           {:error, reason} ->
             # Emit telemetry event for error
             duration = System.monotonic_time(:microsecond) - start_time
-            duration_ms = div(duration, 1000)
+            _duration_ms = div(duration, 1000)
 
             :telemetry.execute(
               [:osa, :mcp, :tool_call],

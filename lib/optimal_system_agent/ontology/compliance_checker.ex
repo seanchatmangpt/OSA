@@ -13,7 +13,7 @@ defmodule OptimalSystemAgent.Ontology.ComplianceChecker do
 
   require Logger
   alias OptimalSystemAgent.Ontology.OxigraphClient
-  alias OptimalSystemAgent.Healing.ReflexArcs
+  alias OptimalSystemAgent.Events.Bus
 
   @compliance_violations_query """
   PREFIX chatman: <https://ontology.chatmangpt.com/core#>
@@ -126,10 +126,8 @@ defmodule OptimalSystemAgent.Ontology.ComplianceChecker do
       {:ok, violations} ->
         remediated =
           Enum.reduce(violations, 0, fn violation, count ->
-            case emit_healing_action(violation) do
-              :ok -> count + 1
-              :error -> count
-            end
+            emit_healing_action(violation)
+            count + 1
           end)
 
         Logger.info(
@@ -163,16 +161,10 @@ defmodule OptimalSystemAgent.Ontology.ComplianceChecker do
       timestamp_ms: System.monotonic_time(:millisecond)
     }
 
-    case ReflexArcs.emit_action(action) do
-      :ok ->
-        Logger.debug(
-          "Emitted healing action for violation: #{Map.get(violation, :violation_id)}"
-        )
-        :ok
-
-      :error ->
-        Logger.error("Failed to emit healing action for violation: #{Map.get(violation, :violation_id)}")
-        :error
-    end
+    Bus.emit(:healing_action, action)
+    Logger.debug(
+      "Emitted healing action for violation: #{Map.get(violation, :violation_id)}"
+    )
+    :ok
   end
 end

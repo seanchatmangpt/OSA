@@ -9,6 +9,7 @@ defmodule OSA.MCP.ToolExecutor do
   """
 
   require Logger
+  require OpenTelemetry.Tracer
   alias OpenTelemetry.Tracer
 
   @doc """

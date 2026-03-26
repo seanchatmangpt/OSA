@@ -12,7 +12,6 @@ defmodule OptimalSystemAgent.Ontology.AgentLoader do
 
   require Logger
   alias OptimalSystemAgent.Ontology.OxigraphClient
-  alias OptimalSystemAgent.Agents.Registry
 
   @agents_active_query """
   PREFIX chatman: <https://ontology.chatmangpt.com/core#>

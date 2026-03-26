@@ -18,6 +18,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   and side-effect calls that are clearly labelled).
   """
   require Logger
+  require OpenTelemetry.Tracer, as: Tracer
   alias OpenTelemetry.Tracer
 
   alias OptimalSystemAgent.Agent.Context

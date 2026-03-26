@@ -554,10 +554,10 @@ defmodule OptimalSystemAgent.Integrations.Healthcare.PHIHandler do
     end
   end
 
-  defp execute_sparql_construct(query) do
+  defp execute_sparql_construct(_query) do
     # Execute SPARQL CONSTRUCT via bos CLI
     # Returns {:ok, triple_count} or {:error, reason}
-    # In production: invoke `bos sparql construct "#{query}"`
+    # In production: invoke `bos sparql construct "#{_query}"`
 
     try do
       # Simulate SPARQL execution

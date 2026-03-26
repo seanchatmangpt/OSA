@@ -241,7 +241,7 @@ defmodule OptimalSystemAgent.Testing.Assert do
   @doc """
   Assert soundness: no deadlock_risk with context (WvdA).
   """
-  def assert_deadlock_free(code_section, context \\ "") do
+  def assert_deadlock_free(_code_section, context \\ "") do
     # This is a narrative assertion for code review
     # Real deadlock freedom requires formal proof or chaos testing
     message =
