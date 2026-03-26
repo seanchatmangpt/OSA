@@ -158,13 +158,22 @@ defmodule OptimalSystemAgent.Health.PM4PyMonitor do
 
   @doc false
   def ping_pm4py do
-    case Client.check_deadlock_free("ping_test") do
-      {:ok, _result} ->
-        latency_ms = System.monotonic_time(:millisecond)
-        {:ok, latency_ms}
+    try do
+      case Client.check_deadlock_free("ping_test") do
+        {:ok, _result} ->
+          {:ok, System.monotonic_time(:millisecond)}
 
-      {:error, reason} ->
-        {:error, reason}
+        {:error, reason} ->
+          {:error, reason}
+      end
+    rescue
+      e ->
+        # ProcessMining.Client may not be started yet during app startup
+        {:error, {:rescue, Exception.message(e)}}
+    catch
+      # Handle :exit when ProcessMining.Client process doesn't exist
+      :exit, reason ->
+        {:error, {:exit, reason}}
     end
   end
 

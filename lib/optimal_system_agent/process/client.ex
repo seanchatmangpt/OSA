@@ -12,6 +12,21 @@ defmodule OptimalSystemAgent.Process.Mining.Client do
   - HTTP requests use `receive_timeout: 10_000` (milliseconds)
   - Timeout triggers escalation rather than silent failure
 
+  ## Backpressure & Resilience
+
+  Calls can be wrapped with a circuit breaker for backpressure:
+
+      {:ok, result} = CircuitBreaker.call(fn ->
+        ProcessMining.Client.check_deadlock_free(process_id)
+      end)
+
+  Circuit breaker states:
+  - **CLOSED**: Normal operation, calls pass through
+  - **OPEN**: Too many failures, calls fail fast with `{:error, :circuit_open}`
+  - **HALF_OPEN**: Testing recovery, limited calls allowed
+
+  See `OptimalSystemAgent.Resilience.CircuitBreaker` for details.
+
   ## Integration
 
   Used by Phase 4 WvdA agents:

@@ -17,13 +17,17 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
   setup do
     # Start a fresh circuit breaker for each test with tuned timeouts
     name = :"test_cb_#{System.unique_integer([:positive])}"
-    {:ok, _pid} = CircuitBreaker.start_link(
-      name: name,
-      failure_threshold: 5,
-      window_duration_ms: 60_000,
-      open_timeout_ms: 100,  # Fast timeout for testing
-      success_threshold: 3
-    )
+
+    {:ok, _pid} =
+      CircuitBreaker.start_link(
+        name: name,
+        failure_threshold: 5,
+        window_duration_ms: 60_000,
+        # Fast timeout for testing
+        open_timeout_ms: 100,
+        success_threshold: 3
+      )
+
     {:ok, cb: name}
   end
 
@@ -47,6 +51,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
       for _i <- 1..5 do
         CircuitBreaker.call(cb, fn -> raise "Error" end)
       end
+
       assert CircuitBreaker.status(cb) == :OPEN
 
       # Subsequent calls should fail immediately with :circuit_open
@@ -59,6 +64,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
       for _i <- 1..5 do
         CircuitBreaker.call(cb, fn -> raise "Error" end)
       end
+
       assert CircuitBreaker.status(cb) == :OPEN
 
       # Wait for open timeout
@@ -122,6 +128,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
       for i <- 1..4 do
         CircuitBreaker.call(cb, fn -> raise "Error #{i}" end)
       end
+
       assert CircuitBreaker.status(cb) == :CLOSED
 
       # Should still be CLOSED (below threshold)
@@ -150,14 +157,15 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
 
   describe "successful calls" do
     test "passes through successful calls in CLOSED", %{cb: cb} do
-      result = CircuitBreaker.call(cb, fn ->
-        %{data: "test"}
-      end)
+      result =
+        CircuitBreaker.call(cb, fn ->
+          %{data: "test"}
+        end)
+
       assert result == {:ok, %{data: "test"}}
       assert CircuitBreaker.status(cb) == :CLOSED
     end
 
-    @moduletag :skip
     test "returns exact result from function", %{cb: cb} do
       expected = [1, 2, 3]
       result = CircuitBreaker.call(cb, fn -> expected end)
@@ -171,6 +179,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
       for _i <- 1..5 do
         CircuitBreaker.call(cb, fn -> raise "Error" end)
       end
+
       assert CircuitBreaker.status(cb) == :OPEN
 
       # Reset
@@ -190,6 +199,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
           raise ArgumentError, "bad argument"
         end)
       end
+
       assert CircuitBreaker.status(cb) == :OPEN
     end
 
@@ -199,6 +209,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
           throw(:error_signal)
         end)
       end
+
       assert CircuitBreaker.status(cb) == :OPEN
     end
 
@@ -232,17 +243,18 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreakerTest do
   describe "integration with ProcessMining.Client pattern" do
     test "wraps client calls correctly", %{cb: cb} do
       # Simulate a ProcessMining.Client call pattern
-      result = CircuitBreaker.call(cb, fn ->
-        {:ok, %{"deadlock_free" => true, "confidence" => 0.95}}
-      end)
+      result =
+        CircuitBreaker.call(cb, fn ->
+          %{"deadlock_free" => true, "confidence" => 0.95}
+        end)
 
       assert match?({:ok, %{"deadlock_free" => true}}, result)
     end
 
     test "fails fast when circuit is open", %{cb: cb} do
-      # Trip the circuit with rapid failures
+      # Trip the circuit with rapid failures (actual exceptions)
       for _i <- 1..5 do
-        CircuitBreaker.call(cb, fn -> {:error, :timeout} end)
+        CircuitBreaker.call(cb, fn -> raise "Error" end)
       end
 
       # Record time for fast fail

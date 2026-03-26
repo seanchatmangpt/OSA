@@ -61,6 +61,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       # MCP client — starts MCP server child processes, depends on Registry + DynamicSupervisor above
       {OptimalSystemAgent.MCP.Client, []},
 
+      # Resilience circuit breaker for ProcessMining.Client (Armstrong backpressure pattern)
+      # Trips to OPEN after 5 failures in 60s window, waits 30s before testing recovery (HALF_OPEN)
+      {OptimalSystemAgent.Resilience.CircuitBreaker, []},
+
       # pm4py-rust health monitor — Armstrong-compliant with 30s ping interval and 2s timeout
       # Emits telemetry events on status change (ok/degraded/down)
       {OptimalSystemAgent.Health.PM4PyMonitor, []},
