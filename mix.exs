@@ -101,7 +101,23 @@ defmodule OptimalSystemAgent.MixProject do
       # Weaver live-check: emits OTLP spans during tests to validate against semconv schema.
       # Requires Weaver receiver running: make -C ../semconv/live-check start
       # Usage: mix weaver.live_check
-      "weaver.live_check": ["cmd WEAVER_LIVE_CHECK=true WEAVER_OTLP_ENDPOINT=http://localhost:4317 mix test"]
+      "weaver.live_check": ["cmd WEAVER_LIVE_CHECK=true WEAVER_OTLP_ENDPOINT=http://localhost:4317 mix test"],
+
+      # Fast feedback loops — unit tests only (no integration/slow)
+      # Usage: mix test.fast
+      "test.fast": ["test", "--exclude", "integration", "--exclude", "slow"],
+
+      # Integration tests only
+      # Usage: mix test.integration
+      "test.integration": ["test", "--include", "integration"],
+
+      # Slow tests only (long-running operations)
+      # Usage: mix test.slow
+      "test.slow": ["test", "--include", "slow"],
+
+      # Unit tests without app startup (pure logic)
+      # Usage: mix test.unit
+      "test.unit": ["test", "--no-start", "--exclude", "integration", "--exclude", "slow"]
     ]
   end
 

@@ -38,6 +38,9 @@ OSA (Optimal System Agent) is an Elixir/OTP + Rust multi-agent orchestration sys
 
 | Explanation | Topic | Why It Matters |
 |-------------|-------|----------------|
+| [The 7-Layer Architecture in OSA](./explanation/seven-layer-architecture-osa.md) | Signal → Composition → Interface → Data → Feedback → Governance | How OSA organizes complexity into 6 layers that prevent failure |
+| [Signal Theory and Quality Gates](./explanation/signal-theory-quality-gates.md) | S=(M,G,T,F,W) as quality mechanism | Why ~75% of agent outputs pass quality gates on first try |
+| [Deadlock-Free Design (WvdA Soundness)](./explanation/deadlock-free-design-wvda.md) | Timeouts, supervision, bounded queues | How OSA guarantees the system never freezes |
 | [The Chatman Equation](../../docs/diataxis/explanation/chatman-equation.md) | A=μ(O) mathematical foundation | OSA applies this to orchestration |
 | [Signal Theory Complete](../../docs/diataxis/explanation/signal-theory-complete.md) | 5-tuple encoding + 4 constraints | OSA's core routing mechanism |
 | [The 7-Layer Architecture](../../docs/diataxis/explanation/seven-layer-architecture.md) | Optimal Systems design | OSA implements layers 2-7 |
@@ -172,3 +175,52 @@ OSA's orchestration uses YAWL patterns:
 ---
 
 *OSA Diátaxis Documentation — Part of the ChatmanGPT Knowledge System*
+
+---
+
+## Latest Additions — Vision 2030 Documentation
+
+### How-To Guides (March 2026)
+
+**[How-To: Implement a New Healing Pattern](./how-to/implement-healing-pattern.md)** (462 lines)
+- Add custom healers for 11 failure modes (deadlock, timeout, cascade, etc.)
+- Follow 6-step process: define → create → register → test → config → E2E
+- Includes deadlock healer example, Armstrong principles, OTEL instrumentation
+- Best practices: idempotency, observability, timeouts, supervision
+
+**[How-To: Add an Agent Tool to OSA](./how-to/add-agent-tool.md)** (519 lines)
+- Build new tools from scratch (e.g., `@tool process_document`)
+- Tools.Behaviour contract, JSON Schema validation, permission enforcement
+- Copy-paste ready: document parser example (markdown, JSON, YAML, text)
+- Registration, testing, integration checklist
+
+### Reference Guides (March 2026)
+
+**[Reference: Agent API Reference](./reference/agent-api-reference.md)** (568 lines)
+- All agent callbacks (init, handle_call, handle_cast, handle_info, terminate)
+- Agent config sources and lifecycle
+- 32+ built-in tools with safety tiers
+- Signals (S=(M,G,T,F,W)), events, modes, permissions
+- Memory layers, budget system, common patterns, debugging
+
+**[Reference: OSA Configuration Glossary](./reference/osa-configuration-glossary.md)** (462 lines)
+- 40+ environment variables grouped by purpose
+- ETS tables (10+ with TTLs, key patterns, usage examples)
+- GenServer processes & registries (named singletons, dynamic agents)
+- Supervision tree structure & restart strategies
+- Database schema, hot reload, health checks, troubleshooting
+
+---
+
+**Cross-Document Navigation:**
+- Need healing? → `implement-healing-pattern.md` → `agent-api-reference.md` (Agent callbacks) → `osa-configuration-glossary.md` (Healing config)
+- Need tools? → `add-agent-tool.md` → `agent-api-reference.md` (Tool safety tiers) → `osa-configuration-glossary.md` (Tool config)
+- Need config? → `osa-configuration-glossary.md` (lookup) → `agent-api-reference.md` (patterns) → how-tos (examples)
+
+**All 4 documents follow:**
+- 80/20 principle (specific + copy-paste ready)
+- Chicago TDD discipline (tests, Red-Green-Refactor)
+- Armstrong principles (supervision, let-it-crash, no shared state)
+- OTEL instrumentation (observability)
+- WvdA soundness (timeouts, deadlock-free, liveness)
+
