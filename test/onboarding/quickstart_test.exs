@@ -39,10 +39,19 @@ defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
   # ── Setup / Teardown ───────────────────────────────────────────
 
   setup do
-    # ETS tables already created by Application.start/2
-    # Clear them for this test
-    :ets.delete_all_objects(:osa_demo_agents)
-    :ets.delete_all_objects(:osa_quickstart_sessions)
+    # ETS tables created by Application.start/2 — clear for this test
+    # (may not exist if app startup was incomplete, so wrap in try/rescue)
+    try do
+      :ets.delete_all_objects(:osa_demo_agents)
+    rescue
+      _ -> :ok
+    end
+
+    try do
+      :ets.delete_all_objects(:osa_quickstart_sessions)
+    rescue
+      _ -> :ok
+    end
 
     # Subscribe to system events (using Phoenix.PubSub if available)
     # Note: Bus.emit uses Task.Supervisor, so no explicit subscription needed for test
