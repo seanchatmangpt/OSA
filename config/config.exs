@@ -20,6 +20,9 @@ config :optimal_system_agent,
   openrouter_url: "https://openrouter.ai/api/v1",
   openrouter_model: "meta-llama/llama-3.3-70b-instruct",
 
+  # pm4py-rust process mining engine (set PM4PY_URL env var to override)
+  pm4py_url: System.get_env("PM4PY_URL", "http://localhost:8090"),
+
   # Agent configuration
   max_iterations: 200,
   temperature: 0.7,

@@ -202,6 +202,7 @@ defmodule OptimalSystemAgent.Agent.Context do
       {runtime_block(state), 1, "runtime"},
       {environment_block(state), 1, "environment"},
       {plan_mode_block(state), 1, "plan_mode"},
+      {process_context_block(state), 1, "process_context"},
       {memory_block_relevant(state), 1, "memory"},
       {episodic_block(state), 1, "episodic"},
       {task_state_block(state), 1, "task_state"},
@@ -691,6 +692,37 @@ defmodule OptimalSystemAgent.Agent.Context do
   defp get_active_model(provider) do
     key = :"#{provider}_model"
     Application.get_env(:optimal_system_agent, key, to_string(provider))
+  end
+
+  # Process context injection — queries pm4py-rust for current process state
+  # Provides LLM with grounded process intelligence (bottlenecks, critical path, variants)
+  defp process_context_block(state) do
+    try do
+      pm4py_url = Map.get(state, :pm4py_url, "http://localhost:8090")
+
+      # Query for generic process overview without specific petri net
+      # (assumes state has process context from previous discovery)
+      query = "Describe the current process state, including critical path, bottlenecks, and main variants."
+
+      case Req.post("#{pm4py_url}/api/query",
+        json: %{"query" => query},
+        receive_timeout: 5000
+      ) do
+        {:ok, response} when is_map(response.body) ->
+          case response.body do
+            %{"response" => insight} ->
+              "## Current Process State\n\n#{insight}"
+
+            _ ->
+              nil
+          end
+
+        _ ->
+          nil
+      end
+    rescue
+      _ -> nil
+    end
   end
 
   defp runtime_block(state) do

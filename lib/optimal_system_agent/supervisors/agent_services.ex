@@ -48,6 +48,7 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       # Process Intelligence — fingerprinting, temporal mining, org evolution
       OptimalSystemAgent.Process.Fingerprint,
       OptimalSystemAgent.Process.OrgEvolution,
+      OptimalSystemAgent.Process.Mining.Client,
 
       # Agent Commerce Marketplace — skill publishing, discovery, trading
       OptimalSystemAgent.Commerce.Marketplace,

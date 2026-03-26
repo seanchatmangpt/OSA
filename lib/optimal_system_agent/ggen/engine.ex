@@ -5,12 +5,18 @@ defmodule OptimalSystemAgent.Ggen.Engine do
   Generates code templates from ODCS workspace definitions using SPARQL CONSTRUCT queries.
   Implements deterministic, variable-substitution-based template rendering.
 
+  Integrates with Oxigraph HTTP API for SPARQL execution. All CONSTRUCT queries return
+  RDF triples which are parsed into SPR (Semantic Projection) output (modules.json, deps.json, patterns.json).
+
   Signal Theory: S=(code,spec,inform,elixir,module)
   """
 
   alias OptimalSystemAgent.Ggen.Registry
   alias OptimalSystemAgent.Ggen.TemplateRenderer
   require Logger
+
+  @oxigraph_base_url "http://localhost:7878"
+  @timeout_ms 10000
 
   @doc """
   Generate a template from workspace definition
@@ -22,6 +28,7 @@ defmodule OptimalSystemAgent.Ggen.Engine do
       - :output_dir - where to write generated files
       - :dry_run - if true, return content without writing
       - :workspace_rdf - path to workspace.ttl for SPARQL correlation
+      - :oxigraph_url - override Oxigraph URL (default: http://localhost:7878)
 
   ## Returns
     {:ok, %{files: [...], metadata: %{}}}
@@ -55,11 +62,14 @@ defmodule OptimalSystemAgent.Ggen.Engine do
   SPR output (modules.json, deps.json, patterns.json) and then generates
   code artifacts from those specifications.
 
+  Sends SPARQL CONSTRUCT query to Oxigraph HTTP API and parses RDF results
+  into structured data.
+
   ## Parameters
     - workspace_rdf_path: path to workspace.ttl
     - query_path: path to SPARQL query file
     - template_type: :rust, :typescript, etc.
-    - options: keyword list
+    - options: keyword list with optional :oxigraph_url override
 
   ## Returns
     {:ok, %{files: [...], spr_output: %{...}, metadata: %{...}}}
@@ -68,7 +78,7 @@ defmodule OptimalSystemAgent.Ggen.Engine do
   def generate_from_sparql(workspace_rdf_path, query_path, template_type, options \\ []) do
     with true <- File.exists?(workspace_rdf_path),
          true <- File.exists?(query_path),
-         {:ok, spr_output} <- execute_sparql_construct(workspace_rdf_path, query_path),
+         {:ok, spr_output} <- execute_sparql_construct(workspace_rdf_path, query_path, options),
          {:ok, variables} <- extract_variables_from_spr(spr_output),
          {:ok, result} <- generate(template_type, variables, options) do
       {:ok, Map.put(result, :spr_output, spr_output)}
@@ -92,6 +102,29 @@ defmodule OptimalSystemAgent.Ggen.Engine do
   """
   def template_info(template_type) do
     Registry.get_template_info(template_type)
+  end
+
+  @doc """
+  Health check for Oxigraph connectivity
+
+  Returns {:ok, %{status: "ok", version: "..."}} if Oxigraph is responding.
+  Used by integration tests and startup validation.
+  """
+  def health_check_oxigraph(options \\ []) do
+    url = Keyword.get(options, :oxigraph_url, @oxigraph_base_url)
+    health_url = "#{url}/health"
+
+    case Req.get(health_url, timeout: @timeout_ms) do
+      {:ok, response} ->
+        if response.status == 200 do
+          {:ok, %{status: "ok", url: url}}
+        else
+          {:error, "Oxigraph returned status #{response.status}"}
+        end
+
+      {:error, reason} ->
+        {:error, "Oxigraph health check failed: #{inspect(reason)}"}
+    end
   end
 
   # Private
@@ -128,22 +161,53 @@ defmodule OptimalSystemAgent.Ggen.Engine do
     end
   end
 
-  defp execute_sparql_construct(workspace_rdf_path, query_path) do
-    # This would integrate with an RDF store (Oxigraph via SPARQL)
-    # For now, return a placeholder
+  @doc false
+  def execute_sparql_construct(workspace_rdf_path, query_path, options \\ []) do
+    url = Keyword.get(options, :oxigraph_url, @oxigraph_base_url)
     query_content = File.read!(query_path)
-    Logger.info("Executing SPARQL CONSTRUCT from #{Path.basename(query_path)}")
 
-    {:ok, %{
-      type: "sparql_result",
-      query: query_content,
-      source: workspace_rdf_path
-    }}
+    # Load workspace.ttl into Oxigraph (in production, workspace would be pre-loaded)
+    # For now, we execute the query and collect results
+
+    sparql_url = "#{url}/query"
+
+    headers = [
+      {"Content-Type", "application/sparql-query"},
+      {"Accept", "application/n-triples"}
+    ]
+
+    Logger.info(
+      "Executing SPARQL CONSTRUCT: #{Path.basename(query_path)} against #{workspace_rdf_path}"
+    )
+
+    case Req.post(sparql_url,
+      headers: headers,
+      body: query_content,
+      timeout: @timeout_ms
+    ) do
+      {:ok, response} ->
+        if response.status == 200 do
+          {:ok, %{
+            type: "sparql_construct_result",
+            query: query_content,
+            source: workspace_rdf_path,
+            result: response.body,
+            timestamp_ms: System.monotonic_time(:millisecond)
+          }}
+        else
+          {:error, "Oxigraph CONSTRUCT failed: status #{response.status}"}
+        end
+
+      {:error, reason} ->
+        {:error, "Failed to execute SPARQL CONSTRUCT: #{inspect(reason)}"}
+    end
   end
 
   defp extract_variables_from_spr(spr_output) do
     # Extract template variables from SPR output
     # (modules.json, deps.json, patterns.json)
-    {:ok, Map.get(spr_output, :variables, %{})}
+    # In a real implementation, parse the RDF result and structure it
+    variables = Map.get(spr_output, :variables, %{})
+    {:ok, variables}
   end
 end

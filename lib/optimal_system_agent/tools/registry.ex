@@ -537,7 +537,8 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "peer_negotiate_task" => OptimalSystemAgent.Tools.Builtins.PeerNegotiateTask,
       "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery,
       "a2a_call" => OptimalSystemAgent.Tools.Builtins.A2ACall,
-      "pm4py_discover" => OptimalSystemAgent.Tools.Builtins.PM4PyDiscover
+      "pm4py_discover" => OptimalSystemAgent.Tools.Builtins.PM4PyDiscover,
+      "process_intelligence_query" => OptimalSystemAgent.Tools.Builtins.ProcessIntelligenceQuery
     }
   end
 

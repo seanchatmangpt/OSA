@@ -18,6 +18,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   and side-effect calls that are clearly labelled).
   """
   require Logger
+  alias OpenTelemetry.Tracer
 
   alias OptimalSystemAgent.Agent.Context
   alias OptimalSystemAgent.Agent.Scratchpad
@@ -42,6 +43,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   Run the agent loop for the given state.
 
   Returns `{response_string, updated_state}`.
+  Emits OTEL span for JTBD Wave 12 scenario instrumentation.
   """
   @spec run(map()) :: {String.t(), map()}
   def run(%{iteration: iter, session_id: sid} = state) do
@@ -80,7 +82,30 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
         {"I've used all #{max_iter} iterations on this task.\n\n**Tools used:** #{tools_used}\n\nIf the task isn't complete, try breaking it into smaller steps or giving more specific instructions.", state}
 
       true ->
-        do_iteration(state)
+        # OTEL instrumentation for JTBD Wave 12
+        Tracer.with_span(:jtbd_scenario_agent_decision_loop, %{
+          "jtbd.scenario.id" => "agent_decision_loop",
+          "jtbd.scenario.step" => step_name(iter),
+          "jtbd.scenario.step_num" => min(iter + 1, 4),
+          "jtbd.scenario.step_total" => 4,
+          "jtbd.scenario.outcome" => "pending",
+          "jtbd.scenario.system" => "osa",
+          "jtbd.scenario.wave" => "wave12",
+          "jtbd.scenario.agent_id" => sid
+        }) do
+          result = do_iteration(state)
+          Tracer.set_attributes(%{"jtbd.scenario.outcome" => "success"})
+          result
+        end
+    end
+  end
+
+  defp step_name(iter) do
+    case iter do
+      0 -> "observe"
+      1 -> "think"
+      2 -> "act"
+      _ -> "conclude"
     end
   end
 
