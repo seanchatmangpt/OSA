@@ -143,6 +143,12 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
 
   Creates a proposal with unique ID, stores in ETS, and broadcasts to agents.
 
+  ## Quorum Calculation
+
+  Threshold = 2f + 1 votes (where n = 3f + 1 agents total).
+  This ensures >2/3 supermajority, guaranteeing consensus even if f agents fail.
+  Example: 7 agents (f=2) need 5 votes; 13 agents (f=4) need 9 votes.
+
   ## Parameters
 
     * `fleet_id` - Fleet identifier
@@ -225,7 +231,10 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
         if Proposal.decided?(proposal) do
           {:ok, proposal.status}
         else
-          # Add vote
+          # ## Vote Propagation & Finality
+          # Record vote and check if we've reached 2f+1 supermajority (>2/3 of fleet).
+          # Once threshold hit, proposal becomes **final** (consensus guarantee).
+          # This is the key safety property: once committed, no reorg is possible.
           updated_proposal = Proposal.add_vote(proposal, agent_id, :approve)
 
           # Check threshold using total agent count
@@ -289,7 +298,10 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
         # Update proposal status
         committed_proposal = %{proposal | status: :approved}
 
-        # Create audit entry with hash chain
+        # ## Hash Chain Audit Log
+        # Each committed proposal references hash of previous entry (Merkle chain).
+        # This creates immutable, non-repudiable record: any fork detected immediately.
+        # Sequence number ensures strict ordering even with concurrent fleets.
         audit_entry = create_audit_entry(
           fleet_id,
           seq_num,

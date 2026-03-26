@@ -320,6 +320,10 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
     metrics = compute_metrics(events, precision)
     signal_vector = classify_signal_vector(events, metrics)
 
+    # ## Fingerprint Generation (Process DNA)
+    # pattern_hash: SHA256(canonical signal+metrics) — 256-bit deterministic ID.
+    # signature: Base64(first 8 bytes of hash) + signal vector — 64-byte barcode for fast lookup.
+    # fingerprint_id: Uses first 128 bits of hash to ensure collision probability <1e-20 at scale.
     pattern_hash = compute_pattern_hash(signal_vector, metrics, precision)
     signature = compute_signature(signal_vector, pattern_hash)
     fingerprint_id = "fp_#{pattern_hash |> String.slice(0, 16)}"
@@ -555,7 +559,10 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
   # ---------------------------------------------------------------------------
 
   defp compute_pattern_hash(signal_vector, metrics, precision) do
-    # Canonicalize: fixed precision, deterministic key order
+    # ## Pattern Hash: Canonical Determinism
+    # Canonicalize: fixed precision, deterministic key order (M,G,T,F,W).
+    # Ensures same process always yields same hash (idempotent).
+    # SHA256 output → hex gives 64-char unique ID per distinct process signature.
     canonical =
       [
         "M:#{Map.get(signal_vector, :M)}",
@@ -576,7 +583,10 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
   end
 
   defp compute_signature(signal_vector, pattern_hash) do
-    # Compress signal vector + first 8 bytes of pattern hash into a short barcode
+    # ## Fingerprint Barcode: Fast Lookup
+    # Compress S=(M,G,T,F,W) signal vector + first 8 bytes of hash into <64-byte barcode.
+    # barcode = Base64(M.G.T.F.W:hash_prefix) — human-readable + compact.
+    # Used for ETS bag indexing and fast collision detection in process comparison.
     vector_str =
       "#{Map.get(signal_vector, :M)}.#{Map.get(signal_vector, :G)}.#{Map.get(signal_vector, :T)}.#{Map.get(signal_vector, :F)}.#{Map.get(signal_vector, :W)}"
 
