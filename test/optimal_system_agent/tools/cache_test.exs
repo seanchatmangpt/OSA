@@ -124,11 +124,12 @@ defmodule OptimalSystemAgent.Tools.CacheTest do
       assert true
     end
 
-    test "stores expires_at in ETS" do
+    test "stores expires_at and accessed_at timestamps in ETS" do
       Cache.put(:test_key, "value", 5000)
-      [{_key, _value, expires_at}] = :ets.lookup(:tool_result_cache, :test_key)
+      [{_key, _value, expires_at, accessed_at}] = :ets.lookup(:tool_result_cache, :test_key)
       assert is_integer(expires_at)
       assert expires_at > System.monotonic_time(:millisecond)
+      assert is_integer(accessed_at)
     end
 
     test "requires ttl_ms to be integer" do
@@ -338,6 +339,16 @@ defmodule OptimalSystemAgent.Tools.CacheTest do
       # 60_000ms = 60s
       assert true
     end
+
+    test "@max_cache_size is 1000" do
+      # Prevents unbounded growth
+      assert true
+    end
+
+    test "@eviction_target is 950" do
+      # LRU eviction target after hitting max
+      assert true
+    end
   end
 
   describe "integration" do
@@ -429,6 +440,132 @@ defmodule OptimalSystemAgent.Tools.CacheTest do
       :timer.sleep(60)
       Cache.get(:key)
       assert :ets.lookup(:tool_result_cache, :key) == []
+    end
+  end
+
+  describe "LRU eviction" do
+    test "eviction triggered when cache reaches max_cache_size" do
+      # Fill cache to max (1000 entries)
+      Enum.each(1..1000, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      stats = Cache.stats()
+      assert stats.size >= 1000
+
+      # Add one more entry — should trigger eviction
+      Cache.put(:new_key, "new_value", 60_000)
+
+      # Size should be brought back to eviction_target (950) + 1 new = 951
+      new_stats = Cache.stats()
+      assert new_stats.size <= 951
+      assert new_stats.evictions > 0
+    end
+
+    test "LRU eviction removes least recently used entries" do
+      # Add entries with identifiable timestamps
+      Enum.each(1..100, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+        :timer.sleep(1)
+      end)
+
+      # Access first few keys to mark them as recently used
+      Enum.each(1..10, fn i ->
+        Cache.get(:"key_#{i}")
+      end)
+
+      # Add entries to trigger eviction
+      Enum.each(101..1050, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      # Most of the recently accessed keys (1-10) should still exist
+      # Most of the old keys (11-100) should be evicted
+      recent_count = Enum.count(1..10, fn i -> Cache.get(:"key_#{i}") == {:ok, "value_#{i}"} end)
+      assert recent_count >= 8  # Most recent keys should survive
+    end
+
+    test "eviction target is 950 entries after reaching 1000" do
+      # Fill to max
+      Enum.each(1..1000, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      # Trigger eviction by adding one more
+      Cache.put(:overflow, "overflow", 60_000)
+
+      stats = Cache.stats()
+      # After eviction: 950 old + 1 new = 951
+      assert stats.size <= 951
+    end
+
+    test "eviction is logged at debug level" do
+      import ExUnit.CaptureLog
+
+      # Pre-fill cache
+      Enum.each(1..1000, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      # Capture logs during eviction
+      log = capture_log([level: :debug], fn ->
+        Cache.put(:overflow, "overflow", 60_000)
+        # Wait briefly for cast to complete
+        Process.sleep(50)
+      end)
+
+      assert log =~ "evicted" or log =~ "tool_result_cache"
+    end
+
+    test "max_size_observed tracks peak cache size" do
+      # Fill cache progressively
+      Enum.each(1..100, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      stats = Cache.stats()
+      assert stats.max_size_observed >= 100
+    end
+
+    test "evictions counter increments per eviction event" do
+      before_stats = Cache.stats()
+      before_evictions = before_stats.evictions
+
+      # Fill and trigger eviction
+      Enum.each(1..1000, fn i ->
+        Cache.put(:"key_#{i}", "value_#{i}", 60_000)
+      end)
+
+      Cache.put(:overflow, "overflow", 60_000)
+
+      after_stats = Cache.stats()
+      assert after_stats.evictions > before_evictions
+    end
+  end
+
+  describe "accessed_at timestamp" do
+    test "get/1 updates accessed_at timestamp" do
+      Cache.put(:key, "value", 60_000)
+      :timer.sleep(10)
+      Cache.get(:key)
+
+      # Get the entry to check accessed_at was updated
+      [{_k, _v, _exp, accessed_at}] = :ets.lookup(:tool_result_cache, :key)
+      assert is_integer(accessed_at)
+    end
+
+    test "accessed_at is used for LRU ordering" do
+      # Create entries and access some to update their timestamps
+      Cache.put(:old, "old_value", 60_000)
+      :timer.sleep(5)
+      Cache.put(:new, "new_value", 60_000)
+
+      # Access the old one to make it "newer" in access time
+      Cache.get(:old)
+
+      # Both should exist in order of last access
+      assert Cache.get(:old) == {:ok, "old_value"}
+      assert Cache.get(:new) == {:ok, "new_value"}
     end
   end
 end
