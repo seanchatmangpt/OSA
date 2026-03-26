@@ -13,6 +13,9 @@
 
 # Workspace metadata
 osa:workspace a owl:Ontology ;
+    owl:imports <https://ontology.chatmangpt.com/core> ;
+    owl:imports <http://www.w3.org/ns/prov-o#> ;
+    owl:imports <http://www.w3.org/2006/time#> ;
     rdfs:label "Fortune 5 Workspace" ;
     rdfs:comment "SPR sensor outputs converted to RDF" ;
     osa:generatedAt "2026-03-24T23:48:40.069861Z"^^xsd:dateTime ;
