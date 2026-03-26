@@ -403,13 +403,13 @@ defmodule OptimalSystemAgent.Agents.Armstrong.SupervisionAuditor do
         severity: audit_result.severity,
         compliant: audit_result.compliant
       })
-    catch
-      :exit, _reason ->
-        # Bus or TaskSupervisor may not be running in test mode
-        :ok
     rescue
       _e ->
         # Any other exceptions are logged but don't crash the audit
+        :ok
+    catch
+      :exit, _reason ->
+        # Bus or TaskSupervisor may not be running in test mode
         :ok
     end
 
@@ -443,13 +443,13 @@ defmodule OptimalSystemAgent.Agents.Armstrong.SupervisionAuditor do
           Logger.warning(
             "[SupervisionAuditor] Escalated critical anomaly to healing: #{inspect(audit_result.anomalies)}"
           )
-        catch
-          :exit, _reason ->
-            # Bus may not be running in test mode
-            :ok
         rescue
           _e ->
             # Any exceptions don't crash the escalation
+            :ok
+        catch
+          :exit, _reason ->
+            # Bus may not be running in test mode
             :ok
         end
 
