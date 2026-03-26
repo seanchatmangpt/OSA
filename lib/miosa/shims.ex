@@ -861,9 +861,10 @@ defmodule MiosaSignal do
   end
 
   def from_cloud_event(%{"data" => data}) when is_map(data) do
+    # Let parse failures propagate to supervisor.
+    # Hidden rescue prevents detection of invalid CloudEvents or malformed data.
+    # Supervisor will see crash and determine restart strategy.
     new(for {k, v} <- data, into: %{}, do: {String.to_existing_atom(k), v})
-  rescue
-    _ -> new(%{})
   end
   def from_cloud_event(_), do: new(%{})
 
