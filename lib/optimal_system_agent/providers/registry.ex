@@ -552,8 +552,8 @@ defmodule OptimalSystemAgent.Providers.Registry do
     # Serialize cache operations through GenServer to prevent TOCTOU (Time-of-check-time-of-use)
     # race where two concurrent requests both miss cache and both fetch from upstream
     GenServer.call(__MODULE__, {:get_or_fetch_context, model}, 10_000)
-  rescue
-    :timeout -> :error
+  catch
+    :exit, _ -> :error
   end
 
   @doc """

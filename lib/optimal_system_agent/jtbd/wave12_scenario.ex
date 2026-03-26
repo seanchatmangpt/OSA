@@ -149,6 +149,10 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   end
 
   defp success_result(tool_name, latency_ms, status) do
+    if System.get_env("WEAVER_LIVE_CHECK") == "true" do
+      emit_weaver_live_check_span(tool_name, latency_ms)
+    end
+
     now = DateTime.utc_now()
 
     %__MODULE__{
@@ -165,4 +169,22 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   end
 
   defp params_for_latency(n) when is_integer(n) and n > 0, do: n
+
+  defp emit_weaver_live_check_span(tool_name, latency_ms) do
+    require OpenTelemetry.Tracer
+
+    cid = System.get_env("CHATMANGPT_CORRELATION_ID") || ""
+
+    OpenTelemetry.Tracer.with_span "jtbd.scenario.mcp_tool_execution", %{} do
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.id", "mcp_tool_execution")
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.step", tool_name)
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.step_num", 1)
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.step_total", 1)
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.outcome", "success")
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.system", "osa")
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.wave", 12)
+      OpenTelemetry.Tracer.set_attribute(:"jtbd.scenario.latency_ms", latency_ms)
+      OpenTelemetry.Tracer.set_attribute(:"chatmangpt.run.correlation_id", cid)
+    end
+  end
 end

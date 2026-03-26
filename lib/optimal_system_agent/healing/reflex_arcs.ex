@@ -104,6 +104,60 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
     GenServer.cast(__MODULE__, :reap_sessions)
   end
 
+  @doc """
+  Trigger healing for a process deviation detected by pm4py-rust.
+
+  Called by Board.HealingBridge when conformance fitness drops below 0.8.
+  Emits a `:healing_complete` board event after healing completes so that
+  InferenceChain can invalidate L0 and cascade re-materialization.
+
+  Armstrong: failures are logged, not propagated. Returns `:ok` on success
+  or `{:error, reason}` on failure (caller decides what to do).
+  """
+  @spec trigger_healing(String.t()) :: :ok | {:error, term()}
+  def trigger_healing(process_id) when is_binary(process_id) do
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
+
+    :otel_tracer.with_span(tracer, "healing.board_process_healing", %{
+      "process_id" => process_id
+    }, fn span_ctx ->
+      Logger.info("[Healing.ReflexArcs] Board healing triggered for process: #{process_id}")
+
+      # Derive span ID from OTEL context for proof triple
+      otel_span_id =
+        try do
+          ctx = :otel_tracer.current_span_ctx(span_ctx)
+          span_id = :otel_span.span_id(ctx)
+          Base.encode16(span_id, case: :lower)
+        rescue
+          _ -> "#{process_id}-#{System.unique_integer([:positive])}"
+        catch
+          _, _ -> "#{process_id}-#{System.unique_integer([:positive])}"
+        end
+
+      outcome = execute_process_healing(process_id)
+
+      # Emit board event so HealingBridge can write proof and invalidate L0
+      Bus.emit(:system_event, %{
+        event: :healing_complete,
+        process_id: process_id,
+        proof_span_id: otel_span_id,
+        outcome: outcome,
+        healed_at: DateTime.utc_now()
+      },
+      source: "healing.reflex_arcs")
+
+      :otel_span.set_attributes(span_ctx, %{
+        "process_id" => process_id,
+        "outcome" => outcome
+      })
+
+      Logger.info("[Healing.ReflexArcs] Board healing complete for #{process_id}: #{outcome}")
+
+      :ok
+    end)
+  end
+
   # -- GenServer Callbacks --
 
   @impl true
@@ -636,6 +690,28 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
         # Session doesn't implement idle_time_ms -- assume active
         0
     end
+  end
+
+  # -- Board Process Healing Implementation --
+
+  # Executes healing actions for a process deviation detected by pm4py-rust.
+  # Returns outcome string: "healed" | "healing_attempted" | "no_action_required"
+  defp execute_process_healing(process_id) do
+    Logger.info("[ReflexArc] Executing process healing for: #{process_id}")
+
+    # Emit reflex event so downstream consumers can react
+    Bus.emit(:system_event, %{
+      event: :reflex,
+      reflex: :process_deviation_healing,
+      process_id: process_id,
+      triggered_at: DateTime.utc_now()
+    },
+    source: "healing.reflex_arcs")
+
+    # Re-check provider health — process deviations may indicate provider issues
+    GenServer.cast(__MODULE__, :check_provider_health)
+
+    "healing_attempted"
   end
 
   # -- Cooldown & Logging Helpers --

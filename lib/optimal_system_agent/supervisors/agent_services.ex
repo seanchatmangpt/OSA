@@ -63,7 +63,17 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       OptimalSystemAgent.Integrations.FIBO.DealCoordinator,
 
       # Wave 12 JTBD Dashboard — live terminal metrics for self-play loop
-      OptimalSystemAgent.JTBD.Dashboard
+      OptimalSystemAgent.JTBD.Dashboard,
+
+      # Board Chair Intelligence System — continuous ontology materialization (permanent, unstoppable)
+      %{
+        id: OptimalSystemAgent.Ontology.MaterializationScheduler,
+        start: {OptimalSystemAgent.Ontology.MaterializationScheduler, :start_link, [[]]},
+        restart: :permanent,
+        type: :worker
+      }
+      # NOTE: Board.HealingBridge is supervised by Board.Supervisor (:rest_for_one strategy)
+      # It must not be added here — adding it twice causes "already started" error on boot.
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

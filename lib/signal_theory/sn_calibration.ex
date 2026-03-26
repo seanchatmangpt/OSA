@@ -37,7 +37,6 @@ defmodule OptimalSystemAgent.SignalTheory.SNCalibration do
   - 0.65-1.00: signal (process normally)
   """
 
-  alias OptimalSystemAgent.SignalTheory.SNScorer
   alias OptimalSystemAgent.Channels.NoiseFilter
 
   @type signal :: %{
@@ -947,7 +946,7 @@ defmodule OptimalSystemAgent.SignalTheory.SNCalibration do
     validation_set = Enum.drop(dataset, split_point)
 
     # Search for optimal thresholds across the validation set
-    {best_thresholds, best_metrics} = optimize_thresholds(validation_set)
+    {best_thresholds, _best_metrics} = optimize_thresholds(validation_set)
 
     # Compute final metrics on validation set
     final_metrics =

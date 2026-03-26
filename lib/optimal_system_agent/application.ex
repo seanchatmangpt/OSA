@@ -129,6 +129,12 @@ defmodule OptimalSystemAgent.Application do
         {OptimalSystemAgent.Integrations.Compliance.Verifier,
          [name: :compliance_verifier, bos_path: "bos"]},
 
+        # Board Intelligence — single-principal auth and encrypted push delivery.
+        # PERMANENT: cannot be stopped via HTTP endpoint or admin command.
+        # Started after TaskSupervisor and AgentServices; before HTTP endpoint.
+        # Board chair is the only human who can ever decrypt a briefing.
+        OptimalSystemAgent.Board.Supervisor,
+
         # Deferred channel startup — starts configured channels in handle_continue
         OptimalSystemAgent.Channels.Starter,
 

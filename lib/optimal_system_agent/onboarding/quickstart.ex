@@ -65,7 +65,6 @@ defmodule OptimalSystemAgent.Onboarding.Quickstart do
   require Logger
 
   alias OptimalSystemAgent.Events.Bus
-  alias OptimalSystemAgent.Onboarding
 
   # ── Types ──────────────────────────────────────────────────────────
 
@@ -561,7 +560,7 @@ defmodule OptimalSystemAgent.Onboarding.Quickstart do
 
   # ── Helpers ────────────────────────────────────────────────────────
 
-  defp test_provider_connection(provider, api_key, model) do
+  defp test_provider_connection(provider, api_key, _model) do
     case provider do
       "ollama" ->
         # No API key needed for Ollama

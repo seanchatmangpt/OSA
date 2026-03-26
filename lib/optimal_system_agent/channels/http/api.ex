@@ -177,6 +177,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   # ── FIBO financial deal coordination (Agent 16) ───────────────────────────
   forward "/fibo", to: API.FIBORoutes
 
+  # ── Board Chair Intelligence System — deviation intake from pm4py-rust ────
+  forward "/board", to: API.BoardDeviationRoutes
+
   # ── Health check (no auth required — forwarded before authenticate) ─────
   get "/health/fortune5" do
     # Fortune 5 health check - reports status of all layers
