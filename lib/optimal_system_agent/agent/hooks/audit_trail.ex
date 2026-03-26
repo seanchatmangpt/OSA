@@ -44,6 +44,7 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrail do
 
   @chain_table :osa_audit_chain
   @head_table :osa_audit_head
+  @index_table :osa_audit_index_counters
 
   require Logger
 
@@ -89,6 +90,18 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrail do
         :public,
         {:read_concurrency, true},
         {:write_concurrency, true}
+      ])
+    end
+
+    # Create a separate index counter table for atomic index assignment per session
+    # This prevents race conditions in next_index_for_session
+    @index_table = :osa_audit_index_counters
+    if :ets.whereis(@index_table) == :undefined do
+      :ets.new(@index_table, [
+        :named_table,
+        :set,
+        :public,
+        {:write_concurrency, false}  # Single writer for strict ordering
       ])
     end
   rescue
@@ -268,12 +281,23 @@ defmodule OptimalSystemAgent.Agent.Hooks.AuditTrail do
 
   # ── Private Helpers ─────────────────────────────────────────────────
 
+  # Atomic index assignment: use update_counter to ensure no two requests get same index
   defp next_index_for_session(session_id) do
+    init_tables()
+
     try do
-      @chain_table
-      |> :ets.match_object({{session_id, :_}, :_})
-      |> Enum.map(fn {_key, _value} -> 1 end)
-      |> Enum.sum()
+      # If no counter exists for this session, :ets.update_counter will raise
+      # So we need to check and initialize first
+      case :ets.lookup(@index_table, session_id) do
+        [{^session_id, _}] ->
+          # Counter exists, atomically increment and return the NEW value
+          :ets.update_counter(@index_table, session_id, {2, 1})
+
+        [] ->
+          # First entry for this session, initialize counter at 0 and return 0
+          :ets.insert(@index_table, {session_id, 0})
+          0
+      end
     rescue
       _ -> 0
     end

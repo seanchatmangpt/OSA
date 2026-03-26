@@ -250,7 +250,13 @@ defmodule OptimalSystemAgent.Consensus.Byzantine do
   """
   @spec mark_faulty(pid(), String.t()) :: :ok | {:error, term()}
   def mark_faulty(pid, node) do
-    GenServer.call(pid, {:mark_faulty, node})
+    try do
+      GenServer.call(pid, {:mark_faulty, node}, 5000)
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Byzantine] mark_faulty timeout for node #{node}")
+        {:error, :timeout}
+    end
   end
 
   @doc """
@@ -260,7 +266,13 @@ defmodule OptimalSystemAgent.Consensus.Byzantine do
   """
   @spec current_leader(pid()) :: {:ok, String.t()} | {:error, term()}
   def current_leader(pid) do
-    GenServer.call(pid, :current_leader)
+    try do
+      GenServer.call(pid, :current_leader, 5000)
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Byzantine] current_leader timeout")
+        {:error, :timeout}
+    end
   end
 
   @doc """
@@ -270,7 +282,13 @@ defmodule OptimalSystemAgent.Consensus.Byzantine do
   """
   @spec get_state(pid()) :: {:ok, map()} | {:error, term()}
   def get_state(pid) do
-    GenServer.call(pid, :get_state)
+    try do
+      GenServer.call(pid, :get_state, 5000)
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Byzantine] get_state timeout")
+        {:error, :timeout}
+    end
   end
 
   @doc """

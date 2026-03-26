@@ -71,7 +71,7 @@ defmodule OptimalSystemAgent.Integration.MCPToolRegistryTest do
     test "tool parameter validation uses JSON Schema" do
       # Tools should validate input parameters against JSON Schema
       # This is verified when tools are actually invoked
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
   end
 
@@ -99,7 +99,7 @@ defmodule OptimalSystemAgent.Integration.MCPToolRegistryTest do
     test "shell_execute tool has timeout" do
       # WvdA Soundness: shell commands must timeout
       # Verify the tool respects timeout_ms parameter
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.ShellExecute) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.ShellExecute)
     end
 
     test "tool execution errors are catchable" do
@@ -113,7 +113,7 @@ defmodule OptimalSystemAgent.Integration.MCPToolRegistryTest do
     test "multiple tools can execute concurrently" do
       # Armstrong principle: tools run in isolated task supervisor
       # Concurrent execution should not deadlock
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
 
     test "tool output not truncated under concurrency" do

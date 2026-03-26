@@ -1,0 +1,153 @@
+defmodule OptimalSystemAgent.ProcessMining.Client do
+  @moduledoc """
+  GenServer client for pm4py-rust HTTP API.
+
+  Provides APIs for process discovery, soundness verification (deadlock-freedom, liveness, boundedness),
+  and reachability analysis. All blocking operations enforce 10-second timeout (WvdA deadlock-freedom).
+
+  Public API:
+  - `discover_process_models(resource_type)` — GET /process/discover/{resource_type}
+  - `check_deadlock_free(process_id)` — POST /process/soundness/{process_id} with {check: "deadlock_free"}
+  - `get_reachability_graph(process_id)` — GET /process/reachability/{process_id}
+  - `analyze_boundedness(process_id)` — POST /process/soundness/{process_id} with {check: "bounded"}
+
+  ## Registration
+
+  Registers as `:process_mining_client` in the supervision tree.
+  """
+  use GenServer
+  require Logger
+
+  @timeout_ms 10_000
+  @pm4py_url Application.compile_env(:optimal_system_agent, :pm4py_url, "http://localhost:8090")
+
+  # Public API
+
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts, name: :process_mining_client)
+  end
+
+  @doc """
+  Discover process models for a resource type.
+
+  Returns `{:ok, models}` or `{:error, reason}`.
+  """
+  def discover_process_models(resource_type) do
+    GenServer.call(:process_mining_client, {:discover, resource_type}, @timeout_ms)
+  catch
+    :exit, {:timeout, _} -> {:error, :timeout}
+  end
+
+  @doc """
+  Check if a process is deadlock-free.
+
+  Returns `{:ok, result}` or `{:error, reason}`.
+  Result contains boolean `:deadlock_free` and confidence metrics.
+  """
+  def check_deadlock_free(process_id) do
+    GenServer.call(:process_mining_client, {:check_soundness, process_id, "deadlock_free"}, @timeout_ms)
+  catch
+    :exit, {:timeout, _} -> {:error, :timeout}
+  end
+
+  @doc """
+  Get reachability graph for a process.
+
+  Returns `{:ok, graph}` or `{:error, reason}`.
+  Graph contains nodes and edges showing all reachable states.
+  """
+  def get_reachability_graph(process_id) do
+    GenServer.call(:process_mining_client, {:reachability, process_id}, @timeout_ms)
+  catch
+    :exit, {:timeout, _} -> {:error, :timeout}
+  end
+
+  @doc """
+  Analyze boundedness properties of a process.
+
+  Returns `{:ok, result}` or `{:error, reason}`.
+  Result contains boolean `:bounded` and resource limits discovered.
+  """
+  def analyze_boundedness(process_id) do
+    GenServer.call(:process_mining_client, {:check_soundness, process_id, "bounded"}, @timeout_ms)
+  catch
+    :exit, {:timeout, _} -> {:error, :timeout}
+  end
+
+  # GenServer callbacks
+
+  @impl true
+  def init(_opts) do
+    Logger.info("ProcessMining.Client starting with URL: #{@pm4py_url}")
+    {:ok, %{url: @pm4py_url}}
+  end
+
+  @impl true
+  def handle_call({:discover, resource_type}, _from, state) do
+    result = do_discover(state.url, resource_type)
+    {:reply, result, state}
+  end
+
+  @impl true
+  def handle_call({:check_soundness, process_id, check_type}, _from, state) do
+    result = do_check_soundness(state.url, process_id, check_type)
+    {:reply, result, state}
+  end
+
+  @impl true
+  def handle_call({:reachability, process_id}, _from, state) do
+    result = do_reachability(state.url, process_id)
+    {:reply, result, state}
+  end
+
+  # Private API
+
+  defp do_discover(url, resource_type) do
+    endpoint = "#{url}/process/discover/#{URI.encode(resource_type)}"
+
+    case Req.get(endpoint, receive_timeout: @timeout_ms) do
+      {:ok, response} ->
+        case response.status do
+          200 -> {:ok, response.body}
+          status -> {:error, {:http, status, response.body}}
+        end
+
+      {:error, reason} ->
+        Logger.error("ProcessMining discovery failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  defp do_check_soundness(url, process_id, check_type) do
+    endpoint = "#{url}/process/soundness/#{URI.encode(process_id)}"
+    body = %{check: check_type}
+
+    case Req.post(endpoint, json: body, receive_timeout: @timeout_ms) do
+      {:ok, response} ->
+        case response.status do
+          200 -> {:ok, response.body}
+          status -> {:error, {:http, status, response.body}}
+        end
+
+      {:error, reason} ->
+        Logger.error("ProcessMining soundness check failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  defp do_reachability(url, process_id) do
+    endpoint = "#{url}/process/reachability/#{URI.encode(process_id)}"
+
+    case Req.get(endpoint, receive_timeout: @timeout_ms) do
+      {:ok, response} ->
+        case response.status do
+          200 -> {:ok, response.body}
+          status -> {:error, {:http, status, response.body}}
+        end
+
+      {:error, reason} ->
+        Logger.error("ProcessMining reachability analysis failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+end

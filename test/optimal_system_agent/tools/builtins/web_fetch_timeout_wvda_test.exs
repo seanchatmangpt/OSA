@@ -28,7 +28,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebFetchTimeoutWvDATest do
       # RED: Can we pass timeout_ms?
       result = WebFetch.execute(%{"url" => "https://example.com"}, timeout_ms: 5000)
       # GREEN: Should either succeed or return error (not hang)
-      assert match?({:ok, _} | {:error, _}, result)
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
     test "DEADLOCK-FREE: Default timeout_ms is documented (30s for web_fetch)" do
@@ -96,8 +96,8 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebFetchTimeoutWvDATest do
       result2 = WebFetch.execute(%{"url" => "https://another.com"})
 
       # GREEN: Both should complete without interference
-      assert match?({:ok, _} | {:error, _}, result1)
-      assert match?({:ok, _} | {:error, _}, result2)
+      assert match?({:ok, _}, result1) or match?({:error, _}, result1)
+      assert match?({:ok, _}, result2) or match?({:error, _}, result2)
     end
 
     test "REPEATABLE: Same call produces same result" do

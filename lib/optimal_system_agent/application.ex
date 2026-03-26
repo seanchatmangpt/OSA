@@ -100,6 +100,10 @@ defmodule OptimalSystemAgent.Application do
     # SPR Sensor ETS tables (Fortune 5 Layer 1: Signal Collection)
     OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
 
+    # Quickstart Onboarding ETS tables (demo agents, session tracking)
+    :ets.new(:osa_demo_agents, [:named_table, :public, :set])
+    :ets.new(:osa_quickstart_sessions, [:named_table, :public, :set])
+
     children =
       platform_repo_children() ++
       [

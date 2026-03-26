@@ -19,7 +19,7 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "exception in tool does not swallow error" do
       # Tools should crash on invalid input, not log and return nil
       # Let supervisor handle restart
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
 
     test "GenServer crash is visible in logs" do
@@ -31,7 +31,7 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "supervisor restarts crashed child" do
       # Infrastructure.Supervisor must restart children on crash
       # restart: :permanent for essential services
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
 
     test "cascading failure is prevented by isolation" do
@@ -43,15 +43,15 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
 
   describe "Supervision Tree" do
     test "infrastructure supervisor exists and is root" do
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
 
     test "sessions supervisor supervises agent processes" do
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Sessions) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Sessions)
     end
 
     test "tools supervisor manages tool execution tasks" do
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
 
     test "supervision strategy prevents cascading failures" do
@@ -76,7 +76,7 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "agent state lives in GenServer, not global" do
       # Session state in Agent GenServer, not ETS or module attributes
       # No shared memory between processes
-      assert Code.ensure_compiled(OptimalSystemAgent.Sessions) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Sessions)
     end
 
     test "all inter-process communication via messages" do
@@ -106,13 +106,13 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "A2A call has max timeout_ms budget" do
       # A2A tool must specify timeout (e.g., 5000ms)
       # Not unbounded wait
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall)
     end
 
     test "tool execution has time budget" do
       # Tools run with max_time_ms (e.g., 30000)
       # Timeout kills runaway scripts
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
 
     test "per-tier budget enforcement exists" do
@@ -170,7 +170,7 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "tool execution in task supervisor (isolated)" do
       # Tools run in Task.Supervisor, not main process
       # Tool crash doesn't crash agent
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
 
     test "HTTP request handling in separate process" do
@@ -209,7 +209,7 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "supervisor can detect and restart failed child" do
       # This would require actually stopping a child
       # In unit tests, verify supervisor exists
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
 
     test "supervisor crash handling preserves state of siblings" do
@@ -237,14 +237,14 @@ defmodule OptimalSystemAgent.Integration.ArmstrongFaultToleranceTest do
     test "A2A call failure → tool restart → recovery (Armstrong pattern)" do
       # Request → A2A routes → tool execution → crash → supervisor restart → recovery
       # User sees timeout and retry, system recovers cleanly
-      assert Code.ensure_compiled(OptimalSystemAgent.Channels.HTTP.API.A2ARoutes) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Channels.HTTP.API.A2ARoutes)
     end
 
     test "tool execution budget enforcement prevents runaway (Armstrong + WvdA)" do
       # Tool runs with 30s timeout
       # If timeout hits, task is killed (let-it-crash)
       # Supervisor may restart for next request (permanent)
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
   end
 end

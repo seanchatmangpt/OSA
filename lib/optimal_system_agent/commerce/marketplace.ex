@@ -146,7 +146,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec publish_skill(String.t(), map()) :: {:ok, String.t()} | {:error, String.t()}
   def publish_skill(publisher_id, skill_params) do
-    GenServer.call(__MODULE__, {:publish_skill, publisher_id, skill_params})
+    try do
+      case GenServer.call(__MODULE__, {:publish_skill, publisher_id, skill_params}, 5000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] publish_skill timeout after 5000ms")
+        {:error, "publish_skill timeout"}
+    end
   end
 
   @doc """
@@ -156,7 +164,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec search_skills(String.t(), map()) :: map()
   def search_skills(query, filters \\ %{}) do
-    GenServer.call(__MODULE__, {:search_skills, query, filters})
+    try do
+      case GenServer.call(__MODULE__, {:search_skills, query, filters}, 5000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] search_skills timeout after 5000ms")
+        %{results: [], total: 0, page: 1, error: "search_skills timeout"}
+    end
   end
 
   @doc """
@@ -166,7 +182,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec acquire_skill(String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
   def acquire_skill(buyer_id, skill_id) do
-    GenServer.call(__MODULE__, {:acquire_skill, buyer_id, skill_id})
+    try do
+      case GenServer.call(__MODULE__, {:acquire_skill, buyer_id, skill_id}, 5000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] acquire_skill timeout for #{skill_id} after 5000ms")
+        {:error, "acquire_skill timeout"}
+    end
   end
 
   @doc """
@@ -178,7 +202,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec rate_skill(String.t(), String.t(), 1..5) :: {:ok, map()} | {:error, String.t()}
   def rate_skill(rater_id, skill_id, rating) when rating in 1..5 do
-    GenServer.call(__MODULE__, {:rate_skill, rater_id, skill_id, rating})
+    try do
+      case GenServer.call(__MODULE__, {:rate_skill, rater_id, skill_id, rating}, 5000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] rate_skill timeout for #{skill_id} after 5000ms")
+        {:error, "rate_skill timeout"}
+    end
   end
 
   @doc """
@@ -190,7 +222,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   @spec execute_skill(String.t(), String.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   def execute_skill(buyer_id, skill_id, context) do
-    GenServer.call(__MODULE__, {:execute_skill, buyer_id, skill_id, context})
+    try do
+      case GenServer.call(__MODULE__, {:execute_skill, buyer_id, skill_id, context}, 30000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] execute_skill timeout for #{skill_id} after 30000ms")
+        {:error, "execute_skill timeout"}
+    end
   end
 
   @doc """
@@ -200,7 +240,15 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec revenue_report(String.t()) :: map()
   def revenue_report(publisher_id) do
-    GenServer.call(__MODULE__, {:revenue_report, publisher_id})
+    try do
+      case GenServer.call(__MODULE__, {:revenue_report, publisher_id}, 10000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] revenue_report timeout for #{publisher_id} after 10000ms")
+        %{publisher_id: publisher_id, total_earnings: 0, skill_breakdown: [], period: "", error: "timeout"}
+    end
   end
 
   @doc """
@@ -211,7 +259,24 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
   """
   @spec marketplace_stats() :: map()
   def marketplace_stats do
-    GenServer.call(__MODULE__, :marketplace_stats)
+    try do
+      case GenServer.call(__MODULE__, :marketplace_stats, 10000) do
+        result -> result
+      end
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[Marketplace] marketplace_stats timeout after 10000ms")
+        %{
+          total_skills: 0,
+          total_publishers: 0,
+          total_acquisitions: 0,
+          total_executions: 0,
+          total_revenue: 0,
+          top_categories: [],
+          trending_skills: [],
+          error: "timeout"
+        }
+    end
   end
 
   @doc """
@@ -438,15 +503,38 @@ defmodule OptimalSystemAgent.Commerce.Marketplace do
           license: determine_license(skill_id)
         }
 
+        # Insert acquisition record
         :ets.insert(@acquisitions_table, {{skill_id, buyer_id}, acquisition})
 
-        # Re-read skill to get current download count and bump quality score
-        [{^skill_id, skill}] = :ets.lookup(@skills_table, skill_id)
-        updated_skill = %{skill | downloads: skill.downloads + 1}
+        # Atomically increment downloads using ETS update_counter
+        # This prevents TOCTOU race where 2 threads both read and increment
+        download_counter_table = :osa_marketplace_downloads
+        if :ets.whereis(download_counter_table) == :undefined do
+          :ets.new(download_counter_table, [:named_table, :public, :set, {:write_concurrency, false}])
+        end
+
+        # Initialize counter if needed
+        case :ets.lookup(download_counter_table, skill_id) do
+          [] ->
+            :ets.insert(download_counter_table, {skill_id, 0})
+          _ ->
+            :ok
+        end
+
+        # Atomically increment download counter
+        _new_count = :ets.update_counter(download_counter_table, skill_id, {2, 1})
+
+        # Re-read skill and update with new download count
+        [{^skill_id, current_skill}] = :ets.lookup(@skills_table, skill_id)
+        updated_count = case :ets.lookup(download_counter_table, skill_id) do
+          [{^skill_id, count}] -> count
+          [] -> 1
+        end
+        updated_skill = %{current_skill | downloads: updated_count}
         updated_skill = %{updated_skill | quality_score: compute_quality_score(updated_skill)}
         :ets.insert(@skills_table, {skill_id, updated_skill})
 
-        Logger.info("[Marketplace] #{buyer_id} acquired skill #{skill_id}")
+        Logger.info("[Marketplace] #{buyer_id} acquired skill #{skill_id} (downloads=#{updated_count})")
         {:ok, acquisition}
 
       [] ->

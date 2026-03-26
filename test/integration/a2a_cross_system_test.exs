@@ -70,7 +70,7 @@ defmodule OptimalSystemAgent.Integration.A2ACrossSystemTest do
     test "A2A call execution preserves trace context" do
       # In OpenTelemetry, trace IDs should propagate through A2A boundaries
       # This test verifies the pattern exists
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall)
     end
 
     test "A2A error responses include request ID" do
@@ -112,7 +112,7 @@ defmodule OptimalSystemAgent.Integration.A2ACrossSystemTest do
     test "Failed A2A call does not crash OSA process" do
       # Armstrong principle: let-it-crash with supervisor restart
       # One failed call should not affect subsequent calls
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall)
     end
 
     test "Invalid A2A target returns error, not exception" do
