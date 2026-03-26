@@ -19,7 +19,6 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
 
   defmodule Task do
     @moduledoc false
-    @derive Jason.Encoder
     defstruct [
       :id,
       :title,
@@ -34,6 +33,27 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       started_at: nil,
       completed_at: nil
     ]
+
+    @doc "Encode task to JSON-safe format"
+    def to_json(task) do
+      %{
+        "id" => task.id,
+        "title" => task.title,
+        "description" => task.description,
+        "reason" => task.reason,
+        "owner" => task.owner,
+        "status" => to_string(task.status),
+        "tokens_used" => task.tokens_used,
+        "blocked_by" => task.blocked_by,
+        "metadata" => task.metadata,
+        "created_at" => serialize_datetime(task.created_at),
+        "started_at" => serialize_datetime(task.started_at),
+        "completed_at" => serialize_datetime(task.completed_at)
+      }
+    end
+
+    defp serialize_datetime(nil), do: nil
+    defp serialize_datetime(dt), do: DateTime.to_iso8601(dt)
   end
 
   # ── State ──────────────────────────────────────────────────────────
