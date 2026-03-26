@@ -115,6 +115,10 @@ defmodule OptimalSystemAgent.Application do
         # SPR Sensor Registry (Fortune 5)
         {OptimalSystemAgent.Sensors.SensorRegistry, []},
 
+        # Fortune 5 Compliance Verifier (SOC2, GDPR, HIPAA, SOX)
+        {OptimalSystemAgent.Integrations.Compliance.Verifier,
+         [name: :compliance_verifier, bos_path: "bos"]},
+
         # Deferred channel startup — starts configured channels in handle_continue
         OptimalSystemAgent.Channels.Starter,
 

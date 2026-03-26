@@ -56,7 +56,13 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       OptimalSystemAgent.FileLocking.RegionLock,
 
       # Speculative Execution — agents work ahead on predicted tasks
-      OptimalSystemAgent.Speculative.Executor
+      OptimalSystemAgent.Speculative.Executor,
+
+      # FIBO Integration — financial deal coordination (Agent 16)
+      OptimalSystemAgent.Integrations.FIBO.DealCoordinator,
+
+      # Wave 12 JTBD Dashboard — live terminal metrics for self-play loop
+      OptimalSystemAgent.JTBD.Dashboard
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

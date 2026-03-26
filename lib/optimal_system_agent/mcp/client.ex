@@ -377,25 +377,29 @@ defmodule OptimalSystemAgent.MCP.Client do
     start_time = System.monotonic_time(:microsecond)
 
     with_retry([context: context], fn ->
-      try do
-        case OptimalSystemAgent.MCP.Server.call_tool(server_name, tool_name, arguments) do
-          {:ok, result} ->
-            # Cache successful results
-            put_cached_tool_result(server_name, tool_name, arguments, result)
+        try do
+          case OptimalSystemAgent.MCP.Server.call_tool(server_name, tool_name, arguments) do
+            {:ok, result} ->
+              # Cache successful results
+              put_cached_tool_result(server_name, tool_name, arguments, result)
 
-            # Emit telemetry event
-            duration = System.monotonic_time(:microsecond) - start_time
-            :telemetry.execute(
-              [:osa, :mcp, :tool_call],
-              %{duration: duration, cached: false},
-              %{server: server_name, tool: tool_name, status: :ok}
-            )
+              # Emit telemetry event
+              duration_us = System.monotonic_time(:microsecond) - start_time
+              duration_ms = div(duration_us, 1000)
 
-            {:ok, result}
+              :telemetry.execute(
+                [:osa, :mcp, :tool_call],
+                %{duration: duration_us, cached: false},
+                %{server: server_name, tool: tool_name, status: :ok}
+              )
+
+              {:ok, result}
 
           {:error, reason} ->
             # Emit telemetry event for error
             duration = System.monotonic_time(:microsecond) - start_time
+            duration_ms = div(duration, 1000)
+
             :telemetry.execute(
               [:osa, :mcp, :tool_call],
               %{duration: duration, cached: false},

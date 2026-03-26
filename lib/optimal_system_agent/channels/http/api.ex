@@ -43,6 +43,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /marketplace → MarketplaceRoutes  POST /publish, GET /search, GET /skills, GET /skills/:id, POST /skills/:id/acquire, POST /skills/:id/rate, GET /stats, GET /revenue/:publisher_id
     /audit-trail → AuditRoutes       GET /:session_id, GET /:session_id/verify, GET /:session_id/merkle
     /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
+    /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -164,11 +165,17 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   # ── Audit trail (Innovation 3 — hash-chain compliance) ───────────────
   forward "/audit-trail", to: API.AuditRoutes
 
+  # ── Fortune 5 compliance verification (SOC2, GDPR, HIPAA, SOX) ───────
+  forward "/compliance", to: API.ComplianceRoutes
+
   # ── Process intelligence (Innovations 2, 4, 7) ───────────────────────
   forward "/process", to: API.ProcessRoutes
 
   # ── A2A (Agent-to-Agent) protocol ────────────────────────────────────
   forward "/a2a", to: API.A2ARoutes
+
+  # ── FIBO financial deal coordination (Agent 16) ───────────────────────────
+  forward "/fibo", to: API.FIBORoutes
 
   # ── Health check (no auth required — forwarded before authenticate) ─────
   get "/health/fortune5" do
