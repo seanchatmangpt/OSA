@@ -46,6 +46,9 @@ defmodule OptimalSystemAgent.Ontology.MaterializationScheduler do
 
   alias OptimalSystemAgent.Ontology.MaterializationWorker
 
+  # Oxigraph URL — read from env at module load time (hot-reload supported via restart)
+  @oxigraph_url System.get_env("OXIGRAPH_URL") || "http://localhost:7878"
+
   # ─────────────────────────────────────────────────────────────────────────
   # Schedule constants (WvdA: all intervals explicit, documented)
   # ─────────────────────────────────────────────────────────────────────────
@@ -180,22 +183,38 @@ defmodule OptimalSystemAgent.Ontology.MaterializationScheduler do
   def handle_info({:refresh, level}, state) do
     Logger.info("[MaterializationScheduler] Timer fired level=#{level}")
 
-    # Spawn worker via Task.Supervisor (temporary, let-it-crash)
-    Task.Supervisor.start_child(state.task_supervisor, fn ->
-      MaterializationWorker.run(level)
-    end)
+    # Empty-graph guard: L1/L2/L3 depend on L0 facts written by BusinessOS BoardchairL0Sync.
+    # If L0 is empty, skip materialization and reschedule — avoids producing empty CONSTRUCT results.
+    if level != :l0 and not l0_has_data?() do
+      Logger.warning(
+        "[MaterializationScheduler] L0 graph empty — skipping #{level} materialization. " <>
+          "Run: bash BusinessOS/sparql/board/seed_l0.sh or ensure BoardchairL0Sync is running."
+      )
 
-    # Reschedule AFTER spawning (WvdA: timer reset after run, not before)
-    next_ms = next_interval(level, state)
-    new_timer = schedule_refresh(level, next_ms)
+      # Reschedule at normal interval even when skipping (WvdA: liveness — timer always resets)
+      next_ms = next_interval(level, state)
+      new_timer = schedule_refresh(level, next_ms)
 
-    new_state =
-      state
-      |> Map.put(timer_key(level), new_timer)
-      |> Map.put(last_run_key(level), DateTime.utc_now())
-      |> Map.update!(:run_count, &(&1 + 1))
+      new_state = Map.put(state, timer_key(level), new_timer)
+      {:noreply, new_state}
+    else
+      # Spawn worker via Task.Supervisor (temporary, let-it-crash)
+      Task.Supervisor.start_child(state.task_supervisor, fn ->
+        MaterializationWorker.run(level)
+      end)
 
-    {:noreply, new_state}
+      # Reschedule AFTER spawning (WvdA: timer reset after run, not before)
+      next_ms = next_interval(level, state)
+      new_timer = schedule_refresh(level, next_ms)
+
+      new_state =
+        state
+        |> Map.put(timer_key(level), new_timer)
+        |> Map.put(last_run_key(level), DateTime.utc_now())
+        |> Map.update!(:run_count, &(&1 + 1))
+
+      {:noreply, new_state}
+    end
   end
 
   @impl true
@@ -308,4 +327,49 @@ defmodule OptimalSystemAgent.Ontology.MaterializationScheduler do
   defp last_run_key(:l1), do: :l1_last_run
   defp last_run_key(:l2), do: :l2_last_run
   defp last_run_key(:l3), do: :l3_last_run
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # L0 empty-graph guard
+  # ─────────────────────────────────────────────────────────────────────────
+
+  # Queries Oxigraph for the count of triples in the L0 named graph.
+  # Returns true if at least one triple exists (L0 has been seeded by BoardchairL0Sync).
+  # Returns false on any error (network down, Oxigraph not running) — fail-safe: skip.
+  # WvdA: bounded operation — 5s timeout, no retry loop.
+  @spec l0_has_data?() :: boolean()
+  defp l0_has_data? do
+    sparql =
+      "SELECT (COUNT(*) AS ?count) FROM <http://businessos.local/l0> WHERE { ?s ?p ?o }"
+
+    case Req.post("#{@oxigraph_url}/query",
+           body: sparql,
+           headers: [
+             {"content-type", "application/sparql-query"},
+             {"accept", "application/sparql-results+json"}
+           ],
+           receive_timeout: 5_000
+         ) do
+      {:ok,
+       %{
+         status: 200,
+         body: %{
+           "results" => %{
+             "bindings" => [%{"count" => %{"value" => count}} | _]
+           }
+         }
+       }} ->
+        case Integer.parse(count) do
+          {n, _} -> n > 0
+          :error -> false
+        end
+
+      {:ok, %{status: status}} ->
+        Logger.warning("[MaterializationScheduler] l0_has_data? unexpected status=#{status}")
+        false
+
+      {:error, reason} ->
+        Logger.warning("[MaterializationScheduler] l0_has_data? query failed: #{inspect(reason)}")
+        false
+    end
+  end
 end

@@ -67,6 +67,7 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
   - `:littles_law_alerts` — list of %{department, stability_ratio, message}
   - `:escalations_sent` — count of :board_escalation events emitted
   - `:healings_triggered` — count of :conformance_violation events emitted
+  - `:structural_issue_count` — count of incoming :board_escalation events from Canopy
   """
   @spec monitor_status() :: map()
   def monitor_status do
@@ -87,13 +88,20 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
 
     Logger.info("[ConwayLittleMonitor] Starting — check interval #{@check_interval_ms}ms")
 
-    # Register handler for system_event — filter for :l2_materialized inside callback
+    # Register handler for system_event — filter for :l2_materialized and :board_escalation
     Bus.register_handler(:system_event, fn raw ->
       payload = Map.get(raw, :data, raw)
       event = Map.get(payload, :event)
 
-      if event == :l2_materialized do
-        GenServer.cast(__MODULE__, :l2_materialized)
+      case event do
+        :l2_materialized ->
+          GenServer.cast(__MODULE__, :l2_materialized)
+
+        :board_escalation ->
+          GenServer.cast(__MODULE__, {:incoming_board_escalation, payload})
+
+        _ ->
+          :ok
       end
     end)
 
@@ -106,7 +114,8 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
       conway_violations: [],
       littles_law_alerts: [],
       escalations_sent: 0,
-      healings_triggered: 0
+      healings_triggered: 0,
+      structural_issue_count: 0
     }
 
     {:ok, state}
@@ -119,7 +128,8 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
       conway_violations: state.conway_violations,
       littles_law_alerts: state.littles_law_alerts,
       escalations_sent: state.escalations_sent,
-      healings_triggered: state.healings_triggered
+      healings_triggered: state.healings_triggered,
+      structural_issue_count: state.structural_issue_count
     }
 
     {:reply, status, state}
@@ -165,6 +175,14 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
     send(self(), :check)
 
     {:noreply, %{state | timer: nil}}
+  end
+
+  @impl true
+  def handle_cast({:incoming_board_escalation, payload}, state) do
+    # Informational — structural decisions require board, not auto-healing (Armstrong)
+    Logger.warning("[ConwayLittleMonitor] Structural Conway violation from Canopy: #{inspect(payload)}")
+
+    {:noreply, %{state | structural_issue_count: state.structural_issue_count + 1}}
   end
 
   # Private

@@ -108,6 +108,9 @@ defmodule OptimalSystemAgent.Board.HealingBridge do
         :healing_complete ->
           GenServer.cast(__MODULE__, {:healing_complete, payload})
 
+        :board_escalation ->
+          GenServer.cast(__MODULE__, {:board_escalation, payload})
+
         _ ->
           :ok
       end
@@ -311,6 +314,48 @@ defmodule OptimalSystemAgent.Board.HealingBridge do
   end
 
   @impl true
+  def handle_cast({:board_escalation, payload}, state) do
+    process_id = extract_field(payload, :process_id)
+    conway_score = extract_field(payload, :conway_score, 0.0)
+    source = extract_field(payload, :source, "canopy_conway")
+
+    if is_binary(process_id) do
+      Logger.warning(
+        "[Board.HealingBridge] Structural Conway violation from Canopy: " <>
+          "process=#{process_id}, score=#{conway_score}, source=#{inspect(source)}"
+      )
+
+      # Emit OTEL span — board.structural_escalation
+      {:ok, span} = Telemetry.start_span("board.structural_escalation", %{
+        "board.process_id" => process_id,
+        "board.is_violation" => true,
+        "board.conway_score" => conway_score || 0.0,
+        "board.escalation_type" => "structural"
+      })
+      Telemetry.end_span(span, :ok)
+
+      # Write proof triple to Oxigraph (5s timeout — WvdA bounded)
+      write_escalation_proof(process_id, conway_score, source)
+
+      # Broadcast :escalation_recorded so board supervisor can observe
+      # DO NOT route to ReflexArcs — structural violations require board decision
+      Bus.emit(:system_event, %{
+        event: :escalation_recorded,
+        process_id: process_id,
+        conway_score: conway_score,
+        source: source,
+        recorded_at: DateTime.utc_now()
+      }, source: "board.healing_bridge")
+    else
+      Logger.warning(
+        "[Board.HealingBridge] Invalid board_escalation payload (missing process_id): #{inspect(payload)}"
+      )
+    end
+
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_info(_msg, state), do: {:noreply, state}
 
   # ── Private Helpers ──────────────────────────────────────────────────────────
@@ -388,6 +433,98 @@ defmodule OptimalSystemAgent.Board.HealingBridge do
         )
     end
   end
+
+  # Write structural escalation proof triple to Oxigraph with 5s timeout (WvdA bounded).
+  # Failure is logged and does NOT crash the bridge (Armstrong principle).
+  defp write_escalation_proof(process_id, conway_score, source) do
+    uuid = :crypto.strong_rand_bytes(8) |> Base.encode16(case: :lower)
+    timestamp_str = DateTime.to_iso8601(DateTime.utc_now())
+    source_str = to_string(source)
+
+    sparql = """
+    PREFIX bos: <https://osa.chatmangpt.com/bos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    INSERT DATA {
+      <escalation/#{uuid}> a bos:StructuralEscalation ;
+        bos:escalationCreatedAt "#{timestamp_str}"^^xsd:dateTime ;
+        bos:escalationSource "#{source_str}" ;
+        bos:conwayScore #{conway_score} ;
+        bos:processId "#{process_id}" .
+    }
+    """
+
+    endpoint =
+      Application.get_env(:optimal_system_agent, :sparql_endpoint, "http://localhost:7878")
+
+    update_url = "#{endpoint}/update"
+
+    try do
+      task =
+        Task.async(fn ->
+          Req.post(update_url,
+            body: sparql,
+            headers: [{"content-type", "application/sparql-update"}]
+          )
+        end)
+
+      case Task.yield(task, @oxigraph_timeout_ms) || Task.shutdown(task) do
+        {:ok, {:ok, %{status: status}}} when status in [200, 204] ->
+          Logger.debug(
+            "[Board.HealingBridge] Escalation proof triple written for #{process_id}"
+          )
+
+        {:ok, {:ok, %{status: status, body: body}}} ->
+          Logger.warning(
+            "[Board.HealingBridge] Oxigraph returned #{status} writing escalation proof for " <>
+              "#{process_id}: #{inspect(body)}"
+          )
+
+        {:ok, {:error, reason}} ->
+          Logger.warning(
+            "[Board.HealingBridge] Escalation proof write failed for #{process_id}: #{inspect(reason)}"
+          )
+
+        nil ->
+          Logger.warning(
+            "[Board.HealingBridge] Escalation proof write timed out (#{@oxigraph_timeout_ms}ms) " <>
+              "for #{process_id}"
+          )
+      end
+    rescue
+      e ->
+        Logger.warning(
+          "[Board.HealingBridge] Escalation proof exception for #{process_id}: #{Exception.message(e)}"
+        )
+    catch
+      kind, reason ->
+        Logger.warning(
+          "[Board.HealingBridge] Escalation proof #{kind} for #{process_id}: #{inspect(reason)}"
+        )
+    end
+  end
+
+  # Build escalation SPARQL INSERT DATA — exposed for testing via @doc false
+  @doc false
+  def build_escalation_sparql(process_id, conway_score, source) do
+    source_str = to_string(source)
+
+    """
+    INSERT DATA {
+      <escalation/test> a bos:StructuralEscalation ;
+        bos:escalationSource "#{source_str}" ;
+        bos:conwayScore #{conway_score} ;
+        bos:processId "#{process_id}" .
+    }
+    """
+  end
+
+  # Determine routing for escalation type — exposed for testing via @doc false
+  @doc false
+  def determine_escalation_routing(%{source: :canopy_conway}), do: :board_supervisor
+  def determine_escalation_routing(%{source: source}) when is_binary(source) do
+    if String.contains?(source, "canopy"), do: :board_supervisor, else: :reflex_arcs
+  end
+  def determine_escalation_routing(_), do: :reflex_arcs
 
   defp extract_field(payload, key, default \\ nil) do
     Map.get(payload, key) || Map.get(payload, to_string(key)) || default

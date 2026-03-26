@@ -9,6 +9,8 @@ defmodule OptimalSystemAgent.Board.Supervisor do
     2. BriefingGenerator — queries Oxigraph, generates briefing text
     3. HealingBridge     — bridges conformance deviations to healing agents
     4. Delivery    — encrypts and pushes briefings to board chair
+    5. ConwayLittleMonitor — Conway + Little's Law structural monitoring
+    6. DecisionRecorder   — records board chair decisions, closes the Conway feedback loop
 
   With :rest_for_one: if Auth crashes, BriefingGenerator, HealingBridge, and
   Delivery are also restarted (they depend on Auth for encryption). A crash in
@@ -71,6 +73,14 @@ defmodule OptimalSystemAgent.Board.Supervisor do
       %{
         id: OptimalSystemAgent.Board.ConwayLittleMonitor,
         start: {OptimalSystemAgent.Board.ConwayLittleMonitor, :start_link, [[]]},
+        restart: :permanent,
+        type: :worker
+      },
+
+      # permanent: board chair decision recorder — closes the Conway feedback loop
+      %{
+        id: OptimalSystemAgent.Board.DecisionRecorder,
+        start: {OptimalSystemAgent.Board.DecisionRecorder, :start_link, [[]]},
         restart: :permanent,
         type: :worker
       }

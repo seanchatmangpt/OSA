@@ -247,7 +247,7 @@ defmodule OptimalSystemAgent.Ontology.InferenceChain do
     sparql_file = sparql_file_for_level(level, state.sparql_dir)
 
     with {:ok, query_body} <- read_sparql_file(sparql_file),
-         update_query = wrap_construct_as_insert(query_body),
+         update_query = wrap_construct_as_insert(query_body, level),
          {:ok, triple_count} <- execute_sparql_update(update_query, state) do
       {:ok, triple_count}
     end
@@ -265,17 +265,27 @@ defmodule OptimalSystemAgent.Ontology.InferenceChain do
     end
   end
 
-  # Wrap a CONSTRUCT query body into a SPARQL Update INSERT { ... } WHERE { ... }
-  # to materialize CONSTRUCT results back into the Oxigraph store.
-  defp wrap_construct_as_insert(construct_query_body) do
+  # Named graph URIs for each inference level's output.
+  # SPARQL 1.1: POST /update with INSERT INTO GRAPH <uri> writes to the named graph.
+  # This ensures L2 queries (FROM <l1>) and L3 queries (FROM <l2>) can read the results.
+  defp named_graph_uri(:l1), do: "http://businessos.local/l1"
+  defp named_graph_uri(:l2), do: "http://businessos.local/l2"
+  defp named_graph_uri(:l3), do: "http://businessos.local/l3"
+
+  # Wrap a CONSTRUCT query body into a SPARQL Update INSERT INTO GRAPH <uri> { ... } WHERE { ... }
+  # to materialize CONSTRUCT results into the correct named graph for the given level.
+  # Writing to a named graph (not the default graph) is required so that downstream
+  # levels can read results via FROM <named-graph-uri> in their WHERE clauses.
+  defp wrap_construct_as_insert(construct_query_body, level) do
     prefix_block = extract_prefix_block(construct_query_body)
     construct_body = extract_construct_body(construct_query_body)
     where_clause = extract_where_clause(construct_query_body)
+    graph_uri = named_graph_uri(level)
 
     """
     #{prefix_block}
 
-    INSERT {
+    INSERT INTO GRAPH <#{graph_uri}> {
     #{construct_body}
     }
     #{where_clause}
@@ -290,7 +300,10 @@ defmodule OptimalSystemAgent.Ontology.InferenceChain do
   end
 
   defp extract_construct_body(query) do
-    case Regex.run(~r/CONSTRUCT\s*\{(.*?)\}\s*WHERE/s, query) do
+    # Match CONSTRUCT { ... } optionally followed by FROM clauses before WHERE.
+    # The FROM <uri> directives added for named-graph routing live between the
+    # closing } of the CONSTRUCT template and the WHERE keyword.
+    case Regex.run(~r/CONSTRUCT\s*\{(.*?)\}\s*(?:FROM\s*<[^>]+>\s*)*WHERE/s, query) do
       [_full, body] -> String.trim(body)
       _ -> "# CONSTRUCT body extraction failed — check SPARQL file syntax"
     end

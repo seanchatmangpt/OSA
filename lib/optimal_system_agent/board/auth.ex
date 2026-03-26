@@ -156,6 +156,65 @@ defmodule OptimalSystemAgent.Board.Auth do
     end
   end
 
+  @doc """
+  Decrypt a briefing envelope using the board chair's private key (base64-encoded).
+
+  The envelope was produced by encrypt_briefing/1 and serialised via Jason.
+  When decoded from JSON, the map keys are strings and `version` is an integer.
+
+  Expected envelope fields (string keys, base64 values):
+    "version"       — integer 1
+    "ephemeral_pub" — base64 ephemeral X25519 public key (32 bytes)
+    "nonce"         — base64 AES-GCM nonce (12 bytes)
+    "tag"           — base64 AES-GCM authentication tag (16 bytes)
+    "ciphertext"    — base64 encrypted briefing text
+
+  Returns {:ok, plaintext} or {:error, reason}.
+  """
+  @spec decrypt_briefing(map(), String.t()) :: {:ok, String.t()} | {:error, term()}
+  def decrypt_briefing(
+        %{
+          "version" => 1,
+          "ephemeral_pub" => eph_pub_b64,
+          "nonce" => nonce_b64,
+          "tag" => tag_b64,
+          "ciphertext" => cipher_b64
+        },
+        priv_key_b64
+      ) do
+    with {:ok, eph_pub} <- Base.decode64(eph_pub_b64),
+         {:ok, nonce} <- Base.decode64(nonce_b64),
+         {:ok, tag} <- Base.decode64(tag_b64),
+         {:ok, ciphertext} <- Base.decode64(cipher_b64),
+         {:ok, priv_key} <- Base.decode64(String.trim(priv_key_b64)) do
+      # ECDH: derive shared secret from ephemeral pub + board chair private key
+      shared_secret = :crypto.compute_key(:ecdh, eph_pub, priv_key, :x25519)
+
+      # HKDF-SHA256: derive 32-byte AES key — same info string as encrypt_briefing
+      aes_key = hkdf_sha256(shared_secret, "board-briefing-v1", 32)
+
+      # Reconstruct AAD exactly as it was built during encryption
+      aad = "v1:#{eph_pub_b64}"
+
+      # AES-256-GCM decrypt
+      case :crypto.crypto_one_time_aead(:aes_256_gcm, aes_key, nonce, ciphertext, aad, tag, false) do
+        plaintext when is_binary(plaintext) -> {:ok, plaintext}
+        :error -> {:error, :decryption_failed}
+      end
+    else
+      :error -> {:error, :invalid_base64}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def decrypt_briefing(%{"version" => ver}, _priv_key) do
+    {:error, {:unsupported_version, ver}}
+  end
+
+  def decrypt_briefing(_envelope, _priv_key) do
+    {:error, :invalid_envelope}
+  end
+
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------

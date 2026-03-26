@@ -17,6 +17,7 @@ defmodule OptimalSystemAgent.Board.BriefingTemplate do
   """
 
   alias OptimalSystemAgent.Observability.Telemetry
+  alias OptimalSystemAgent.Board.DecisionRecorder
 
   @property_labels %{
     "bos:organizationalHealthSummary" => "Overall organizational health",
@@ -94,16 +95,39 @@ defmodule OptimalSystemAgent.Board.BriefingTemplate do
     date = Date.utc_today() |> Date.to_string()
 
     # Section 6: STRUCTURAL DECISIONS REQUIRED (only when Conway violations present)
-    structural_count = Map.get(rdf_map, "bos:structuralIssueCount", 0)
+    # Exclude departments that already have a recorded board decision — the loop is closed.
+    decided_departments =
+      try do
+        DecisionRecorder.decided_departments()
+      rescue
+        _ -> []
+      end
+
+    raw_structural_count = Map.get(rdf_map, "bos:structuralIssueCount", 0)
+    decided_count = length(decided_departments)
+
+    # Reduce structural count by the number of departments with active decisions
+    structural_count =
+      case raw_structural_count do
+        n when is_integer(n) -> max(0, n - decided_count)
+        _ -> 0
+      end
 
     structural_section =
       if structural_count > 0 do
         conway_score = Map.get(rdf_map, "bos:highestConwayScore")
         score_pct = if conway_score, do: "#{round(conway_score * 100)}%", else: "unknown"
 
+        decided_note =
+          if decided_count > 0 do
+            "\n(#{decided_count} department(s) already have recorded decisions and are excluded.)"
+          else
+            ""
+          end
+
         """
         STRUCTURAL DECISIONS REQUIRED
-        #{structural_count} department(s) have org boundary bottlenecks this system cannot fix.
+        #{structural_count} department(s) have org boundary bottlenecks this system cannot fix.#{decided_note}
         Worst boundary consumption: #{score_pct} of cycle time.
         These are Conway's Law violations — the org chart is the bottleneck.
         Only you can decide: reorganize, add a liaison role, or accept the constraint.\
@@ -132,7 +156,7 @@ defmodule OptimalSystemAgent.Board.BriefingTemplate do
     # Count sections rendered (excluding empty structural section)
     section_count = length(sections)
     has_structural_issues = structural_count > 0
-    structural_issue_count = if is_integer(structural_count), do: structural_count, else: 0
+    structural_issue_count = structural_count
 
     Telemetry.end_span(
       Map.merge(span, %{
