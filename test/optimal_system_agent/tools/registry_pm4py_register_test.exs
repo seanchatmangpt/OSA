@@ -8,6 +8,8 @@ defmodule OptimalSystemAgent.Tools.Registry.PM4PyRegisterTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Tools.Registry
 
   setup_all do

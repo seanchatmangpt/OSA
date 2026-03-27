@@ -21,7 +21,9 @@ defmodule OptimalSystemAgent.JTBD.Wave12ScenarioTest do
   WvdA: Deadlock-free (all ops have timeout_ms), liveness (all loops bounded), boundedness (queue max 100)
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
+
+  @moduletag :requires_application
 
   alias OptimalSystemAgent.MCP.Client
   alias OptimalSystemAgent.JTBD.Wave12Scenario
