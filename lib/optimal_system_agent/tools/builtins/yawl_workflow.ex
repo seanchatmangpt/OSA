@@ -107,7 +107,14 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkflow do
   end
 
   defp dispatch("launch_case", %{"spec_id" => spec_id}) when is_binary(spec_id) do
-    ia_post(%{"action" => "launchCase", "specID" => spec_id})
+    case ia_post(%{"action" => "launchCase", "specID" => spec_id}) do
+      {:ok, %{"status" => "success", "value" => case_id} = result} when case_id != "" ->
+        OptimalSystemAgent.Yawl.EventStream.subscribe(case_id)
+        {:ok, result}
+
+      other ->
+        other
+    end
   end
 
   defp dispatch("launch_case", _params) do

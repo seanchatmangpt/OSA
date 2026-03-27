@@ -142,6 +142,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkItem do
     case http_post_form(url, form) do
       {:ok, body} ->
         work_items = parse_work_items(body)
+        set_trace_context_from_work_item(work_item_id)
 
         {:ok,
          %{
@@ -227,6 +228,28 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkItem do
 
   defp dispatch("get_children", _params) do
     {:error, "get_children requires work_item_id parameter"}
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Trace Context (OTEL Petri Net Correlation)
+  # ──────────────────────────────────────────────────────────────────────────
+
+  # Work item IDs are in "caseID:taskID:uniqueID" format.
+  # Extract the caseID prefix, look up the trace_id from EventStream ETS,
+  # and store it in the process dictionary so subsequent OTEL span creation
+  # in this agent process becomes a child of the YAWL case trace.
+  defp set_trace_context_from_work_item(work_item_id) when is_binary(work_item_id) do
+    case String.split(work_item_id, ":", parts: 2) do
+      [case_id | _] when case_id != "" ->
+        if trace_id = OptimalSystemAgent.Yawl.EventStream.lookup_trace_id(case_id) do
+          Process.put(:osa_yawl_trace_id, trace_id)
+          Process.put(:osa_yawl_case_id, case_id)
+          Logger.debug("[YawlWorkItem] trace context set: case=#{case_id} trace=#{trace_id}")
+        end
+
+      _ ->
+        :ignore
+    end
   end
 
   # ──────────────────────────────────────────────────────────────────────────
