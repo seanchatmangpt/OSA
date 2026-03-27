@@ -12,6 +12,8 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.Loop.DoomLoop
 
   setup_all do

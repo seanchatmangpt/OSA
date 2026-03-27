@@ -1,6 +1,8 @@
 defmodule OptimalSystemAgent.Channels.HTTP.API.MetricsRoutesTest do
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Channels.HTTP.API.MetricsRoutes
   alias OptimalSystemAgent.Telemetry.Metrics
 

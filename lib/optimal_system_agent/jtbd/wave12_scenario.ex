@@ -155,7 +155,7 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
 
     now = DateTime.utc_now()
 
-    %__MODULE__{
+    struct_result = %__MODULE__{
       tool_name: tool_name,
       status: status,
       response: %{ok: true},
@@ -166,6 +166,29 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
       latency_ms: latency_ms,
       tier: nil
     }
+
+    broadcast_result(struct_result)
+  end
+
+  defp broadcast_result(result) do
+    if Process.whereis(Canopy.PubSub) != nil do
+      Phoenix.PubSub.broadcast(
+        Canopy.PubSub,
+        "jtbd:wave12",
+        {:scenario_result, %{
+          scenarios: [%{
+            id: result.tool_name,
+            outcome: result.outcome,
+            latency_ms: Map.get(result, :latency_ms, 0),
+            system: Map.get(result, :system, "unknown")
+          }],
+          pass_count: if(result.outcome == "success", do: 1, else: 0),
+          fail_count: if(result.outcome == "success", do: 0, else: 1)
+        }}
+      )
+    end
+
+    result
   end
 
   defp params_for_latency(n) when is_integer(n) and n > 0, do: n

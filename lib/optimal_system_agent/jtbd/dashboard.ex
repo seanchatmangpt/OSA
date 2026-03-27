@@ -660,6 +660,26 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
     funnel
   end
 
+  @doc """
+  Advance the RevOps funnel based on a passing scenario result.
+  Failing scenarios do NOT advance the funnel (unlike the internal update_revops_funnel/2).
+  """
+  @spec update_funnel_from_scenario(map(), map()) :: map()
+  def update_funnel_from_scenario(funnel, %{scenario: scenario, outcome: :pass}) do
+    update_revops_funnel(funnel, scenario)
+  end
+
+  def update_funnel_from_scenario(funnel, _failed_or_unknown), do: funnel
+
+  @doc """
+  Calculate 3-sigma SPC control limits from a list of pass-rate floats.
+  Returns %{mean: float, sigma: float, ucl: float, lcl: float}.
+  """
+  @spec calculate_control_limits([float()]) :: map()
+  def calculate_control_limits(history) when is_list(history) do
+    compute_spc_stats(history)
+  end
+
   defp is_valid_scenario(scenario) when is_map(scenario) do
     with {:ok, _id} <- validate_field(scenario, :id, &is_binary/1),
          {:ok, _outcome} <- validate_field(scenario, :outcome, &is_binary/1),

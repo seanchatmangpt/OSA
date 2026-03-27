@@ -87,7 +87,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
 
   describe "scan_sensor_suite/1 — Full SPR scan pipeline" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
       :ok
     end
 
@@ -308,7 +312,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
 
   describe "current_fingerprint/0 — SHA256 fingerprint calculation" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
       :ok
     end
 
@@ -418,7 +426,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
 
   describe "stale?/1 — Freshness check" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
       :ok
     end
 
@@ -499,6 +511,15 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
   # ---------------------------------------------------------------------------
 
   describe "Private function behavior — discover_modules/1" do
+    setup do
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
+      :ok
+    end
+
     test "returns error for non-existent path" do
       # This tests the actual behavior of discover_modules via scan_sensor_suite
       output_dir = "tmp/chicago_private_modules_test"
@@ -544,6 +565,15 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
   end
 
   describe "Private function behavior — discover_dependencies/1" do
+    setup do
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
+      :ok
+    end
+
     test "returns dependency list for real codebase" do
       # discover_dependencies now scans use/import/require/alias statements
       output_dir = "tmp/chicago_deps_real_test"
@@ -575,6 +605,15 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
   end
 
   describe "Private function behavior — detect_yawl_patterns/1" do
+    setup do
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
+      :ok
+    end
+
     test "returns pattern list for real codebase" do
       # detect_yawl_patterns now detects YAWL workflow patterns
       output_dir = "tmp/chicago_patterns_real_test"

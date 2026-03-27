@@ -8,6 +8,8 @@ defmodule OptimalSystemAgent.EventStreamTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.EventStream
 
   @moduletag :capture_log

@@ -13,9 +13,10 @@ defmodule OptimalSystemAgent.Board.HealingBridgeTest do
 
   use ExUnit.Case, async: false
 
-  alias OptimalSystemAgent.Board.HealingBridge
-
+  @moduletag :requires_application
   @moduletag :board_healing
+
+  alias OptimalSystemAgent.Board.HealingBridge
 
   # ── Routing logic tests (pure, no GenServer needed) ──────────────────────────
 

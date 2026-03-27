@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.ProgressTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.Progress
   alias OptimalSystemAgent.Agent.Progress.TaskProgress
   alias OptimalSystemAgent.Agent.Progress.AgentProgress

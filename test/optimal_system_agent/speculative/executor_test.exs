@@ -8,6 +8,8 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Speculative.Executor
 
   @moduletag :capture_log

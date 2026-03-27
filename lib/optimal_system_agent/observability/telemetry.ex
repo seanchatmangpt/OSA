@@ -466,13 +466,37 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     Process.get(:telemetry_current_span_id)
   end
 
-  # Enrich attributes with system context
+  # Enrich attributes with system context.
+  # Correlation ID is ALWAYS added — not gated on environment — so every span
+  # carries chatmangpt.run.correlation_id for cross-system trace correlation.
   defp enrich_attributes(attributes) do
+    correlation_id = get_correlation_id()
+
     Map.merge(attributes, %{
       "timestamp" => DateTime.utc_now() |> DateTime.to_iso8601(),
       "node" => node() |> to_string(),
-      "version" => get_osa_version()
+      "version" => get_osa_version(),
+      "chatmangpt.run.correlation_id" => correlation_id
     })
+  end
+
+  # Retrieve the correlation ID from the process dictionary, env var, or generate one.
+  # Sets it in the process dictionary so subsequent spans in the same process share it.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  # Generate a random 32-hex-character correlation ID using :crypto.
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 
   # Get OSA version

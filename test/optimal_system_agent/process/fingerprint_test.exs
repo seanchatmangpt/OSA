@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Process.FingerprintTest do
   """
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Process.Fingerprint
 
 

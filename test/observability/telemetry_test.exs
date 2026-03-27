@@ -1,6 +1,8 @@
 defmodule OptimalSystemAgent.Observability.TelemetryTest do
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Observability.Telemetry
 
   setup do

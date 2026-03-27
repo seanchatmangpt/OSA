@@ -1,6 +1,8 @@
 defmodule OptimalSystemAgent.Integrations.Compliance.VerifierTest do
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Integrations.Compliance.Verifier
 
   setup do

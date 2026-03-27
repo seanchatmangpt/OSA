@@ -72,14 +72,24 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
   def diagnose({:error, reason}, context) when is_atom(reason) do
     tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    :otel_tracer.with_span(tracer, "diagnosis.classify", %{
-      "error_type" => "atom",
-      "reason" => inspect(reason)
-    }, fn span_ctx ->
+    :otel_tracer.with_span(tracer, "diagnosis.classify", %{}, fn span_ctx ->
       result = diagnose_reason(reason, context)
-      :otel_span.set_attributes(span_ctx, %{"diagnosis_mode" => inspect(elem(result, 0))})
+
+      :otel_span.set_attributes(span_ctx, [
+        {"error_type", "atom"},
+        {"reason", inspect(reason)},
+        {"diagnosis_mode", inspect(elem(result, 0))},
+        {"chatmangpt.run.correlation_id", get_correlation_id()}
+      ])
+
       result
     end)
+  rescue
+    _ ->
+      diagnose_reason(reason, context)
+  catch
+    _, _ ->
+      diagnose_reason(reason, context)
   end
 
   def diagnose({:error, message}, _context) when is_binary(message) do
@@ -347,5 +357,23 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
 
   defp contains_any?(string, substrings) do
     Enum.any?(substrings, &String.contains?(string, &1))
+  end
+
+  # Retrieve correlation ID for span attributes.
+  # Reads from process dictionary, then env var, then generates a fallback.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 end

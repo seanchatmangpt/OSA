@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.Loop.TelemetryTest do
 
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.Loop.Telemetry
 
   @moduletag :capture_log

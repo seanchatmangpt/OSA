@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.ScratchpadTest do
 
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.Scratchpad
 
   @moduletag :capture_log

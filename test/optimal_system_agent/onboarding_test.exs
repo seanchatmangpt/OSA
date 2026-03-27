@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.OnboardingTest do
 
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Onboarding
 
   @moduletag :capture_log

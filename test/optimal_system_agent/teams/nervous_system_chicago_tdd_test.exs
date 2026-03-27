@@ -20,6 +20,8 @@ defmodule OptimalSystemAgent.Teams.NervousSystemChicagoTDDTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Teams.NervousSystem
 
   setup_all do

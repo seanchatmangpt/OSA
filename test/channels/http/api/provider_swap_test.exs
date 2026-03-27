@@ -1,5 +1,8 @@
 defmodule OptimalSystemAgent.Channels.HTTP.API.ProviderSwapTest do
   use ExUnit.Case, async: false
+
+  @moduletag :requires_application
+
   use Plug.Test
 
   alias OptimalSystemAgent.Channels.HTTP.API.SessionRoutes

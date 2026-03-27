@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.Loop.SurveyTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.Loop.Survey
 
   @moduletag :capture_log

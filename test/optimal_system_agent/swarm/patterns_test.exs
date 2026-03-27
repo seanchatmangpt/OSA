@@ -1,5 +1,8 @@
 defmodule OptimalSystemAgent.Swarm.PatternsTest do
   use ExUnit.Case
+
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Swarm.Patterns
 
   describe "list_patterns/0" do

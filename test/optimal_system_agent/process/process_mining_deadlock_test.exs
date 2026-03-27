@@ -8,6 +8,8 @@ defmodule OptimalSystemAgent.Process.ProcessMiningDeadlockTest do
   """
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Process.ProcessMining
 
   @unique_prefix "deadlock-test-#{:erlang.unique_integer([:positive])}-"

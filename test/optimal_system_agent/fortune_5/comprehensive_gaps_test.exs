@@ -1,6 +1,7 @@
 defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
   @moduletag :fortune_5_comprehensive
   @moduletag :capture_log
 

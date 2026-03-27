@@ -118,9 +118,7 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   def trigger_healing(process_id) when is_binary(process_id) do
     tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    :otel_tracer.with_span(tracer, "healing.board_process_healing", %{
-      "process_id" => process_id
-    }, fn span_ctx ->
+    :otel_tracer.with_span(tracer, "healing.board_process_healing", %{}, fn span_ctx ->
       Logger.info("[Healing.ReflexArcs] Board healing triggered for process: #{process_id}")
 
       # Derive span ID from OTEL context for proof triple
@@ -147,10 +145,11 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
       },
       source: "healing.reflex_arcs")
 
-      :otel_span.set_attributes(span_ctx, %{
-        "process_id" => process_id,
-        "outcome" => outcome
-      })
+      :otel_span.set_attributes(span_ctx, [
+        {"process_id", process_id},
+        {"outcome", outcome},
+        {"chatmangpt.run.correlation_id", get_correlation_id()}
+      ])
 
       Logger.info("[Healing.ReflexArcs] Board healing complete for #{process_id}: #{outcome}")
 
@@ -766,5 +765,24 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
       _ ->
         false
     end
+  end
+
+  # Retrieve correlation ID for span attributes.
+  # Reads from process dictionary, then env var, then generates a fallback.
+  # Stored in process dictionary so all spans in the same process share the same ID.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 end

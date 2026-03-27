@@ -25,7 +25,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryTest do
 
   describe "scan_sensor_suite/1" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
 
       # Get the pid of the already-running GenServer (started by application)
       pid = Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry)
@@ -61,7 +65,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryTest do
 
   describe "current_fingerprint/0" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
 
       # Clear any existing scan data for clean test state
       try do
@@ -97,7 +105,11 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryTest do
 
   describe "stale?/1" do
     setup do
-      SensorRegistry.init_tables()
+      OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+      case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+        nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+        _   -> :ok
+      end
 
       # Clear any existing scan data for clean test state
       try do
