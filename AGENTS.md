@@ -427,6 +427,109 @@ Delegate:
 
 ---
 
+## ═══════════════════════════════════════════════════════════════════════════════
+# YAWL INTEGRATION TOOLS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+> These four tools expose a live YAWL 6 engine (yawlv6) to OSA agents.
+> They chain together: `yawl_spec_library → yawl_workflow → yawl_work_item → yawl_process_mining`
+
+### `yawl_spec_library`
+
+**Purpose**: Browse and load YAWL workflow specifications
+
+**Operations**:
+- `list_patterns` — Returns all 43 WCP workflow control patterns with metadata
+- `get_pattern` — Fetch a named WCP pattern spec (e.g. `WCP-1-Sequence`, `WCP-17-MI-DAT`)
+- `list_specs` — List real-data specs from `~/yawlv6/exampleSpecs/`
+- `load_spec` — Read a `.yawl` spec file by name or path
+
+**Config**:
+- No network required — reads local `~/yawlv6/exampleSpecs/` directory
+
+**Use When**:
+- Selecting a workflow pattern before launching a case
+- Inspecting available specs for a given domain
+- Loading spec XML to upload via `yawl_workflow`
+
+---
+
+### `yawl_workflow`
+
+**Purpose**: Upload specs, launch cases, and manage running workflows via YAWL Interface A
+
+**Operations**:
+- `upload_spec` — POST a `.yawl` spec to the engine (returns spec ID)
+- `launch_case` — Start a new case for a loaded spec (returns case ID)
+- `cancel_case` — Terminate a running case by case ID
+- `list_cases` — List all active cases (optionally filtered by spec ID)
+- `get_case` — Fetch current state and data for a running case
+
+**Config**:
+- `YAWL_ENGINE_URL` — YAWL engine base URL (default: `http://localhost:8080`)
+
+**Use When**:
+- Starting an orchestrated workflow from a YAWL spec
+- Monitoring or cancelling running workflow instances
+- Chaining: load spec with `yawl_spec_library`, then call `upload_spec` + `launch_case`
+
+---
+
+### `yawl_work_item`
+
+**Purpose**: Checkout and complete YAWL work items via Interface B
+
+**Operations**:
+- `list_enabled` — List all enabled (available) work items across active cases
+- `checkout` — Check out a work item (moves to executing, returns item data)
+- `checkin` — Complete a work item, submitting output data (advances the workflow)
+- `get_item` — Fetch details and current data for a specific work item
+- `suspend` — Suspend a checked-out item (returns to enabled pool)
+
+**Config**:
+- `YAWL_ENGINE_URL` — YAWL engine base URL (default: `http://localhost:8080`)
+
+**Use When**:
+- An OSA agent needs to perform a task step in a running YAWL workflow
+- Implementing human-in-the-loop patterns (agent acts as a resource)
+- Chaining: after `yawl_workflow` launches a case, poll `list_enabled` then `checkout`/`checkin`
+
+---
+
+### @osa-process-mining
+
+**Purpose**: YAWL-integrated process mining, discovery, and conformance checking
+
+**Signal Encoding**: `S=(data, result, inform, json, process-mining-report)`
+
+**Use When**:
+- Discovering process models from event logs
+- Conformance checking against YAWL specs
+- Computing case/variant/performance statistics
+- Feeding XES event data into pm4py-rust
+
+**Knowledge**:
+- **XES extraction**: Pulls event logs directly from running YAWL engine
+- **pm4py-rust**: Forwards XES to pm4py-rust service for discovery/conformance/stats
+- **Discovery algorithms**: Alpha Miner, Heuristics Miner, Inductive Miner (via pm4py-rust)
+- **Conformance**: Token-based replay and alignments against YAWL Petri net semantics
+- **WCP patterns**: Knows all 43 patterns; annotates mined models with pattern labels
+
+**Tool**: `yawl_process_mining`
+
+**Operations**:
+- `pull_xes` — Extract XES event log from YAWL engine for a given spec or case range
+- `discover` — Run process discovery (returns BPMN/Petri net + WCP pattern annotations)
+- `conformance` — Replay log against YAWL spec; returns fitness/precision scores
+- `stats` — Case frequency, variant distribution, median throughput time
+
+**Config**:
+- `YAWL_ENGINE_URL` — YAWL engine base URL (default: `http://localhost:8080`)
+
+**Chain Position**: Used downstream of `yawl_workflow` after cases complete
+
+---
+
 ### @osa-quality-gate
 
 **Purpose**: S/N quality enforcement
@@ -536,6 +639,35 @@ Agent produces output
   → @osa-quality-gate
 ```
 
+## Auto-Dispatch by YAWL Tool
+
+```
+"YAWL spec", "WCP pattern", "workflow spec", "example spec"
+  → yawl_spec_library
+
+"launch case", "upload spec", "cancel case", "list cases"
+  → yawl_workflow
+
+"work item", "checkout", "checkin", "enabled items"
+  → yawl_work_item
+
+"process mining", "XES", "discover process", "conformance"
+  → yawl_process_mining
+```
+
+**YAWL Tool Chain** (typical end-to-end flow):
+```
+1. yawl_spec_library.list_patterns     → choose WCP pattern
+2. yawl_spec_library.load_spec         → get spec XML
+3. yawl_workflow.upload_spec           → register with engine → spec_id
+4. yawl_workflow.launch_case           → start instance → case_id
+5. yawl_work_item.list_enabled         → find available work items
+6. yawl_work_item.checkout / checkin   → agent performs work steps
+7. yawl_process_mining.pull_xes        → extract completed event log
+8. yawl_process_mining.discover        → mine process model + WCP annotations
+9. yawl_process_mining.conformance     → fitness/precision vs. original spec
+```
+
 ---
 
 ## ═══════════════════════════════════════════════════════════════════════════════
@@ -601,6 +733,12 @@ Agent produces output
 ║   @osa-multi-agent-fleet   → Parallel agent coordination                ║
 ║   @osa-delegation-agent    → Task decomposition                         ║
 ║   @osa-quality-gate        → S/N quality enforcement                     ║
+║                                                                          ║
+║ YAWL INTEGRATION TOOLS:                                                  ║
+║   yawl_spec_library        → Browse 43 WCP patterns + exampleSpecs      ║
+║   yawl_workflow            → Upload specs, launch/cancel/list cases      ║
+║   yawl_work_item           → Checkout/checkin work items (Interface B)   ║
+║   yawl_process_mining      → XES extraction, discovery, conformance      ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```

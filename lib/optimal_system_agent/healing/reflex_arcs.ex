@@ -60,6 +60,9 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   @provider_failure_threshold 3
   @budget_pressure_threshold 0.80
 
+  # -- WCP-10 Cascade Detection --
+  @max_reflex_depth 5
+
   # -- Critical agents that should never be throttled --
   @critical_agents ~w(health-monitor healing)
 
@@ -102,6 +105,32 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   @spec reap_sessions() :: :ok
   def reap_sessions do
     GenServer.cast(__MODULE__, :reap_sessions)
+  end
+
+  @doc """
+  WCP-10 Cascade Detection — check whether firing `proposed_next` reflex
+  would create a cycle or exceed the maximum reflex chain depth.
+
+  Returns `:ok` when it is safe to fire, or an error tuple when a cascade
+  or depth limit would be violated.
+
+      iex> ReflexArcs.detect_cascade([], "reflex_a")
+      :ok
+
+      iex> ReflexArcs.detect_cascade(["reflex_a"], "reflex_a")
+      {:error, :cascade_detected}
+
+      iex> chain = Enum.map(1..5, fn i -> "reflex_\#{i}" end)
+      iex> ReflexArcs.detect_cascade(chain, "reflex_6")
+      {:error, :max_depth}
+  """
+  @spec detect_cascade([String.t()], String.t()) :: :ok | {:error, :cascade_detected | :max_depth}
+  def detect_cascade(chain, proposed_next) do
+    cond do
+      length(chain) >= @max_reflex_depth -> {:error, :max_depth}
+      proposed_next in chain -> {:error, :cascade_detected}
+      true -> :ok
+    end
   end
 
   @doc """
@@ -715,34 +744,47 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
 
   # -- Cooldown & Logging Helpers --
 
-  defp maybe_fire_reflex(state, reflex_name, cooldown_ms, executor_fn) do
-    now = System.monotonic_time(:millisecond)
-    last_fired = Map.get(state.cooldowns, reflex_name, 0)
+  defp maybe_fire_reflex(state, reflex_name, cooldown_ms, executor_fn, chain \\ []) do
+    reflex_key = to_string(reflex_name)
 
-    if now - last_fired >= cooldown_ms do
-      result = executor_fn.()
+    case detect_cascade(chain, reflex_key) do
+      {:error, reason} ->
+        Logger.warning(
+          "[Healing.ReflexArcs] Healing cascade prevented: chain=#{inspect(chain)} proposed=#{reflex_key}"
+        )
 
-      if result != nil do
-        entry = %{
-          reflex: reflex_name,
-          result: result,
-          fired_at: DateTime.utc_now()
-        }
-
+        _ = reason
         state
-        |> log_reflex(entry)
-        |> put_in([:cooldowns, reflex_name], now)
-      else
-        state
-      end
-    else
-      # Still in cooldown
-      remaining_s = Float.round((cooldown_ms - (now - last_fired)) / 1_000, 1)
-      Logger.debug(
-        "[ReflexArc] #{reflex_name} skipped -- cooldown active (#{remaining_s}s remaining)"
-      )
 
-      state
+      :ok ->
+        now = System.monotonic_time(:millisecond)
+        last_fired = Map.get(state.cooldowns, reflex_name, 0)
+
+        if now - last_fired >= cooldown_ms do
+          result = executor_fn.()
+
+          if result != nil do
+            entry = %{
+              reflex: reflex_name,
+              result: result,
+              fired_at: DateTime.utc_now()
+            }
+
+            state
+            |> log_reflex(entry)
+            |> put_in([:cooldowns, reflex_name], now)
+          else
+            state
+          end
+        else
+          # Still in cooldown
+          remaining_s = Float.round((cooldown_ms - (now - last_fired)) / 1_000, 1)
+          Logger.debug(
+            "[ReflexArc] #{reflex_name} skipped -- cooldown active (#{remaining_s}s remaining)"
+          )
+
+          state
+        end
     end
   end
 

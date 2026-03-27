@@ -538,7 +538,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery,
       "a2a_call" => OptimalSystemAgent.Tools.Builtins.A2ACall,
       "pm4py_discover" => OptimalSystemAgent.Tools.Builtins.PM4PyDiscover,
-      "process_intelligence_query" => OptimalSystemAgent.Tools.Builtins.ProcessIntelligenceQuery
+      "process_intelligence_query" => OptimalSystemAgent.Tools.Builtins.ProcessIntelligenceQuery,
+      "yawl_workflow" => OptimalSystemAgent.Tools.Builtins.YawlWorkflow,
+      "yawl_work_item" => OptimalSystemAgent.Tools.Builtins.YawlWorkItem,
+      "yawl_spec_library" => OptimalSystemAgent.Tools.Builtins.YawlSpecLibrary,
+      "yawl_process_mining" => OptimalSystemAgent.Tools.Builtins.YawlProcessMining
     }
   end
 

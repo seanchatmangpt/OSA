@@ -44,6 +44,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /audit-trail → AuditRoutes       GET /:session_id, GET /:session_id/verify, GET /:session_id/merkle
     /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
     /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
+    /yawl        → YawlRoutes       GET /patterns, POST /check-conformance, GET /health
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -183,6 +184,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   forward "/board/decision", to: API.BoardDecisionRoutes
   forward "/board/decisions", to: API.BoardDecisionRoutes
   forward "/board", to: API.BoardDeviationRoutes
+
+  # ── YAWL engine integration (WCP patterns, conformance, health proxy) ─
+  forward "/yawl", to: API.YawlRoutes
 
   # ── Health check (no auth required — forwarded before authenticate) ─────
   get "/health/fortune5" do

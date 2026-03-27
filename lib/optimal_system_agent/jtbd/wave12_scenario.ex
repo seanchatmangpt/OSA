@@ -3,7 +3,14 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   Wave 12 JTBD MCP tool execution — bounded, timeout-aware, queue-limited.
 
   Used by `test/jtbd/wave12_scenario_test.exs` and Weaver live-check spans.
+
+  Also provides DMAIC phase sequence validation backed by the YAWL spec engine
+  (WCP-1 sequence pattern).  YAWL engine availability is optional: if the
+  engine is not running the function degrades gracefully and index-based logic
+  governs the decision.
   """
+
+  @dmaic_phases ["define", "measure", "analyze", "improve", "control"]
 
   defstruct [
     :tool_name,
@@ -81,6 +88,73 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
       _ ->
         :ok
     end
+  end
+
+  # ---------------------------------------------------------------------------
+  # DMAIC phase validation (YAWL WCP-1 sequence)
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Validates a DMAIC phase transition from `current` to `next`.
+
+  Returns:
+  - `:ok`                         — valid forward transition
+  - `{:error, :invalid_phase}`    — unknown phase name
+  - `{:error, :invalid_transition}` — backward or non-adjacent move
+
+  YAWL engine check is opportunistic: if the engine is unavailable the
+  index-based logic alone determines the result (graceful degradation).
+  """
+  @spec validate_phase_transition(String.t(), String.t()) ::
+          :ok | {:error, :invalid_phase | :invalid_transition}
+  def validate_phase_transition(current, next) do
+    current_idx = Enum.find_index(@dmaic_phases, &(&1 == current))
+    next_idx = Enum.find_index(@dmaic_phases, &(&1 == next))
+
+    cond do
+      is_nil(current_idx) or is_nil(next_idx) ->
+        {:error, :invalid_phase}
+
+      next_idx == current_idx + 1 ->
+        # Valid forward transition — optionally verify with YAWL
+        partial_log = build_partial_log(@dmaic_phases, current_idx)
+
+        case check_yawl_transition(dmaic_spec(), partial_log) do
+          {:ok, _} -> :ok
+          {:error, :yawl_unavailable} -> :ok
+          {:error, _} -> {:error, :invalid_transition}
+        end
+
+      true ->
+        {:error, :invalid_transition}
+    end
+  end
+
+  # Build YAWL spec lazily so compile-time evaluation is not required.
+  defp dmaic_spec do
+    OptimalSystemAgent.Yawl.SpecBuilder.sequence(@dmaic_phases)
+  end
+
+  defp check_yawl_transition(spec, partial_log) do
+    try do
+      OptimalSystemAgent.Yawl.Client.check_conformance(spec, partial_log)
+    catch
+      :exit, _ -> {:error, :yawl_unavailable}
+    end
+  end
+
+  defp build_partial_log(phases, up_to_index) do
+    phases
+    |> Enum.take(up_to_index + 1)
+    |> Enum.with_index()
+    |> Enum.map(fn {phase, i} ->
+      %{
+        "case_id" => "dmaic_1",
+        "activity" => phase,
+        "timestamp" => "2026-01-01T0#{i}:00:00Z"
+      }
+    end)
+    |> Jason.encode!()
   end
 
   defp do_execute(%{"method" => method} = request, timeout_ms) do

@@ -23,6 +23,12 @@ config :optimal_system_agent,
   # pm4py-rust process mining engine (set PM4PY_URL env var to override)
   pm4py_url: System.get_env("PM4PY_URL", "http://localhost:8090"),
 
+  # YAWLv6 engine URL (set YAWLV6_URL env var to override)
+  yawl_url: System.get_env("YAWLV6_URL", "http://localhost:8080"),
+
+  # YAWLv6 exampleSpecs path (set YAWLV6_SPECS_PATH env var to override)
+  yawl_specs_path: Path.expand("~/yawlv6/exampleSpecs"),
+
   # Agent configuration
   max_iterations: 200,
   temperature: 0.7,

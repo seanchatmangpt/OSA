@@ -7,12 +7,25 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
     :pipeline    — each agent's output feeds the next
     :debate      — N-1 proposers in parallel, last agent is the critic
     :review_loop — worker + reviewer iterate until APPROVED or max_iterations
+
+  ## YAWL Topology Validation
+
+  `parallel/3` and `pipeline/3` perform a WvdA soundness gate before spawning
+  agents.  The gate builds a minimal YAWL XML spec via `SpecBuilder` and
+  verifies it with `Yawl.Client.check_conformance/2`.
+
+  Graceful degradation rules:
+    - YAWL engine unreachable → log warning and proceed (never block spawning)
+    - fitness == 0.0           → return `{:error, :unsound_topology}`
+    - fitness > 0.0            → proceed normally
   """
   require Logger
 
   alias OptimalSystemAgent.Orchestrator
+  alias OptimalSystemAgent.Yawl.SpecBuilder
 
   @presets_path "priv/swarms/patterns.json"
+  @yawl_timeout_ms 5_000
 
   # ---------------------------------------------------------------------------
   # Parallel
@@ -21,26 +34,41 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
   @doc """
   All agents work simultaneously on their assigned sub-tasks.
   Returns results in the same order as configs.
+
+  Performs a YAWL WCP-2 (AND-split) soundness check before spawning agents.
+  If the YAWL engine is unreachable the gate is skipped (graceful degradation).
+  If the spec is structurally unsound (fitness == 0.0) the call returns
+  `{:error, :unsound_topology}` without spawning any agent.
   """
   def parallel(parent_id, configs, _opts \\ []) do
     Logger.info("[Swarm.Patterns] parallel — #{length(configs)} agents")
 
-    results =
-      OptimalSystemAgent.TaskSupervisor
-      |> Task.Supervisor.async_stream_nolink(
-        configs,
-        fn config -> Orchestrator.run_subagent(Map.put(config, :parent_session_id, parent_id)) end,
-        max_concurrency: length(configs),
-        timeout: 600_000,
-        on_timeout: :kill_task
-      )
-      |> Enum.map(fn
-        {:ok, result} -> result
-        {:exit, :timeout} -> {:ok, "[Agent timed out]"}
-        {:exit, reason} -> {:error, inspect(reason)}
-      end)
+    agent_names = Enum.map(configs, fn c -> Map.get(c, :role, "agent") end)
 
-    {:ok, results}
+    case validate_yawl_topology(:parallel, agent_names) do
+      {:error, :unsound_topology} ->
+        {:error, :unsound_topology}
+
+      _ ->
+        results =
+          OptimalSystemAgent.TaskSupervisor
+          |> Task.Supervisor.async_stream_nolink(
+            configs,
+            fn config ->
+              Orchestrator.run_subagent(Map.put(config, :parent_session_id, parent_id))
+            end,
+            max_concurrency: length(configs),
+            timeout: 600_000,
+            on_timeout: :kill_task
+          )
+          |> Enum.map(fn
+            {:ok, result} -> result
+            {:exit, :timeout} -> {:ok, "[Agent timed out]"}
+            {:exit, reason} -> {:error, inspect(reason)}
+          end)
+
+        {:ok, results}
+    end
   end
 
   # ---------------------------------------------------------------------------
@@ -50,31 +78,45 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
   @doc """
   Sequential chain. Each agent receives the previous agent's output prepended
   to its task, enabling iterative refinement.
+
+  Performs a YAWL WCP-1 (sequence) soundness check before spawning agents.
+  If the YAWL engine is unreachable the gate is skipped (graceful degradation).
+  If the spec is structurally unsound (fitness == 0.0) the call returns
+  `{:error, :unsound_topology}` without spawning any agent.
   """
   def pipeline(parent_id, configs, _opts \\ []) do
     Logger.info("[Swarm.Patterns] pipeline — #{length(configs)} agents")
 
-    {results, _} =
-      Enum.map_reduce(configs, nil, fn config, prev_output ->
-        task =
-          if prev_output do
-            "## Previous step output\n#{prev_output}\n\n## Your task\n#{config.task}"
-          else
-            config.task
-          end
+    step_names = Enum.map(configs, fn c -> Map.get(c, :role, "step") end)
 
-        config = Map.put(config, :parent_session_id, parent_id) |> Map.put(:task, task)
-        result = Orchestrator.run_subagent(config)
+    case validate_yawl_topology(:pipeline, step_names) do
+      {:error, :unsound_topology} ->
+        {:error, :unsound_topology}
 
-        output = case result do
-          {:ok, text} -> text
-          {:error, _} -> nil
-        end
+      _ ->
+        {results, _} =
+          Enum.map_reduce(configs, nil, fn config, prev_output ->
+            task =
+              if prev_output do
+                "## Previous step output\n#{prev_output}\n\n## Your task\n#{config.task}"
+              else
+                config.task
+              end
 
-        {result, output}
-      end)
+            config = Map.put(config, :parent_session_id, parent_id) |> Map.put(:task, task)
+            result = Orchestrator.run_subagent(config)
 
-    {:ok, results}
+            output =
+              case result do
+                {:ok, text} -> text
+                {:error, _} -> nil
+              end
+
+            {result, output}
+          end)
+
+        {:ok, results}
+    end
   end
 
   # ---------------------------------------------------------------------------
@@ -426,6 +468,68 @@ Your task: Evaluate and vote on this proposal.
             end
           _ -> {:error, :not_found}
         end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # YAWL Topology Validation (private)
+  # ---------------------------------------------------------------------------
+
+  # Validate a swarm topology against the YAWL engine before spawning agents.
+  #
+  # Returns:
+  #   :ok                        — spec is sound (fitness > 0.0)
+  #   {:error, :yawl_unavailable} — engine not running; caller should proceed
+  #   {:error, :unsound_topology} — fitness == 0.0; caller should abort
+  #
+  # All GenServer calls are wrapped in try/catch to handle the case where
+  # YawlClient process is not running (WvdA deadlock-freedom requirement).
+  defp validate_yawl_topology(pattern, names) do
+    spec =
+      case pattern do
+        :parallel -> SpecBuilder.parallel_split("dispatch", names)
+        :pipeline -> SpecBuilder.sequence(names)
+      end
+
+    result =
+      try do
+        GenServer.call(
+          OptimalSystemAgent.Yawl.Client,
+          {:check_conformance, spec, "[]"},
+          @yawl_timeout_ms
+        )
+      catch
+        :exit, _ -> {:error, :yawl_unavailable}
+      end
+
+    case result do
+      {:error, :yawl_unavailable} ->
+        Logger.warning(
+          "[Swarm.Patterns] YAWL engine unreachable — skipping #{pattern} topology check"
+        )
+
+        {:error, :yawl_unavailable}
+
+      {:error, reason} ->
+        Logger.warning(
+          "[Swarm.Patterns] YAWL check failed (#{inspect(reason)}) — proceeding with #{pattern}"
+        )
+
+        {:error, :yawl_unavailable}
+
+      {:ok, %{fitness: fitness}} when fitness == 0.0 ->
+        Logger.error(
+          "[Swarm.Patterns] YAWL soundness gate rejected #{pattern} topology (fitness=0.0)"
+        )
+
+        {:error, :unsound_topology}
+
+      {:ok, %{fitness: fitness}} ->
+        Logger.debug(
+          "[Swarm.Patterns] YAWL #{pattern} topology sound (fitness=#{fitness})"
+        )
+
+        :ok
     end
   end
 end
