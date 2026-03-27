@@ -73,6 +73,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   end
 
   plug :cors
+  plug OptimalSystemAgent.Channels.HTTP.TraceContext
   plug OptimalSystemAgent.Channels.HTTP.RateLimiter
   plug :validate_content_type
   plug :authenticate

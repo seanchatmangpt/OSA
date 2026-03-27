@@ -260,6 +260,7 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
 
     # Update span status in the ETS record
     updated_span = Map.put(span_ctx, "status", to_string(status))
+    updated_span = Map.put(updated_span, "end_time_us", end_time_us)
 
     updated_span =
       if error_message do
