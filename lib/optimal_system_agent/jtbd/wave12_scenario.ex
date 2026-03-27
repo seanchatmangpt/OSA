@@ -36,7 +36,7 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
     def init(:ok), do: {:ok, 0}
 
     def acquire do
-      GenServer.call(__MODULE__, :acquire)
+      GenServer.call(__MODULE__, :acquire, 5_000)
     end
 
     def release do
@@ -117,18 +117,45 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
         {:error, :invalid_phase}
 
       next_idx == current_idx + 1 ->
-        # Valid forward transition — optionally verify with YAWL
+        # Valid forward transition — verify with YAWL, emit DMAIC phase span.
+        # The span is emitted regardless of YAWL availability so that every
+        # syntactically-valid forward move is observable in the trace.
         partial_log = build_partial_log(@dmaic_phases, current_idx)
 
-        case check_yawl_transition(dmaic_spec(), partial_log) do
-          {:ok, _} -> :ok
-          {:error, :yawl_unavailable} -> {:error, :yawl_unavailable}
-          {:error, _} -> {:error, :invalid_transition}
-        end
+        yawl_result = check_yawl_transition(dmaic_spec(), partial_log)
+
+        outcome =
+          case yawl_result do
+            {:ok, _} -> :ok
+            {:error, :yawl_unavailable} -> {:error, :yawl_unavailable}
+            {:error, _} -> {:error, :invalid_transition}
+          end
+
+        emit_dmaic_phase_span(next, outcome)
+        outcome
 
       true ->
         {:error, :invalid_transition}
     end
+  end
+
+  defp emit_dmaic_phase_span(phase_name, outcome) do
+    phase_outcome =
+      case outcome do
+        :ok -> "completed"
+        {:error, _} -> "failed"
+      end
+
+    {:ok, span_ctx} =
+      OptimalSystemAgent.Observability.Telemetry.start_span(
+        "jtbd.dmaic.phase",
+        %{
+          "jtbd.dmaic.phase_name" => phase_name,
+          "jtbd.dmaic.phase_outcome" => phase_outcome
+        }
+      )
+
+    OptimalSystemAgent.Observability.Telemetry.end_span(span_ctx, :ok)
   end
 
   # Build YAWL spec lazily so compile-time evaluation is not required.

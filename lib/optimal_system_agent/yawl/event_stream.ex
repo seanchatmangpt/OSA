@@ -1,18 +1,17 @@
 defmodule OptimalSystemAgent.Yawl.EventStream do
   @moduledoc """
   GenServer that subscribes to the YAWL SSE event stream per case and emits
-  `:telemetry` events using Weaver-generated semconv constants.
+  proper OpenTelemetry spans visible in Jaeger.
 
-  ## Telemetry events emitted
+  ## OTEL spans emitted
 
-  | Event | Measurements | Metadata keys |
-  |-------|-------------|---------------|
-  | `[:osa, :yawl, :case, :started]` | `%{}` | case_id, spec_uri, instance_id, event_type |
-  | `[:osa, :yawl, :case, :completed]` | `%{}` | case_id, event_type |
-  | `[:osa, :yawl, :task, :execution]` | `%{token_consumed, token_produced}` | case_id, task_id, event_type, work_item_id |
+  | Span name              | Trigger                        | Key attributes |
+  |------------------------|--------------------------------|----------------|
+  | `yawl.case`            | INSTANCE_CREATED → end on INSTANCE_COMPLETED/CANCELLED | yawl.case.id, yawl.spec.uri, yawl.instance.id |
+  | `yawl.task.execution`  | TASK_STARTED / TASK_COMPLETED / TASK_FAILED | yawl.case.id, yawl.task.id, yawl.token.consumed, yawl.token.produced, yawl.work_item.id |
 
-  All metadata keys are atoms matching `OpenTelemetry.SemConv.Incubating.YawlAttributes`
-  function names (e.g. `:"yawl.case.id"`) so consumers can attach them directly to OTEL spans.
+  Both span types are stored in the `:telemetry_spans` ETS table so tests and
+  dashboards can assert on them without needing a live Jaeger instance.
 
   ## Trace correlation
 
@@ -22,14 +21,24 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
       {case_id :: String.t(), trace_id :: String.t()}
 
   Agent work item handlers look up `trace_id` to parent their spans under the YAWL case trace.
+
+  ## Armstrong compliance
+
+  No try/rescue around span or ETS calls. If `:telemetry_spans` or
+  `:osa_yawl_trace_ids` do not exist the process crashes — the supervisor
+  restarts EventStream, `init/1` recreates the tables, and the system returns
+  to a correct state.
   """
 
   use GenServer
   require Logger
 
-  alias OpenTelemetry.SemConv.Incubating.YawlAttributes, as: Attrs
+  alias OptimalSystemAgent.Observability.Telemetry
+  alias OpenTelemetry.SemConv.Incubating.SpanNames
 
   @ets_table :osa_yawl_trace_ids
+  # ETS table that tracks active yawl.case span contexts keyed by case_id
+  @case_spans_table :osa_yawl_case_spans
   @stream_path "/api/process-mining/events/stream"
   @stream_timeout 300_000
 
@@ -63,6 +72,79 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
     end
   end
 
+  @doc """
+  Emit a `yawl.case` OTEL span for a case start event and return the span context.
+
+  Called internally by `dispatch_event/1` when an INSTANCE_CREATED event arrives.
+  Exposed as a public function so tests can call it directly to assert on span
+  structure without needing a live YAWL SSE stream.
+
+  Stores the span context in `:osa_yawl_case_spans` ETS so `emit_case_end_span/2`
+  can retrieve it when INSTANCE_COMPLETED or INSTANCE_CANCELLED arrives.
+  """
+  @spec emit_case_start_span(String.t(), String.t()) :: {:ok, map} | {:error, term}
+  def emit_case_start_span(case_id, spec_uri, instance_id \\ "") do
+    attrs = %{
+      "yawl.case.id" => case_id,
+      "yawl.spec.uri" => spec_uri,
+      "yawl.instance.id" => instance_id
+    }
+
+    result = Telemetry.start_span(SpanNames.yawl_case(), attrs)
+
+    case result do
+      {:ok, span_ctx} ->
+        # Store span context so the completion event can end it
+        :ets.insert(@case_spans_table, {case_id, span_ctx})
+        {:ok, span_ctx}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  End an active `yawl.case` span.
+
+  Called internally when INSTANCE_COMPLETED or INSTANCE_CANCELLED arrives.
+  `status` is `:ok` for normal completion and `:error` for cancellation.
+  """
+  @spec emit_case_end_span(map, :ok | :error) :: :ok
+  def emit_case_end_span(span_ctx, status) do
+    Telemetry.end_span(span_ctx, status)
+  end
+
+  @doc """
+  Emit a `yawl.task.execution` OTEL span for a task lifecycle event and return
+  the completed span context.
+
+  `event_type` is one of `"TASK_STARTED"`, `"TASK_COMPLETED"`, `"TASK_FAILED"`.
+  `token_consumed` and `token_produced` follow Petri net token semantics.
+  """
+  @spec emit_task_span(String.t(), String.t(), String.t(), integer, integer, String.t()) ::
+          {:ok, map} | {:error, term}
+  def emit_task_span(case_id, task_id, event_type, token_consumed, token_produced, work_item_id) do
+    attrs = %{
+      "yawl.case.id" => case_id,
+      "yawl.task.id" => task_id,
+      "yawl.event.type" => event_type,
+      "yawl.token.consumed" => token_consumed,
+      "yawl.token.produced" => token_produced,
+      "yawl.work_item.id" => work_item_id
+    }
+
+    case Telemetry.start_span(SpanNames.yawl_task_execution(), attrs) do
+      {:ok, span_ctx} ->
+        # Task spans are point-in-time events — end immediately after creation
+        status = if event_type == "TASK_FAILED", do: :error, else: :ok
+        Telemetry.end_span(span_ctx, status)
+        {:ok, span_ctx}
+
+      error ->
+        error
+    end
+  end
+
   # ──────────────────────────────────────────────────────────────────────────
   # GenServer Callbacks
   # ──────────────────────────────────────────────────────────────────────────
@@ -73,6 +155,15 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
       case :ets.whereis(@ets_table) do
         :undefined ->
           :ets.new(@ets_table, [:named_table, :public, :set, read_concurrency: true])
+
+        tid ->
+          tid
+      end
+
+    _case_spans_table =
+      case :ets.whereis(@case_spans_table) do
+        :undefined ->
+          :ets.new(@case_spans_table, [:named_table, :public, :set, read_concurrency: true])
 
         tid ->
           tid
@@ -165,24 +256,20 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
   defp parse_and_emit_sse_event(_), do: :ignore
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Telemetry Dispatch (Weaver-generated constants)
+  # OTEL Span Dispatch (replaces :telemetry.execute calls)
   # ──────────────────────────────────────────────────────────────────────────
 
+  # INSTANCE_CREATED → open a yawl.case span, store it for later completion
   defp dispatch_event(
          %{"eventType" => "INSTANCE_CREATED", "caseID" => case_id} = event
        ) do
-    :telemetry.execute(
-      [:osa, :yawl, :case, :started],
-      %{},
-      %{
-        Attrs.yawl_case_id() => case_id,
-        Attrs.yawl_spec_uri() => Map.get(event, "specificationID", ""),
-        Attrs.yawl_instance_id() => Map.get(event, "instanceId", ""),
-        Attrs.yawl_event_type() => Attrs.yawl_event_type_values().instance_created
-      }
-    )
+    spec_uri = Map.get(event, "specificationID", "")
+    instance_id = Map.get(event, "instanceId", "")
+
+    emit_case_start_span(case_id, spec_uri, instance_id)
   end
 
+  # TASK_STARTED / TASK_COMPLETED / TASK_FAILED → yawl.task.execution span (point-in-time)
   defp dispatch_event(
          %{"eventType" => event_type, "caseID" => case_id, "taskId" => task_id} = event
        )
@@ -194,13 +281,6 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
         "TASK_FAILED" -> {0, 0}
       end
 
-    event_type_atom =
-      case event_type do
-        "TASK_STARTED" -> Attrs.yawl_event_type_values().task_started
-        "TASK_COMPLETED" -> Attrs.yawl_event_type_values().task_completed
-        "TASK_FAILED" -> Attrs.yawl_event_type_values().task_failed
-      end
-
     work_item_id =
       event
       |> Map.get("details", %{})
@@ -209,35 +289,26 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
         _ -> ""
       end)
 
-    :telemetry.execute(
-      [:osa, :yawl, :task, :execution],
-      %{token_consumed: consumed, token_produced: produced},
-      %{
-        Attrs.yawl_case_id() => case_id,
-        Attrs.yawl_task_id() => task_id,
-        Attrs.yawl_event_type() => event_type_atom,
-        Attrs.yawl_work_item_id() => work_item_id
-      }
-    )
+    emit_task_span(case_id, task_id, event_type, consumed, produced, work_item_id)
   end
 
+  # INSTANCE_COMPLETED / INSTANCE_CANCELLED → close the yawl.case span
   defp dispatch_event(
          %{"eventType" => event_type, "caseID" => case_id} = _event
        )
        when event_type in ["INSTANCE_COMPLETED", "INSTANCE_CANCELLED"] do
-    event_type_atom =
-      if event_type == "INSTANCE_COMPLETED",
-        do: Attrs.yawl_event_type_values().instance_completed,
-        else: Attrs.yawl_event_type_values().instance_cancelled
+    status = if event_type == "INSTANCE_COMPLETED", do: :ok, else: :error
 
-    :telemetry.execute(
-      [:osa, :yawl, :case, :completed],
-      %{},
-      %{
-        Attrs.yawl_case_id() => case_id,
-        Attrs.yawl_event_type() => event_type_atom
-      }
-    )
+    case :ets.lookup(@case_spans_table, case_id) do
+      [{^case_id, span_ctx}] ->
+        emit_case_end_span(span_ctx, status)
+        :ets.delete(@case_spans_table, case_id)
+
+      [] ->
+        # No open span for this case — log and continue (case may have started before
+        # EventStream was subscribed, or SSE stream delivered INSTANCE_COMPLETED first)
+        Logger.debug("[EventStream] No open span for case #{case_id} on #{event_type}")
+    end
   end
 
   defp dispatch_event(_event), do: :ignore

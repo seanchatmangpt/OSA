@@ -83,6 +83,19 @@ defmodule OpenTelemetry.SemConv.Incubating.SpanNames do
   @spec conformance_check() :: binary()
   def conformance_check, do: "conformance.check"
 
+  # YAWL domain
+
+  @spec yawl_case() :: binary()
+  def yawl_case, do: "yawl.case"
+
+  @spec yawl_task_execution() :: binary()
+  def yawl_task_execution, do: "yawl.task.execution"
+
+  # JTBD domain
+
+  @spec jtbd_dmaic_phase() :: binary()
+  def jtbd_dmaic_phase, do: "jtbd.dmaic.phase"
+
   # BusinessOS domain
 
   @spec bos_compliance_check() :: binary()

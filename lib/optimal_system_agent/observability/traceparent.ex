@@ -68,9 +68,12 @@ defmodule OptimalSystemAgent.Observability.Traceparent do
 
     case {trace_id, span_id} do
       {trace_id, span_id} when is_binary(trace_id) and is_binary(span_id) ->
-        # Ensure trace_id is 32 hex chars and span_id is 16 hex chars
-        trace_id_padded = pad_hex(trace_id, 32)
-        span_id_padded = pad_hex(span_id, 16)
+        # Ensure trace_id is 32 hex chars and span_id is 16 hex chars.
+        # sanitize_hex_id strips UUID dashes before padding/slicing so that
+        # UUID-formatted IDs (e.g. "9287363b-c0aa-c4a6-be38-7eefd545ae47") become
+        # valid 32-char hex strings rather than polluting the traceparent with extra dashes.
+        trace_id_padded = pad_hex(sanitize_hex_id(trace_id), 32)
+        span_id_padded = pad_hex(sanitize_hex_id(span_id), 16)
 
         traceparent = "00-#{trace_id_padded}-#{span_id_padded}-01"
         {:ok, traceparent}
@@ -78,7 +81,7 @@ defmodule OptimalSystemAgent.Observability.Traceparent do
       {trace_id, _} when is_binary(trace_id) ->
         # Only trace_id available, generate span_id
         span_id = generate_span_id()
-        trace_id_padded = pad_hex(trace_id, 32)
+        trace_id_padded = pad_hex(sanitize_hex_id(trace_id), 32)
         traceparent = "00-#{trace_id_padded}-#{span_id}-01"
         {:ok, traceparent}
 
@@ -118,6 +121,13 @@ defmodule OptimalSystemAgent.Observability.Traceparent do
     # Generate 8 random bytes and convert to 16 hex characters
     :crypto.strong_rand_bytes(8)
     |> Base.encode16(case: :lower)
+  end
+
+  # Strip UUID dashes so that a UUID-formatted trace/span ID such as
+  # "9287363b-c0aa-c4a6-be38-7eefd545ae47" is reduced to the raw 32-char hex
+  # string "9287363bc0aac4a6be387eefd545ae47" before length-checking or slicing.
+  defp sanitize_hex_id(id) when is_binary(id) do
+    String.replace(id, "-", "")
   end
 
   defp pad_hex(hex, desired_length) when is_binary(hex) do

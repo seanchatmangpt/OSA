@@ -47,6 +47,7 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.Providers.HealthChecker
   alias OptimalSystemAgent.Agent.Compactor
+  alias OptimalSystemAgent.Observability.Telemetry
 
   # -- Cooldowns (milliseconds) --
   @provider_failover_cooldown 30_000
@@ -131,6 +132,43 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
       proposed_next in chain -> {:error, :cascade_detected}
       true -> :ok
     end
+  end
+
+  @doc """
+  Span-emitting wrapper for `detect_cascade/2`.
+
+  Emits a `"healing.reflex_arc"` span via `OptimalSystemAgent.Observability.Telemetry`
+  with attributes:
+  - `healing.recovery_action` — the proposed next reflex name
+  - `healing.iteration`       — current chain depth (number of reflexes already fired)
+
+  Returns the same result as `detect_cascade/2`.
+
+  Armstrong: NO try/rescue wraps the `Telemetry` calls. If `:telemetry_spans` is
+  missing the process crashes, the supervisor restarts, and ETS is recreated.
+  """
+  @spec detect_cascade_with_span([String.t()], String.t()) ::
+          :ok | {:error, :cascade_detected | :max_depth}
+  def detect_cascade_with_span(chain, proposed_next) do
+    iteration = length(chain)
+
+    {:ok, span_ctx} =
+      Telemetry.start_span("healing.reflex_arc", %{
+        "healing.recovery_action" => proposed_next,
+        "healing.iteration" => iteration
+      })
+
+    result = detect_cascade(chain, proposed_next)
+
+    span_status =
+      case result do
+        :ok -> :ok
+        {:error, _} -> :error
+      end
+
+    :ok = Telemetry.end_span(span_ctx, span_status)
+
+    result
   end
 
   @doc """

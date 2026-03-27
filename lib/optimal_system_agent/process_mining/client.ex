@@ -5,6 +5,15 @@ defmodule OptimalSystemAgent.ProcessMining.Client do
   Provides APIs for process discovery, soundness verification (deadlock-freedom, liveness, boundedness),
   and reachability analysis. All blocking operations enforce 10-second timeout (WvdA deadlock-freedom).
 
+  Each public API call emits an OTEL span via Telemetry.start_span/end_span and injects
+  a W3C traceparent header into the outbound HTTP request to pm4py-rust, enabling
+  cross-project trace correlation in Jaeger.
+
+  Span names (from SpanNames constants):
+  - `process.mining.discovery`   — discover_process_models/1
+  - `process.mining.soundness`   — check_deadlock_free/1 and analyze_boundedness/1
+  - `process.mining.reachability` — get_reachability_graph/1
+
   Public API:
   - `discover_process_models(resource_type)` — GET /process/discover/{resource_type}
   - `check_deadlock_free(process_id)` — POST /process/soundness/{process_id} with {check: "deadlock_free"}
@@ -17,6 +26,9 @@ defmodule OptimalSystemAgent.ProcessMining.Client do
   """
   use GenServer
   require Logger
+
+  alias OptimalSystemAgent.Observability.Telemetry
+  alias OptimalSystemAgent.Observability.Traceparent
 
   @timeout_ms 10_000
   @pm4py_url Application.compile_env(:optimal_system_agent, :pm4py_url, "http://localhost:8090")
@@ -105,49 +117,105 @@ defmodule OptimalSystemAgent.ProcessMining.Client do
   defp do_discover(url, resource_type) do
     endpoint = "#{url}/process/discover/#{URI.encode(resource_type)}"
 
-    case Req.get(endpoint, receive_timeout: @timeout_ms) do
-      {:ok, response} ->
-        case response.status do
-          200 -> {:ok, response.body}
-          status -> {:error, {:http, status, response.body}}
-        end
+    {:ok, span} =
+      Telemetry.start_span("process.mining.discovery", %{
+        "process.mining.resource_type" => resource_type,
+        "process.mining.endpoint" => endpoint
+      })
 
-      {:error, reason} ->
-        Logger.error("ProcessMining discovery failed: #{inspect(reason)}")
-        {:error, reason}
+    # Store current span ID so Traceparent.add_to_request picks it up
+    Process.put(:telemetry_current_span_id, span["span_id"])
+
+    req_opts = Traceparent.add_to_request(receive_timeout: @timeout_ms)
+
+    result =
+      case Req.get(endpoint, req_opts) do
+        {:ok, response} ->
+          case response.status do
+            200 -> {:ok, response.body}
+            status -> {:error, {:http, status, response.body}}
+          end
+
+        {:error, reason} ->
+          Logger.error("ProcessMining discovery failed: #{inspect(reason)}")
+          {:error, reason}
+      end
+
+    case result do
+      {:ok, _} -> Telemetry.end_span(span, :ok)
+      {:error, reason} -> Telemetry.end_span(span, :error, inspect(reason))
     end
+
+    result
   end
 
   defp do_check_soundness(url, process_id, check_type) do
     endpoint = "#{url}/process/soundness/#{URI.encode(process_id)}"
     body = %{check: check_type}
 
-    case Req.post(endpoint, json: body, receive_timeout: @timeout_ms) do
-      {:ok, response} ->
-        case response.status do
-          200 -> {:ok, response.body}
-          status -> {:error, {:http, status, response.body}}
-        end
+    {:ok, span} =
+      Telemetry.start_span("process.mining.soundness", %{
+        "process.mining.process_id" => process_id,
+        "process.mining.check_type" => check_type,
+        "process.mining.endpoint" => endpoint
+      })
 
-      {:error, reason} ->
-        Logger.error("ProcessMining soundness check failed: #{inspect(reason)}")
-        {:error, reason}
+    Process.put(:telemetry_current_span_id, span["span_id"])
+
+    req_opts = Traceparent.add_to_request(json: body, receive_timeout: @timeout_ms)
+
+    result =
+      case Req.post(endpoint, req_opts) do
+        {:ok, response} ->
+          case response.status do
+            200 -> {:ok, response.body}
+            status -> {:error, {:http, status, response.body}}
+          end
+
+        {:error, reason} ->
+          Logger.error("ProcessMining soundness check failed: #{inspect(reason)}")
+          {:error, reason}
+      end
+
+    case result do
+      {:ok, _} -> Telemetry.end_span(span, :ok)
+      {:error, reason} -> Telemetry.end_span(span, :error, inspect(reason))
     end
+
+    result
   end
 
   defp do_reachability(url, process_id) do
     endpoint = "#{url}/process/reachability/#{URI.encode(process_id)}"
 
-    case Req.get(endpoint, receive_timeout: @timeout_ms) do
-      {:ok, response} ->
-        case response.status do
-          200 -> {:ok, response.body}
-          status -> {:error, {:http, status, response.body}}
-        end
+    {:ok, span} =
+      Telemetry.start_span("process.mining.reachability", %{
+        "process.mining.process_id" => process_id,
+        "process.mining.endpoint" => endpoint
+      })
 
-      {:error, reason} ->
-        Logger.error("ProcessMining reachability analysis failed: #{inspect(reason)}")
-        {:error, reason}
+    Process.put(:telemetry_current_span_id, span["span_id"])
+
+    req_opts = Traceparent.add_to_request(receive_timeout: @timeout_ms)
+
+    result =
+      case Req.get(endpoint, req_opts) do
+        {:ok, response} ->
+          case response.status do
+            200 -> {:ok, response.body}
+            status -> {:error, {:http, status, response.body}}
+          end
+
+        {:error, reason} ->
+          Logger.error("ProcessMining reachability analysis failed: #{inspect(reason)}")
+          {:error, reason}
+      end
+
+    case result do
+      {:ok, _} -> Telemetry.end_span(span, :ok)
+      {:error, reason} -> Telemetry.end_span(span, :error, inspect(reason))
     end
+
+    result
   end
 end
