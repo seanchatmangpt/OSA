@@ -140,7 +140,7 @@ defmodule OptimalSystemAgent.Ontology.RegistryTest do
       # This test would normally mock the HTTP call
       # For now, we test the cache mechanism
       query = "CONSTRUCT { ?s ?p ?o } WHERE { ?s a test:Entity }"
-      expected_result = [{"subject", "predicate", "object"}]
+      _expected_result = [{"subject", "predicate", "object"}]
 
       # Mock would intercept here and return expected_result
       # For this basic test, we just verify the function signature works

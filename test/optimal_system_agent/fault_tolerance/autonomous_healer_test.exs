@@ -428,7 +428,7 @@ defmodule OptimalSystemAgent.FaultTolerance.AutonomousHealerTest do
     test "healer can recover from multi-component failure" do
       # Simulate cascade: if infrastructure is down
       try do
-        health = AutonomousHealer.diagnose_system_health()
+        _health = AutonomousHealer.diagnose_system_health()
 
         # Initiate recovery for infrastructure
         case AutonomousHealer.initiate_recovery(:budget) do

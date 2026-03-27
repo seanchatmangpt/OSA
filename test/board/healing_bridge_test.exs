@@ -1,4 +1,4 @@
-defmodule OptimalSystemAgent.Board.HealingBridgeTest do
+defmodule OptimalSystemAgent.Board.HealingBridgeWave9Test do
   @moduledoc """
   Chicago TDD tests for Board.HealingBridge — board_escalation handling.
 

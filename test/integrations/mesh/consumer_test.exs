@@ -298,7 +298,7 @@ defmodule OptimalSystemAgent.Integrations.Mesh.ConsumerTest do
   # =========================================================================
 
   describe "timeout resilience" do
-    test "operations timeout after 12 seconds", %{pid: pid} do
+    test "operations timeout after 12 seconds", %{pid: _pid} do
       # Set a very short timeout to test timeout behavior
       {:ok, short_pid} = Consumer.start_link(name: :short_timeout, bos_timeout_ms: 100)
 

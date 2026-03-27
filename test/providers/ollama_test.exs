@@ -141,7 +141,7 @@ defmodule OptimalSystemAgent.Providers.OllamaTest do
     defp make_acc, do: %{buffer: "", content: "", tool_calls: [], usage: %{}}
 
     test "emits :text_delta for content field and accumulates" do
-      tokens = []
+      _tokens = []
       cb = fn event -> send(self(), {:cb, event}) end
       acc = make_acc()
 

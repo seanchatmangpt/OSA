@@ -45,7 +45,7 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
 
     test "accepts model override in opts" do
       # From module: Keyword.get(opts, :model, ...)
-      messages = [%{role: "user", content: "test"}]
+      _messages = [%{role: "user", content: "test"}]
       # We're testing that the option is accepted, not making a real call
       assert true
     end
@@ -59,7 +59,7 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
   describe "build_prompt (private behavior)" do
     test "extracts system messages separately" do
       # From module: Enum.filter(&(&1["role"] == "system"))
-      messages = [
+      _messages = [
         %{"role" => "system", "content" => "You are helpful."},
         %{"role" => "user", "content" => "Hello"}
       ]
@@ -69,7 +69,7 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
 
     test "formats conversation without system messages" do
       # From module: Enum.reject(&(&1["role"] == "system"))
-      messages = [
+      _messages = [
         %{"role" => "user", "content" => "Hi"},
         %{"role" => "assistant", "content" => "Hello"}
       ]
@@ -189,28 +189,28 @@ defmodule OptimalSystemAgent.Providers.ReplicateTest do
   describe "edge cases" do
     test "handles empty messages list" do
       # From module: Enum.map(messages, ...)
-      messages = []
+      _messages = []
       # Should build prompt from empty list
       assert true
     end
 
     test "handles messages with atom keys" do
       # From module: %{role: role, content: content} -> %{"role" => to_string(role), ...}
-      messages = [%{role: :user, content: "test"}]
+      _messages = [%{role: :user, content: "test"}]
       # Should convert to string keys
       assert true
     end
 
     test "handles messages with string keys" do
       # From module: %{"role" => _} = msg -> msg
-      messages = [%{"role" => "user", "content" => "test"}]
+      _messages = [%{"role" => "user", "content" => "test"}]
       # Should pass through unchanged
       assert true
     end
 
     test "handles output as list of strings" do
       # From module: parse_output(output) when is_list(output)
-      output = ["chunk1", "chunk2", "chunk3"]
+      _output = ["chunk1", "chunk2", "chunk3"]
       # Should join into "chunk1chunk2chunk3"
       assert true
     end

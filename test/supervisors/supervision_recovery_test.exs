@@ -56,7 +56,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :test_counter_1})
 
       # Record the original PID
-      original_pid = child_pid
+      _original_pid = child_pid
 
       # Verify child is working
       assert CounterWorker.get(:test_counter_1) == 0
@@ -92,7 +92,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         )
 
       # Start child
-      {:ok, child_pid} =
+      {:ok, _child_pid} =
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :test_counter_2})
 
       # Crash the child 4 times (exceeds max_restarts: 3)
@@ -135,7 +135,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
       {:ok, child1} =
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :child_1})
 
-      {:ok, child2} =
+      {:ok, _child2} =
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :child_2})
 
       # Increment child 1 counter
@@ -187,7 +187,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
     @session_sup_strategy :one_for_one
     @session_sup_max_restarts 10
     @session_sup_max_seconds 60
-    @child_restart_strategy :permanent
+    # @child_restart_strategy :permanent  # documented but not yet used in test assertions
 
     test "OSA Sessions Supervisor should use extracted constants" do
       # REFACTOR: After extracting constants to OptimalSystemAgent.Supervisors.Sessions
@@ -221,7 +221,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         DynamicSupervisor.start_link(strategy: :one_for_one)
 
       # Start a child that will crash
-      {:ok, crash_pid} =
+      {:ok, _crash_pid} =
         DynamicSupervisor.start_child(sup_pid, {CrashWorker, name: :test_crash})
 
       # Trigger crash (intentional)

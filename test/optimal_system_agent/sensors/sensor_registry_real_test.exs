@@ -335,7 +335,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistryRealTest do
       File.mkdir_p!(output_dir)
 
       # Run scan
-      {:ok, scan_result} = SensorRegistry.scan_sensor_suite(
+      {:ok, _scan_result} = SensorRegistry.scan_sensor_suite(
         codebase_path: "lib",
         output_dir: output_dir
       )

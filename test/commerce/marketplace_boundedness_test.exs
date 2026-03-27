@@ -216,7 +216,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
       tables = [:skills, :acquisitions, :ratings, :executions]
 
       for table_name <- tables do
-        limit = Map.fetch!(@table_limits, table_name)
+        _limit = Map.fetch!(@table_limits, table_name)
 
         # After fix: verify table size via marketplace monitoring
         stats = Marketplace.marketplace_stats()
@@ -267,7 +267,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
       # Armstrong: Budget → prevent one buyer from hoarding all skills
 
       buyer_id = "buyer_1"
-      max_buyer_acquisitions = 100
+      _max_buyer_acquisitions = 100
 
       results =
         1..200

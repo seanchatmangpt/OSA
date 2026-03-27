@@ -166,7 +166,7 @@ defmodule OptimalSystemAgent.Integrations.Compliance.VerifierTest do
     end
 
     test "hits increment on cache hit", %{verifier: pid} do
-      stats_before = Verifier.cache_stats(pid)
+      _stats_before = Verifier.cache_stats(pid)
 
       # Force a cache hit by calling twice
       Verifier.verify_soc2(pid)
@@ -215,7 +215,7 @@ defmodule OptimalSystemAgent.Integrations.Compliance.VerifierTest do
       Verifier.verify_soc2(pid)
       Verifier.verify_gdpr(pid)
 
-      stats_before = Verifier.cache_stats(pid)
+      _stats_before = Verifier.cache_stats(pid)
 
       # Clear all
       :ok = Verifier.clear_cache(pid)
@@ -367,7 +367,7 @@ defmodule OptimalSystemAgent.Integrations.Compliance.VerifierTest do
       # Try to populate cache with many entries
       for i <- 1..10 do
         # We can only populate with actual frameworks, so cycle through them
-        framework = case rem(i, 4) do
+        _framework = case rem(i, 4) do
           0 -> :soc2
           1 -> :gdpr
           2 -> :hipaa

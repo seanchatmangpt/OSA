@@ -57,26 +57,26 @@ defmodule OptimalSystemAgent.Providers.CohereTest do
   describe "format_messages/1 (private behavior)" do
     test "converts atom role to string" do
       # From module: %{"role" => to_string(role), ...}
-      messages = [%{role: :user, content: "test"}]
+      _messages = [%{role: :user, content: "test"}]
       # Should convert to "user"
       assert true
     end
 
     test "preserves string roles" do
       # From module: %{"role" => cohere_role, ...}
-      messages = [%{"role" => "user", "content" => "test"}]
+      _messages = [%{"role" => "user", "content" => "test"}]
       assert true
     end
 
     test "handles map with string role" do
       # From module: %{"role" => role} = msg -> Map.put(msg, "role", normalize_role(role))
-      messages = [%{"role" => "USER", "content" => "test"}]
+      _messages = [%{"role" => "USER", "content" => "test"}]
       assert true
     end
 
     test "handles map with atom role and content" do
       # From module: %{role: role, content: content}
-      messages = [%{role: :user, content: "test"}]
+      _messages = [%{role: :user, content: "test"}]
       assert true
     end
   end
@@ -91,7 +91,7 @@ defmodule OptimalSystemAgent.Providers.CohereTest do
       #     "parameters" => tool.parameters
       #   }
       # }
-      tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
+      _tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
       # Should wrap in function schema
       assert true
     end
@@ -299,13 +299,13 @@ defmodule OptimalSystemAgent.Providers.CohereTest do
 
   describe "edge cases" do
     test "handles empty messages list" do
-      messages = []
+      _messages = []
       # Should format to empty list
       assert true
     end
 
     test "handles messages with mixed atom and string keys" do
-      messages = [
+      _messages = [
         %{role: :user, content: "test1"},
         %{"role" => "assistant", "content" => "test2"}
       ]

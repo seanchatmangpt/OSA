@@ -85,13 +85,13 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
     end
 
     test "returns {:ok, confirmed} when all assumptions pass" do
-      check_fn = fn _assumption, _context -> :ok end
+      _check_fn = fn _assumption, _context -> :ok end
       # This would require a valid speculative_id
       assert true
     end
 
     test "returns {:invalidated, fails} when any assumption fails" do
-      check_fn = fn _assumption, _context -> {:invalid, "reason"} end
+      _check_fn = fn _assumption, _context -> {:invalid, "reason"} end
       assert true
     end
   end
@@ -173,7 +173,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
 
   describe "handle_call/3" do
     test "handles unknown calls" do
-      result = GenServer.call(Executor, :unknown_call)
+      _result = GenServer.call(Executor, :unknown_call)
       assert true
     end
   end

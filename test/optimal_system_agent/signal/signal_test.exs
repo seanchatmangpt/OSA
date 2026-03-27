@@ -350,7 +350,7 @@ defmodule OptimalSystemAgent.SignalTest do
 
   describe "edge cases" do
     test "handles nil content" do
-      signal = Signal.new(%{content: nil})
+      _signal = Signal.new(%{content: nil})
       # Should handle gracefully
       assert true
     end

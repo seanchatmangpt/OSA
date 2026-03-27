@@ -231,7 +231,7 @@ defmodule OptimalSystemAgent.Agent.Loop.DoomLoopTest do
       # Three failures on same tool but different errors
       sig1 = "bash:Error: command not found: foo"
       sig2 = "bash:Error: permission denied"
-      sig3 = "bash:Error: timeout after 30s"
+      _sig3 = "bash:Error: timeout after 30s"
       state = base_state(recent_failure_signatures: [sig1, sig2])
 
       results = [error_result("bash", "Error: timeout after 30s")]

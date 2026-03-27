@@ -121,7 +121,7 @@ defmodule OptimalSystemAgent.Sandbox.HostTest do
     test "handles unknown extension with sh" do
       temp_file = "/tmp/test_host_sandbox.unknown"
       File.write!(temp_file, "echo 'Unknown extension'")
-      assert {:ok, output} = Host.run_file(temp_file)
+      assert {:ok, _output} = Host.run_file(temp_file)
       File.rm!(temp_file)
     end
 
@@ -159,7 +159,7 @@ defmodule OptimalSystemAgent.Sandbox.HostTest do
     test "handles file with unicode content" do
       temp_file = "/tmp/test_host_unicode.py"
       File.write!(temp_file, "print('测试内容')")
-      assert {:ok, output} = Host.run_file(temp_file)
+      assert {:ok, _output} = Host.run_file(temp_file)
       File.rm!(temp_file)
     end
 

@@ -36,7 +36,7 @@ defmodule OptimalSystemAgent.Integration.MCPToolRegistryTest do
   describe "Built-in Tools" do
     test "a2a_call tool is in registry" do
       tools = OptimalSystemAgent.Tools.Registry.tools()
-      tool_names = Enum.map(tools, & &1.name)
+      _tool_names = Enum.map(tools, & &1.name)
       # In full integration, should be present
       assert true, "Tool registry accessible"
     end

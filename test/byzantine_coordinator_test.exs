@@ -59,7 +59,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
     end
 
     test "rejects consensus when Byzantine returns invalid JSON" do
-      scenario = %{
+      _scenario = %{
         id: "invalid_json_test",
         total_agents: 5,
         honest_count: 3,
@@ -117,7 +117,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
   describe "crash detection" do
     test "tolerates single agent crash in 3-agent cluster" do
-      scenario = %{
+      _scenario = %{
         id: "crash_3_test",
         total_agents: 3,
         honest_count: 2,
@@ -572,7 +572,7 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
     honest_responses ++ byzantine_responses
   end
 
-  defp generate_responses(total, honest_count, modes) when is_list(modes) do
+  defp generate_responses(_total, honest_count, modes) when is_list(modes) do
     model = %{id: "m", transitions: [{"a", "b"}]}
     honest_responses = List.duplicate({:ok, model}, honest_count)
 
