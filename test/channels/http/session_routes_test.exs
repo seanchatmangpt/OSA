@@ -269,12 +269,13 @@ defmodule OptimalSystemAgent.Channels.HTTP.SessionRoutesTest do
 
       inserted =
         try do
+          now_ms = System.monotonic_time(:millisecond)
           :ets.insert(:osa_pending_questions, {ref_str, %{
             session_id: session_id,
             question: "Which option do you prefer?",
             options: ["A", "B"],
             asked_at: asked_at
-          }})
+          }, now_ms})
           true
         rescue
           ArgumentError -> false
@@ -308,12 +309,13 @@ defmodule OptimalSystemAgent.Channels.HTTP.SessionRoutesTest do
       ref_str = "ref-cross-#{System.unique_integer([:positive])}"
 
       try do
+        now_ms = System.monotonic_time(:millisecond)
         :ets.insert(:osa_pending_questions, {ref_str, %{
           session_id: session_a,
           question: "For session A only",
           options: [],
           asked_at: DateTime.utc_now() |> DateTime.to_iso8601()
-        }})
+        }, now_ms})
 
         conn = json_get("/#{session_b}/pending_questions")
         body = decode_body(conn)

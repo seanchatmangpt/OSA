@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `4500`, `2000`, `500`
   """
-  @spec agent_budget_remaining_ms() :: :agent_budget_remaining_ms
-  def agent_budget_remaining_ms, do: :agent_budget_remaining_ms
+  @spec agent_budget_remaining_ms() :: :"agent.budget.remaining_ms"
+  def agent_budget_remaining_ms, do: :"agent.budget.remaining_ms"
 
   @doc """
   The priority tier of the agent operation (affects budget allocation).
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `critical`, `normal`
   """
-  @spec agent_budget_tier() :: :agent_budget_tier
-  def agent_budget_tier, do: :agent_budget_tier
+  @spec agent_budget_tier() :: :"agent.budget.tier"
+  def agent_budget_tier, do: :"agent.budget.tier"
 
   @doc """
   Enumerated values for `agent.budget.tier`.
@@ -91,8 +91,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `catalog-v1`, `agent-caps-2026`
   """
-  @spec agent_capability_catalog_id() :: :agent_capability_catalog_id
-  def agent_capability_catalog_id, do: :agent_capability_catalog_id
+  @spec agent_capability_catalog_id() :: :"agent.capability.catalog_id"
+  def agent_capability_catalog_id, do: :"agent.capability.catalog_id"
 
   @doc """
   Version string of the agent capability catalog.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `2.3.1`
   """
-  @spec agent_capability_catalog_version() :: :agent_capability_catalog_version
-  def agent_capability_catalog_version, do: :agent_capability_catalog_version
+  @spec agent_capability_catalog_version() :: :"agent.capability.catalog_version"
+  def agent_capability_catalog_version, do: :"agent.capability.catalog_version"
 
   @doc """
   Number of capabilities registered by this agent.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `20`
   """
-  @spec agent_capability_count() :: :agent_capability_count
-  def agent_capability_count, do: :agent_capability_count
+  @spec agent_capability_count() :: :"agent.capability.count"
+  def agent_capability_count, do: :"agent.capability.count"
 
   @doc """
   Scope of the agent capability catalog (local node, cluster, or federated).
@@ -127,8 +127,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `cluster`, `federated`
   """
-  @spec agent_capability_scope() :: :agent_capability_scope
-  def agent_capability_scope, do: :agent_capability_scope
+  @spec agent_capability_scope() :: :"agent.capability.scope"
+  def agent_capability_scope, do: :"agent.capability.scope"
 
   @doc """
   Enumerated values for `agent.capability.scope`.
@@ -180,8 +180,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `5`, `50`, `500`
   """
-  @spec agent_coordination_latency_ms() :: :agent_coordination_latency_ms
-  def agent_coordination_latency_ms, do: :agent_coordination_latency_ms
+  @spec agent_coordination_latency_ms() :: :"agent.coordination.latency_ms"
+  def agent_coordination_latency_ms, do: :"agent.coordination.latency_ms"
 
   @doc """
   Confidence score for the agent's decision, range [0.0, 1.0].
@@ -192,8 +192,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `0.92`, `0.75`, `0.55`
   """
-  @spec agent_decision_confidence() :: :agent_decision_confidence
-  def agent_decision_confidence, do: :agent_decision_confidence
+  @spec agent_decision_confidence() :: :"agent.decision.confidence"
+  def agent_decision_confidence, do: :"agent.decision.confidence"
 
   @doc """
   The type of decision made by the agent.
@@ -204,8 +204,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `action`, `delegation`
   """
-  @spec agent_decision_type() :: :agent_decision_type
-  def agent_decision_type, do: :agent_decision_type
+  @spec agent_decision_type() :: :"agent.decision.type"
+  def agent_decision_type, do: :"agent.decision.type"
 
   @doc """
   Enumerated values for `agent.decision.type`.
@@ -271,8 +271,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `150`, `500`, `2000`
   """
-  @spec agent_execution_critical_path_ms() :: :agent_execution_critical_path_ms
-  def agent_execution_critical_path_ms, do: :agent_execution_critical_path_ms
+  @spec agent_execution_critical_path_ms() :: :"agent.execution.critical_path_ms"
+  def agent_execution_critical_path_ms, do: :"agent.execution.critical_path_ms"
 
   @doc """
   Number of edges (dependencies) in the execution graph.
@@ -283,8 +283,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `2`, `9`, `30`
   """
-  @spec agent_execution_edge_count() :: :agent_execution_edge_count
-  def agent_execution_edge_count, do: :agent_execution_edge_count
+  @spec agent_execution_edge_count() :: :"agent.execution.edge_count"
+  def agent_execution_edge_count, do: :"agent.execution.edge_count"
 
   @doc """
   Unique identifier for the agent execution graph (DAG of agent steps).
@@ -295,8 +295,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `graph-exec-001`, `dag-run-42`
   """
-  @spec agent_execution_graph_id() :: :agent_execution_graph_id
-  def agent_execution_graph_id, do: :agent_execution_graph_id
+  @spec agent_execution_graph_id() :: :"agent.execution.graph_id"
+  def agent_execution_graph_id, do: :"agent.execution.graph_id"
 
   @doc """
   Number of nodes (steps) in the execution graph.
@@ -307,8 +307,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `3`, `10`, `25`
   """
-  @spec agent_execution_node_count() :: :agent_execution_node_count
-  def agent_execution_node_count, do: :agent_execution_node_count
+  @spec agent_execution_node_count() :: :"agent.execution.node_count"
+  def agent_execution_node_count, do: :"agent.execution.node_count"
 
   @doc """
   Reason the agent handoff was initiated.
@@ -319,8 +319,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `capability`, `load`
   """
-  @spec agent_handoff_reason() :: :agent_handoff_reason
-  def agent_handoff_reason, do: :agent_handoff_reason
+  @spec agent_handoff_reason() :: :"agent.handoff.reason"
+  def agent_handoff_reason, do: :"agent.handoff.reason"
 
   @doc """
   Enumerated values for `agent.handoff.reason`.
@@ -379,8 +379,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `10`, `50`, `200`
   """
-  @spec agent_handoff_state_transfer_ms() :: :agent_handoff_state_transfer_ms
-  def agent_handoff_state_transfer_ms, do: :agent_handoff_state_transfer_ms
+  @spec agent_handoff_state_transfer_ms() :: :"agent.handoff.state_transfer_ms"
+  def agent_handoff_state_transfer_ms, do: :"agent.handoff.state_transfer_ms"
 
   @doc """
   Identifier of the agent receiving the handoff.
@@ -391,8 +391,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `agent-7`, `osa-executor-2`
   """
-  @spec agent_handoff_target_id() :: :agent_handoff_target_id
-  def agent_handoff_target_id, do: :agent_handoff_target_id
+  @spec agent_handoff_target_id() :: :"agent.handoff.target_id"
+  def agent_handoff_target_id, do: :"agent.handoff.target_id"
 
   @doc """
   Unique identifier of the agent.
@@ -403,8 +403,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `agent-1`, `osa-react-agent`, `healing-agent-1`
   """
-  @spec agent_id() :: :agent_id
-  def agent_id, do: :agent_id
+  @spec agent_id() :: :"agent.id"
+  def agent_id, do: :"agent.id"
 
   @doc """
   The LLM model used for agent inference.
@@ -415,8 +415,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `claude-sonnet-4-6`, `claude-haiku-4-5`
   """
-  @spec agent_llm_model() :: :agent_llm_model
-  def agent_llm_model, do: :agent_llm_model
+  @spec agent_llm_model() :: :"agent.llm_model"
+  def agent_llm_model, do: :"agent.llm_model"
 
   @doc """
   Current iteration of the agent's main processing loop.
@@ -427,8 +427,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `42`
   """
-  @spec agent_loop_iteration() :: :agent_loop_iteration
-  def agent_loop_iteration, do: :agent_loop_iteration
+  @spec agent_loop_iteration() :: :"agent.loop.iteration"
+  def agent_loop_iteration, do: :"agent.loop.iteration"
 
   @doc """
   Number of peer agents sharing the same federated memory pool.
@@ -439,8 +439,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `2`, `5`, `10`
   """
-  @spec agent_memory_federation_peer_count() :: :agent_memory_federation_peer_count
-  def agent_memory_federation_peer_count, do: :agent_memory_federation_peer_count
+  @spec agent_memory_federation_peer_count() :: :"agent.memory.federation.peer_count"
+  def agent_memory_federation_peer_count, do: :"agent.memory.federation.peer_count"
 
   @doc """
   Monotonically increasing version counter for federated memory consistency.
@@ -451,8 +451,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1`, `42`, `1000`
   """
-  @spec agent_memory_federation_version() :: :agent_memory_federation_version
-  def agent_memory_federation_version, do: :agent_memory_federation_version
+  @spec agent_memory_federation_version() :: :"agent.memory.federation.version"
+  def agent_memory_federation_version, do: :"agent.memory.federation.version"
 
   @doc """
   Identifier of the federated memory pool shared across multiple agents.
@@ -463,8 +463,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `fed-mem-pool-1`, `cluster-memory-abc`
   """
-  @spec agent_memory_federation_id() :: :agent_memory_federation_id
-  def agent_memory_federation_id, do: :agent_memory_federation_id
+  @spec agent_memory_federation_id() :: :"agent.memory.federation_id"
+  def agent_memory_federation_id, do: :"agent.memory.federation_id"
 
   @doc """
   Current size of the agent's working memory in tokens or items.
@@ -475,8 +475,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `100`, `1000`, `10000`
   """
-  @spec agent_memory_size() :: :agent_memory_size
-  def agent_memory_size, do: :agent_memory_size
+  @spec agent_memory_size() :: :"agent.memory.size"
+  def agent_memory_size, do: :"agent.memory.size"
 
   @doc """
   Latency in milliseconds for synchronizing state with federated memory peers.
@@ -487,8 +487,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `5`, `25`, `100`
   """
-  @spec agent_memory_sync_latency_ms() :: :agent_memory_sync_latency_ms
-  def agent_memory_sync_latency_ms, do: :agent_memory_sync_latency_ms
+  @spec agent_memory_sync_latency_ms() :: :"agent.memory.sync.latency_ms"
+  def agent_memory_sync_latency_ms, do: :"agent.memory.sync.latency_ms"
 
   @doc """
   Type of memory the agent is accessing or updating.
@@ -499,8 +499,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `short_term`, `long_term`
   """
-  @spec agent_memory_type() :: :agent_memory_type
-  def agent_memory_type, do: :agent_memory_type
+  @spec agent_memory_type() :: :"agent.memory.type"
+  def agent_memory_type, do: :"agent.memory.type"
 
   @doc """
   Enumerated values for `agent.memory.type`.
@@ -559,8 +559,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `42`
   """
-  @spec agent_message_count() :: :agent_message_count
-  def agent_message_count, do: :agent_message_count
+  @spec agent_message_count() :: :"agent.message.count"
+  def agent_message_count, do: :"agent.message.count"
 
   @doc """
   Node identifier for the agent (hostname, cluster node, etc).
@@ -571,8 +571,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `node-1`, `worker-0`, `compute-42`
   """
-  @spec agent_node() :: :agent_node
-  def agent_node, do: :agent_node
+  @spec agent_node() :: :"agent.node"
+  def agent_node, do: :"agent.node"
 
   @doc """
   Identifier of the orchestrating agent supervising this agent (Armstrong supervision tree).
@@ -583,8 +583,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `osa-root`, `coordinator-1`
   """
-  @spec agent_orchestrator_id() :: :agent_orchestrator_id
-  def agent_orchestrator_id, do: :agent_orchestrator_id
+  @spec agent_orchestrator_id() :: :"agent.orchestrator.id"
+  def agent_orchestrator_id, do: :"agent.orchestrator.id"
 
   @doc """
   Outcome of the agent decision.
@@ -595,8 +595,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `success`, `failure`, `escalated`
   """
-  @spec agent_outcome() :: :agent_outcome
-  def agent_outcome, do: :agent_outcome
+  @spec agent_outcome() :: :"agent.outcome"
+  def agent_outcome, do: :"agent.outcome"
 
   @doc """
   Enumerated values for `agent.outcome`.
@@ -648,8 +648,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `pipeline-001`, `pl-extract-transform-load`
   """
-  @spec agent_pipeline_id() :: :agent_pipeline_id
-  def agent_pipeline_id, do: :agent_pipeline_id
+  @spec agent_pipeline_id() :: :"agent.pipeline.id"
+  def agent_pipeline_id, do: :"agent.pipeline.id"
 
   @doc """
   Retry policy for the agent pipeline stage.
@@ -659,8 +659,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec agent_pipeline_retry_policy() :: :agent_pipeline_retry_policy
-  def agent_pipeline_retry_policy, do: :agent_pipeline_retry_policy
+  @spec agent_pipeline_retry_policy() :: :"agent.pipeline.retry_policy"
+  def agent_pipeline_retry_policy, do: :"agent.pipeline.retry_policy"
 
   @doc """
   Enumerated values for `agent.pipeline.retry_policy`.
@@ -719,8 +719,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `extract`, `transform`, `validate`, `load`
   """
-  @spec agent_pipeline_stage() :: :agent_pipeline_stage
-  def agent_pipeline_stage, do: :agent_pipeline_stage
+  @spec agent_pipeline_stage() :: :"agent.pipeline.stage"
+  def agent_pipeline_stage, do: :"agent.pipeline.stage"
 
   @doc """
   Total number of stages in the pipeline.
@@ -731,8 +731,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`, `8`
   """
-  @spec agent_pipeline_stage_count() :: :agent_pipeline_stage_count
-  def agent_pipeline_stage_count, do: :agent_pipeline_stage_count
+  @spec agent_pipeline_stage_count() :: :"agent.pipeline.stage_count"
+  def agent_pipeline_stage_count, do: :"agent.pipeline.stage_count"
 
   @doc """
   Change in confidence score from start to end of the reasoning trace, range [-1.0, 1.0].
@@ -743,8 +743,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `0.15`, `-0.05`
   """
-  @spec agent_reasoning_confidence_delta() :: :agent_reasoning_confidence_delta
-  def agent_reasoning_confidence_delta, do: :agent_reasoning_confidence_delta
+  @spec agent_reasoning_confidence_delta() :: :"agent.reasoning.confidence_delta"
+  def agent_reasoning_confidence_delta, do: :"agent.reasoning.confidence_delta"
 
   @doc """
   Duration in milliseconds of the complete reasoning trace.
@@ -755,8 +755,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `250`, `1500`
   """
-  @spec agent_reasoning_duration_ms() :: :agent_reasoning_duration_ms
-  def agent_reasoning_duration_ms, do: :agent_reasoning_duration_ms
+  @spec agent_reasoning_duration_ms() :: :"agent.reasoning.duration_ms"
+  def agent_reasoning_duration_ms, do: :"agent.reasoning.duration_ms"
 
   @doc """
   Number of reasoning steps in the agent's chain-of-thought trace.
@@ -767,8 +767,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `5`, `12`
   """
-  @spec agent_reasoning_step_count() :: :agent_reasoning_step_count
-  def agent_reasoning_step_count, do: :agent_reasoning_step_count
+  @spec agent_reasoning_step_count() :: :"agent.reasoning.step_count"
+  def agent_reasoning_step_count, do: :"agent.reasoning.step_count"
 
   @doc """
   Unique identifier for an agent reasoning trace (chain-of-thought record).
@@ -779,8 +779,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `trace-abc123`, `cot-run-007`
   """
-  @spec agent_reasoning_trace_id() :: :agent_reasoning_trace_id
-  def agent_reasoning_trace_id, do: :agent_reasoning_trace_id
+  @spec agent_reasoning_trace_id() :: :"agent.reasoning.trace_id"
+  def agent_reasoning_trace_id, do: :"agent.reasoning.trace_id"
 
   @doc """
   Number of child agents spawned by this agent in the current session.
@@ -791,8 +791,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `10`
   """
-  @spec agent_spawn_count() :: :agent_spawn_count
-  def agent_spawn_count, do: :agent_spawn_count
+  @spec agent_spawn_count() :: :"agent.spawn.count"
+  def agent_spawn_count, do: :"agent.spawn.count"
 
   @doc """
   Time in milliseconds from spawn request to agent ready state.
@@ -803,8 +803,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1500`
   """
-  @spec agent_spawn_latency_ms() :: :agent_spawn_latency_ms
-  def agent_spawn_latency_ms, do: :agent_spawn_latency_ms
+  @spec agent_spawn_latency_ms() :: :"agent.spawn.latency_ms"
+  def agent_spawn_latency_ms, do: :"agent.spawn.latency_ms"
 
   @doc """
   Identifier of the parent agent that initiated the spawn operation.
@@ -815,8 +815,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `orchestrator-1`, `pipeline-root`
   """
-  @spec agent_spawn_parent_id() :: :agent_spawn_parent_id
-  def agent_spawn_parent_id, do: :agent_spawn_parent_id
+  @spec agent_spawn_parent_id() :: :"agent.spawn.parent_id"
+  def agent_spawn_parent_id, do: :"agent.spawn.parent_id"
 
   @doc """
   Strategy used to create the spawned agent.
@@ -827,8 +827,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `on_demand`, `pre_warmed`, `pooled`
   """
-  @spec agent_spawn_strategy() :: :agent_spawn_strategy
-  def agent_spawn_strategy, do: :agent_spawn_strategy
+  @spec agent_spawn_strategy() :: :"agent.spawn.strategy"
+  def agent_spawn_strategy, do: :"agent.spawn.strategy"
 
   @doc """
   Enumerated values for `agent.spawn.strategy`.
@@ -880,8 +880,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `running`, `completed`
   """
-  @spec agent_task_status() :: :agent_task_status
-  def agent_task_status, do: :agent_task_status
+  @spec agent_task_status() :: :"agent.task.status"
+  def agent_task_status, do: :"agent.task.status"
 
   @doc """
   Enumerated values for `agent.task.status`.
@@ -947,8 +947,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `2026-03-25T12:00:00Z`, `2026-03-25T12:00:00.123Z`
   """
-  @spec agent_timestamp() :: :agent_timestamp
-  def agent_timestamp, do: :agent_timestamp
+  @spec agent_timestamp() :: :"agent.timestamp"
+  def agent_timestamp, do: :"agent.timestamp"
 
   @doc """
   Total token count for the agent inference.
@@ -959,8 +959,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `256`, `1024`, `4096`
   """
-  @spec agent_token_count() :: :agent_token_count
-  def agent_token_count, do: :agent_token_count
+  @spec agent_token_count() :: :"agent.token_count"
+  def agent_token_count, do: :"agent.token_count"
 
   @doc """
   The coordination topology of agents in this multi-agent system.
@@ -971,8 +971,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `pipeline`, `fan_out`, `hierarchical`
   """
-  @spec agent_topology_type() :: :agent_topology_type
-  def agent_topology_type, do: :agent_topology_type
+  @spec agent_topology_type() :: :"agent.topology.type"
+  def agent_topology_type, do: :"agent.topology.type"
 
   @doc """
   Enumerated values for `agent.topology.type`.
@@ -1038,8 +1038,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `v2.3.1-beta`, `2026-03-25`
   """
-  @spec agent_version() :: :agent_version
-  def agent_version, do: :agent_version
+  @spec agent_version() :: :"agent.version"
+  def agent_version, do: :"agent.version"
 
   @doc """
   Unique identifier for the workflow checkpoint.
@@ -1050,8 +1050,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `chk-abc123`, `wf-checkpoint-47`
   """
-  @spec agent_workflow_checkpoint_id() :: :agent_workflow_checkpoint_id
-  def agent_workflow_checkpoint_id, do: :agent_workflow_checkpoint_id
+  @spec agent_workflow_checkpoint_id() :: :"agent.workflow.checkpoint_id"
+  def agent_workflow_checkpoint_id, do: :"agent.workflow.checkpoint_id"
 
   @doc """
   Step number at which the checkpoint was captured.
@@ -1062,8 +1062,8 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `5`, `12`, `100`
   """
-  @spec agent_workflow_checkpoint_step() :: :agent_workflow_checkpoint_step
-  def agent_workflow_checkpoint_step, do: :agent_workflow_checkpoint_step
+  @spec agent_workflow_checkpoint_step() :: :"agent.workflow.checkpoint_step"
+  def agent_workflow_checkpoint_step, do: :"agent.workflow.checkpoint_step"
 
   @doc """
   Number of times this workflow has been resumed from a checkpoint.
@@ -1074,7 +1074,7 @@ defmodule OpenTelemetry.SemConv.Incubating.AgentAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec agent_workflow_resume_count() :: :agent_workflow_resume_count
-  def agent_workflow_resume_count, do: :agent_workflow_resume_count
+  @spec agent_workflow_resume_count() :: :"agent.workflow.resume_count"
+  def agent_workflow_resume_count, do: :"agent.workflow.resume_count"
 
 end

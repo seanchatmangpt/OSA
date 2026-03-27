@@ -197,18 +197,22 @@ defmodule OptimalSystemAgent.Integration.OtelCorrelationTest do
 
   describe "Telemetry span enrichment — chatmangpt.run.correlation_id attribute" do
     setup do
-      # Clean ETS and process dict before each test.
-      try do
-        :ets.delete(:telemetry_spans)
-        :ets.delete(:telemetry_metrics)
-      rescue
-        _ -> :ok
+      # Clean ETS tables and process dict before each test.
+      # Use delete_all_objects to clear contents WITHOUT destroying the table.
+      # Destroying the named table (via :ets.delete) is destructive — the table
+      # owner (Application process) keeps the table alive between tests and
+      # subsequent tests depend on it existing.
+      if :ets.whereis(:telemetry_spans) != :undefined do
+        :ets.delete_all_objects(:telemetry_spans)
+      end
+
+      if :ets.whereis(:telemetry_metrics) != :undefined do
+        :ets.delete_all_objects(:telemetry_metrics)
       end
 
       Process.delete(:telemetry_trace_id)
       Process.delete(:chatmangpt_correlation_id)
 
-      Telemetry.init_tracer()
       :ok
     end
 

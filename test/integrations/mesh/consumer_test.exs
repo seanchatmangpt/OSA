@@ -15,7 +15,7 @@ defmodule OptimalSystemAgent.Integrations.Mesh.ConsumerTest do
   alias OptimalSystemAgent.Integrations.Mesh.Consumer
 
   setup do
-    {:ok, pid} = Consumer.start_link(name: :test_consumer_1)
+    pid = start_supervised!({Consumer, [name: :test_consumer_1]})
     {:ok, pid: pid}
   end
 

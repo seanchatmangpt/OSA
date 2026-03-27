@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `0xabc123def456`, `0x123456789abcdef`, `block-hash-wave12-001`
   """
-  @spec jtbd_contract_block_hash() :: :jtbd_contract_block_hash
-  def jtbd_contract_block_hash, do: :jtbd_contract_block_hash
+  @spec jtbd_contract_block_hash() :: :"jtbd.contract.block_hash"
+  def jtbd_contract_block_hash, do: :"jtbd.contract.block_hash"
 
   @doc """
   Number of consensus nodes that validated and signed the contract.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `3`, `5`, `7`
   """
-  @spec jtbd_contract_consensus_nodes() :: :jtbd_contract_consensus_nodes
-  def jtbd_contract_consensus_nodes, do: :jtbd_contract_consensus_nodes
+  @spec jtbd_contract_consensus_nodes() :: :"jtbd.contract.consensus_nodes"
+  def jtbd_contract_consensus_nodes, do: :"jtbd.contract.consensus_nodes"
 
   @doc """
   Total contract value in USD for closed contracts.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `50000.0`, `250000.0`, `2000000.0`
   """
-  @spec jtbd_contract_contract_value_usd() :: :jtbd_contract_contract_value_usd
-  def jtbd_contract_contract_value_usd, do: :jtbd_contract_contract_value_usd
+  @spec jtbd_contract_contract_value_usd() :: :"jtbd.contract.contract_value_usd"
+  def jtbd_contract_contract_value_usd, do: :"jtbd.contract.contract_value_usd"
 
   @doc """
   Number of contracts successfully closed and signed.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `1`, `5`, `20`
   """
-  @spec jtbd_contract_contracts_closed() :: :jtbd_contract_contracts_closed
-  def jtbd_contract_contracts_closed, do: :jtbd_contract_contracts_closed
+  @spec jtbd_contract_contracts_closed() :: :"jtbd.contract.contracts_closed"
+  def jtbd_contract_contracts_closed, do: :"jtbd.contract.contracts_closed"
 
   @doc """
   FIBO (Financial Industry Business Ontology) validation result — true if contract conforms to ontology.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `true`, `false`
   """
-  @spec jtbd_contract_fibo_validated() :: :jtbd_contract_fibo_validated
-  def jtbd_contract_fibo_validated, do: :jtbd_contract_fibo_validated
+  @spec jtbd_contract_fibo_validated() :: :"jtbd.contract.fibo_validated"
+  def jtbd_contract_fibo_validated, do: :"jtbd.contract.fibo_validated"
 
   @doc """
   Legal/compliance framework enforced (e.g., "SOX", "GDPR", "HIPAA", "CCPA").
@@ -79,8 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `SOX`, `GDPR`, `HIPAA`, `CCPA`
   """
-  @spec jtbd_contract_framework() :: :jtbd_contract_framework
-  def jtbd_contract_framework, do: :jtbd_contract_framework
+  @spec jtbd_contract_framework() :: :"jtbd.contract.framework"
+  def jtbd_contract_framework, do: :"jtbd.contract.framework"
 
   @doc """
   ISO8601 contract signature timestamp.
@@ -91,8 +91,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `2026-03-24T14:30:00Z`, `2026-03-26T09:15:00Z`
   """
-  @spec jtbd_contract_signed_at() :: :jtbd_contract_signed_at
-  def jtbd_contract_signed_at, do: :jtbd_contract_signed_at
+  @spec jtbd_contract_signed_at() :: :"jtbd.contract.signed_at"
+  def jtbd_contract_signed_at, do: :"jtbd.contract.signed_at"
 
   @doc """
   Number of deals advanced to next pipeline stage.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `5`, `20`, `50`
   """
-  @spec jtbd_deal_deals_progressed() :: :jtbd_deal_deals_progressed
-  def jtbd_deal_deals_progressed, do: :jtbd_deal_deals_progressed
+  @spec jtbd_deal_deals_progressed() :: :"jtbd.deal.deals_progressed"
+  def jtbd_deal_deals_progressed, do: :"jtbd.deal.deals_progressed"
 
   @doc """
   ISO8601 forecast close date for progressed deals.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `2026-04-30T00:00:00Z`, `2026-06-15T00:00:00Z`, `2026-12-31T00:00:00Z`
   """
-  @spec jtbd_deal_forecast_close_date() :: :jtbd_deal_forecast_close_date
-  def jtbd_deal_forecast_close_date, do: :jtbd_deal_forecast_close_date
+  @spec jtbd_deal_forecast_close_date() :: :"jtbd.deal.forecast_close_date"
+  def jtbd_deal_forecast_close_date, do: :"jtbd.deal.forecast_close_date"
 
   @doc """
   Total pipeline value of progressed deals in USD.
@@ -127,8 +127,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `50000.0`, `250000.0`, `1000000.0`
   """
-  @spec jtbd_deal_pipeline_value_usd() :: :jtbd_deal_pipeline_value_usd
-  def jtbd_deal_pipeline_value_usd, do: :jtbd_deal_pipeline_value_usd
+  @spec jtbd_deal_pipeline_value_usd() :: :"jtbd.deal.pipeline_value_usd"
+  def jtbd_deal_pipeline_value_usd, do: :"jtbd.deal.pipeline_value_usd"
 
   @doc """
   CRM pipeline stage before progression (e.g., "qualify", "proposal", "negotiation").
@@ -139,8 +139,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `qualify`, `proposal`, `negotiation`, `close`
   """
-  @spec jtbd_deal_stage_from() :: :jtbd_deal_stage_from
-  def jtbd_deal_stage_from, do: :jtbd_deal_stage_from
+  @spec jtbd_deal_stage_from() :: :"jtbd.deal.stage_from"
+  def jtbd_deal_stage_from, do: :"jtbd.deal.stage_from"
 
   @doc """
   CRM pipeline stage after progression.
@@ -151,8 +151,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `proposal`, `negotiation`, `close`, `won`
   """
-  @spec jtbd_deal_stage_to() :: :jtbd_deal_stage_to
-  def jtbd_deal_stage_to, do: :jtbd_deal_stage_to
+  @spec jtbd_deal_stage_to() :: :"jtbd.deal.stage_to"
+  def jtbd_deal_stage_to, do: :"jtbd.deal.stage_to"
 
   @doc """
   Number of contacts evaluated in ICP qualification.
@@ -163,8 +163,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `150`, `500`, `1000`
   """
-  @spec jtbd_icp_contacts_evaluated() :: :jtbd_icp_contacts_evaluated
-  def jtbd_icp_contacts_evaluated, do: :jtbd_icp_contacts_evaluated
+  @spec jtbd_icp_contacts_evaluated() :: :"jtbd.icp.contacts_evaluated"
+  def jtbd_icp_contacts_evaluated, do: :"jtbd.icp.contacts_evaluated"
 
   @doc """
   Number of contacts qualified as ICP targets.
@@ -175,8 +175,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `45`, `125`, `300`
   """
-  @spec jtbd_icp_contacts_qualified() :: :jtbd_icp_contacts_qualified
-  def jtbd_icp_contacts_qualified, do: :jtbd_icp_contacts_qualified
+  @spec jtbd_icp_contacts_qualified() :: :"jtbd.icp.contacts_qualified"
+  def jtbd_icp_contacts_qualified, do: :"jtbd.icp.contacts_qualified"
 
   @doc """
   ICP qualification rate — ratio of qualified contacts to evaluated contacts (0.0-1.0).
@@ -187,8 +187,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `0.3`, `0.6`, `0.9`
   """
-  @spec jtbd_icp_qualification_rate() :: :jtbd_icp_qualification_rate
-  def jtbd_icp_qualification_rate, do: :jtbd_icp_qualification_rate
+  @spec jtbd_icp_qualification_rate() :: :"jtbd.icp.qualification_rate"
+  def jtbd_icp_qualification_rate, do: :"jtbd.icp.qualification_rate"
 
   @doc """
   Number of contacts enrolled in outreach sequence.
@@ -199,8 +199,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `25`, `100`, `500`
   """
-  @spec jtbd_outreach_contacts_enrolled() :: :jtbd_outreach_contacts_enrolled
-  def jtbd_outreach_contacts_enrolled, do: :jtbd_outreach_contacts_enrolled
+  @spec jtbd_outreach_contacts_enrolled() :: :"jtbd.outreach.contacts_enrolled"
+  def jtbd_outreach_contacts_enrolled, do: :"jtbd.outreach.contacts_enrolled"
 
   @doc """
   Total messages queued for this outreach sequence.
@@ -211,8 +211,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `50`, `200`, `1000`
   """
-  @spec jtbd_outreach_messages_queued() :: :jtbd_outreach_messages_queued
-  def jtbd_outreach_messages_queued, do: :jtbd_outreach_messages_queued
+  @spec jtbd_outreach_messages_queued() :: :"jtbd.outreach.messages_queued"
+  def jtbd_outreach_messages_queued, do: :"jtbd.outreach.messages_queued"
 
   @doc """
   Messages remaining within daily rate limit for outreach platform.
@@ -223,8 +223,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `500`, `1000`, `5000`
   """
-  @spec jtbd_outreach_rate_limit_remaining() :: :jtbd_outreach_rate_limit_remaining
-  def jtbd_outreach_rate_limit_remaining, do: :jtbd_outreach_rate_limit_remaining
+  @spec jtbd_outreach_rate_limit_remaining() :: :"jtbd.outreach.rate_limit_remaining"
+  def jtbd_outreach_rate_limit_remaining, do: :"jtbd.outreach.rate_limit_remaining"
 
   @doc """
   Identifier of the outreach sequence being executed.
@@ -235,8 +235,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `seq-nurture-001`, `seq-launch-2026q1`, `seq-re-engage-vip`
   """
-  @spec jtbd_outreach_sequence_id() :: :jtbd_outreach_sequence_id
-  def jtbd_outreach_sequence_id, do: :jtbd_outreach_sequence_id
+  @spec jtbd_outreach_sequence_id() :: :"jtbd.outreach.sequence_id"
+  def jtbd_outreach_sequence_id, do: :"jtbd.outreach.sequence_id"
 
   @doc """
   Current step number within the outreach sequence (1-indexed).
@@ -247,8 +247,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `1`, `5`, `10`
   """
-  @spec jtbd_outreach_step_number() :: :jtbd_outreach_step_number
-  def jtbd_outreach_step_number, do: :jtbd_outreach_step_number
+  @spec jtbd_outreach_step_number() :: :"jtbd.outreach.step_number"
+  def jtbd_outreach_step_number, do: :"jtbd.outreach.step_number"
 
   @doc """
   Process model type used for PI analysis (petri_net, dfg, event_log, bpmn).
@@ -259,8 +259,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `petri_net`, `dfg`, `event_log`, `bpmn`
   """
-  @spec jtbd_pi_model_type() :: :jtbd_pi_model_type
-  def jtbd_pi_model_type, do: :jtbd_pi_model_type
+  @spec jtbd_pi_model_type() :: :"jtbd.pi.model_type"
+  def jtbd_pi_model_type, do: :"jtbd.pi.model_type"
 
   @doc """
   Natural language query submitted to process intelligence engine.
@@ -271,8 +271,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `What is the critical path?`, `Where are the bottlenecks?`, `Which cases are stalled?`
   """
-  @spec jtbd_pi_query() :: :jtbd_pi_query
-  def jtbd_pi_query, do: :jtbd_pi_query
+  @spec jtbd_pi_query() :: :"jtbd.pi.query"
+  def jtbd_pi_query, do: :"jtbd.pi.query"
 
   @doc """
   Number of tokens in the plain-English response from process intelligence engine.
@@ -283,8 +283,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `150`, `500`, `2000`
   """
-  @spec jtbd_pi_response_tokens() :: :jtbd_pi_response_tokens
-  def jtbd_pi_response_tokens, do: :jtbd_pi_response_tokens
+  @spec jtbd_pi_response_tokens() :: :"jtbd.pi.response_tokens"
+  def jtbd_pi_response_tokens, do: :"jtbd.pi.response_tokens"
 
   @doc """
   Java 26 retrofit complexity score (0.0-1.0) — higher indicates more complex migration.
@@ -295,8 +295,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `0.25`, `0.55`, `0.85`
   """
-  @spec jtbd_retrofit_complexity_score() :: :jtbd_retrofit_complexity_score
-  def jtbd_retrofit_complexity_score, do: :jtbd_retrofit_complexity_score
+  @spec jtbd_retrofit_complexity_score() :: :"jtbd.retrofit.complexity_score"
+  def jtbd_retrofit_complexity_score, do: :"jtbd.retrofit.complexity_score"
 
   @doc """
   Estimated days to complete full Java 26 retrofit.
@@ -307,8 +307,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `10`, `30`, `90`
   """
-  @spec jtbd_retrofit_estimated_days() :: :jtbd_retrofit_estimated_days
-  def jtbd_retrofit_estimated_days, do: :jtbd_retrofit_estimated_days
+  @spec jtbd_retrofit_estimated_days() :: :"jtbd.retrofit.estimated_days"
+  def jtbd_retrofit_estimated_days, do: :"jtbd.retrofit.estimated_days"
 
   @doc """
   Source to target Java version gap (e.g., "17 -> 26").
@@ -319,8 +319,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `11 -> 26`, `17 -> 26`, `21 -> 26`
   """
-  @spec jtbd_retrofit_java_version_gap() :: :jtbd_retrofit_java_version_gap
-  def jtbd_retrofit_java_version_gap, do: :jtbd_retrofit_java_version_gap
+  @spec jtbd_retrofit_java_version_gap() :: :"jtbd.retrofit.java_version_gap"
+  def jtbd_retrofit_java_version_gap, do: :"jtbd.retrofit.java_version_gap"
 
   @doc """
   Number of Java modules analyzed during retrofit assessment.
@@ -331,8 +331,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `10`, `50`, `150`
   """
-  @spec jtbd_retrofit_modules_analyzed() :: :jtbd_retrofit_modules_analyzed
-  def jtbd_retrofit_modules_analyzed, do: :jtbd_retrofit_modules_analyzed
+  @spec jtbd_retrofit_modules_analyzed() :: :"jtbd.retrofit.modules_analyzed"
+  def jtbd_retrofit_modules_analyzed, do: :"jtbd.retrofit.modules_analyzed"
 
   @doc """
   Enumerated JTBD scenario identifier — identifies the job-to-be-done being instrumented.
@@ -343,8 +343,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `agent_decision_loop`, `process_discovery`, `compliance_check`, `icp_qualification`, `process_intelligence_query`
   """
-  @spec jtbd_scenario_id() :: :jtbd_scenario_id
-  def jtbd_scenario_id, do: :jtbd_scenario_id
+  @spec jtbd_scenario_id() :: :"jtbd.scenario.id"
+  def jtbd_scenario_id, do: :"jtbd.scenario.id"
 
   @doc """
   Enumerated values for `jtbd.scenario.id`.
@@ -494,8 +494,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `success`, `failure`, `timeout`, `fallback`
   """
-  @spec jtbd_scenario_outcome() :: :jtbd_scenario_outcome
-  def jtbd_scenario_outcome, do: :jtbd_scenario_outcome
+  @spec jtbd_scenario_outcome() :: :"jtbd.scenario.outcome"
+  def jtbd_scenario_outcome, do: :"jtbd.scenario.outcome"
 
   @doc """
   Enumerated values for `jtbd.scenario.outcome`.
@@ -554,8 +554,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `fetch_agent_definition`, `classify_failure`, `evaluate_state`
   """
-  @spec jtbd_scenario_step() :: :jtbd_scenario_step
-  def jtbd_scenario_step, do: :jtbd_scenario_step
+  @spec jtbd_scenario_step() :: :"jtbd.scenario.step"
+  def jtbd_scenario_step, do: :"jtbd.scenario.step"
 
   @doc """
   Ordinal position of this step within the scenario (1-indexed).
@@ -566,8 +566,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `1`, `2`, `3`, `4`, `5`
   """
-  @spec jtbd_scenario_step_num() :: :jtbd_scenario_step_num
-  def jtbd_scenario_step_num, do: :jtbd_scenario_step_num
+  @spec jtbd_scenario_step_num() :: :"jtbd.scenario.step_num"
+  def jtbd_scenario_step_num, do: :"jtbd.scenario.step_num"
 
   @doc """
   Total number of steps expected in this scenario execution.
@@ -578,8 +578,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `10`, `15`, `20`
   """
-  @spec jtbd_scenario_step_total() :: :jtbd_scenario_step_total
-  def jtbd_scenario_step_total, do: :jtbd_scenario_step_total
+  @spec jtbd_scenario_step_total() :: :"jtbd.scenario.step_total"
+  def jtbd_scenario_step_total, do: :"jtbd.scenario.step_total"
 
   @doc """
   ChatmanGPT system executing this JTBD scenario step.
@@ -590,8 +590,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `osa`, `businessos`, `canopy`, `pm4py_rust`
   """
-  @spec jtbd_scenario_system() :: :jtbd_scenario_system
-  def jtbd_scenario_system, do: :jtbd_scenario_system
+  @spec jtbd_scenario_system() :: :"jtbd.scenario.system"
+  def jtbd_scenario_system, do: :"jtbd.scenario.system"
 
   @doc """
   Enumerated values for `jtbd.scenario.system`.
@@ -650,8 +650,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `required`
   Examples: `wave12`, `wave13`, `wave14`
   """
-  @spec jtbd_scenario_wave() :: :jtbd_scenario_wave
-  def jtbd_scenario_wave, do: :jtbd_scenario_wave
+  @spec jtbd_scenario_wave() :: :"jtbd.scenario.wave"
+  def jtbd_scenario_wave, do: :"jtbd.scenario.wave"
 
   @doc """
   Human-readable error description when scenario.outcome is failure or timeout.
@@ -662,8 +662,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `{"conditionally_required": "when jtbd.scenario.outcome is 'failure' or 'timeout'"}`
   Examples: `deadlock_detected`, `timeout_exceeded_30s`, `validation_failed`
   """
-  @spec jtbd_scenario_error_reason() :: :jtbd_scenario_error_reason
-  def jtbd_scenario_error_reason, do: :jtbd_scenario_error_reason
+  @spec jtbd_scenario_error_reason() :: :"jtbd.scenario.error_reason"
+  def jtbd_scenario_error_reason, do: :"jtbd.scenario.error_reason"
 
   @doc """
   Identifier of the agent executing or participating in this scenario step.
@@ -674,8 +674,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `recommended`
   Examples: `healing-agent-1`, `consensus-agent-2`, `discovery-agent-1`
   """
-  @spec jtbd_scenario_agent_id() :: :jtbd_scenario_agent_id
-  def jtbd_scenario_agent_id, do: :jtbd_scenario_agent_id
+  @spec jtbd_scenario_agent_id() :: :"jtbd.scenario.agent_id"
+  def jtbd_scenario_agent_id, do: :"jtbd.scenario.agent_id"
 
   @doc """
   Iteration or attempt number within a repeating loop (e.g., retry attempt, consensus round iteration).
@@ -686,8 +686,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec jtbd_scenario_iteration() :: :jtbd_scenario_iteration
-  def jtbd_scenario_iteration, do: :jtbd_scenario_iteration
+  @spec jtbd_scenario_iteration() :: :"jtbd.scenario.iteration"
+  def jtbd_scenario_iteration, do: :"jtbd.scenario.iteration"
 
   @doc """
   Measured latency (elapsed time) for this scenario step in milliseconds.
@@ -698,8 +698,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `recommended`
   Examples: `42`, `156`, `5000`
   """
-  @spec jtbd_scenario_latency_ms() :: :jtbd_scenario_latency_ms
-  def jtbd_scenario_latency_ms, do: :jtbd_scenario_latency_ms
+  @spec jtbd_scenario_latency_ms() :: :"jtbd.scenario.latency_ms"
+  def jtbd_scenario_latency_ms, do: :"jtbd.scenario.latency_ms"
 
   @doc """
   Identifier of the Claude Code task or work item associated with this scenario step.
@@ -710,8 +710,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `recommended`
   Examples: `task-wave12-001`, `task-001`, `task-abc-123`
   """
-  @spec jtbd_scenario_task_id() :: :jtbd_scenario_task_id
-  def jtbd_scenario_task_id, do: :jtbd_scenario_task_id
+  @spec jtbd_scenario_task_id() :: :"jtbd.scenario.task_id"
+  def jtbd_scenario_task_id, do: :"jtbd.scenario.task_id"
 
   @doc """
   Jaeger trace ID or OpenTelemetry trace link for full observability of this scenario step.
@@ -722,7 +722,7 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   Requirement: `recommended`
   Examples: `4bf92f3577b34da6a3ce929d0e0e4736`, `trace://jaeger-local/abc123...`
   """
-  @spec jtbd_scenario_trace_link() :: :jtbd_scenario_trace_link
-  def jtbd_scenario_trace_link, do: :jtbd_scenario_trace_link
+  @spec jtbd_scenario_trace_link() :: :"jtbd.scenario.trace_link"
+  def jtbd_scenario_trace_link, do: :"jtbd.scenario.trace_link"
 
 end

@@ -314,6 +314,8 @@ defmodule MiosaMemory.Cortex do
 
   use GenServer
 
+  @call_timeout 5_000
+
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Keyword.put_new(opts, :name, __MODULE__))
   end
@@ -328,23 +330,23 @@ defmodule MiosaMemory.Cortex do
   end
 
   def bulletin do
-    GenServer.call(__MODULE__, :bulletin)
+    GenServer.call(__MODULE__, :bulletin, @call_timeout)
   end
 
   def refresh do
-    GenServer.call(__MODULE__, :refresh)
+    GenServer.call(__MODULE__, :refresh, @call_timeout)
   end
 
   def active_topics do
-    GenServer.call(__MODULE__, :active_topics)
+    GenServer.call(__MODULE__, :active_topics, @call_timeout)
   end
 
   def session_summary(session_id) do
-    GenServer.call(__MODULE__, {:session_summary, session_id})
+    GenServer.call(__MODULE__, {:session_summary, session_id}, @call_timeout)
   end
 
   def synthesis_stats do
-    GenServer.call(__MODULE__, :synthesis_stats)
+    GenServer.call(__MODULE__, :synthesis_stats, @call_timeout)
   end
 
   @impl true
@@ -561,6 +563,7 @@ defmodule MiosaBudget.Budget do
   use GenServer
   require Logger
 
+  @call_timeout 5_000
   @daily_default_usd   50.0
   @monthly_default_usd 200.0
 
@@ -580,11 +583,11 @@ defmodule MiosaBudget.Budget do
   end
 
   def check_budget do
-    GenServer.call(__MODULE__, :check_budget)
+    GenServer.call(__MODULE__, :check_budget, @call_timeout)
   end
 
   def get_status do
-    GenServer.call(__MODULE__, :get_status)
+    GenServer.call(__MODULE__, :get_status, @call_timeout)
   end
 
   def record_cost(provider, model, tokens_in, tokens_out, session_id) do
@@ -722,6 +725,8 @@ defmodule MiosaBudget.Treasury do
 
   use GenServer
 
+  @call_timeout 5_000
+
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Keyword.put_new(opts, :name, __MODULE__))
   end
@@ -735,12 +740,12 @@ defmodule MiosaBudget.Treasury do
     }
   end
 
-  def balance, do: GenServer.call(__MODULE__, :balance)
+  def balance, do: GenServer.call(__MODULE__, :balance, @call_timeout)
   def deposit(amount, reason), do: GenServer.cast(__MODULE__, {:deposit, amount, reason})
   def withdraw(amount, reason), do: GenServer.cast(__MODULE__, {:withdraw, amount, reason})
   def reserve(amount, reason), do: GenServer.cast(__MODULE__, {:reserve, amount, reason})
   def release(amount, reason), do: GenServer.cast(__MODULE__, {:release, amount, reason})
-  def audit_log, do: GenServer.call(__MODULE__, :audit_log)
+  def audit_log, do: GenServer.call(__MODULE__, :audit_log, @call_timeout)
 
   @impl true
   def init(:ok), do: {:ok, %{balance: 0.0, reserved: 0.0, log: []}}

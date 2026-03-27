@@ -27,8 +27,6 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
   alias OptimalSystemAgent.Commerce.Marketplace
 
   setup do
-    # Start marketplace GenServer
-    start_supervised!(Marketplace)
     :ok
   end
 
@@ -54,6 +52,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
           Marketplace.publish_skill(publisher_id, %{
             name: "skill_#{i}",
             description: "Test skill #{i}",
+            instructions: "Do task #{i}",
             price: 10.0
           })
         end)
@@ -69,17 +68,19 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
     test "skills table size should be queryable" do
       # REFACTOR: After adding table size monitoring
 
-      publisher_id = "test_publisher"
+      publisher_id = "test_publisher_#{System.unique_integer()}"
 
       _result1 = Marketplace.publish_skill(publisher_id, %{
-        name: "skill_1",
+        name: "queryable_skill_1_#{System.unique_integer()}",
         description: "First skill",
+        instructions: "Execute first skill",
         price: 10.0
       })
 
       _result2 = Marketplace.publish_skill(publisher_id, %{
-        name: "skill_2",
+        name: "queryable_skill_2_#{System.unique_integer()}",
         description: "Second skill",
+        instructions: "Execute second skill",
         price: 20.0
       })
 
@@ -97,14 +98,28 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
     test "acquisitions table should limit purchase records per buyer" do
       # RED: Unbounded purchase history can exhaust memory
 
-      buyer_id = "buyer_1"
+      buyer_id = "buyer_acq_#{System.unique_integer()}"
+      publisher_id = "pub_acq_#{System.unique_integer()}"
       max_acquisitions = 1_000
 
-      # Simulate buyer acquiring skills multiple times
-      results =
+      # Publish real skills first so acquire_skill has valid IDs to work with
+      skill_ids =
         1..max_acquisitions
         |> Enum.map(fn i ->
-          skill_id = "skill_#{i}"
+          {:ok, skill_id} =
+            Marketplace.publish_skill(publisher_id, %{
+              name: "acq_skill_#{i}_#{System.unique_integer()}",
+              description: "Acquisition test skill #{i}",
+              instructions: "Do acquisition task #{i}",
+              price: 1.0
+            })
+
+          skill_id
+        end)
+
+      # Simulate buyer acquiring each published skill
+      results =
+        Enum.map(skill_ids, fn skill_id ->
           Marketplace.acquire_skill(buyer_id, skill_id)
         end)
 
@@ -120,7 +135,15 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
     test "ratings table should have maximum size limit" do
       # RED: Unbounded ratings → memory leak
 
-      skill_id = "skill_1"
+      publisher_id = "pub_rating_#{System.unique_integer()}"
+      {:ok, skill_id} =
+        Marketplace.publish_skill(publisher_id, %{
+          name: "rateable_skill_#{System.unique_integer()}",
+          description: "A skill to rate",
+          instructions: "Rate this skill",
+          price: 5.0
+        })
+
       max_ratings = 10_000
 
       results =
@@ -246,6 +269,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
           Marketplace.publish_skill(publisher_id, %{
             name: "skill_#{i}",
             description: "Skill #{i}",
+            instructions: "Execute skill #{i}",
             price: 10.0
           })
         end)
@@ -265,13 +289,28 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
     test "buyer should have acquisition budget" do
       # Armstrong: Budget → prevent one buyer from hoarding all skills
 
-      buyer_id = "buyer_1"
+      buyer_id = "buyer_budget_#{System.unique_integer()}"
+      publisher_id = "pub_budget_#{System.unique_integer()}"
       _max_buyer_acquisitions = 100
 
-      results =
+      # Publish real skills first
+      skill_ids =
         1..200
         |> Enum.map(fn i ->
-          Marketplace.acquire_skill(buyer_id, "skill_#{i}")
+          {:ok, skill_id} =
+            Marketplace.publish_skill(publisher_id, %{
+              name: "budget_skill_#{i}_#{System.unique_integer()}",
+              description: "Budget test skill #{i}",
+              instructions: "Execute budget task #{i}",
+              price: 1.0
+            })
+
+          skill_id
+        end)
+
+      results =
+        Enum.map(skill_ids, fn skill_id ->
+          Marketplace.acquire_skill(buyer_id, skill_id)
         end)
 
       ok_count = Enum.count(results, &match?({:ok, _}, &1))
@@ -295,6 +334,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
         Marketplace.publish_skill(publisher_id, %{
           name: "skill_#{i}",
           description: "Test",
+          instructions: "Execute task #{i}",
           price: 10.0
         })
       end
@@ -313,6 +353,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
       result = Marketplace.publish_skill(publisher_id, %{
         name: "skill_1",
         description: "Test",
+        instructions: "Execute skill 1",
         price: 10.0
       })
 
@@ -328,6 +369,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceBoundednessTest do
       result = Marketplace.publish_skill(publisher_id, %{
         name: "skill_2",
         description: "Test",
+        instructions: "Execute skill 2",
         price: 20.0
       })
 

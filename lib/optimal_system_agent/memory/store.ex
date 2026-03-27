@@ -111,11 +111,11 @@ defmodule OptimalSystemAgent.Memory.Store do
           [] ->
             entry_with_timestamps = add_timestamps_to_entry(entry, id)
 
-            try do
+            if :ets.whereis(table_name) != :undefined do
               :ets.insert(table_name, {id, entry_with_timestamps})
               {:ok, id}
-            rescue
-              ArgumentError -> {:error, :insert_failed}
+            else
+              {:error, :insert_failed}
             end
         end
     end
@@ -129,13 +129,13 @@ defmodule OptimalSystemAgent.Memory.Store do
     if id == nil do
       {:error, :not_found}
     else
-      try do
+      if :ets.whereis(table_name) != :undefined do
         case :ets.lookup(table_name, id) do
           [{^id, entry}] -> {:ok, entry}
           [] -> {:error, :not_found}
         end
-      rescue
-        ArgumentError -> {:error, :not_found}
+      else
+        {:error, :not_found}
       end
     end
   end
@@ -145,7 +145,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   Returns {:ok, updated_entry} or {:error, :not_found}.
   """
   def update(table_name, id, updates) when is_atom(table_name) and is_map(updates) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       case :ets.lookup(table_name, id) do
         [{^id, existing}] ->
           merged = Map.merge(existing, updates)
@@ -156,8 +156,8 @@ defmodule OptimalSystemAgent.Memory.Store do
         [] ->
           {:error, :not_found}
       end
-    rescue
-      ArgumentError -> {:error, :not_found}
+    else
+      {:error, :not_found}
     end
   end
 
@@ -166,12 +166,10 @@ defmodule OptimalSystemAgent.Memory.Store do
   Returns :ok (always succeeds, even for non-existent IDs).
   """
   def delete(table_name, id) when is_atom(table_name) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       :ets.delete(table_name, id)
-      :ok
-    rescue
-      ArgumentError -> :ok
     end
+    :ok
   end
 
   @doc """
@@ -179,11 +177,11 @@ defmodule OptimalSystemAgent.Memory.Store do
   Returns a list of entries (values only, without keys).
   """
   def list(table_name) when is_atom(table_name) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       :ets.tab2list(table_name)
       |> Enum.map(fn {_id, entry} -> entry end)
-    rescue
-      ArgumentError -> []
+    else
+      []
     end
   end
 
@@ -192,7 +190,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   Returns list of entries that match query keywords above threshold.
   """
   def search(table_name, query, threshold) when is_atom(table_name) and is_number(threshold) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       query_keywords = extract_keywords(query)
 
       :ets.tab2list(table_name)
@@ -204,8 +202,8 @@ defmodule OptimalSystemAgent.Memory.Store do
       |> Enum.filter(fn {score, _} -> score >= threshold end)
       |> Enum.sort_by(&elem(&1, 0), :desc)
       |> Enum.map(&elem(&1, 1))
-    rescue
-      ArgumentError -> []
+    else
+      []
     end
   end
 
@@ -213,10 +211,10 @@ defmodule OptimalSystemAgent.Memory.Store do
   Count the number of entries in an ETS table.
   """
   def count(table_name) when is_atom(table_name) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       :ets.info(table_name, :size) || 0
-    rescue
-      ArgumentError -> 0
+    else
+      0
     end
   end
 
@@ -225,12 +223,10 @@ defmodule OptimalSystemAgent.Memory.Store do
   Returns :ok.
   """
   def clear(table_name) when is_atom(table_name) do
-    try do
+    if :ets.whereis(table_name) != :undefined do
       :ets.delete_all_objects(table_name)
-      :ok
-    rescue
-      ArgumentError -> :ok
     end
+    :ok
   end
 
   # ---------------------------------------------------------------------------
@@ -238,11 +234,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   # ---------------------------------------------------------------------------
 
   defp whereis_table(table_name) do
-    try do
-      :ets.whereis(table_name)
-    rescue
-      ArgumentError -> :undefined
-    end
+    :ets.whereis(table_name)
   end
 
   defp add_timestamps_to_entry(entry, _id) do
@@ -499,7 +491,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   end
 
   defp lookup_ets_index(keywords) do
-    try do
+    if :ets.whereis(@index_table) != :undefined do
       keywords
       |> Enum.flat_map(fn kw ->
         case :ets.lookup(@index_table, kw) do
@@ -508,21 +500,21 @@ defmodule OptimalSystemAgent.Memory.Store do
         end
       end)
       |> Enum.uniq()
-    rescue
-      ArgumentError -> []
+    else
+      []
     end
   end
 
   defp load_entries_by_ids(ids, category, scope) do
     ids
     |> Enum.flat_map(fn id ->
-      try do
+      if :ets.whereis(@entries_table) != :undefined do
         case :ets.lookup(@entries_table, id) do
           [{^id, entry}] -> [entry]
           [] -> load_from_sqlite_by_id(id)
         end
-      rescue
-        ArgumentError -> load_from_sqlite_by_id(id)
+      else
+        load_from_sqlite_by_id(id)
       end
     end)
     |> filter_by_category(category)
@@ -585,7 +577,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   # ---------------------------------------------------------------------------
 
   defp do_get(id) do
-    try do
+    if :ets.whereis(@entries_table) != :undefined do
       case :ets.lookup(@entries_table, id) do
         [{^id, entry}] ->
           {:ok, entry}
@@ -596,12 +588,11 @@ defmodule OptimalSystemAgent.Memory.Store do
             entry -> {:ok, struct_to_map(entry)}
           end
       end
-    rescue
-      ArgumentError ->
-        case Repo.get(MemoryEntry, id) do
-          nil -> {:error, :not_found}
-          entry -> {:ok, struct_to_map(entry)}
-        end
+    else
+      case Repo.get(MemoryEntry, id) do
+        nil -> {:error, :not_found}
+        entry -> {:ok, struct_to_map(entry)}
+      end
     end
   end
 
@@ -771,8 +762,8 @@ defmodule OptimalSystemAgent.Memory.Store do
     keywords = parse_keywords(entry[:keywords] || entry["keywords"] || "")
     id = entry[:id] || entry["id"]
 
-    Enum.each(keywords, fn kw ->
-      try do
+    if :ets.whereis(@index_table) != :undefined do
+      Enum.each(keywords, fn kw ->
         existing =
           case :ets.lookup(@index_table, kw) do
             [{^kw, ids}] -> ids
@@ -782,10 +773,8 @@ defmodule OptimalSystemAgent.Memory.Store do
         unless id in existing do
           :ets.insert(@index_table, {kw, [id | existing]})
         end
-      rescue
-        ArgumentError -> :ok
-      end
-    end)
+      end)
+    end
   end
 
   defp reindex_entry(old_id, new_entry) do
@@ -794,7 +783,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   end
 
   defp remove_from_ets_index(id) do
-    try do
+    if :ets.whereis(@index_table) != :undefined do
       all_keys = :ets.tab2list(@index_table)
 
       Enum.each(all_keys, fn {kw, ids} ->
@@ -806,26 +795,20 @@ defmodule OptimalSystemAgent.Memory.Store do
           :ets.insert(@index_table, {kw, updated})
         end
       end)
-    rescue
-      ArgumentError -> :ok
     end
   end
 
   defp cache_entry(entry) do
     id = entry[:id] || entry["id"]
 
-    try do
+    if :ets.whereis(@entries_table) != :undefined do
       :ets.insert(@entries_table, {id, entry})
-    rescue
-      ArgumentError -> :ok
     end
   end
 
   defp remove_from_cache(id) do
-    try do
+    if :ets.whereis(@entries_table) != :undefined do
       :ets.delete(@entries_table, id)
-    rescue
-      ArgumentError -> :ok
     end
   end
 
@@ -850,11 +833,12 @@ defmodule OptimalSystemAgent.Memory.Store do
   end
 
   defp rebuild_ets_index do
-    try do
+    if :ets.whereis(@index_table) != :undefined do
       :ets.delete_all_objects(@index_table)
+    end
+
+    if :ets.whereis(@entries_table) != :undefined do
       :ets.delete_all_objects(@entries_table)
-    rescue
-      ArgumentError -> :ok
     end
 
     load_from_sqlite()
@@ -935,7 +919,7 @@ defmodule OptimalSystemAgent.Memory.Store do
   defp find_similar(entry, limit) do
     entry_keywords = parse_keywords(entry.keywords)
 
-    try do
+    if :ets.whereis(@entries_table) != :undefined do
       candidate_ids = lookup_ets_index(entry_keywords)
 
       candidate_ids
@@ -953,8 +937,8 @@ defmodule OptimalSystemAgent.Memory.Store do
       |> Enum.filter(fn {score, _} -> score >= @similarity_threshold end)
       |> Enum.sort_by(&elem(&1, 0), :desc)
       |> Enum.take(limit)
-    rescue
-      ArgumentError -> []
+    else
+      []
     end
   end
 

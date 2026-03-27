@@ -195,7 +195,7 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcer do
   def handle_call(:get_all_status, _from, state) do
     status =
       Enum.reduce(state.tiers, %{}, fn {tier, _}, acc ->
-        {:ok, tier_status} = handle_call({:get_tier_status, tier}, nil, state)
+        {:reply, {:ok, tier_status}, _state} = handle_call({:get_tier_status, tier}, nil, state)
         Map.put(acc, tier, tier_status)
       end)
 

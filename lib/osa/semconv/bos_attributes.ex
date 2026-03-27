@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `bos-compliance`, `bos-decisions`, `bos-workspace`
   """
-  @spec bos_agent_service() :: :bos_agent_service
-  def bos_agent_service, do: :bos_agent_service
+  @spec bos_agent_service() :: :"bos.agent.service"
+  def bos_agent_service, do: :"bos.agent.service"
 
   @doc """
   Identity of the actor performing the audited operation.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `user-123`, `service-account-bos`
   """
-  @spec bos_audit_actor_id() :: :bos_audit_actor_id
-  def bos_audit_actor_id, do: :bos_audit_actor_id
+  @spec bos_audit_actor_id() :: :"bos.audit.actor_id"
+  def bos_audit_actor_id, do: :"bos.audit.actor_id"
 
   @doc """
   Type of audit event recorded.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `data_access`, `config_change`
   """
-  @spec bos_audit_event_type() :: :bos_audit_event_type
-  def bos_audit_event_type, do: :bos_audit_event_type
+  @spec bos_audit_event_type() :: :"bos.audit.event_type"
+  def bos_audit_event_type, do: :"bos.audit.event_type"
 
   @doc """
   Enumerated values for `bos.audit.event_type`.
@@ -110,8 +110,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `audit-2026-03-25-001`, `trail-soc2-xyz`
   """
-  @spec bos_audit_trail_id() :: :bos_audit_trail_id
-  def bos_audit_trail_id, do: :bos_audit_trail_id
+  @spec bos_audit_trail_id() :: :"bos.audit.trail.id"
+  def bos_audit_trail_id, do: :"bos.audit.trail.id"
 
   @doc """
   Control ID within the compliance framework.
@@ -122,8 +122,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `CC6.1`, `A3.2`
   """
-  @spec bos_compliance_control_id() :: :bos_compliance_control_id
-  def bos_compliance_control_id, do: :bos_compliance_control_id
+  @spec bos_compliance_control_id() :: :"bos.compliance.control_id"
+  def bos_compliance_control_id, do: :"bos.compliance.control_id"
 
   @doc """
   Compliance framework being evaluated or enforced.
@@ -134,8 +134,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `SOC2`, `GDPR`
   """
-  @spec bos_compliance_framework() :: :bos_compliance_framework
-  def bos_compliance_framework, do: :bos_compliance_framework
+  @spec bos_compliance_framework() :: :"bos.compliance.framework"
+  def bos_compliance_framework, do: :"bos.compliance.framework"
 
   @doc """
   Enumerated values for `bos.compliance.framework`.
@@ -200,8 +200,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec bos_compliance_passed() :: :bos_compliance_passed
-  def bos_compliance_passed, do: :bos_compliance_passed
+  @spec bos_compliance_passed() :: :"bos.compliance.passed"
+  def bos_compliance_passed, do: :"bos.compliance.passed"
 
   @doc """
   Identifier of the specific compliance rule being checked.
@@ -212,8 +212,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `soc2.cc6.1`, `hipaa.164.312.a`
   """
-  @spec bos_compliance_rule_id() :: :bos_compliance_rule_id
-  def bos_compliance_rule_id, do: :bos_compliance_rule_id
+  @spec bos_compliance_rule_id() :: :"bos.compliance.rule_id"
+  def bos_compliance_rule_id, do: :"bos.compliance.rule_id"
 
   @doc """
   Severity level of a compliance rule violation.
@@ -224,8 +224,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `critical`, `high`
   """
-  @spec bos_compliance_severity() :: :bos_compliance_severity
-  def bos_compliance_severity, do: :bos_compliance_severity
+  @spec bos_compliance_severity() :: :"bos.compliance.severity"
+  def bos_compliance_severity, do: :"bos.compliance.severity"
 
   @doc """
   Enumerated values for `bos.compliance.severity`.
@@ -284,8 +284,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `dec-2026-001`, `adr-authentication-strategy`
   """
-  @spec bos_decision_id() :: :bos_decision_id
-  def bos_decision_id, do: :bos_decision_id
+  @spec bos_decision_id() :: :"bos.decision.id"
+  def bos_decision_id, do: :"bos.decision.id"
 
   @doc """
   The outcome of a business decision.
@@ -296,8 +296,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `approved`, `rejected`
   """
-  @spec bos_decision_outcome() :: :bos_decision_outcome
-  def bos_decision_outcome, do: :bos_decision_outcome
+  @spec bos_decision_outcome() :: :"bos.decision.outcome"
+  def bos_decision_outcome, do: :"bos.decision.outcome"
 
   @doc """
   Enumerated values for `bos.decision.outcome`.
@@ -356,8 +356,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `architectural`, `operational`
   """
-  @spec bos_decision_type() :: :bos_decision_type
-  def bos_decision_type, do: :bos_decision_type
+  @spec bos_decision_type() :: :"bos.decision.type"
+  def bos_decision_type, do: :"bos.decision.type"
 
   @doc """
   Enumerated values for `bos.decision.type`.
@@ -416,8 +416,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `gap-cc6.1-001`, `gap-hipaa-phi-002`
   """
-  @spec bos_gap_id() :: :bos_gap_id
-  def bos_gap_id, do: :bos_gap_id
+  @spec bos_gap_id() :: :"bos.gap.id"
+  def bos_gap_id, do: :"bos.gap.id"
 
   @doc """
   Target days to remediate the detected gap.
@@ -428,8 +428,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `7`, `30`, `90`
   """
-  @spec bos_gap_remediation_days() :: :bos_gap_remediation_days
-  def bos_gap_remediation_days, do: :bos_gap_remediation_days
+  @spec bos_gap_remediation_days() :: :"bos.gap.remediation_days"
+  def bos_gap_remediation_days, do: :"bos.gap.remediation_days"
 
   @doc """
   Severity of the detected compliance gap.
@@ -440,8 +440,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `critical`, `high`
   """
-  @spec bos_gap_severity() :: :bos_gap_severity
-  def bos_gap_severity, do: :bos_gap_severity
+  @spec bos_gap_severity() :: :"bos.gap.severity"
+  def bos_gap_severity, do: :"bos.gap.severity"
 
   @doc """
   Enumerated values for `bos.gap.severity`.
@@ -500,8 +500,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `open`, `in_remediation`
   """
-  @spec bos_gap_status() :: :bos_gap_status
-  def bos_gap_status, do: :bos_gap_status
+  @spec bos_gap_status() :: :"bos.gap.status"
+  def bos_gap_status, do: :"bos.gap.status"
 
   @doc """
   Enumerated values for `bos.gap.status`.
@@ -560,8 +560,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `1.2.0`, `soc2-2026-q1`
   """
-  @spec bos_policy_version() :: :bos_policy_version
-  def bos_policy_version, do: :bos_policy_version
+  @spec bos_policy_version() :: :"bos.policy.version"
+  def bos_policy_version, do: :"bos.policy.version"
 
   @doc """
   Unique identifier for a BusinessOS workspace.
@@ -572,8 +572,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `ws-chatmangpt-001`, `ws-disney-team-abc`
   """
-  @spec bos_workspace_id() :: :bos_workspace_id
-  def bos_workspace_id, do: :bos_workspace_id
+  @spec bos_workspace_id() :: :"bos.workspace.id"
+  def bos_workspace_id, do: :"bos.workspace.id"
 
   @doc """
   Human-readable name of the BusinessOS workspace.
@@ -584,7 +584,7 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   Requirement: `recommended`
   Examples: `ChatmanGPT HQ`, `Disney Animation Team`
   """
-  @spec bos_workspace_name() :: :bos_workspace_name
-  def bos_workspace_name, do: :bos_workspace_name
+  @spec bos_workspace_name() :: :"bos.workspace.name"
+  def bos_workspace_name, do: :"bos.workspace.name"
 
 end

@@ -15,6 +15,7 @@ defmodule OptimalSystemAgent.Tools.Cache do
   @default_ttl_ms 60_000
   @max_cache_size 1000
   @eviction_target 950
+  @call_timeout 5_000
 
   # ── Public API ──────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ defmodule OptimalSystemAgent.Tools.Cache do
 
   @doc "Fetch a cached value. Returns `{:ok, value}`, `:miss`, or `{:miss, :expired}`."
   def get(key) do
-    GenServer.call(__MODULE__, {:get, key})
+    GenServer.call(__MODULE__, {:get, key}, @call_timeout)
   end
 
   @doc "Store a value with the default TTL."
@@ -62,7 +63,7 @@ defmodule OptimalSystemAgent.Tools.Cache do
 
   @doc "Return cache statistics."
   def stats do
-    GenServer.call(__MODULE__, :stats)
+    GenServer.call(__MODULE__, :stats, @call_timeout)
   end
 
   # ── GenServer callbacks ─────────────────────────────────────────────

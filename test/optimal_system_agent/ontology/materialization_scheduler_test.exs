@@ -227,10 +227,11 @@ defmodule OptimalSystemAgent.Ontology.MaterializationSchedulerTest do
 
       test_opts = Keyword.merge(@test_intervals, [task_supervisor: task_sup])
 
-      # Start a simple supervisor to hold the scheduler as a permanent child
+      # Use GenServer.start_link directly (no global name registration) so this
+      # test works even when the application's MaterializationScheduler is running.
       child_spec = %{
-        id: MaterializationScheduler,
-        start: {MaterializationScheduler, :start_link, [test_opts]},
+        id: :test_mat_sched_restart,
+        start: {GenServer, :start_link, [MaterializationScheduler, test_opts, []]},
         restart: :permanent,
         type: :worker
       }
@@ -264,8 +265,8 @@ defmodule OptimalSystemAgent.Ontology.MaterializationSchedulerTest do
       test_opts = Keyword.merge(@test_intervals, [task_supervisor: task_sup])
 
       child_spec = %{
-        id: MaterializationScheduler,
-        start: {MaterializationScheduler, :start_link, [test_opts]},
+        id: :test_mat_sched_timers,
+        start: {GenServer, :start_link, [MaterializationScheduler, test_opts, []]},
         restart: :permanent,
         type: :worker
       }

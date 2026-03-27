@@ -27,6 +27,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
 
   @yawl_default_url "http://localhost:8080"
   @yawl_poll_interval_ms 15_000
+  @call_timeout 5_000
 
   @dmaic_phases %{
     define: [:compliance_check, :a2a_deal_lifecycle, :icp_qualification],
@@ -45,7 +46,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   @doc "Start the dashboard"
   @spec start(keyword()) :: {:ok, pid()} | {:error, term()}
   def start(opts \\ []) do
-    case GenServer.call(__MODULE__, {:start, opts}) do
+    case GenServer.call(__MODULE__, {:start, opts}, @call_timeout) do
       :ok -> {:ok, self()}
       error -> error
     end
@@ -56,7 +57,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   @doc "Stop the dashboard"
   @spec stop() :: :ok
   def stop do
-    GenServer.call(__MODULE__, :stop)
+    GenServer.call(__MODULE__, :stop, @call_timeout)
   rescue
     _e -> :ok
   end

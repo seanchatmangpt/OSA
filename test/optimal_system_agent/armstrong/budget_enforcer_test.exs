@@ -3,11 +3,8 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerTest do
 
   alias OptimalSystemAgent.Armstrong.BudgetEnforcer
 
-  @moduletag :skip
-
   setup do
-    # Start a fresh BudgetEnforcer for each test
-    {:ok, pid} = BudgetEnforcer.start_link(name: :"enforcer_#{System.monotonic_time()}")
+    pid = start_supervised!({BudgetEnforcer, [escalate_to_healing: false]})
     {:ok, enforcer: pid}
   end
 
@@ -171,13 +168,7 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerTest do
   end
 
   describe "escalate_on_violations" do
-    test "emits system_event on budget violation" do
-      {:ok, pid} =
-        BudgetEnforcer.start_link(
-          name: :"enforcer_event_test_#{System.monotonic_time()}",
-          escalate_to_healing: false
-        )
-
+    test "emits system_event on budget violation", %{enforcer: _pid} do
       # Exhaust the critical tier
       BudgetEnforcer.record_operation("op1", :critical, 100, 5.0)
 

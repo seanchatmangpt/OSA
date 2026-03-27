@@ -7,10 +7,9 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :capture_log
 
   alias OptimalSystemAgent.Agent.Budget
-
-  @moduletag :capture_log
 
   describe "start_link/1" do
     test "starts the Budget GenServer" do

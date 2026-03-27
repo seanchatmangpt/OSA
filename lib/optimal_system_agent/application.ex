@@ -110,6 +110,10 @@ defmodule OptimalSystemAgent.Application do
     # Decisions graph ETS table (decision tree tracking)
     OptimalSystemAgent.Decisions.Graph.init_tables()
 
+    # Telemetry ETS tables (:telemetry_spans, :telemetry_metrics) — must exist
+    # before any GenServer or template calls Telemetry.start_span/2.
+    OptimalSystemAgent.Observability.Telemetry.init_tracer()
+
     children =
       platform_repo_children() ++
       [

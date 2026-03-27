@@ -28,9 +28,7 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealerTest do
       Process.sleep(100)
     end
 
-    @tag :skip
     test "health_status returns comprehensive health map", %{healer: _} do
-      # This test requires full app startup to properly initialize health check
       status = SelfHealer.health_status()
       assert is_map(status)
       assert Map.has_key?(status, :timestamp)

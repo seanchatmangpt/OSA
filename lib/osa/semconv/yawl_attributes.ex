@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `required`
   Examples: `case-001`, `order-flow-42`, `repair-7391`
   """
-  @spec yawl_case_id() :: :yawl_case_id
-  def yawl_case_id, do: :yawl_case_id
+  @spec yawl_case_id() :: :"yawl.case.id"
+  def yawl_case_id, do: :"yawl.case.id"
 
   @doc """
   YAWL workflow event type from the SSE event stream.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `required`
   Examples: `TASK_STARTED`, `TASK_COMPLETED`, `INSTANCE_COMPLETED`
   """
-  @spec yawl_event_type() :: :yawl_event_type
-  def yawl_event_type, do: :yawl_event_type
+  @spec yawl_event_type() :: :"yawl.event.type"
+  def yawl_event_type, do: :"yawl.event.type"
 
   @doc """
   Enumerated values for `yawl.event.type`.
@@ -112,8 +112,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `required`
   Examples: `TaskA`, `approveOrder`, `InputCondition`
   """
-  @spec yawl_task_id() :: :yawl_task_id
-  def yawl_task_id, do: :yawl_task_id
+  @spec yawl_task_id() :: :"yawl.task.id"
+  def yawl_task_id, do: :"yawl.task.id"
 
   @doc """
   YAWL workflow instance identifier (internal engine identifier).
@@ -124,8 +124,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `instance-001`
   """
-  @spec yawl_instance_id() :: :yawl_instance_id
-  def yawl_instance_id, do: :yawl_instance_id
+  @spec yawl_instance_id() :: :"yawl.instance.id"
+  def yawl_instance_id, do: :"yawl.instance.id"
 
   @doc """
   YAWL SSE event identifier from the event stream.
@@ -136,8 +136,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `evt-001`, `evt-abc123`
   """
-  @spec yawl_spec_event_id() :: :yawl_spec_event_id
-  def yawl_spec_event_id, do: :yawl_spec_event_id
+  @spec yawl_spec_event_id() :: :"yawl.spec.event_id"
+  def yawl_spec_event_id, do: :"yawl.spec.event_id"
 
   @doc """
   YAWL specification URI — the workflow definition being executed.
@@ -148,8 +148,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `WCP01_Sequence`, `OrderManagement`, `RepairProcess`
   """
-  @spec yawl_spec_uri() :: :yawl_spec_uri
-  def yawl_spec_uri, do: :yawl_spec_uri
+  @spec yawl_spec_uri() :: :"yawl.spec.uri"
+  def yawl_spec_uri, do: :"yawl.spec.uri"
 
   @doc """
   Number of tokens consumed from input conditions when this task fires.
@@ -160,8 +160,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`
   """
-  @spec yawl_token_consumed() :: :yawl_token_consumed
-  def yawl_token_consumed, do: :yawl_token_consumed
+  @spec yawl_token_consumed() :: :"yawl.token.consumed"
+  def yawl_token_consumed, do: :"yawl.token.consumed"
 
   @doc """
   Number of tokens produced to output conditions after this task fires.
@@ -172,8 +172,8 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`
   """
-  @spec yawl_token_produced() :: :yawl_token_produced
-  def yawl_token_produced, do: :yawl_token_produced
+  @spec yawl_token_produced() :: :"yawl.token.produced"
+  def yawl_token_produced, do: :"yawl.token.produced"
 
   @doc """
   YAWL work item unique identifier in caseID:taskID:uniqueID format.
@@ -184,7 +184,7 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   Requirement: `recommended`
   Examples: `case-001:TaskA:001`, `repair-7391:diagnose:002`
   """
-  @spec yawl_work_item_id() :: :yawl_work_item_id
-  def yawl_work_item_id, do: :yawl_work_item_id
+  @spec yawl_work_item_id() :: :"yawl.work_item.id"
+  def yawl_work_item_id, do: :"yawl.work_item.id"
 
 end

@@ -107,13 +107,13 @@ defmodule OptimalSystemAgent.ContextMesh.Keeper do
   @doc "Return current stats for monitoring and staleness scoring."
   @spec stats(String.t(), String.t()) :: map()
   def stats(team_id, keeper_id \\ nil) do
-    GenServer.call(via(team_id, keeper_id || team_id), :stats)
+    GenServer.call(via(team_id, keeper_id || team_id), :stats, 5_000)
   end
 
   @doc "Force an immediate flush of any pending dirty state."
   @spec flush(String.t(), String.t()) :: :ok
   def flush(team_id, keeper_id \\ nil) do
-    GenServer.call(via(team_id, keeper_id || team_id), :flush)
+    GenServer.call(via(team_id, keeper_id || team_id), :flush, 5_000)
   end
 
   # ---------------------------------------------------------------------------

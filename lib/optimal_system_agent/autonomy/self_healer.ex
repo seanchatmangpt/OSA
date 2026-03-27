@@ -322,6 +322,14 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
 
   @impl true
   def handle_call(:health_status, _from, state) do
+    # If health_status is empty (not yet populated), run a health check first
+    state =
+      if state.health_status == %{} do
+        do_health_check(state)
+      else
+        state
+      end
+
     {:reply, state.health_status, state}
   end
 

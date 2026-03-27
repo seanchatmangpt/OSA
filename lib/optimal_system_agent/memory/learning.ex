@@ -43,6 +43,7 @@ defmodule OptimalSystemAgent.Memory.Learning do
   @max_observations 500
   @incremental_every 5
   @full_every 50
+  @call_timeout 30_000
 
   # ---------------------------------------------------------------------------
   # Public API
@@ -75,25 +76,25 @@ defmodule OptimalSystemAgent.Memory.Learning do
   @doc "Return all persisted patterns from SQLite."
   @spec patterns() :: {:ok, [map()]}
   def patterns do
-    GenServer.call(__MODULE__, :patterns, :infinity)
+    GenServer.call(__MODULE__, :patterns, @call_timeout)
   end
 
   @doc "Return stored solutions (correction/solution category patterns)."
   @spec solutions() :: {:ok, [map()]}
   def solutions do
-    GenServer.call(__MODULE__, :solutions, :infinity)
+    GenServer.call(__MODULE__, :solutions, @call_timeout)
   end
 
   @doc "Force a full consolidation cycle. Returns a report map."
   @spec consolidate() :: {:ok, map()}
   def consolidate do
-    GenServer.call(__MODULE__, :consolidate, :infinity)
+    GenServer.call(__MODULE__, :consolidate, @call_timeout)
   end
 
   @doc "Return consolidation stats from GenServer state."
   @spec metrics() :: {:ok, map()}
   def metrics do
-    GenServer.call(__MODULE__, :metrics, :infinity)
+    GenServer.call(__MODULE__, :metrics, @call_timeout)
   end
 
   @doc "Record a pattern (wrapper for testing compatibility)."
@@ -386,24 +387,20 @@ defmodule OptimalSystemAgent.Memory.Learning do
   defp append_to_ets(%Observation{} = obs) do
     key = System.monotonic_time(:nanosecond)
 
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       :ets.insert(@ets_table, {key, obs})
       trim_ets_if_needed()
-    rescue
-      ArgumentError -> :ok
     end
   end
 
   defp trim_ets_if_needed do
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       size = :ets.info(@ets_table, :size)
 
       if size > @max_observations do
         excess = size - @max_observations
         trim_oldest(:ets.first(@ets_table), excess)
       end
-    rescue
-      ArgumentError -> :ok
     end
   end
 
@@ -411,18 +408,18 @@ defmodule OptimalSystemAgent.Memory.Learning do
   defp trim_oldest(_key, 0), do: :ok
 
   defp trim_oldest(key, n) do
-    next = :ets.next(@ets_table, key)
-    :ets.delete(@ets_table, key)
-    trim_oldest(next, n - 1)
-  rescue
-    ArgumentError -> :ok
+    if :ets.whereis(@ets_table) != :undefined do
+      next = :ets.next(@ets_table, key)
+      :ets.delete(@ets_table, key)
+      trim_oldest(next, n - 1)
+    end
   end
 
   defp ets_size do
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       :ets.info(@ets_table, :size)
-    rescue
-      ArgumentError -> 0
+    else
+      0
     end
   end
 

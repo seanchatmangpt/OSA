@@ -162,8 +162,11 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
 
     span_ctx = Map.put(span_ctx, "otel_ctx", otel_ctx)
 
-    # Store in ETS for parent/child traversal and backward-compatible test assertions
-    :ets.insert(:telemetry_spans, {span_id, span_ctx})
+    # Store in ETS for parent/child traversal and backward-compatible test assertions.
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_spans) != :undefined do
+      :ets.insert(:telemetry_spans, {span_id, span_ctx})
+    end
 
     # Emit telemetry event for subscribers
     :telemetry.execute(
@@ -208,15 +211,18 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   def record_metric(metric_name, value, dimensions \\ %{}) when is_number(value) do
     metric_key = {to_string(metric_name), dimensions}
 
-    # Upsert metric in ETS (increment counter or store histogram observation)
-    case :ets.lookup(:telemetry_metrics, metric_key) do
-      [{_key, metric_data}] ->
-        updated = update_metric_data(metric_data, value)
-        :ets.insert(:telemetry_metrics, {metric_key, updated})
+    # Upsert metric in ETS (increment counter or store histogram observation).
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_metrics) != :undefined do
+      case :ets.lookup(:telemetry_metrics, metric_key) do
+        [{_key, metric_data}] ->
+          updated = update_metric_data(metric_data, value)
+          :ets.insert(:telemetry_metrics, {metric_key, updated})
 
-      [] ->
-        metric_data = init_metric_data(metric_name, value)
-        :ets.insert(:telemetry_metrics, {metric_key, metric_data})
+        [] ->
+          metric_data = init_metric_data(metric_name, value)
+          :ets.insert(:telemetry_metrics, {metric_key, metric_data})
+      end
     end
 
     # Emit telemetry event for subscribers
@@ -269,7 +275,10 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
         updated_span
       end
 
-    :ets.insert(:telemetry_spans, {span_id, updated_span})
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_spans) != :undefined do
+      :ets.insert(:telemetry_spans, {span_id, updated_span})
+    end
 
     # End the OpenTelemetry span if one was started (safe — no-ops if ctx is nil)
     end_otel_span(span_ctx["otel_ctx"], status, error_message)

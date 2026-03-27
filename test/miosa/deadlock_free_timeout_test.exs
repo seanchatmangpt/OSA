@@ -22,6 +22,7 @@ defmodule MiosaLedger.DeadlockFreeTimeoutTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :integration
 
   alias MiosaLedger
 
@@ -122,7 +123,7 @@ defmodule MiosaLedger.DeadlockFreeTimeoutTest do
         {:get_status, []}
       ]
 
-      for {op_name, args} <- operations do
+      for {op_name, _args} <- operations do
         # After fix: all operations should accept timeout_ms as parameter
         case op_name do
           :bulletin ->

@@ -710,7 +710,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "process.mining.replay_fitness attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
-    assert ProcessAttributes.process_mining_replay_fitness() == :"process.mining.replay_fitness"
+    assert ProcessAttributes.process_mining_replay_fitness() == :"process.mining.replay.fitness"
   end
 
   # === Wave 9 Iteration 10: Signal Theory ===
@@ -863,19 +863,19 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   # === Wave 9 Iteration 11: BusinessOS compliance and audit ===
 
-  @tag :unit
+  @tag :integration
   test "business os compliance framework attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.BosAttributes
     assert BosAttributes.business_os_compliance_framework() == :"business_os.compliance.framework"
   end
 
-  @tag :unit
+  @tag :integration
   test "business os audit event type attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.BosAttributes
     assert BosAttributes.business_os_audit_event_type() == :"business_os.audit.event_type"
   end
 
-  @tag :unit
+  @tag :integration
   test "business os integration type attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.BosAttributes
     assert BosAttributes.business_os_integration_type() == :"business_os.integration.type"

@@ -43,7 +43,8 @@ defmodule OptimalSystemAgent.Channels.CLI.Spinner do
   @spec start() :: pid()
   def start do
     parent = self()
-    spawn(fn -> init_loop(parent) end)
+    Task.Supervisor.start_child(OptimalSystemAgent.Events.TaskSupervisor, fn -> init_loop(parent) end)
+    |> then(fn {:ok, pid} -> pid end)
   end
 
   @doc "Stop the spinner. Returns {elapsed_ms, tool_count, total_tokens}."

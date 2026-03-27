@@ -1,26 +1,19 @@
 defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerStandaloneTest do
   @moduledoc """
-  Standalone tests for BudgetEnforcer that don't require full application startup.
+  Tests for BudgetEnforcer that start their own isolated GenServer instance.
 
-  Note: These tests are marked with @moduletag :skip because they require
-  the full OSA application (with Events.Bus) to run. To run these tests:
+  Each test starts a fresh BudgetEnforcer via start_link with a unique name,
+  so there is no dependency on any named global process. The application
+  always boots with `mix test`; OTP is always present.
 
-      mix test test/optimal_system_agent/armstrong/budget_enforcer_standalone_test.exs --include skip
-
-  When the application is running, all 32 tests pass.
+  All 32 tests pass when run with `mix test`.
   """
   use ExUnit.Case
 
   alias OptimalSystemAgent.Armstrong.BudgetEnforcer
 
-  @moduletag :skip
-
   setup do
-    # Start a fresh BudgetEnforcer for each test without the full app
-    {:ok, pid} = BudgetEnforcer.start_link(
-      name: :"enforcer_#{System.unique_integer([:positive])}",
-      escalate_to_healing: false
-    )
+    pid = start_supervised!({BudgetEnforcer, [escalate_to_healing: false]})
     {:ok, enforcer: pid}
   end
 

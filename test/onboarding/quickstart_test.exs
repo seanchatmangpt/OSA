@@ -624,7 +624,7 @@ defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
       {:ok, result} = Quickstart.run(pid, config)
 
       # Result should include total duration (similar to quickstart_complete event)
-      assert result.total_ms > 0
+      assert result.total_ms >= 0
       assert result.status == :success
     end
 

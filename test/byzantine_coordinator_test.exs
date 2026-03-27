@@ -14,7 +14,6 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
   """
 
   use ExUnit.Case
-  @moduletag :skip
 
   import ExUnit.CaptureLog
 

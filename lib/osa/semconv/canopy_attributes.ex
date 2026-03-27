@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `start`, `stop`, `send_message`, `get_status`
   """
-  @spec canopy_adapter_action() :: :canopy_adapter_action
-  def canopy_adapter_action, do: :canopy_adapter_action
+  @spec canopy_adapter_action() :: :"canopy.adapter.action"
+  def canopy_adapter_action, do: :"canopy.adapter.action"
 
   @doc """
   Cumulative error count from the adapter since last reset.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `100`
   """
-  @spec canopy_adapter_error_count() :: :canopy_adapter_error_count
-  def canopy_adapter_error_count, do: :canopy_adapter_error_count
+  @spec canopy_adapter_error_count() :: :"canopy.adapter.error_count"
+  def canopy_adapter_error_count, do: :"canopy.adapter.error_count"
 
   @doc """
   Name of the Canopy adapter being invoked.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `osa`, `business_os`, `mcp`, `a2a`
   """
-  @spec canopy_adapter_name() :: :canopy_adapter_name
-  def canopy_adapter_name, do: :canopy_adapter_name
+  @spec canopy_adapter_name() :: :"canopy.adapter.name"
+  def canopy_adapter_name, do: :"canopy.adapter.name"
 
   @doc """
   The type of Canopy adapter handling the request.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `osa`, `mcp`
   """
-  @spec canopy_adapter_type() :: :canopy_adapter_type
-  def canopy_adapter_type, do: :canopy_adapter_type
+  @spec canopy_adapter_type() :: :"canopy.adapter.type"
+  def canopy_adapter_type, do: :"canopy.adapter.type"
 
   @doc """
   Enumerated values for `canopy.adapter.type`.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `5000`
   """
-  @spec canopy_budget_ms() :: :canopy_budget_ms
-  def canopy_budget_ms, do: :canopy_budget_ms
+  @spec canopy_budget_ms() :: :"canopy.budget.ms"
+  def canopy_budget_ms, do: :"canopy.budget.ms"
 
   @doc """
   Source agent or service that originated the command.
@@ -127,8 +127,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `osa`, `businessos`, `user`
   """
-  @spec canopy_command_source() :: :canopy_command_source
-  def canopy_command_source, do: :canopy_command_source
+  @spec canopy_command_source() :: :"canopy.command.source"
+  def canopy_command_source, do: :"canopy.command.source"
 
   @doc """
   Target agent or service for the command.
@@ -139,8 +139,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `osa`, `pm4py`, `canopy.adapter.osa`
   """
-  @spec canopy_command_target() :: :canopy_command_target
-  def canopy_command_target, do: :canopy_command_target
+  @spec canopy_command_target() :: :"canopy.command.target"
+  def canopy_command_target, do: :"canopy.command.target"
 
   @doc """
   Type of command being dispatched through Canopy.
@@ -151,8 +151,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `execute`, `query`
   """
-  @spec canopy_command_type() :: :canopy_command_type
-  def canopy_command_type, do: :canopy_command_type
+  @spec canopy_command_type() :: :"canopy.command.type"
+  def canopy_command_type, do: :"canopy.command.type"
 
   @doc """
   Enumerated values for `canopy.command.type`.
@@ -260,8 +260,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `5`
   """
-  @spec canopy_conflict_count() :: :canopy_conflict_count
-  def canopy_conflict_count, do: :canopy_conflict_count
+  @spec canopy_conflict_count() :: :"canopy.conflict.count"
+  def canopy_conflict_count, do: :"canopy.conflict.count"
 
   @doc """
   Round-trip latency of the heartbeat probe in milliseconds (Armstrong WvdA bounded).
@@ -272,8 +272,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `5`, `50`, `200`
   """
-  @spec canopy_heartbeat_latency_ms() :: :canopy_heartbeat_latency_ms
-  def canopy_heartbeat_latency_ms, do: :canopy_heartbeat_latency_ms
+  @spec canopy_heartbeat_latency_ms() :: :"canopy.heartbeat.latency_ms"
+  def canopy_heartbeat_latency_ms, do: :"canopy.heartbeat.latency_ms"
 
   @doc """
   Consecutive missed heartbeats before this probe was sent (liveness indicator).
@@ -284,8 +284,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec canopy_heartbeat_missed_count() :: :canopy_heartbeat_missed_count
-  def canopy_heartbeat_missed_count, do: :canopy_heartbeat_missed_count
+  @spec canopy_heartbeat_missed_count() :: :"canopy.heartbeat.missed_count"
+  def canopy_heartbeat_missed_count, do: :"canopy.heartbeat.missed_count"
 
   @doc """
   Monotonically increasing sequence number of this heartbeat probe for ordering.
@@ -296,8 +296,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `1`, `42`, `10000`
   """
-  @spec canopy_heartbeat_sequence_num() :: :canopy_heartbeat_sequence_num
-  def canopy_heartbeat_sequence_num, do: :canopy_heartbeat_sequence_num
+  @spec canopy_heartbeat_sequence_num() :: :"canopy.heartbeat.sequence_num"
+  def canopy_heartbeat_sequence_num, do: :"canopy.heartbeat.sequence_num"
 
   @doc """
   Health status reported by the heartbeat.
@@ -308,8 +308,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `healthy`, `degraded`
   """
-  @spec canopy_heartbeat_status() :: :canopy_heartbeat_status
-  def canopy_heartbeat_status, do: :canopy_heartbeat_status
+  @spec canopy_heartbeat_status() :: :"canopy.heartbeat.status"
+  def canopy_heartbeat_status, do: :"canopy.heartbeat.status"
 
   @doc """
   Enumerated values for `canopy.heartbeat.status`.
@@ -368,8 +368,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `critical`, `normal`
   """
-  @spec canopy_heartbeat_tier() :: :canopy_heartbeat_tier
-  def canopy_heartbeat_tier, do: :canopy_heartbeat_tier
+  @spec canopy_heartbeat_tier() :: :"canopy.heartbeat.tier"
+  def canopy_heartbeat_tier, do: :"canopy.heartbeat.tier"
 
   @doc """
   Enumerated values for `canopy.heartbeat.tier`.
@@ -428,8 +428,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `read`, `write`, `publish`
   """
-  @spec canopy_operation_type() :: :canopy_operation_type
-  def canopy_operation_type, do: :canopy_operation_type
+  @spec canopy_operation_type() :: :"canopy.operation.type"
+  def canopy_operation_type, do: :"canopy.operation.type"
 
   @doc """
   Enumerated values for `canopy.operation.type`.
@@ -488,8 +488,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `10`
   """
-  @spec canopy_peer_count() :: :canopy_peer_count
-  def canopy_peer_count, do: :canopy_peer_count
+  @spec canopy_peer_count() :: :"canopy.peer.count"
+  def canopy_peer_count, do: :"canopy.peer.count"
 
   @doc """
   The version of the Canopy workspace protocol in use.
@@ -500,8 +500,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `2.1`, `3.0-beta`
   """
-  @spec canopy_protocol_version() :: :canopy_protocol_version
-  def canopy_protocol_version, do: :canopy_protocol_version
+  @spec canopy_protocol_version() :: :"canopy.protocol.version"
+  def canopy_protocol_version, do: :"canopy.protocol.version"
 
   @doc """
   Time in milliseconds for the Canopy workspace to respond to a command.
@@ -512,8 +512,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `45`, `120`, `500`
   """
-  @spec canopy_response_time_ms() :: :canopy_response_time_ms
-  def canopy_response_time_ms, do: :canopy_response_time_ms
+  @spec canopy_response_time_ms() :: :"canopy.response_time_ms"
+  def canopy_response_time_ms, do: :"canopy.response_time_ms"
 
   @doc """
   Unique identifier for the Canopy workspace session.
@@ -524,8 +524,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `session-abc123`, `canopy-ws-001`
   """
-  @spec canopy_session_id() :: :canopy_session_id
-  def canopy_session_id, do: :canopy_session_id
+  @spec canopy_session_id() :: :"canopy.session.id"
+  def canopy_session_id, do: :"canopy.session.id"
 
   @doc """
   Signal Theory mode of the workspace signal (M in S=(M,G,T,F,W)).
@@ -536,8 +536,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `linguistic`, `code`, `data`
   """
-  @spec canopy_signal_mode() :: :canopy_signal_mode
-  def canopy_signal_mode, do: :canopy_signal_mode
+  @spec canopy_signal_mode() :: :"canopy.signal.mode"
+  def canopy_signal_mode, do: :"canopy.signal.mode"
 
   @doc """
   Compression ratio achieved on the snapshot (uncompressed/compressed), >= 1.0.
@@ -548,8 +548,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `1.5`, `2.8`, `4.2`
   """
-  @spec canopy_snapshot_compression_ratio() :: :canopy_snapshot_compression_ratio
-  def canopy_snapshot_compression_ratio, do: :canopy_snapshot_compression_ratio
+  @spec canopy_snapshot_compression_ratio() :: :"canopy.snapshot.compression_ratio"
+  def canopy_snapshot_compression_ratio, do: :"canopy.snapshot.compression_ratio"
 
   @doc """
   Unique identifier of the canopy workspace snapshot.
@@ -560,8 +560,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `snap-abc123`, `snap-2026-03-25-001`
   """
-  @spec canopy_snapshot_id() :: :canopy_snapshot_id
-  def canopy_snapshot_id, do: :canopy_snapshot_id
+  @spec canopy_snapshot_id() :: :"canopy.snapshot.id"
+  def canopy_snapshot_id, do: :"canopy.snapshot.id"
 
   @doc """
   Size of the serialized snapshot in bytes.
@@ -572,8 +572,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `1024`, `65536`, `1048576`
   """
-  @spec canopy_snapshot_size_bytes() :: :canopy_snapshot_size_bytes
-  def canopy_snapshot_size_bytes, do: :canopy_snapshot_size_bytes
+  @spec canopy_snapshot_size_bytes() :: :"canopy.snapshot.size_bytes"
+  def canopy_snapshot_size_bytes, do: :"canopy.snapshot.size_bytes"
 
   @doc """
   The synchronization strategy used for workspace state reconciliation.
@@ -584,8 +584,8 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `immediate`, `batched`
   """
-  @spec canopy_sync_strategy() :: :canopy_sync_strategy
-  def canopy_sync_strategy, do: :canopy_sync_strategy
+  @spec canopy_sync_strategy() :: :"canopy.sync.strategy"
+  def canopy_sync_strategy, do: :"canopy.sync.strategy"
 
   @doc """
   Enumerated values for `canopy.sync.strategy`.
@@ -644,7 +644,7 @@ defmodule OpenTelemetry.SemConv.Incubating.CanopyAttributes do
   Requirement: `recommended`
   Examples: `ws-abc-123`, `ws-primary-001`
   """
-  @spec canopy_workspace_id() :: :canopy_workspace_id
-  def canopy_workspace_id, do: :canopy_workspace_id
+  @spec canopy_workspace_id() :: :"canopy.workspace.id"
+  def canopy_workspace_id, do: :"canopy.workspace.id"
 
 end

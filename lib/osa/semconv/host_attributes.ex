@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HostAttributes do
   Requirement: `recommended`
   Examples: `amd64`, `arm64`, `x86_64`
   """
-  @spec host_arch() :: :host_arch
-  def host_arch, do: :host_arch
+  @spec host_arch() :: :"host.arch"
+  def host_arch, do: :"host.arch"
 
   @doc """
   Hostname of the system.
@@ -31,7 +31,7 @@ defmodule OpenTelemetry.SemConv.Incubating.HostAttributes do
   Requirement: `recommended`
   Examples: `localhost`, `prod-server-01`
   """
-  @spec host_name() :: :host_name
-  def host_name, do: :host_name
+  @spec host_name() :: :"host.name"
+  def host_name, do: :"host.name"
 
 end

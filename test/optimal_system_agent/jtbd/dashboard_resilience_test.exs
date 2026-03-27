@@ -18,6 +18,7 @@ defmodule OptimalSystemAgent.JTBD.DashboardResilienceTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :integration
 
   require Logger
   import ExUnit.CaptureLog

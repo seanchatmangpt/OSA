@@ -4,16 +4,15 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
 
   Tests verify:
   1. PHI detection: SSN, MRN, health condition keywords (pure functions)
-  2. Access logging & violation flagging (requires GenServer, marked @skip)
-  3. Audit trail generation (requires GenServer, marked @skip)
-  4. Metrics collection (requires GenServer, marked @skip)
+  2. Access logging & violation flagging (GenServer started per-test via start_link)
+  3. Audit trail generation (GenServer started per-test via start_link)
+  4. Metrics collection (GenServer started per-test via start_link)
   5. Armstrong fault tolerance: supervision, timeouts, budgets
 
-  Tests marked with @moduletag :skip require the OSA application to be running
-  (use `mix test --include integration` to run them).
+  All tests run with `mix test` — the application always boots with OTP.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   alias OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetector
 
@@ -249,22 +248,9 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
   # ── GENSERVER TESTS (Require Application Running) ───────────────────────
 
   describe "log_phi_access/3 — Access Logging" do
-    @moduletag :skip
-
     setup do
-      {:ok, pid} =
-        HipaaBreachDetector.start_link(name: :"detector_#{System.unique_integer()}")
-
-      on_exit(fn ->
-        try do
-          :ets.delete_all_objects(:osa_phi_access_log)
-          :ets.delete_all_objects(:osa_phi_metrics)
-        catch
-          _ -> :ok
-        end
-      end)
-
-      {:ok, detector_pid: pid}
+      start_supervised!(HipaaBreachDetector)
+      :ok
     end
 
     test "logs authorized access with encryption" do
@@ -331,21 +317,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
   end
 
   describe "audit_phi_access/2 — Compliance Reporting" do
-    @moduletag :skip
-
     setup do
-      {:ok, _pid} =
-        HipaaBreachDetector.start_link(name: :"detector_#{System.unique_integer()}")
-
-      on_exit(fn ->
-        try do
-          :ets.delete_all_objects(:osa_phi_access_log)
-          :ets.delete_all_objects(:osa_phi_metrics)
-        catch
-          _ -> :ok
-        end
-      end)
-
+      start_supervised!(HipaaBreachDetector)
       :ok
     end
 
@@ -410,21 +383,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
   end
 
   describe "get_metrics/0 — Statistics" do
-    @moduletag :skip
-
     setup do
-      {:ok, _pid} =
-        HipaaBreachDetector.start_link(name: :"detector_#{System.unique_integer()}")
-
-      on_exit(fn ->
-        try do
-          :ets.delete_all_objects(:osa_phi_access_log)
-          :ets.delete_all_objects(:osa_phi_metrics)
-        catch
-          _ -> :ok
-        end
-      end)
-
+      start_supervised!(HipaaBreachDetector)
       :ok
     end
 
@@ -448,21 +408,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
   end
 
   describe "flag_violation/3 — Manual Escalation" do
-    @moduletag :skip
-
     setup do
-      {:ok, _pid} =
-        HipaaBreachDetector.start_link(name: :"detector_#{System.unique_integer()}")
-
-      on_exit(fn ->
-        try do
-          :ets.delete_all_objects(:osa_phi_access_log)
-          :ets.delete_all_objects(:osa_phi_metrics)
-        catch
-          _ -> :ok
-        end
-      end)
-
+      start_supervised!(HipaaBreachDetector)
       :ok
     end
 
@@ -493,21 +440,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
   end
 
   describe "Integration — Realistic Healthcare Workflows" do
-    @moduletag :skip
-
     setup do
-      {:ok, _pid} =
-        HipaaBreachDetector.start_link(name: :"detector_#{System.unique_integer()}")
-
-      on_exit(fn ->
-        try do
-          :ets.delete_all_objects(:osa_phi_access_log)
-          :ets.delete_all_objects(:osa_phi_metrics)
-        catch
-          _ -> :ok
-        end
-      end)
-
+      start_supervised!(HipaaBreachDetector)
       :ok
     end
 

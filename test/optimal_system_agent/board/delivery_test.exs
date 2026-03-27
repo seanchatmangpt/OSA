@@ -6,16 +6,15 @@ defmodule OptimalSystemAgent.Board.DeliveryTest do
   The SMTP call is stubbed via process-dictionary override so tests run without
   a real mail server.
 
-  All tests use @moduletag :skip to avoid requiring the full application boot
-  (ETS tables, supervisors, etc.).  The key behavioral assertions are covered
-  in the unit tests below which run the internal logic directly.
+  All tests run pure logic (filesystem, encryption math, retry simulation) —
+  no GenServer or named ETS dependencies. The application always boots with
+  `mix test`; these tests do not require any OTP processes.
   """
 
   use ExUnit.Case, async: false
 
   @moduletag :board
   @moduletag :board_delivery
-  @moduletag :skip
 
   # ---------------------------------------------------------------------------
   # Direct unit tests for storage logic (no GenServer needed)

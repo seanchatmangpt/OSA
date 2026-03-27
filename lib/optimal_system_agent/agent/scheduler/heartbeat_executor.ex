@@ -130,16 +130,12 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
     prompt = task["prompt"] || task["job"] || task["name"]
     session_id = "scheduled_#{task["id"]}_#{System.unique_integer([:positive])}"
 
-    parent = self()
-    ref = make_ref()
-
-    pid = spawn(fn ->
-      result = JobExecutor.execute_task(prompt, session_id)
-      send(parent, {ref, result})
+    task = Task.Supervisor.async_nolink(OptimalSystemAgent.Events.TaskSupervisor, fn ->
+      JobExecutor.execute_task(prompt, session_id)
     end)
 
-    receive do
-      {^ref, {:ok, output}} ->
+    case Task.yield(task, timeout_ms) || Task.shutdown(task) do
+      {:ok, {:ok, output}} ->
         now = DateTime.utc_now()
         duration = DateTime.diff(now, run.started_at, :millisecond)
 
@@ -161,7 +157,7 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
 
         {:ok, run}
 
-      {^ref, {:error, reason}} ->
+      {:ok, {:error, reason}} ->
         now = DateTime.utc_now()
         duration = DateTime.diff(now, run.started_at, :millisecond)
 
@@ -175,10 +171,8 @@ defmodule OptimalSystemAgent.Agent.Scheduler.HeartbeatExecutor do
 
         emit_run_failed(run)
         {:error, run}
-    after
-      timeout_ms ->
-        Process.exit(pid, :kill)
 
+      nil ->
         now = DateTime.utc_now()
         duration = DateTime.diff(now, run.started_at, :millisecond)
 

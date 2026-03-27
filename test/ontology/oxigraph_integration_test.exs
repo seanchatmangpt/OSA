@@ -369,7 +369,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
   describe "Chicago TDD: RED Phase" do
     # These tests are RED (skipped until Oxigraph is available) to drive implementation:
 
-    @tag :skip
+    @tag :integration
     test "agents-active.rq query returns >= 1 agent" do
       # RED: Query not yet executed against real Oxigraph
       # Expected: {:ok, [%{agent_id: "agent_7", label: "...", ...}]}
@@ -377,7 +377,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
       assert true
     end
 
-    @tag :skip
+    @tag :integration
     test "tool-registry.rq query returns >= 1 tool" do
       # RED: Tool discovery not yet queried
       # Expected: {:ok, [%{tool_id: "web_fetch", required_tier: "normal", ...}]}
@@ -385,7 +385,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
       assert true
     end
 
-    @tag :skip
+    @tag :integration
     test "compliance-violations.rq detects policy violations" do
       # RED: Compliance check not yet queried
       # Expected: {:ok, [%{severity: "high", policy: "soc2_cc6_1", ...}]}
@@ -393,7 +393,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
       assert true
     end
 
-    @tag :skip
+    @tag :integration
     test "provenance emitted via INSERT DATA triples" do
       # RED: ProvenanceEmitter.emit_action/5 not yet verified to insert
       # Expected: :ok and triple stored in RDF
@@ -401,7 +401,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
       assert true
     end
 
-    @tag :skip
+    @tag :integration
     test "quality metrics aggregated correctly over time window" do
       # RED: QualityRecorder.aggregate_quality_metric not yet verified
       # Expected: {:ok, %{avg: 0.88, min: 0.75, max: 0.95, count: 42}}
@@ -409,7 +409,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphIntegrationTest do
       assert true
     end
 
-    @tag :skip
+    @tag :integration
     test "soundness verification blocks unsound workflows" do
       # RED: SoundnessVerifier.verify_process("unsound_wf") not yet returns error
       # Expected: {:error, %{failing_properties: [:deadlock_free]}}
