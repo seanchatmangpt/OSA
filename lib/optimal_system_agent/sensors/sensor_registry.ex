@@ -86,7 +86,8 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
       }
   """
   def scan_sensor_suite(opts \\ []) do
-    GenServer.call(__MODULE__, {:scan_suite, opts}, 15000)
+    # Monorepo scans (Elixir + Go + Rust) can take up to 5 minutes
+    GenServer.call(__MODULE__, {:scan_suite, opts}, 300_000)
   end
 
   @doc """
@@ -182,7 +183,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
     normalized_path = normalize_path(codebase_path)
     normalized_output = normalize_path(output_dir)
 
-    with :ok <- validate_no_path_traversal(normalized_path),
+    with :ok <- validate_codebase_path(normalized_path),
          :ok <- validate_no_path_traversal(normalized_output),
          :ok <- validate_output_directory(normalized_output),
          true <- File.dir?(normalized_path) || {:error, :no_such_directory},
@@ -229,9 +230,40 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
     |> String.replace(["＼", "\uFF3C"], "\\")
   end
 
+  defp validate_codebase_path(path) do
+    # For codebase_path (read-only scan source), allow absolute paths.
+    # Still block traversal attempts and shell injection.
+    dangerous_patterns = [
+      "..",                 # path traversal
+      ~r/^~/,              # home directory expansion
+      ";",                 # shell command separator
+      "|",                 # pipe
+      "$",                 # variable expansion
+      "(",                 # subshell
+      ")",                 # subshell
+      "`",                 # command substitution
+      "&"                  # background process
+    ]
+
+    has_dangerous = Enum.any?(dangerous_patterns, fn pattern ->
+      if is_binary(pattern) do
+        String.contains?(path, pattern)
+      else
+        Regex.match?(pattern, path)
+      end
+    end)
+
+    if has_dangerous do
+      {:error, :path_traversal_detected}
+    else
+      :ok
+    end
+  end
+
   defp validate_no_path_traversal(path) do
     # Reject paths containing ".." (path traversal attempt)
     # Also reject absolute paths and shell injection characters
+    # Used for output_dir (write target) — absolute paths not permitted there.
     dangerous_patterns = [
       "..",                 # path traversal
       ~r/^\//,             # absolute path (starts with /)
@@ -367,36 +399,80 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
     }}
   end
 
+  # Directories to skip when scanning — these contain third-party or generated code
+  @excluded_dir_patterns ["deps/", "_build/", "vendor/", "node_modules/", ".git/"]
+
+  defp excluded_path?(file) do
+    Enum.any?(@excluded_dir_patterns, fn pattern ->
+      String.contains?(file, "/" <> pattern) or String.contains?(file, pattern)
+    end)
+  end
+
+  defp valid_file?(file) do
+    depth = file |> Path.split() |> length()
+    normalized = normalize_path(file)
+    depth <= 50 and
+      not String.contains?(normalized, "..") and
+      not excluded_path?(file) and
+      match?({:ok, %{type: :regular}}, File.stat(file))
+  end
+
+  defp read_file_safe(file) do
+    case File.stat(file) do
+      {:ok, %{size: size}} when size > @max_file_bytes ->
+        Logger.warning("[SensorRegistry] Skipping large file: #{file} (#{div(size, 1024)}KB)")
+        ""
+      {:ok, _} ->
+        try do
+          code = File.read!(file)
+          if byte_size(code) > @max_file_bytes, do: String.slice(code, 0, @max_file_bytes), else: code
+        rescue
+          File.Error -> ""
+        catch
+          :error, _ -> ""
+        end
+      {:error, _} ->
+        ""
+    end
+  end
+
   defp discover_modules(codebase_path) do
-    # Find all module definitions in the codebase
-    # For Elixir: defmodule X; for Go: type X, package X; etc.
+    # Find all module/type/function definitions in the codebase.
+    # Elixir: defmodule X
+    # Go:     func FuncName / type TypeName (exported symbols, non-test files)
+    # Rust:   pub fn / pub struct / pub enum / pub trait
 
     case File.dir?(codebase_path) do
       false -> []
       true ->
         try do
-          codebase_path
-          |> Path.join("**/*.ex")
-          |> Path.wildcard()
-          # Filter out excessively deep paths (> 50 levels deep)
-          |> Enum.filter(fn file ->
-            depth = file |> Path.split() |> length()
-            depth <= 50
-          end)
-          # Filter out files with path traversal attempts (even after Unicode normalization)
-          |> Enum.filter(fn file ->
-            normalized = normalize_path(file)
-            not String.contains?(normalized, "..")
-          end)
-          # Filter out circular symlinks and broken symlinks
-          |> Enum.filter(fn file ->
-            case File.stat(file) do
-              {:ok, %{type: :regular}} -> true
-              _ -> false
-            end
-          end)
-          |> Enum.flat_map(fn file -> extract_modules_from_file(file, codebase_path) end)
-          |> Enum.uniq_by(fn %{name: name} -> name end)
+          elixir_modules =
+            codebase_path
+            |> Path.join("**/*.ex")
+            |> Path.wildcard()
+            |> Enum.filter(&valid_file?/1)
+            |> Enum.flat_map(&extract_modules_from_file(&1, codebase_path))
+            |> Enum.uniq_by(fn %{name: name, file: f} -> {name, f} end)
+
+          go_modules =
+            codebase_path
+            |> Path.join("**/*.go")
+            |> Path.wildcard()
+            |> Enum.filter(&valid_file?/1)
+            # Exclude test files from Go — they add noise but aren't production modules
+            |> Enum.reject(fn f -> String.ends_with?(f, "_test.go") end)
+            |> Enum.flat_map(&extract_go_modules(&1, codebase_path))
+            |> Enum.uniq_by(fn %{name: name, file: f} -> {name, f} end)
+
+          rust_modules =
+            codebase_path
+            |> Path.join("**/*.rs")
+            |> Path.wildcard()
+            |> Enum.filter(&valid_file?/1)
+            |> Enum.flat_map(&extract_rust_modules(&1, codebase_path))
+            |> Enum.uniq_by(fn %{name: name, file: f} -> {name, f} end)
+
+          elixir_modules ++ go_modules ++ rust_modules
         rescue
           e ->
             Logger.warning("[SensorRegistry] Error scanning modules: #{Exception.message(e)}")
@@ -405,36 +481,57 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
     end
   end
 
+  defp extract_go_modules(file, codebase_path) do
+    relative_path = Path.relative_to(file, codebase_path)
+    code = read_file_safe(file)
+
+    code
+    |> String.split("\n")
+    |> Enum.with_index(1)
+    |> Enum.filter(fn {line, _} ->
+      Regex.match?(~r/^(func|type)\s+[A-Z]/, line)
+    end)
+    |> Enum.map(fn {line, idx} ->
+      name = case Regex.run(~r/^(func|type)\s+(\w+)/, line, capture: :all_but_first) do
+        [_kind, n] -> n
+        _ -> "unknown"
+      end
+      %{name: name, type: "go", file: relative_path, line: idx}
+    end)
+  end
+
+  defp extract_rust_modules(file, codebase_path) do
+    relative_path = Path.relative_to(file, codebase_path)
+    code = read_file_safe(file)
+
+    code
+    |> String.split("\n")
+    |> Enum.with_index(1)
+    |> Enum.filter(fn {line, _} ->
+      Regex.match?(~r/^pub\s+(fn|struct|enum|trait)\s+/, line)
+    end)
+    |> Enum.map(fn {line, idx} ->
+      name = case Regex.run(~r/^pub\s+(?:fn|struct|enum|trait)\s+(\w+)/, line, capture: :all_but_first) do
+        [n] -> n
+        _ -> "unknown"
+      end
+      %{name: name, type: "rust", file: relative_path, line: idx}
+    end)
+  end
+
   defp extract_modules_from_file(file, base_path) do
     relative_path = Path.relative_to(file, base_path)
+    code = read_file_safe(file)
 
-    # Skip files that are too large
-    case File.stat(file) do
-      {:ok, %{size: size}} when size > @max_file_bytes ->
-        Logger.warning("[SensorRegistry] Skipping large file: #{relative_path} (#{div(size, 1024)}KB)")
-        []
-      {:ok, _} ->
-        # Read file, handling malformed UTF-8
-        code = try do
-          File.read!(file)
-        rescue
-          File.Error -> ""
-        catch
-          :error, _ -> ""
-        end
-
-        extract_modules_from_code(code)
-        |> Enum.map(fn name ->
-          %{
-            name: name,
-            file: relative_path,
-            type: module_type(name),
-            line: find_line_number(file, name)
-          }
-        end)
-      {:error, _} ->
-        []
-    end
+    extract_modules_from_code(code)
+    |> Enum.map(fn name ->
+      %{
+        name: name,
+        file: relative_path,
+        type: module_type(name),
+        line: find_line_number(file, name)
+      }
+    end)
   end
 
   @doc """
@@ -497,16 +594,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
           codebase_path
           |> Path.join("**/*.ex")
           |> Path.wildcard()
-          |> Enum.filter(fn file ->
-            depth = file |> Path.split() |> length()
-            depth <= 50
-          end)
-          |> Enum.filter(fn file ->
-            case File.stat(file) do
-              {:ok, %{type: :regular}} -> true
-              _ -> false
-            end
-          end)
+          |> Enum.filter(&valid_file?/1)
           |> Enum.flat_map(fn file ->
             relative_path = Path.relative_to(file, codebase_path)
             extract_dependencies_from_file(file, relative_path)
@@ -521,21 +609,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
   end
 
   defp extract_dependencies_from_file(file, relative_path) do
-    code =
-      try do
-        File.read!(file)
-      rescue
-        File.Error -> ""
-      catch
-        :error, _ -> ""
-      end
-
-    code_to_scan =
-      if byte_size(code) > @max_file_bytes do
-        String.slice(code, 0, @max_file_bytes)
-      else
-        code
-      end
+    code_to_scan = read_file_safe(file)
 
     # Extract the module name defined in this file
     source_module =
@@ -568,16 +642,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
           codebase_path
           |> Path.join("**/*.ex")
           |> Path.wildcard()
-          |> Enum.filter(fn file ->
-            depth = file |> Path.split() |> length()
-            depth <= 50
-          end)
-          |> Enum.filter(fn file ->
-            case File.stat(file) do
-              {:ok, %{type: :regular}} -> true
-              _ -> false
-            end
-          end)
+          |> Enum.filter(&valid_file?/1)
           |> Enum.flat_map(fn file ->
             relative_path = Path.relative_to(file, codebase_path)
             extract_patterns_from_file(file, relative_path)
@@ -592,21 +657,7 @@ defmodule OptimalSystemAgent.Sensors.SensorRegistry do
   end
 
   defp extract_patterns_from_file(file, relative_path) do
-    code =
-      try do
-        File.read!(file)
-      rescue
-        File.Error -> ""
-      catch
-        :error, _ -> ""
-      end
-
-    code_to_scan =
-      if byte_size(code) > @max_file_bytes do
-        String.slice(code, 0, @max_file_bytes)
-      else
-        code
-      end
+    code_to_scan = read_file_safe(file)
 
     patterns = []
 
