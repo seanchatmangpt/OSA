@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Agent.TasksTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Agent.Tasks
 
   @moduletag :capture_log
@@ -202,7 +203,7 @@ defmodule OptimalSystemAgent.Agent.TasksTest do
 
   describe "get_next_task/1" do
     test "returns next unblocked pending task" do
-      {:ok, id} = Tasks.add_task("session", "Task 1")
+      {:ok, _id} = Tasks.add_task("session", "Task 1")
       result = Tasks.get_next_task("session")
       assert match?({:ok, %{}}, result) or result == {:error, :not_found}
     end

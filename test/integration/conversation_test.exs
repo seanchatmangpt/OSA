@@ -1,6 +1,7 @@
 defmodule OptimalSystemAgent.Integration.ConversationTest do
   use ExUnit.Case, async: true
 
+
   alias OptimalSystemAgent.Agent.{Context, Compactor, Tasks}
 
   # ---------------------------------------------------------------------------

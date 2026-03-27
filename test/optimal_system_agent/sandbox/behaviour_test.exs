@@ -8,8 +8,6 @@ defmodule OptimalSystemAgent.Sandbox.BehaviourTest do
 
   use ExUnit.Case, async: true
 
-  alias OptimalSystemAgent.Sandbox.Behaviour
-
   @moduletag :capture_log
 
   describe "behaviour definition" do
@@ -100,7 +98,7 @@ defmodule OptimalSystemAgent.Sandbox.BehaviourTest do
     test "execute accepts empty command string" do
       # Implementations should handle empty commands
       command = ""
-      opts = []
+      _opts = []
       assert is_binary(command)
     end
 

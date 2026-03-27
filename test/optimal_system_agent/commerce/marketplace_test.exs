@@ -6,6 +6,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceTest do
   """
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Commerce.Marketplace
 
   @pub "pub-#{:erlang.unique_integer([:positive])}"
@@ -283,7 +284,7 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceTest do
       })
 
       rater = "update-rater-#{:erlang.unique_integer([:positive])}"
-      {:ok, r1} = Marketplace.rate_skill(rater, id, 3)
+      {:ok, _r1} = Marketplace.rate_skill(rater, id, 3)
       {:ok, r2} = Marketplace.rate_skill(rater, id, 5)
       # Second rating replaces first; rating_count should stay at 1
       assert r2.new_average == 5.0

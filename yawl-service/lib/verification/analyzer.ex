@@ -7,12 +7,83 @@ defmodule YawlService.Verification.Analyzer do
   - Livelock freedom
   - Proper completion
   - Fairness
+
+  Delegates to the real YAWL engine when available; falls back to
+  pure-Elixir structural analysis when the engine is unreachable.
   """
+
+  @yawl_engine_url System.get_env("YAWL_ENGINE_URL", "http://localhost:8080")
 
   @doc """
   Verify workflow soundness properties.
+
+  Tries the real YAWL engine first; falls back to the pure-Elixir
+  structural analysis if the engine is down or returns an error.
   """
   def verify(yawl_net) do
+    case try_yawl_engine(yawl_net) do
+      {:ok, result} -> result
+      {:error, _reason} -> structural_analysis(yawl_net)
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Real YAWL engine delegation
+  # ---------------------------------------------------------------------------
+
+  @doc false
+  def try_yawl_engine(yawl_net) do
+    url = "#{@yawl_engine_url}/api/process-mining/discover"
+    spec_xml = Map.get(yawl_net, :spec_xml, "")
+    headers = [{"Content-Type", "application/xml"}, {"Accept", "application/json"}]
+    options = [recv_timeout: 5_000, connect_timeout: 3_000]
+
+    case HTTPoison.post(url, spec_xml, headers, options) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        case Jason.decode(body) do
+          {:ok, discovery} -> {:ok, engine_result_to_analysis(discovery)}
+          {:error, _} -> {:error, :invalid_json}
+        end
+
+      {:ok, %HTTPoison.Response{status_code: status}} ->
+        {:error, {:http_error, status}}
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, {:connection_error, reason}}
+    end
+  rescue
+    _ -> {:error, :unexpected}
+  end
+
+  # Map the engine's discovery response to the same shape `structural_analysis/1`
+  # returns, so callers always see a consistent result format.
+  defp engine_result_to_analysis(discovery) do
+    soundness = Map.get(discovery, "soundness", %{})
+    structure = Map.get(discovery, "structure", %{})
+
+    %{
+      soundness: %{
+        deadlock_freedom: Map.get(soundness, "deadlock_freedom", true),
+        livelock_freedom: Map.get(soundness, "livelock_freedom", true),
+        proper_completion: Map.get(soundness, "proper_completion", true),
+        fairness: Map.get(soundness, "fairness", true),
+        overall_score: Map.get(soundness, "overall_score", 5.0),
+        overall_verdict: Map.get(soundness, "overall_verdict", "SOUND")
+      },
+      analysis: %{
+        places: Map.get(structure, "places", 0),
+        transitions: Map.get(structure, "transitions", 0),
+        yawl_patterns_used: Map.get(structure, "patterns", []),
+        potential_issues: Map.get(structure, "issues", [])
+      }
+    }
+  end
+
+  # ---------------------------------------------------------------------------
+  # Pure-Elixir fallback (original logic, unchanged)
+  # ---------------------------------------------------------------------------
+
+  defp structural_analysis(yawl_net) do
     %{
       soundness: verify_soundness(yawl_net),
       analysis: analyze_structure(yawl_net)

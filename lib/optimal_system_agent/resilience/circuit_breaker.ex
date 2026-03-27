@@ -128,9 +128,12 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
       window_duration_ms: Keyword.get(opts, :window_duration_ms, 60_000),
       open_timeout_ms: Keyword.get(opts, :open_timeout_ms, 30_000),
       success_threshold: Keyword.get(opts, :success_threshold, 3),
-      failures: [],  # List of {timestamp_ms, reason}
-      opened_at_ms: nil,  # Timestamp when circuit opened
-      half_open_successes: 0  # Counter for successes in HALF_OPEN state
+      # List of {timestamp_ms, reason}
+      failures: [],
+      # Timestamp when circuit opened
+      opened_at_ms: nil,
+      # Counter for successes in HALF_OPEN state
+      half_open_successes: 0
     }
 
     {:ok, state}
@@ -138,23 +141,30 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
 
   @impl true
   def handle_call({:call, fun}, _from, state) do
-    case state.status do
-      :CLOSED ->
-        handle_closed_call(fun, state)
+    try do
+      case state.status do
+        :CLOSED ->
+          handle_closed_call(fun, state)
 
-      :OPEN ->
-        case should_transition_to_half_open?(state) do
-          true ->
-            Logger.info("CircuitBreaker: OPEN → HALF_OPEN (testing recovery)")
-            new_state = %{state | status: :HALF_OPEN, half_open_successes: 0}
-            handle_half_open_call(fun, new_state)
+        :OPEN ->
+          case should_transition_to_half_open?(state) do
+            true ->
+              Logger.info("CircuitBreaker: OPEN → HALF_OPEN (testing recovery)")
+              new_state = %{state | status: :HALF_OPEN, half_open_successes: 0}
+              handle_half_open_call(fun, new_state)
 
-          false ->
-            {:reply, {:error, :circuit_open}, state}
-        end
+            false ->
+              {:reply, {:error, :circuit_open}, state}
+          end
 
-      :HALF_OPEN ->
-        handle_half_open_call(fun, state)
+        :HALF_OPEN ->
+          handle_half_open_call(fun, state)
+      end
+    catch
+      # Handle throw() from within the case statement
+      kind, reason ->
+        Logger.error("CircuitBreaker: Caught unexpected error: #{kind} #{inspect(reason)}")
+        {:reply, {:error, reason}, state}
     end
   end
 
@@ -164,6 +174,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
 
   def handle_call(:reset, _from, state) do
     Logger.info("CircuitBreaker: Reset to CLOSED")
+
     new_state = %{
       state
       | status: :CLOSED,
@@ -171,6 +182,7 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
         opened_at_ms: nil,
         half_open_successes: 0
     }
+
     {:reply, :ok, new_state}
   end
 
@@ -186,6 +198,9 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
       e ->
         handle_failure(e, state)
     catch
+      :throw, reason ->
+        handle_failure(reason, state)
+
       :exit, reason ->
         handle_failure(reason, state)
     end
@@ -193,19 +208,27 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
 
   defp handle_failure(reason, state) do
     now_ms = System.monotonic_time(:millisecond)
+
     new_failures = [
-      {now_ms, reason} | Enum.filter(state.failures, fn {ts, _} ->
-        now_ms - ts < state.window_duration_ms
-      end)
+      {now_ms, reason}
+      | Enum.filter(state.failures, fn {ts, _} ->
+          now_ms - ts < state.window_duration_ms
+        end)
     ]
 
-    Logger.warning("CircuitBreaker: Failure recorded (#{length(new_failures)}/#{state.failure_threshold}): #{inspect(reason)}")
+    Logger.warning(
+      "CircuitBreaker: Failure recorded (#{length(new_failures)}/#{state.failure_threshold}): #{inspect(reason)}"
+    )
 
     new_state = %{state | failures: new_failures}
 
     if length(new_failures) >= state.failure_threshold do
-      Logger.error("CircuitBreaker: CLOSED → OPEN (#{length(new_failures)} failures in #{state.window_duration_ms}ms)")
-      {:reply, {:error, :circuit_open}, %{new_state | status: :OPEN, opened_at_ms: now_ms, failures: []}}
+      Logger.error(
+        "CircuitBreaker: CLOSED → OPEN (#{length(new_failures)} failures in #{state.window_duration_ms}ms)"
+      )
+
+      {:reply, {:error, :circuit_open},
+       %{new_state | status: :OPEN, opened_at_ms: now_ms, failures: []}}
     else
       {:reply, {:error, reason}, new_state}
     end
@@ -217,7 +240,10 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
       new_successes = state.half_open_successes + 1
 
       if new_successes >= state.success_threshold do
-        Logger.info("CircuitBreaker: HALF_OPEN → CLOSED (#{new_successes}/#{state.success_threshold} successes)")
+        Logger.info(
+          "CircuitBreaker: HALF_OPEN → CLOSED (#{new_successes}/#{state.success_threshold} successes)"
+        )
+
         new_state = %{
           state
           | status: :CLOSED,
@@ -225,26 +251,62 @@ defmodule OptimalSystemAgent.Resilience.CircuitBreaker do
             failures: [],
             opened_at_ms: nil
         }
+
         {:reply, {:ok, result}, new_state}
       else
         new_state = %{state | half_open_successes: new_successes}
-        Logger.info("CircuitBreaker: HALF_OPEN success (#{new_successes}/#{state.success_threshold})")
+
+        Logger.info(
+          "CircuitBreaker: HALF_OPEN success (#{new_successes}/#{state.success_threshold})"
+        )
+
         {:reply, {:ok, result}, new_state}
       end
     rescue
       e ->
         Logger.error("CircuitBreaker: HALF_OPEN → OPEN (failure on test call): #{inspect(e)}")
-        {:reply, {:error, :circuit_open}, %{state | status: :OPEN, opened_at_ms: System.monotonic_time(:millisecond), half_open_successes: 0}}
+
+        {:reply, {:error, :circuit_open},
+         %{
+           state
+           | status: :OPEN,
+             opened_at_ms: System.monotonic_time(:millisecond),
+             half_open_successes: 0
+         }}
     catch
+      :throw, reason ->
+        Logger.error(
+          "CircuitBreaker: HALF_OPEN → OPEN (failure on test call): #{inspect(reason)}"
+        )
+
+        {:reply, {:error, :circuit_open},
+         %{
+           state
+           | status: :OPEN,
+             opened_at_ms: System.monotonic_time(:millisecond),
+             half_open_successes: 0
+         }}
+
       :exit, reason ->
-        Logger.error("CircuitBreaker: HALF_OPEN → OPEN (failure on test call): #{inspect(reason)}")
-        {:reply, {:error, :circuit_open}, %{state | status: :OPEN, opened_at_ms: System.monotonic_time(:millisecond), half_open_successes: 0}}
+        Logger.error(
+          "CircuitBreaker: HALF_OPEN → OPEN (failure on test call): #{inspect(reason)}"
+        )
+
+        {:reply, {:error, :circuit_open},
+         %{
+           state
+           | status: :OPEN,
+             opened_at_ms: System.monotonic_time(:millisecond),
+             half_open_successes: 0
+         }}
     end
   end
 
   defp should_transition_to_half_open?(state) do
     case state.opened_at_ms do
-      nil -> false
+      nil ->
+        false
+
       opened_at_ms ->
         now_ms = System.monotonic_time(:millisecond)
         now_ms - opened_at_ms >= state.open_timeout_ms

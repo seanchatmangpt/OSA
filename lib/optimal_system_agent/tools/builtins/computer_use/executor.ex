@@ -204,7 +204,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.ComputerUse.Executor do
       cmd_args = if args != "", do: String.split(args), else: []
 
       # Launch in background, wait for window to appear
-      spawn(fn ->
+      Task.Supervisor.start_child(OptimalSystemAgent.Events.TaskSupervisor, fn ->
         System.cmd("nohup", [app | cmd_args], stderr_to_stdout: true, env: [{"DISPLAY", System.get_env("DISPLAY") || ":0"}])
       end)
       Process.sleep(2000)

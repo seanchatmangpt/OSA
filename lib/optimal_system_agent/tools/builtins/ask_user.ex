@@ -4,10 +4,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.AskUser do
 
   Emits an event on the Bus and waits for the user's response.
   The channel (SSE/TUI) renders the question and relays the answer back.
+  Uses bounded PendingQuestionsCache to track in-flight questions (max 5000).
   """
   @behaviour OptimalSystemAgent.Tools.Behaviour
 
   alias OptimalSystemAgent.Events.Bus
+  alias OptimalSystemAgent.Memory.PendingQuestionsCache
 
   @timeout_ms 300_000
 
@@ -48,17 +50,14 @@ defmodule OptimalSystemAgent.Tools.Builtins.AskUser do
     caller = self()
 
     # Register pending question so TUI can poll GET /sessions/:id/pending_questions
+    # Uses bounded cache with max 5000 entries and 15-minute TTL
     if is_binary(session_id) and session_id != "" do
-      try do
-        :ets.insert(:osa_pending_questions, {ref_str, %{
-          session_id: session_id,
-          question: question,
-          options: options,
-          asked_at: DateTime.utc_now() |> DateTime.to_iso8601()
-        }})
-      rescue
-        _ -> :ok
-      end
+      PendingQuestionsCache.insert_question(ref_str, %{
+        session_id: session_id,
+        question: question,
+        options: options,
+        asked_at: DateTime.utc_now() |> DateTime.to_iso8601()
+      })
     end
 
     # Subscribe to PubSub for receiving the answer from the TUI survey dialog
@@ -94,12 +93,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.AskUser do
 
     # Cleanup
     Phoenix.PubSub.unsubscribe(OptimalSystemAgent.PubSub, "osa:ask_user:#{ref_str}")
-
-    try do
-      :ets.delete(:osa_pending_questions, ref_str)
-    rescue
-      _ -> :ok
-    end
+    PendingQuestionsCache.delete_question(ref_str)
 
     result
   end

@@ -51,14 +51,14 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
   describe "format_messages/1 (private behavior)" do
     test "converts atom role to string" do
       # From module: %{role: to_string(role), content: content}
-      messages = [%{role: :user, content: "test"}]
+      _messages = [%{role: :user, content: "test"}]
       # Should convert to "user"
       assert true
     end
 
     test "preserves string roles" do
       # From module: %{role: role, content: content} = msg -> msg
-      messages = [%{"role" => "user", "content" => "test"}]
+      _messages = [%{"role" => "user", "content" => "test"}]
       assert true
     end
 
@@ -83,7 +83,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
       #     }
       #   ]
       # }
-      tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
+      _tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
       # Should wrap in tools list with function schema
       assert true
     end
@@ -271,13 +271,13 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
 
   describe "edge cases" do
     test "handles empty messages list" do
-      messages = []
+      _messages = []
       # Should format to empty list
       assert true
     end
 
     test "handles messages with mixed atom and string keys" do
-      messages = [
+      _messages = [
         %{role: :user, content: "test1"},
         %{"role" => "assistant", "content" => "test2"}
       ]
@@ -301,7 +301,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatTest do
   describe "custom base URL" do
     test "uses custom base_url from opts when provided" do
       # From module: base_url = Keyword.get(opts, :base_url, @default_url)
-      custom_url = "https://custom.example.com/v1"
+      _custom_url = "https://custom.example.com/v1"
       # Should use custom_url instead of @default_url
       assert true
     end

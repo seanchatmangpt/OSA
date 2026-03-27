@@ -8,11 +8,12 @@ defmodule OptimalSystemAgent.Agent.SchedulerChicagoTDDTest do
   - Heartbeat task management
   - Status and monitoring
 
-  Note: These tests require infrastructure (TaskSupervisor, Events.Bus).
-  They are skipped in --no-start mode.
+  Note: These tests require full OTP application startup
+  (TaskSupervisor, Events.Bus, supervision tree).
   """
 
   use ExUnit.Case, async: false
+
 
   alias OptimalSystemAgent.Agent.Scheduler
 

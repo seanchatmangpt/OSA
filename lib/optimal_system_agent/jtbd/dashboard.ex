@@ -25,6 +25,10 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   @ets_table :jtbd_wave12_metrics
   @pubsub_topic "jtbd:wave12"
 
+  @yawl_default_url "http://localhost:8080"
+  @yawl_poll_interval_ms 15_000
+  @call_timeout 5_000
+
   @dmaic_phases %{
     define: [:compliance_check, :a2a_deal_lifecycle, :icp_qualification],
     measure: [:process_discovery, :workspace_sync, :conformance_drift, :yawl_v6_checkpoint],
@@ -42,7 +46,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   @doc "Start the dashboard"
   @spec start(keyword()) :: {:ok, pid()} | {:error, term()}
   def start(opts \\ []) do
-    case GenServer.call(__MODULE__, {:start, opts}) do
+    case GenServer.call(__MODULE__, {:start, opts}, @call_timeout) do
       :ok -> {:ok, self()}
       error -> error
     end
@@ -53,7 +57,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   @doc "Stop the dashboard"
   @spec stop() :: :ok
   def stop do
-    GenServer.call(__MODULE__, :stop)
+    GenServer.call(__MODULE__, :stop, @call_timeout)
   rescue
     _e -> :ok
   end
@@ -101,6 +105,9 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
     }
 
     Logger.info("Wave 12 dashboard initialized | ascii_only=#{Keyword.get(opts, :ascii_only, false)}")
+
+    # Schedule first YAWL engine health poll immediately
+    Process.send_after(self(), :tick, 0)
 
     {:ok, state}
   end
@@ -186,6 +193,13 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
   end
 
   @impl GenServer
+  def handle_info(:tick, state) do
+    new_yawlv6 = poll_yawl_engine()
+    Process.send_after(self(), :tick, @yawl_poll_interval_ms)
+    {:noreply, %{state | yawlv6: new_yawlv6}}
+  end
+
+  @impl GenServer
   def handle_info(_msg, state) do
     {:noreply, state}
   end
@@ -205,7 +219,7 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
     render_spc_chart(state.spc_history, state.spc_stats)
     render_revops_panel(state.revops_funnel)
     render_footer(pass_rate, state.pass_count, state.fail_count)
-    render_yawlv6_full_panel(state.yawlv6_sim)
+    render_yawlv6_full_panel(state.yawlv6)
   end
 
   defp render_header(iteration, timestamp, pass_rate) do
@@ -332,52 +346,28 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
     IO.write("╚═════════════════════════════════════════════════════════════════════╝\n")
   end
 
-  # YAWLv6 Full Panel rendering
-  defp render_yawlv6_full_panel(yawlv6_sim) do
+  # YAWLv6 Full Panel rendering — uses real engine state from periodic health poll
+  defp render_yawlv6_full_panel(yawlv6) do
     IO.write("\n")
-    IO.write("╔═ YAWLV6 JAVA 26 REFACTOR PROGRESS ═════════════════════════════════╗\n")
+    IO.write("╔═ YAWLV6 ENGINE STATUS ══════════════════════════════════════════════╗\n")
 
-    case yawlv6_sim do
-      nil ->
-        IO.write("║ [░░░░░░░░░░░░░░░░] 0/16 modules complete (0%)                    ║\n")
-        IO.write("║ No checkpoint data yet.                                           ║\n")
+    case yawlv6 do
+      %{status: "running"} = engine ->
+        version = Map.get(engine, :version, "unknown")
+        active_cases = Map.get(engine, :active_cases, 0)
+        ts = Map.get(engine, :timestamp, "")
+        ts_short = if is_binary(ts), do: String.slice(ts, 0, 19), else: ""
 
-      sim when is_map(sim) ->
-        tests_passed = sim["tests_passed"] || 0
-        tests_total = sim["tests_total"] || 191
-        percent = Float.round(tests_passed / tests_total * 100, 1)
-        progress = Float.round(percent / 6.25) |> trunc()
-        bar = String.duplicate("█", progress) <> String.duplicate("░", 16 - progress)
+        IO.write("║ Status:  RUNNING                                                    ║\n")
+        IO.write("║ Version: #{String.pad_trailing(to_string(version), 59)}║\n")
+        IO.write("║ Active cases: #{String.pad_leading(to_string(active_cases), 4)}                                                  ║\n")
+        IO.write("║ Last poll: #{String.pad_trailing(ts_short, 57)}║\n")
 
-        IO.write("║ [#{bar}] #{String.pad_leading("#{progress}", 2)}/16 modules complete (#{String.pad_leading(Float.to_string(percent), 5)}%)          ║\n")
-        IO.write("║                                                                    ║\n")
-        IO.write("║ Phase 1: Foundation (3/3) ✅                                      ║\n")
-        IO.write("║   ✅ yawl-core       #{String.pad_leading("#{tests_passed}/#{tests_total}", 3)} tests (WCP-18 deferred)            ║\n")
-        IO.write("║   ✅ yawl-webapp     45/45 tests                                  ║\n")
-        IO.write("║   ✅ yawl-api        78/78 tests                                  ║\n")
-        IO.write("║                                                                    ║\n")
-        IO.write("║ Phase 2: Services (3/10) 🔄                                       ║\n")
-        IO.write("║   ✅ yawl-persistence 152/156 tests (JDBC timeout)                ║\n")
-        IO.write("║   ✅ yawl-auth       89/89 tests                                  ║\n")
-        IO.write("║   🔄 yawl-engine     298/312 tests (virtual thread pinning)       ║\n")
-        IO.write("║   ⏳ yawl-scheduler   67/67 tests                                  ║\n")
-        IO.write("║   ⏳ yawl-worklet     128/134 tests                                ║\n")
-        IO.write("║   ⏳ yawl-resourcing  203/203 tests (pending)                      ║\n")
-        IO.write("║   ⏳ yawl-logging     45/45 tests (pending)                        ║\n")
-        IO.write("║                                                                    ║\n")
-        IO.write("║ Phase 3: Monitoring (0/3) ⏳                                       ║\n")
-        IO.write("║   ⏳ yawl-monitoring  75/78 tests (JMX, thread dump)               ║\n")
-        IO.write("║   ⏳ yawl-transport   112/112 tests (pending)                      ║\n")
-        IO.write("║   ⏳ yawl-notification 56/56 tests (pending)                       ║\n")
-        IO.write("║                                                                    ║\n")
-        IO.write("║ Phase 4: Integration (0/3) ⏳                                      ║\n")
-        IO.write("║   ⏳ yawl-process-mining  87/89 tests (OCEL mapping)               ║\n")
-        IO.write("║   ⏳ yawl-a2a-agent      134/134 tests (pending)                   ║\n")
-        IO.write("║   ⏳ yawl-node-mcp       78/78 tests (pending)                     ║\n")
-
-      _other ->
-        IO.write("║ [░░░░░░░░░░░░░░░░] 0/16 modules complete (0%)                    ║\n")
-        IO.write("║ Invalid checkpoint data.                                          ║\n")
+      _ ->
+        # nil, %{status: "offline"}, or any other value
+        IO.write("║ Status:  OFFLINE                                                    ║\n")
+        IO.write("║ Start with: make run  (in ~/yawlv6)                                 ║\n")
+        IO.write("║ Engine URL: #{String.pad_trailing(yawl_engine_url(), 56)}║\n")
     end
 
     IO.write("╚═════════════════════════════════════════════════════════════════════╝\n")
@@ -419,6 +409,81 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
 
     IO.write(footer)
   end
+
+  # YAWL Engine Polling
+
+  defp yawl_engine_url do
+    System.get_env("YAWL_ENGINE_URL") || @yawl_default_url
+  end
+
+  defp poll_yawl_engine do
+    base_url = yawl_engine_url()
+    health_url = base_url <> "/health"
+
+    case Req.request(url: health_url, method: :get, receive_timeout: 5_000) do
+      {:ok, %{status: status, body: body}} when status in 200..299 ->
+        version = extract_version(body)
+        timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
+        active_cases = fetch_active_case_count(base_url)
+
+        %{
+          status: "running",
+          version: version,
+          timestamp: timestamp,
+          active_cases: active_cases
+        }
+
+      {:ok, %{status: status}} ->
+        Logger.debug("[Dashboard] YAWL health returned HTTP #{status}")
+        %{status: "offline"}
+
+      {:error, %Req.TransportError{reason: :econnrefused}} ->
+        Logger.debug("[Dashboard] YAWL engine not reachable at #{base_url}")
+        %{status: "offline"}
+
+      {:error, reason} ->
+        Logger.debug("[Dashboard] YAWL health poll failed: #{inspect(reason)}")
+        %{status: "offline"}
+    end
+  end
+
+  # Extract version string from health JSON response (or body string)
+  defp extract_version(body) when is_map(body) do
+    Map.get(body, "version") || Map.get(body, "engineVersion") || "unknown"
+  end
+
+  defp extract_version(body) when is_binary(body) do
+    case Jason.decode(body) do
+      {:ok, map} -> extract_version(map)
+      _ -> "unknown"
+    end
+  end
+
+  defp extract_version(_), do: "unknown"
+
+  # Fetch running case count from Interface A (best-effort; returns 0 on error)
+  defp fetch_active_case_count(base_url) do
+    ia_url = base_url <> "/ia"
+
+    case Req.request(url: ia_url, method: :get, params: %{"action" => "getAllRunningCases"}, receive_timeout: 5_000) do
+      {:ok, %{status: status, body: body}} when status in 200..299 ->
+        count_cases_in_xml(body)
+
+      _ ->
+        0
+    end
+  end
+
+  # Count <caseID> elements in YAWL getAllRunningCases XML response
+  defp count_cases_in_xml(body) when is_binary(body) do
+    body
+    |> String.split("<caseID>")
+    |> length()
+    |> Kernel.-(1)
+    |> max(0)
+  end
+
+  defp count_cases_in_xml(_), do: 0
 
   # Helpers
 
@@ -658,6 +723,26 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
 
   defp update_revops_funnel(funnel, _) do
     funnel
+  end
+
+  @doc """
+  Advance the RevOps funnel based on a passing scenario result.
+  Failing scenarios do NOT advance the funnel (unlike the internal update_revops_funnel/2).
+  """
+  @spec update_funnel_from_scenario(map(), map()) :: map()
+  def update_funnel_from_scenario(funnel, %{scenario: scenario, outcome: :pass}) do
+    update_revops_funnel(funnel, scenario)
+  end
+
+  def update_funnel_from_scenario(funnel, _failed_or_unknown), do: funnel
+
+  @doc """
+  Calculate 3-sigma SPC control limits from a list of pass-rate floats.
+  Returns %{mean: float, sigma: float, ucl: float, lcl: float}.
+  """
+  @spec calculate_control_limits([float()]) :: map()
+  def calculate_control_limits(history) when is_list(history) do
+    compute_spc_stats(history)
   end
 
   defp is_valid_scenario(scenario) when is_map(scenario) do

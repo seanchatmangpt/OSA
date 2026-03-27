@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.ContextMesh.Registry
 
   @moduletag :capture_log

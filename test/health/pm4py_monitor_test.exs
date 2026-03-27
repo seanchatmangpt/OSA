@@ -5,7 +5,7 @@ defmodule OptimalSystemAgent.Health.PM4PyMonitorTest do
 
   # Note: These tests require pm4py-rust running on localhost:8090
   # Run with: OSA_TEST_PM4PY=1 mix test test/health/pm4py_monitor_test.exs
-  @moduletag :skip
+  @moduletag :integration
 
   describe "health check module compilation" do
     test "module compiles with zero warnings" do

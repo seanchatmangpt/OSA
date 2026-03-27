@@ -124,11 +124,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.FileWrite do
     filename = Path.basename(expanded_path)
 
     if String.starts_with?(expanded_path, osa_dir) and filename in @soul_reload_files do
-      try do
-        OptimalSystemAgent.Soul.reload()
-      rescue
-        _ -> :ok
-      end
+      # Let soul reload failure propagate to supervisor.
+      # Supervisor detects crash and restarts if needed.
+      # This ensures data corruption is caught immediately, not hidden.
+      OptimalSystemAgent.Soul.reload()
     end
   end
 

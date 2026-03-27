@@ -60,40 +60,58 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DashboardRoutes do
   defp fetch_active_agents do
     OptimalSystemAgent.Agents.Registry.list() |> length()
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :agent_registry, error: inspect(e)})
+      0
   catch
-    :exit, _ -> 0
+    :exit, reason ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :agent_registry, error: inspect(reason)})
+      0
   end
 
   defp fetch_active_sessions do
     Registry.select(OptimalSystemAgent.SessionRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])
     |> length()
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :session_registry, error: inspect(e)})
+      0
   catch
-    :exit, _ -> 0
+    :exit, reason ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :session_registry, error: inspect(reason)})
+      0
   end
 
   defp fetch_memory_entries do
     :ets.info(:osa_memory_entries, :size)
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :memory_entries_ets, error: inspect(e)})
+      0
   catch
-    :exit, _ -> 0
+    :exit, reason ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :memory_entries_ets, error: inspect(reason)})
+      0
   end
 
   defp fetch_scheduled_tasks do
     OptimalSystemAgent.Agent.Scheduler.list_jobs() |> length()
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :scheduler, error: inspect(e)})
+      0
   catch
-    :exit, _ -> 0
+    :exit, reason ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :scheduler, error: inspect(reason)})
+      0
   end
 
   defp fetch_provider do
     Application.get_env(:optimal_system_agent, :default_provider, :ollama) |> to_string()
   rescue
-    _ -> "ollama"
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :provider_config, error: inspect(e)})
+      "ollama"
   end
 
   defp fetch_model do
@@ -101,27 +119,37 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DashboardRoutes do
        Application.get_env(:optimal_system_agent, :ollama_model, "openai/gpt-oss-20b"))
     |> to_string()
   rescue
-    _ -> "openai/gpt-oss-20b"
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :model_config, error: inspect(e)})
+      "openai/gpt-oss-20b"
   end
 
   defp fetch_uptime_seconds do
     {uptime_ms, _} = :erlang.statistics(:wall_clock)
     div(uptime_ms, 1_000)
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :uptime, error: inspect(e)})
+      0
   end
 
   defp fetch_memory_mb do
     (:erlang.memory(:total) / 1_048_576) |> Float.round(1)
   rescue
-    _ -> 0.0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :memory_mb, error: inspect(e)})
+      0.0
   end
 
   defp fetch_tools_count do
     OptimalSystemAgent.Tools.Registry.list_tools_direct() |> length()
   rescue
-    _ -> 0
+    e ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :tools_registry, error: inspect(e)})
+      0
   catch
-    :exit, _ -> 0
+    :exit, reason ->
+      :telemetry.execute([:osa, :dashboard, :fallback], %{count: 1}, %{source: :tools_registry, error: inspect(reason)})
+      0
   end
 end

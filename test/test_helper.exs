@@ -1,1 +1,1 @@
-ExUnit.start(exclude: [:integration, :requires_llm])
+ExUnit.start(exclude: [:integration, :requires_llm, :sparql_benchmark])

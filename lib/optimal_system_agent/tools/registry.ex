@@ -36,12 +36,12 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
   @doc "Register a tool module implementing Tools.Behaviour."
   def register(skill_module) do
-    GenServer.call(__MODULE__, {:register_module, skill_module})
+    GenServer.call(__MODULE__, {:register_module, skill_module}, 5_000)
   end
 
   @doc "List all available tools (for LLM function calling)."
   def list_tools do
-    GenServer.call(__MODULE__, :list_tools)
+    GenServer.call(__MODULE__, :list_tools, 5_000)
   end
 
   @doc "Alias for list_tools/0 — returns list of available tools."
@@ -216,7 +216,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
   @doc "List tool and skill documentation (for context injection)."
   def list_docs do
-    GenServer.call(__MODULE__, :list_docs)
+    GenServer.call(__MODULE__, :list_docs, 5_000)
   end
 
   @doc """
@@ -234,7 +234,7 @@ defmodule OptimalSystemAgent.Tools.Registry do
 
   @doc "Reload skills from disk (~/.osa/skills/) and recompile the dispatcher."
   def reload_skills do
-    GenServer.call(__MODULE__, :reload_skills)
+    GenServer.call(__MODULE__, :reload_skills, 5_000)
   end
 
   @doc """
@@ -538,7 +538,11 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "cross_team_query" => OptimalSystemAgent.Tools.Builtins.CrossTeamQuery,
       "a2a_call" => OptimalSystemAgent.Tools.Builtins.A2ACall,
       "pm4py_discover" => OptimalSystemAgent.Tools.Builtins.PM4PyDiscover,
-      "process_intelligence_query" => OptimalSystemAgent.Tools.Builtins.ProcessIntelligenceQuery
+      "process_intelligence_query" => OptimalSystemAgent.Tools.Builtins.ProcessIntelligenceQuery,
+      "yawl_workflow" => OptimalSystemAgent.Tools.Builtins.YawlWorkflow,
+      "yawl_work_item" => OptimalSystemAgent.Tools.Builtins.YawlWorkItem,
+      "yawl_spec_library" => OptimalSystemAgent.Tools.Builtins.YawlSpecLibrary,
+      "yawl_process_mining" => OptimalSystemAgent.Tools.Builtins.YawlProcessMining
     }
   end
 

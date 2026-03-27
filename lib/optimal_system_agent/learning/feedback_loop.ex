@@ -40,6 +40,8 @@ defmodule OptimalSystemAgent.Learning.FeedbackLoop do
   alias OptimalSystemAgent.Learning.ExperienceStore
   alias OptimalSystemAgent.Signal
 
+  @call_timeout 30_000
+
   # ---------------------------------------------------------------------------
   # Public API
   # ---------------------------------------------------------------------------
@@ -76,7 +78,7 @@ defmodule OptimalSystemAgent.Learning.FeedbackLoop do
   """
   @spec recommend_action(String.t(), map()) :: {:ok, map()} | {:error, term()}
   def recommend_action(agent_id, context) when is_binary(agent_id) and is_map(context) do
-    GenServer.call(__MODULE__, {:recommend_action, agent_id, context}, :infinity)
+    GenServer.call(__MODULE__, {:recommend_action, agent_id, context}, @call_timeout)
   end
 
   def recommend_action(_agent_id, _context) do
@@ -93,7 +95,7 @@ defmodule OptimalSystemAgent.Learning.FeedbackLoop do
   """
   @spec should_explore?(String.t()) :: {:ok, boolean()} | {:error, term()}
   def should_explore?(agent_id) when is_binary(agent_id) do
-    GenServer.call(__MODULE__, {:should_explore, agent_id}, :infinity)
+    GenServer.call(__MODULE__, {:should_explore, agent_id}, @call_timeout)
   end
 
   def should_explore?(_agent_id) do

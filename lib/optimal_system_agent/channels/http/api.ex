@@ -44,6 +44,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /audit-trail → AuditRoutes       GET /:session_id, GET /:session_id/verify, GET /:session_id/merkle
     /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
     /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
+    /yawl        → YawlRoutes       GET /patterns, POST /check-conformance, GET /health
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -72,6 +73,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   end
 
   plug :cors
+  plug OptimalSystemAgent.Channels.HTTP.TraceContext
   plug OptimalSystemAgent.Channels.HTTP.RateLimiter
   plug :validate_content_type
   plug :authenticate
@@ -176,6 +178,16 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── FIBO financial deal coordination (Agent 16) ───────────────────────────
   forward "/fibo", to: API.FIBORoutes
+
+  # ── Board Chair Intelligence System — briefing + decisions + deviation ────
+  # Order matters: more-specific paths first so they match before /board catch-all.
+  forward "/board/briefing", to: API.BoardDecisionRoutes
+  forward "/board/decision", to: API.BoardDecisionRoutes
+  forward "/board/decisions", to: API.BoardDecisionRoutes
+  forward "/board", to: API.BoardDeviationRoutes
+
+  # ── YAWL engine integration (WCP patterns, conformance, health proxy) ─
+  forward "/yawl", to: API.YawlRoutes
 
   # ── Health check (no auth required — forwarded before authenticate) ─────
   get "/health/fortune5" do

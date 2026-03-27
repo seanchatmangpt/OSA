@@ -8,6 +8,7 @@ defmodule OptimalSystemAgent.Process.ProcessMiningTest do
   """
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Process.ProcessMining
 
   @unique_prefix "test-#{:erlang.unique_integer([:positive])}-"

@@ -86,11 +86,14 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
     timeout = if thinking, do: 600_000, else: 120_000
 
     try do
-      case Req.post("#{base_url}/messages",
-             json: body,
-             headers: headers,
-             receive_timeout: timeout
-           ) do
+      # Step 3: Build request with W3C traceparent header
+      opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+        json: body,
+        headers: headers,
+        receive_timeout: timeout
+      ])
+
+      case Req.post("#{base_url}/messages", opts) do
         {:ok, %{status: 200, body: resp}} ->
           duration_ms = System.monotonic_time(:millisecond) - start_time
 
@@ -98,6 +101,12 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
           tool_calls = extract_tool_calls(resp)
           usage = extract_usage(resp)
           thinking_blocks = extract_thinking(resp)
+
+          # Record token usage in current span (OTEL Step 7&8)
+          # Extracts input/output tokens from Anthropic response and adds as span attributes
+          if usage != %{} do
+            record_token_usage_to_span(usage, model)
+          end
 
           # Emit telemetry for successful chat completion
           :telemetry.execute(
@@ -197,12 +206,15 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
     timeout = if thinking, do: 600_000, else: 120_000
 
     try do
-      case Req.post("#{base_url}/messages",
-             json: body,
-             headers: headers,
-             receive_timeout: timeout,
-             into: :self
-           ) do
+      # Step 3: Build request with W3C traceparent header
+      opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+        json: body,
+        headers: headers,
+        receive_timeout: timeout,
+        into: :self
+      ])
+
+      case Req.post("#{base_url}/messages", opts) do
         {:ok, resp} ->
           collect_stream(resp, callback, %{
             content: "",
@@ -616,6 +628,54 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
         "input_schema" => tool.parameters
       }
     end)
+  end
+
+  # --- OTEL Token Recording (Step 7&8) ---
+  # Records LLM token usage to the current active span via OpenTelemetry.
+  # Extracts:
+  #   - llm.token.input: input tokens consumed
+  #   - llm.token.output: output tokens generated
+  #   - llm.token.cache_creation_input: tokens written to cache (if applicable)
+  #   - llm.token.cache_read_input: tokens read from cache (if applicable)
+  # This is OTEL Step 7&8: record token usage and activate OTLP export.
+  # The span context is retrieved from the process dictionary (set by caller).
+
+  defp record_token_usage_to_span(usage, model) do
+    input_tokens = usage[:input_tokens] || 0
+    output_tokens = usage[:output_tokens] || 0
+    cache_creation_tokens = usage[:cache_creation_input_tokens] || 0
+    cache_read_tokens = usage[:cache_read_input_tokens] || 0
+
+    # Record metrics for token usage (also useful for budget enforcement)
+    OptimalSystemAgent.Observability.Telemetry.record_metric(
+      "llm.token.input",
+      input_tokens,
+      %{"model" => model, "provider" => "anthropic"}
+    )
+
+    OptimalSystemAgent.Observability.Telemetry.record_metric(
+      "llm.token.output",
+      output_tokens,
+      %{"model" => model, "provider" => "anthropic"}
+    )
+
+    if cache_creation_tokens > 0 do
+      OptimalSystemAgent.Observability.Telemetry.record_metric(
+        "llm.token.cache_creation_input",
+        cache_creation_tokens,
+        %{"model" => model, "provider" => "anthropic"}
+      )
+    end
+
+    if cache_read_tokens > 0 do
+      OptimalSystemAgent.Observability.Telemetry.record_metric(
+        "llm.token.cache_read_input",
+        cache_read_tokens,
+        %{"model" => model, "provider" => "anthropic"}
+      )
+    end
+
+    :ok
   end
 
   defp extract_content(%{"content" => blocks}) when is_list(blocks) do

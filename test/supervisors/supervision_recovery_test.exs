@@ -30,6 +30,25 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
 
   require Logger
 
+  # Ensure TestRegistry is alive for the duration of each test.
+  # CounterWorker calls Registry.start_link lazily, but the registry can be
+  # killed between tests if linked to a previous test's process.
+  # We use start_supervised! so ExUnit owns the lifecycle and the registry
+  # stays alive until the test's supervised tree is torn down.
+  setup do
+    # If TestRegistry is already alive (e.g. from a previous test that didn't
+    # clean up), reuse it — otherwise start a fresh one under ExUnit's supervision.
+    case Process.whereis(TestRegistry) do
+      nil ->
+        start_supervised!({Registry, [keys: :unique, name: TestRegistry]})
+
+      _pid ->
+        :ok
+    end
+
+    :ok
+  end
+
   # ---------------------------------------------------------------------------
   # RED Phase: Tests documenting supervision recovery behavior
   # ---------------------------------------------------------------------------
@@ -54,7 +73,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :test_counter_1})
 
       # Record the original PID
-      original_pid = child_pid
+      _original_pid = child_pid
 
       # Verify child is working
       assert CounterWorker.get(:test_counter_1) == 0
@@ -81,6 +100,9 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
     test "supervisor should enforce max_restarts limit" do
       # RED: Rapid crashes should eventually give up (prevent restart cascade)
       # WvdA Property 1: Deadlock-free → use max_restarts to prevent thrashing
+      #
+      # Trap exits so the supervisor's shutdown does not kill the test process.
+      Process.flag(:trap_exit, true)
 
       {:ok, sup_pid} =
         DynamicSupervisor.start_link(
@@ -89,13 +111,15 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
           max_seconds: 1  # Short window: 3 restarts in 1 second
         )
 
+      counter_name = :"test_counter_2_#{System.unique_integer([:positive])}"
+
       # Start child
-      {:ok, child_pid} =
-        DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :test_counter_2})
+      {:ok, _child_pid} =
+        DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: counter_name})
 
       # Crash the child 4 times (exceeds max_restarts: 3)
       for i <- 1..4 do
-        current_pid = CounterWorker.whereis(:test_counter_2)
+        current_pid = CounterWorker.whereis(counter_name)
 
         if current_pid && Process.alive?(current_pid) do
           Process.exit(current_pid, :kill)
@@ -103,11 +127,14 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         end
 
         if i == 4 do
-          # After 4 crashes (> max_restarts), supervisor might give up
-          # This is the expected behavior to prevent cascade
-          children = DynamicSupervisor.which_children(sup_pid)
-          # Document: after max_restarts exceeded, supervisor stops restarting
-          _ = children
+          # After 4 crashes (> max_restarts), supervisor might give up.
+          # Document: after max_restarts exceeded, supervisor stops restarting.
+          # Drain any exit messages so the test process is clean.
+          receive do
+            {:EXIT, ^sup_pid, _reason} -> :ok
+          after
+            200 -> :ok
+          end
         end
       end
 
@@ -133,7 +160,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
       {:ok, child1} =
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :child_1})
 
-      {:ok, child2} =
+      {:ok, _child2} =
         DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :child_2})
 
       # Increment child 1 counter
@@ -185,7 +212,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
     @session_sup_strategy :one_for_one
     @session_sup_max_restarts 10
     @session_sup_max_seconds 60
-    @child_restart_strategy :permanent
+    # @child_restart_strategy :permanent  # documented but not yet used in test assertions
 
     test "OSA Sessions Supervisor should use extracted constants" do
       # REFACTOR: After extracting constants to OptimalSystemAgent.Supervisors.Sessions
@@ -219,7 +246,7 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         DynamicSupervisor.start_link(strategy: :one_for_one)
 
       # Start a child that will crash
-      {:ok, crash_pid} =
+      {:ok, _crash_pid} =
         DynamicSupervisor.start_child(sup_pid, {CrashWorker, name: :test_crash})
 
       # Trigger crash (intentional)
@@ -339,13 +366,17 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
   describe "FIRST Principle: REPEATABLE — Deterministic Behavior" do
     test "same test run 10 times should produce same results" do
       # REPEATABLE: No timing flakes, deterministic outcome
+      # Use unique counter names per iteration to avoid Registry collisions
+      # when a previous supervisor's child is still registered.
 
-      for _run <- 1..3 do
+      for run <- 1..3 do
+        counter_name = :"test_repeat_#{run}_#{System.unique_integer([:positive])}"
+
         {:ok, sup_pid} =
           DynamicSupervisor.start_link(strategy: :one_for_one)
 
         {:ok, child_pid} =
-          DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: :test_repeat})
+          DynamicSupervisor.start_child(sup_pid, {CounterWorker, counter_name: counter_name})
 
         # Always the same: child_pid should be a pid
         assert is_pid(child_pid)
@@ -357,6 +388,10 @@ defmodule OptimalSystemAgent.Supervisors.SupervisionRecoveryTest do
         # Result should always be the same
         children = DynamicSupervisor.which_children(sup_pid)
         assert length(children) >= 0
+
+        # Clean up the supervisor so the next iteration starts fresh
+        Process.exit(sup_pid, :normal)
+        Process.sleep(20)
       end
     end
   end

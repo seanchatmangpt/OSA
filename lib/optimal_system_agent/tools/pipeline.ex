@@ -24,7 +24,12 @@ defmodule OptimalSystemAgent.Tools.Pipeline do
       Pipeline.parallel([{"web_search", %{"q" => "elixir"}}, "list_skills"], executor: executor)
   """
 
+  require Logger
+
   alias OptimalSystemAgent.Tools.Instruction
+
+  # WvdA boundedness guard: cap retry attempts to prevent unbounded loops
+  @max_retry_cap 10
 
   @type executor :: (String.t(), map() -> {:ok, any()} | {:error, String.t()})
 
@@ -106,22 +111,33 @@ defmodule OptimalSystemAgent.Tools.Pipeline do
   Retry a single `instruction` up to `:attempts` times (default 3).
   Returns the first success or the last error.
   """
-  @spec retry(term(), keyword()) :: {:ok, any()} | {:error, String.t()}
+  @spec retry(term(), keyword()) :: {:ok, any()} | {:error, String.t()} | {:error, :zero_attempts_invalid}
   def retry(instruction, opts \\ []) do
     executor = Keyword.get(opts, :executor, fn _tool, params -> {:ok, params} end)
     attempts = Keyword.get(opts, :attempts, 3)
 
-    case Instruction.normalize(instruction) do
-      {:error, _} = err ->
-        err
+    # WvdA boundedness guards: enforce finite, non-zero retry counts
+    if attempts == 0 do
+      {:error, :zero_attempts_invalid}
+    else
+      if attempts > @max_retry_cap do
+        Logger.warning(
+          "retry/2 called with attempts=#{attempts} > #{@max_retry_cap}, may be unbounded"
+        )
+      end
 
-      {:ok, inst} ->
-        Enum.reduce_while(1..attempts, {:error, "not attempted"}, fn _i, _acc ->
-          case executor.(inst.tool, inst.params) do
-            {:ok, _} = ok -> {:halt, ok}
-            {:error, _} = err -> {:cont, err}
-          end
-        end)
+      case Instruction.normalize(instruction) do
+        {:error, _} = err ->
+          err
+
+        {:ok, inst} ->
+          Enum.reduce_while(1..attempts, {:error, "not attempted"}, fn _i, _acc ->
+            case executor.(inst.tool, inst.params) do
+              {:ok, _} = ok -> {:halt, ok}
+              {:error, _} = err -> {:cont, err}
+            end
+          end)
+      end
     end
   end
 end

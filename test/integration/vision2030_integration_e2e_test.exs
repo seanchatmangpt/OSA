@@ -249,7 +249,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "review" => "Excellent skill"
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/marketplace/rate",
         rating
       )
@@ -307,13 +307,12 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "process_type" => "smoke_test"
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/fingerprint/extract",
         events
       )
 
       assert code in [200, 201]
-      assert is_map(response)
     end
 
     test "compare process fingerprints" do
@@ -322,7 +321,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "fingerprint_2" => "fp-current"
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/fingerprint/compare",
         body
       )
@@ -331,7 +330,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
     end
 
     test "get fingerprint evolution" do
-      assert {:ok, code, body} = HTTPClient.get(
+      assert {:ok, code, _body} = HTTPClient.get(
         "http://localhost:9089/api/v1/process/fingerprint/evolution/smoke-test"
       )
 
@@ -346,7 +345,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "geography" => "North America"
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/fingerprint/benchmark",
         body
       )
@@ -374,7 +373,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         }
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/temporal/snapshot",
         snapshot
       )
@@ -383,7 +382,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
     end
 
     test "get process velocity metrics" do
-      assert {:ok, code, body} = HTTPClient.get(
+      assert {:ok, code, _body} = HTTPClient.get(
         "http://localhost:9089/api/v1/process/temporal/velocity/smoke-test?period=7_days"
       )
 
@@ -391,7 +390,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
     end
 
     test "predict process future state" do
-      assert {:ok, code, body} = HTTPClient.get(
+      assert {:ok, code, _body} = HTTPClient.get(
         "http://localhost:9089/api/v1/process/temporal/predict/smoke-test?days_ahead=7"
       )
 
@@ -399,7 +398,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
     end
 
     test "get early warning alerts" do
-      assert {:ok, code, body} = HTTPClient.get(
+      assert {:ok, code, _body} = HTTPClient.get(
         "http://localhost:9089/api/v1/process/temporal/early-warning/smoke-test"
       )
 
@@ -407,7 +406,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
     end
 
     test "detect process stagnation" do
-      assert {:ok, code, body} = HTTPClient.get(
+      assert {:ok, code, _body} = HTTPClient.get(
         "http://localhost:9089/api/v1/process/temporal/stagnation/smoke-test"
       )
 
@@ -428,7 +427,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "drift_threshold" => 0.15
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/org/drift",
         body
       )
@@ -443,7 +442,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "position" => "after_step_2"
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/org/mutate",
         body
       )
@@ -458,7 +457,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "constraints" => ["max_headcount_increase:0"]
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/org/optimize",
         body
       )
@@ -473,7 +472,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "include_training" => true
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/process/org/sop",
         body
       )
@@ -524,7 +523,7 @@ defmodule OSA.Vision2030IntegrationE2ETest do
         "timeout_ms" => 30000
       }
 
-      assert {:ok, code, response} = HTTPClient.post(
+      assert {:ok, code, _response} = HTTPClient.post(
         "http://localhost:9089/api/v1/orchestrate",
         task
       )

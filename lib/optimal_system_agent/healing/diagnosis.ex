@@ -20,7 +20,22 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
   - `mode` is an atom (:shannon, :ashby, :beer, :wiener, :deadlock, :cascade, :byzantine, :starvation, :livelock, :timeout, :inconsistent, or :unknown)
   - `description` is a human-readable string
   - `root_cause` is a string explaining the specific error
+
+  ## OTEL span emission via `classify/1`
+
+  Use `classify/1` for the span-emitting entry point. It wraps `diagnose/2` and
+  records a `"healing.diagnosis"` span via `OptimalSystemAgent.Observability.Telemetry`.
+  The span carries semconv attributes defined in `OtelBridge`:
+  - `healing.failure_mode` — the classified mode atom as a string
+  - `healing.agent_id`     — always `"osa"`
+  - `healing.confidence`   — numeric confidence score
+
+  Armstrong: NO try/rescue around the ETS call inside `start_span/end_span`.
+  If the `:telemetry_spans` table is missing the process crashes and the supervisor
+  recreates it with a clean ETS table.
   """
+
+  alias OptimalSystemAgent.Observability.Telemetry
 
   @type failure_mode ::
           :shannon
@@ -37,6 +52,78 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
           | :unknown
 
   @type diagnosis :: {failure_mode(), String.t(), String.t()}
+
+  @doc """
+  Classify an error, emit a `"healing.diagnosis"` OTEL span, and return a result map.
+
+  This is the primary span-emitting entry point for the healing domain. It calls
+  `diagnose/2` internally and wraps the execution in a `Telemetry.start_span` /
+  `Telemetry.end_span` pair so that every classification is observable in Jaeger
+  (or any compatible OTEL backend) and in the `:telemetry_spans` ETS table.
+
+  ## Span attributes (semconv from OtelBridge)
+
+  | Key                   | Value                           |
+  |-----------------------|---------------------------------|
+  | `healing.failure_mode`| classified mode atom as string  |
+  | `healing.agent_id`    | `"osa"`                         |
+  | `healing.confidence`  | numeric confidence score [0, 1] |
+
+  ## Returns
+
+  `{:ok, %{failure_mode: atom, description: string, root_cause: string, confidence: float}}`
+
+  ## Armstrong rule
+
+  No try/rescue wraps the `Telemetry` calls here. If `:telemetry_spans` is missing
+  the process will crash, the supervisor will restart it, and the ETS table will be
+  recreated. That is the correct OTP behaviour.
+  """
+  @spec classify(term()) :: {:ok, map()}
+  def classify(error) do
+    {:ok, span_ctx} =
+      Telemetry.start_span("healing.diagnosis", %{
+        "healing.agent_id" => "osa"
+      })
+
+    {mode, description, root_cause} = diagnose(error)
+
+    confidence = failure_mode_confidence(mode)
+
+    # Update the span with post-classification attributes before closing it
+    updated_span = Map.update!(span_ctx, "attributes", fn attrs ->
+      attrs
+      |> Map.put("healing.failure_mode", to_string(mode))
+      |> Map.put("healing.confidence", confidence)
+    end)
+
+    :ets.insert(:telemetry_spans, {updated_span["span_id"], updated_span})
+
+    :ok = Telemetry.end_span(updated_span, :ok)
+
+    result = %{
+      failure_mode: mode,
+      description: description,
+      root_cause: root_cause,
+      confidence: confidence
+    }
+
+    {:ok, result}
+  end
+
+  # Confidence scores by failure mode — higher for well-defined structural failures
+  defp failure_mode_confidence(:deadlock), do: 0.92
+  defp failure_mode_confidence(:timeout), do: 0.90
+  defp failure_mode_confidence(:cascade), do: 0.85
+  defp failure_mode_confidence(:livelock), do: 0.85
+  defp failure_mode_confidence(:starvation), do: 0.80
+  defp failure_mode_confidence(:byzantine), do: 0.80
+  defp failure_mode_confidence(:shannon), do: 0.78
+  defp failure_mode_confidence(:ashby), do: 0.75
+  defp failure_mode_confidence(:beer), do: 0.75
+  defp failure_mode_confidence(:wiener), do: 0.73
+  defp failure_mode_confidence(:inconsistent), do: 0.70
+  defp failure_mode_confidence(:unknown), do: 0.40
 
   @doc """
   Diagnose an error and classify it into a failure mode.
@@ -72,14 +159,24 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
   def diagnose({:error, reason}, context) when is_atom(reason) do
     tracer = :opentelemetry.get_tracer(:optimal_system_agent)
 
-    :otel_tracer.with_span(tracer, "diagnosis.classify", %{
-      "error_type" => "atom",
-      "reason" => inspect(reason)
-    }, fn span_ctx ->
+    :otel_tracer.with_span(tracer, "diagnosis.classify", %{}, fn span_ctx ->
       result = diagnose_reason(reason, context)
-      :otel_span.set_attributes(span_ctx, %{"diagnosis_mode" => inspect(elem(result, 0))})
+
+      :otel_span.set_attributes(span_ctx, [
+        {"error_type", "atom"},
+        {"reason", inspect(reason)},
+        {"diagnosis_mode", inspect(elem(result, 0))},
+        {"chatmangpt.run.correlation_id", get_correlation_id()}
+      ])
+
       result
     end)
+  rescue
+    _ ->
+      diagnose_reason(reason, context)
+  catch
+    _, _ ->
+      diagnose_reason(reason, context)
   end
 
   def diagnose({:error, message}, _context) when is_binary(message) do
@@ -347,5 +444,23 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
 
   defp contains_any?(string, substrings) do
     Enum.any?(substrings, &String.contains?(string, &1))
+  end
+
+  # Retrieve correlation ID for span attributes.
+  # Reads from process dictionary, then env var, then generates a fallback.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 end

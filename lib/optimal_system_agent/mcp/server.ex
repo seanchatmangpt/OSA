@@ -54,13 +54,25 @@ defmodule OptimalSystemAgent.MCP.Server do
   @spec call_tool(String.t(), String.t(), map()) ::
           {:ok, map()} | {:error, term()}
   def call_tool(server_name, tool_name, arguments) when is_binary(server_name) do
-    GenServer.call(via_tuple(server_name), {:call_tool, tool_name, arguments}, @default_timeout)
+    try do
+      GenServer.call(via_tuple(server_name), {:call_tool, tool_name, arguments}, @default_timeout)
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[MCP.Server] call_tool timeout for #{tool_name} on #{server_name}")
+        {:error, :tool_call_timeout}
+    end
   end
 
   @doc "List tools discovered from this MCP server."
   @spec list_tools(String.t()) :: [map()]
   def list_tools(server_name) when is_binary(server_name) do
-    GenServer.call(via_tuple(server_name), :list_tools, @default_timeout)
+    try do
+      GenServer.call(via_tuple(server_name), :list_tools, @default_timeout)
+    catch
+      :exit, {:timeout, _} ->
+        Logger.error("[MCP.Server] list_tools timeout on #{server_name}")
+        []
+    end
   end
 
   @doc "Get the PID for a named MCP server."

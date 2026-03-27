@@ -317,7 +317,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DataRoutes do
         case OptimalSystemAgent.Providers.Ollama.list_models() do
           {:ok, models} ->
             Enum.map(models, fn m ->
-              ctx = try do OptimalSystemAgent.Providers.Registry.context_window(m.name) rescue _ -> 128_000 end
+              ctx = OptimalSystemAgent.Providers.Registry.context_window(m.name)
               %{
                 name: m.name,
                 provider: "ollama",
@@ -343,7 +343,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.DataRoutes do
           case OptimalSystemAgent.Providers.Registry.provider_info(p) do
             {:ok, info} ->
               Enum.map(info.available_models, fn model_name ->
-                ctx = try do OptimalSystemAgent.Providers.Registry.context_window(model_name) rescue _ -> 128_000 end
+                ctx = OptimalSystemAgent.Providers.Registry.context_window(model_name)
                 %{
                   name: model_name,
                   provider: to_string(p),

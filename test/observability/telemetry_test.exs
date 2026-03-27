@@ -1,6 +1,7 @@
 defmodule OptimalSystemAgent.Observability.TelemetryTest do
   use ExUnit.Case, async: true
 
+
   alias OptimalSystemAgent.Observability.Telemetry
 
   setup do

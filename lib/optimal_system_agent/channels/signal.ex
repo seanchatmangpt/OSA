@@ -104,7 +104,7 @@ defmodule OptimalSystemAgent.Channels.Signal do
 
   @impl true
   def handle_cast({:webhook, body}, state) do
-    spawn(fn -> process_webhook(body, state) end)
+    Task.Supervisor.start_child(OptimalSystemAgent.Events.TaskSupervisor, fn -> process_webhook(body, state) end)
     {:noreply, state}
   end
 

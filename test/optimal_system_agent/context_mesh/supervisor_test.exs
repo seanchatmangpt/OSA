@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.ContextMesh.SupervisorTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.ContextMesh.Supervisor
 
   @moduletag :capture_log

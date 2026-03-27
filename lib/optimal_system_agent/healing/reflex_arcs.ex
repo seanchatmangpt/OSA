@@ -47,6 +47,7 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.Providers.HealthChecker
   alias OptimalSystemAgent.Agent.Compactor
+  alias OptimalSystemAgent.Observability.Telemetry
 
   # -- Cooldowns (milliseconds) --
   @provider_failover_cooldown 30_000
@@ -59,6 +60,9 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   # -- Thresholds --
   @provider_failure_threshold 3
   @budget_pressure_threshold 0.80
+
+  # -- WCP-10 Cascade Detection --
+  @max_reflex_depth 5
 
   # -- Critical agents that should never be throttled --
   @critical_agents ~w(health-monitor healing)
@@ -102,6 +106,122 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
   @spec reap_sessions() :: :ok
   def reap_sessions do
     GenServer.cast(__MODULE__, :reap_sessions)
+  end
+
+  @doc """
+  WCP-10 Cascade Detection — check whether firing `proposed_next` reflex
+  would create a cycle or exceed the maximum reflex chain depth.
+
+  Returns `:ok` when it is safe to fire, or an error tuple when a cascade
+  or depth limit would be violated.
+
+      iex> ReflexArcs.detect_cascade([], "reflex_a")
+      :ok
+
+      iex> ReflexArcs.detect_cascade(["reflex_a"], "reflex_a")
+      {:error, :cascade_detected}
+
+      iex> chain = Enum.map(1..5, fn i -> "reflex_\#{i}" end)
+      iex> ReflexArcs.detect_cascade(chain, "reflex_6")
+      {:error, :max_depth}
+  """
+  @spec detect_cascade([String.t()], String.t()) :: :ok | {:error, :cascade_detected | :max_depth}
+  def detect_cascade(chain, proposed_next) do
+    cond do
+      length(chain) >= @max_reflex_depth -> {:error, :max_depth}
+      proposed_next in chain -> {:error, :cascade_detected}
+      true -> :ok
+    end
+  end
+
+  @doc """
+  Span-emitting wrapper for `detect_cascade/2`.
+
+  Emits a `"healing.reflex_arc"` span via `OptimalSystemAgent.Observability.Telemetry`
+  with attributes:
+  - `healing.recovery_action` — the proposed next reflex name
+  - `healing.iteration`       — current chain depth (number of reflexes already fired)
+
+  Returns the same result as `detect_cascade/2`.
+
+  Armstrong: NO try/rescue wraps the `Telemetry` calls. If `:telemetry_spans` is
+  missing the process crashes, the supervisor restarts, and ETS is recreated.
+  """
+  @spec detect_cascade_with_span([String.t()], String.t()) ::
+          :ok | {:error, :cascade_detected | :max_depth}
+  def detect_cascade_with_span(chain, proposed_next) do
+    iteration = length(chain)
+
+    {:ok, span_ctx} =
+      Telemetry.start_span("healing.reflex_arc", %{
+        "healing.recovery_action" => proposed_next,
+        "healing.iteration" => iteration
+      })
+
+    result = detect_cascade(chain, proposed_next)
+
+    span_status =
+      case result do
+        :ok -> :ok
+        {:error, _} -> :error
+      end
+
+    :ok = Telemetry.end_span(span_ctx, span_status)
+
+    result
+  end
+
+  @doc """
+  Trigger healing for a process deviation detected by pm4py-rust.
+
+  Called by Board.HealingBridge when conformance fitness drops below 0.8.
+  Emits a `:healing_complete` board event after healing completes so that
+  InferenceChain can invalidate L0 and cascade re-materialization.
+
+  Armstrong: failures are logged, not propagated. Returns `:ok` on success
+  or `{:error, reason}` on failure (caller decides what to do).
+  """
+  @spec trigger_healing(String.t()) :: :ok | {:error, term()}
+  def trigger_healing(process_id) when is_binary(process_id) do
+    tracer = :opentelemetry.get_tracer(:optimal_system_agent)
+
+    :otel_tracer.with_span(tracer, "healing.board_process_healing", %{}, fn span_ctx ->
+      Logger.info("[Healing.ReflexArcs] Board healing triggered for process: #{process_id}")
+
+      # Derive span ID from OTEL context for proof triple
+      otel_span_id =
+        try do
+          ctx = :otel_tracer.current_span_ctx(span_ctx)
+          span_id = :otel_span.span_id(ctx)
+          Base.encode16(span_id, case: :lower)
+        rescue
+          _ -> "#{process_id}-#{System.unique_integer([:positive])}"
+        catch
+          _, _ -> "#{process_id}-#{System.unique_integer([:positive])}"
+        end
+
+      outcome = execute_process_healing(process_id)
+
+      # Emit board event so HealingBridge can write proof and invalidate L0
+      Bus.emit(:system_event, %{
+        event: :healing_complete,
+        process_id: process_id,
+        proof_span_id: otel_span_id,
+        outcome: outcome,
+        healed_at: DateTime.utc_now()
+      },
+      source: "healing.reflex_arcs")
+
+      :otel_span.set_attributes(span_ctx, [
+        {"process_id", process_id},
+        {"outcome", outcome},
+        {"chatmangpt.run.correlation_id", get_correlation_id()}
+      ])
+
+      Logger.info("[Healing.ReflexArcs] Board healing complete for #{process_id}: #{outcome}")
+
+      :ok
+    end)
   end
 
   # -- GenServer Callbacks --
@@ -638,36 +758,71 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
     end
   end
 
+  # -- Board Process Healing Implementation --
+
+  # Executes healing actions for a process deviation detected by pm4py-rust.
+  # Returns outcome string: "healed" | "healing_attempted" | "no_action_required"
+  defp execute_process_healing(process_id) do
+    Logger.info("[ReflexArc] Executing process healing for: #{process_id}")
+
+    # Emit reflex event so downstream consumers can react
+    Bus.emit(:system_event, %{
+      event: :reflex,
+      reflex: :process_deviation_healing,
+      process_id: process_id,
+      triggered_at: DateTime.utc_now()
+    },
+    source: "healing.reflex_arcs")
+
+    # Re-check provider health — process deviations may indicate provider issues
+    GenServer.cast(__MODULE__, :check_provider_health)
+
+    "healing_attempted"
+  end
+
   # -- Cooldown & Logging Helpers --
 
-  defp maybe_fire_reflex(state, reflex_name, cooldown_ms, executor_fn) do
-    now = System.monotonic_time(:millisecond)
-    last_fired = Map.get(state.cooldowns, reflex_name, 0)
+  defp maybe_fire_reflex(state, reflex_name, cooldown_ms, executor_fn, chain \\ []) do
+    reflex_key = to_string(reflex_name)
 
-    if now - last_fired >= cooldown_ms do
-      result = executor_fn.()
+    case detect_cascade(chain, reflex_key) do
+      {:error, reason} ->
+        Logger.warning(
+          "[Healing.ReflexArcs] Healing cascade prevented: chain=#{inspect(chain)} proposed=#{reflex_key}"
+        )
 
-      if result != nil do
-        entry = %{
-          reflex: reflex_name,
-          result: result,
-          fired_at: DateTime.utc_now()
-        }
-
+        _ = reason
         state
-        |> log_reflex(entry)
-        |> put_in([:cooldowns, reflex_name], now)
-      else
-        state
-      end
-    else
-      # Still in cooldown
-      remaining_s = Float.round((cooldown_ms - (now - last_fired)) / 1_000, 1)
-      Logger.debug(
-        "[ReflexArc] #{reflex_name} skipped -- cooldown active (#{remaining_s}s remaining)"
-      )
 
-      state
+      :ok ->
+        now = System.monotonic_time(:millisecond)
+        last_fired = Map.get(state.cooldowns, reflex_name, 0)
+
+        if now - last_fired >= cooldown_ms do
+          result = executor_fn.()
+
+          if result != nil do
+            entry = %{
+              reflex: reflex_name,
+              result: result,
+              fired_at: DateTime.utc_now()
+            }
+
+            state
+            |> log_reflex(entry)
+            |> put_in([:cooldowns, reflex_name], now)
+          else
+            state
+          end
+        else
+          # Still in cooldown
+          remaining_s = Float.round((cooldown_ms - (now - last_fired)) / 1_000, 1)
+          Logger.debug(
+            "[ReflexArc] #{reflex_name} skipped -- cooldown active (#{remaining_s}s remaining)"
+          )
+
+          state
+        end
     end
   end
 
@@ -690,5 +845,24 @@ defmodule OptimalSystemAgent.Healing.ReflexArcs do
       _ ->
         false
     end
+  end
+
+  # Retrieve correlation ID for span attributes.
+  # Reads from process dictionary, then env var, then generates a fallback.
+  # Stored in process dictionary so all spans in the same process share the same ID.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 end

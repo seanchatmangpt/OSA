@@ -17,6 +17,9 @@ defmodule OptimalSystemAgent.JTBD.DashboardResilienceTest do
   """
 
   use ExUnit.Case, async: false
+
+  @moduletag :integration
+
   require Logger
   import ExUnit.CaptureLog
 
@@ -369,7 +372,7 @@ defmodule OptimalSystemAgent.JTBD.DashboardResilienceTest do
     dashboard_pid: dashboard_pid
   } do
     # Validate initial state
-    initial_count = :ets.info(@ets_table, :size)
+    _initial_count = :ets.info(@ets_table, :size)
 
     # Send alternating corrupted + valid messages
     for i <- 1..5 do
@@ -468,7 +471,7 @@ defmodule OptimalSystemAgent.JTBD.DashboardResilienceTest do
     dashboard_pid: dashboard_pid
   } do
     # Capture logs
-    logs =
+    _logs =
       capture_log(fn ->
         # Send corrupted message
         corrupted = %{

@@ -91,7 +91,7 @@ defmodule OptimalSystemAgent.Ggen.EngineTest do
 
       # In dry_run mode, we still return the files but don't write them
       # (This depends on implementation - adjust if needed)
-      cargo_path = Path.join(output_dir, "Cargo.toml")
+      _cargo_path = Path.join(output_dir, "Cargo.toml")
 
       # Either the file shouldn't be written, or we should verify the logic
       # For now, we just verify the function returns successfully

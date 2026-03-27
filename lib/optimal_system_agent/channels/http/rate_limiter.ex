@@ -131,7 +131,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.RateLimiter do
   end
 
   defp spawn_cleanup_loop do
-    spawn(fn -> cleanup_loop() end)
+    Task.Supervisor.start_child(OptimalSystemAgent.Events.TaskSupervisor, fn -> cleanup_loop() end, restart: :transient)
   end
 
   defp cleanup_loop do

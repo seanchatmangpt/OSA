@@ -8,6 +8,7 @@ defmodule OptimalSystemAgent.Healing.ReflexArcsTest do
   """
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Healing.ReflexArcs
 
   describe "status/0" do

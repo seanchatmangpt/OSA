@@ -45,6 +45,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   @ets_table :osa_experiences
   @max_experiences_per_agent 1000
   @embedding_dimensions 128
+  @call_timeout 30_000
 
   # ---------------------------------------------------------------------------
   # Public API
@@ -74,7 +75,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   """
   @spec get_recent(String.t(), non_neg_integer()) :: {:ok, [tuple()]} | {:error, term()}
   def get_recent(agent_id, limit \\ 10) when is_binary(agent_id) and is_integer(limit) do
-    GenServer.call(__MODULE__, {:get_recent, agent_id, limit}, :infinity)
+    GenServer.call(__MODULE__, {:get_recent, agent_id, limit}, @call_timeout)
   end
 
   @doc """
@@ -86,7 +87,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   def embedding(agent_id, {action, context, outcome, _feedback, _timestamp})
       when is_binary(agent_id) and is_binary(action) and is_map(context) and
            is_binary(outcome) do
-    GenServer.call(__MODULE__, {:embedding, agent_id, action, context, outcome}, :infinity)
+    GenServer.call(__MODULE__, {:embedding, agent_id, action, context, outcome}, @call_timeout)
   end
 
   def embedding(_agent_id, _experience) do
@@ -105,7 +106,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
 
   def find_similar(agent_id, {_action, _context, _outcome} = query, top_k)
       when is_binary(agent_id) and is_integer(top_k) do
-    GenServer.call(__MODULE__, {:find_similar, agent_id, query, top_k}, :infinity)
+    GenServer.call(__MODULE__, {:find_similar, agent_id, query, top_k}, @call_timeout)
   end
 
   def find_similar(_agent_id, _query, _top_k) do
@@ -119,7 +120,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   """
   @spec learning_signals(String.t()) :: {:ok, map()} | {:error, term()}
   def learning_signals(agent_id) when is_binary(agent_id) do
-    GenServer.call(__MODULE__, {:learning_signals, agent_id}, :infinity)
+    GenServer.call(__MODULE__, {:learning_signals, agent_id}, @call_timeout)
   end
 
   # ---------------------------------------------------------------------------
@@ -137,12 +138,9 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   def handle_cast({:record, agent_id, {action, context, outcome, feedback, timestamp}}, state) do
     key = {agent_id, System.monotonic_time(:nanosecond)}
 
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       :ets.insert(@ets_table, {key, {action, context, outcome, feedback, timestamp}})
       trim_agent_experiences(agent_id)
-    rescue
-      ArgumentError ->
-        Logger.warning("[ExperienceStore] ETS table error on record")
     end
 
     {:noreply, state}
@@ -151,7 +149,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   @impl true
   def handle_call({:get_recent, agent_id, limit}, _from, state) do
     result =
-      try do
+      if :ets.whereis(@ets_table) != :undefined do
         experiences =
           @ets_table
           |> :ets.match_object({agent_id_pattern(agent_id), :_})
@@ -160,8 +158,8 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
           |> Enum.take(limit)
 
         {:ok, experiences}
-      rescue
-        ArgumentError -> {:error, :ets_error}
+      else
+        {:error, :ets_error}
       end
 
     {:reply, result, state}
@@ -260,7 +258,7 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
   end
 
   defp trim_agent_experiences(agent_id) do
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       count =
         @ets_table
         |> :ets.match_object({agent_id_pattern(agent_id), :_})
@@ -270,13 +268,11 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
         excess = count - @max_experiences_per_agent
         trim_oldest_for_agent(agent_id, excess)
       end
-    rescue
-      ArgumentError -> :ok
     end
   end
 
   defp trim_oldest_for_agent(agent_id, n) do
-    try do
+    if :ets.whereis(@ets_table) != :undefined do
       @ets_table
       |> :ets.match_object({agent_id_pattern(agent_id), :_})
       |> Enum.sort_by(fn {{_aid, key}, _exp} -> key end)
@@ -284,8 +280,6 @@ defmodule OptimalSystemAgent.Learning.ExperienceStore do
       |> Enum.each(fn {{_aid, key}, _exp} ->
         :ets.delete(@ets_table, {agent_id, key})
       end)
-    rescue
-      ArgumentError -> :ok
     end
   end
 

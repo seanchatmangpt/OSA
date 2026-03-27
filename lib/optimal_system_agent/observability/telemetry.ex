@@ -162,8 +162,11 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
 
     span_ctx = Map.put(span_ctx, "otel_ctx", otel_ctx)
 
-    # Store in ETS for parent/child traversal and backward-compatible test assertions
-    :ets.insert(:telemetry_spans, {span_id, span_ctx})
+    # Store in ETS for parent/child traversal and backward-compatible test assertions.
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_spans) != :undefined do
+      :ets.insert(:telemetry_spans, {span_id, span_ctx})
+    end
 
     # Emit telemetry event for subscribers
     :telemetry.execute(
@@ -208,15 +211,18 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
   def record_metric(metric_name, value, dimensions \\ %{}) when is_number(value) do
     metric_key = {to_string(metric_name), dimensions}
 
-    # Upsert metric in ETS (increment counter or store histogram observation)
-    case :ets.lookup(:telemetry_metrics, metric_key) do
-      [{_key, metric_data}] ->
-        updated = update_metric_data(metric_data, value)
-        :ets.insert(:telemetry_metrics, {metric_key, updated})
+    # Upsert metric in ETS (increment counter or store histogram observation).
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_metrics) != :undefined do
+      case :ets.lookup(:telemetry_metrics, metric_key) do
+        [{_key, metric_data}] ->
+          updated = update_metric_data(metric_data, value)
+          :ets.insert(:telemetry_metrics, {metric_key, updated})
 
-      [] ->
-        metric_data = init_metric_data(metric_name, value)
-        :ets.insert(:telemetry_metrics, {metric_key, metric_data})
+        [] ->
+          metric_data = init_metric_data(metric_name, value)
+          :ets.insert(:telemetry_metrics, {metric_key, metric_data})
+      end
     end
 
     # Emit telemetry event for subscribers
@@ -260,6 +266,7 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
 
     # Update span status in the ETS record
     updated_span = Map.put(span_ctx, "status", to_string(status))
+    updated_span = Map.put(updated_span, "end_time_us", end_time_us)
 
     updated_span =
       if error_message do
@@ -268,7 +275,10 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
         updated_span
       end
 
-    :ets.insert(:telemetry_spans, {span_id, updated_span})
+    # Guard against the ETS table being absent (e.g. Telemetry GenServer restarting).
+    if :ets.whereis(:telemetry_spans) != :undefined do
+      :ets.insert(:telemetry_spans, {span_id, updated_span})
+    end
 
     # End the OpenTelemetry span if one was started (safe — no-ops if ctx is nil)
     end_otel_span(span_ctx["otel_ctx"], status, error_message)
@@ -466,13 +476,37 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     Process.get(:telemetry_current_span_id)
   end
 
-  # Enrich attributes with system context
+  # Enrich attributes with system context.
+  # Correlation ID is ALWAYS added — not gated on environment — so every span
+  # carries chatmangpt.run.correlation_id for cross-system trace correlation.
   defp enrich_attributes(attributes) do
+    correlation_id = get_correlation_id()
+
     Map.merge(attributes, %{
       "timestamp" => DateTime.utc_now() |> DateTime.to_iso8601(),
       "node" => node() |> to_string(),
-      "version" => get_osa_version()
+      "version" => get_osa_version(),
+      "chatmangpt.run.correlation_id" => correlation_id
     })
+  end
+
+  # Retrieve the correlation ID from the process dictionary, env var, or generate one.
+  # Sets it in the process dictionary so subsequent spans in the same process share it.
+  defp get_correlation_id do
+    case Process.get(:chatmangpt_correlation_id) do
+      nil ->
+        id = System.get_env("CHATMANGPT_CORRELATION_ID") || generate_correlation_id()
+        Process.put(:chatmangpt_correlation_id, id)
+        id
+
+      id ->
+        id
+    end
+  end
+
+  # Generate a random 32-hex-character correlation ID using :crypto.
+  defp generate_correlation_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 
   # Get OSA version

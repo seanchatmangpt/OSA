@@ -29,12 +29,12 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "HTTP requests have socket timeout" do
       # All HTTP clients must have max_time, connect_timeout
       # Prevents indefinite hangs
-      assert Code.ensure_compiled(OptimalSystemAgent.MCP.Client) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.MCP.Client)
     end
 
     test "A2A calls enforce timeout_ms parameter" do
       # A2A tool must include timeout_ms in schema
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Builtins.A2ACall)
     end
   end
 
@@ -48,7 +48,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "message-passing channels don't form cycles" do
       # All processes should follow DAG pattern (no cycles)
       # Supervision tree defines ordering
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
   end
 
@@ -56,7 +56,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "agent loop terminates on exit condition" do
       # ReAct loop must have explicit termination condition
       # Cannot loop forever
-      assert Code.ensure_compiled(OptimalSystemAgent.Agent.Loop) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Agent.Loop)
     end
 
     test "reconnection retry loop has max attempts" do
@@ -68,7 +68,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "tool execution has iteration limit" do
       # Tool loops must have max_iterations parameter
       # Prevents runaway scripts
-      assert Code.ensure_compiled(OptimalSystemAgent.Tools.Registry) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Tools.Registry)
     end
   end
 
@@ -82,7 +82,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "async task spawning is bounded" do
       # Task supervisor limits concurrent tasks
       # Not unbounded spawn
-      assert Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Supervisors.Infrastructure)
     end
   end
 
@@ -95,7 +95,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
 
     test "event bus subscriber queue has limit" do
       # Goldrush dispatch or PubSub subscribers don't queue unbounded
-      assert Code.ensure_compiled(OptimalSystemAgent.Events.Bus) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Events.Bus)
     end
 
     test "ETS cache tables have max_memory" do
@@ -115,7 +115,7 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "in-flight request tracking has limit" do
       # Maximum concurrent requests tracked
       # Not unlimited request accumulation
-      assert Code.ensure_compiled(OptimalSystemAgent.Sessions) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Sessions)
     end
 
     test "skill cache has TTL and max_items" do
@@ -141,13 +141,13 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "swarm.parallel respects worker limit" do
       # Parallel coordinator limits concurrent workers
       # E.g., max 10 parallel workers
-      assert Code.ensure_compiled(OptimalSystemAgent.Swarm) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Swarm)
     end
 
     test "consensus protocol has timeout" do
       # HotStuff or other consensus must timeout
       # Rounds don't last forever
-      assert Code.ensure_compiled(OptimalSystemAgent.Consensus) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Consensus)
     end
 
     test "heartbeat loop runs at fixed interval" do
@@ -161,13 +161,13 @@ defmodule OptimalSystemAgent.Integration.WvdASoundnessTest do
     test "A2A call → tool execution → response forms finite state machine" do
       # Request comes in, routes through A2A, tool executes, response sent
       # Should be bounded FSM with no infinite states
-      assert Code.ensure_compiled(OptimalSystemAgent.Channels.HTTP.API.A2ARoutes) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.Channels.HTTP.API.A2ARoutes)
     end
 
     test "MCP server → tool invocation → result streaming is bounded" do
       # Streaming results should have max chunk count
       # Not infinite stream
-      assert Code.ensure_compiled(OptimalSystemAgent.MCP.Server) == {:module, _}
+      {:module, _} = Code.ensure_compiled(OptimalSystemAgent.MCP.Server)
     end
   end
 

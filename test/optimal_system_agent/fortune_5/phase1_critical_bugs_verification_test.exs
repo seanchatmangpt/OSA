@@ -21,6 +21,15 @@ defmodule OptimalSystemAgent.Fortune5.Phase1CriticalBugsVerificationTest do
   @moduletag :fortune_5
   @moduletag :phase1_critical
 
+  setup do
+    OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
+    case Process.whereis(OptimalSystemAgent.Sensors.SensorRegistry) do
+      nil -> start_supervised({OptimalSystemAgent.Sensors.SensorRegistry, []})
+      _   -> :ok
+    end
+    :ok
+  end
+
   describe "Bug #1: Deep Path Handling - Depth Limit Protection" do
     test "handles 50-level directory nesting (boundary)" do
       crash_dir = "tmp/phase1_deep_50"
@@ -64,7 +73,7 @@ defmodule OptimalSystemAgent.Fortune5.Phase1CriticalBugsVerificationTest do
       )
 
       # Scan succeeds, but the file is filtered out due to depth
-      assert match?({:ok, scan_data}, result)
+      assert match?({:ok, _scan_data}, result)
       {:ok, scan_data} = result
       assert scan_data.modules.module_count == 0, "Files at depth > 50 should be excluded"
     end
@@ -410,7 +419,7 @@ defmodule OptimalSystemAgent.Fortune5.Phase1CriticalBugsVerificationTest do
       assert scan_data.modules.module_count >= 1, "Should find at least the safe module"
 
       # Malicious module should NOT be found (path traversal blocked)
-      modules = scan_data.modules
+      _modules = scan_data.modules
 
       # Verify the scan succeeded despite the attack
       assert scan_data.scan_id != nil

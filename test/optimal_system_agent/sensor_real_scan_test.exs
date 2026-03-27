@@ -29,7 +29,7 @@ defmodule OptimalSystemAgent.SensorRealScanTest do
       )
 
       # Verify scan succeeded
-      assert {:ok, scan_result} = result
+      assert {:ok, _scan_result} = result
 
       # Read real SPR data
       modules_json = File.read!(Path.join(output_dir, "modules.json"))

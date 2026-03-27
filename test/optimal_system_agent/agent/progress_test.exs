@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Agent.ProgressTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Agent.Progress
   alias OptimalSystemAgent.Agent.Progress.TaskProgress
   alias OptimalSystemAgent.Agent.Progress.AgentProgress

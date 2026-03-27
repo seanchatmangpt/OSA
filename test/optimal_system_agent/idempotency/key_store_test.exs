@@ -1,8 +1,12 @@
 defmodule OptimalSystemAgent.Idempotency.KeyStoreTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+
 
   setup do
-    {:ok, _pid} = OptimalSystemAgent.Idempotency.KeyStore.start_link()
+    case OptimalSystemAgent.Idempotency.KeyStore.start_link() do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} -> :ok
+    end
     :ok
   end
 

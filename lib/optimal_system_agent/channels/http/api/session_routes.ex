@@ -20,6 +20,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
 
   alias OptimalSystemAgent.SDK.Memory
   alias OptimalSystemAgent.Agent.Loop
+  alias OptimalSystemAgent.Memory.PendingQuestionsCache
 
   plug :match
   plug :dispatch
@@ -502,22 +503,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
 
   get "/:id/pending_questions" do
     session_id = conn.params["id"]
-
-    questions =
-      try do
-        :ets.tab2list(:osa_pending_questions)
-        |> Enum.filter(fn {_ref, meta} -> meta.session_id == session_id end)
-        |> Enum.map(fn {ref, meta} ->
-          %{
-            ref: ref,
-            question: meta.question,
-            options: meta.options,
-            asked_at: meta.asked_at
-          }
-        end)
-      rescue
-        _ -> []
-      end
+    questions = PendingQuestionsCache.get_questions_for_session(session_id)
 
     body = Jason.encode!(%{pending_questions: questions, count: length(questions)})
 

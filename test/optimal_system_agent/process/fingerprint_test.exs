@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Process.FingerprintTest do
   """
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Process.Fingerprint
 
 

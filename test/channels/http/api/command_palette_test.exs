@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.CommandPaletteTest do
   full unfiltered command list (existing behaviour, regression tests included).
   """
   use ExUnit.Case, async: false
+
+
   use Plug.Test
 
   alias OptimalSystemAgent.Channels.HTTP.API.ToolRoutes

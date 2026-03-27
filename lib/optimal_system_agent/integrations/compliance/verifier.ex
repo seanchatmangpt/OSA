@@ -200,6 +200,16 @@ defmodule OptimalSystemAgent.Integrations.Compliance.Verifier do
               verified_at: verified_at,
               cached: false
             }
+
+          :timeout ->
+            %{
+              framework: Atom.to_string(framework),
+              compliant: false,
+              violation_count: 1,
+              violations: ["verification timeout"],
+              verified_at: verified_at,
+              cached: false
+            }
         end
       end)
 

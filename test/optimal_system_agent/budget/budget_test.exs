@@ -8,6 +8,7 @@ defmodule OptimalSystemAgent.BudgetTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Budget
 
   @moduletag :capture_log
@@ -26,12 +27,12 @@ defmodule OptimalSystemAgent.BudgetTest do
     end
 
     test "accepts daily_limit option" do
-      assert {:ok, pid} = Budget.start_link([name: :test_budget_daily, daily_limit: 50.0])
+      assert {:ok, _pid} = Budget.start_link([name: :test_budget_daily, daily_limit: 50.0])
       GenServer.stop(:test_budget_daily)
     end
 
     test "accepts monthly_limit option" do
-      assert {:ok, pid} = Budget.start_link([name: :test_budget_monthly, monthly_limit: 200.0])
+      assert {:ok, _pid} = Budget.start_link([name: :test_budget_monthly, monthly_limit: 200.0])
       GenServer.stop(:test_budget_monthly)
     end
   end

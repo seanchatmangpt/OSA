@@ -16,6 +16,7 @@ defmodule OptimalSystemAgent.Supervisors.Extensions do
   @impl true
   def init(_init_arg) do
     children =
+      [OptimalSystemAgent.Yawl.Supervisor] ++
       treasury_children() ++
       updater_children()
 

@@ -134,8 +134,6 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
 
     # Initialize view for fleet if not exists
     :ok
-  rescue
-    ArgumentError -> :ok
   end
 
   @doc """

@@ -100,6 +100,20 @@ defmodule OptimalSystemAgent.Application do
     # SPR Sensor ETS tables (Fortune 5 Layer 1: Signal Collection)
     OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
 
+    # Quickstart Onboarding ETS tables (demo agents, session tracking)
+    :ets.new(:osa_demo_agents, [:named_table, :public, :set])
+    :ets.new(:osa_quickstart_sessions, [:named_table, :public, :set])
+
+    # HotStuff consensus ETS tables (proposals, views, audit trail)
+    OptimalSystemAgent.Consensus.HotStuff.init_tables()
+
+    # Decisions graph ETS table (decision tree tracking)
+    OptimalSystemAgent.Decisions.Graph.init_tables()
+
+    # Telemetry ETS tables (:telemetry_spans, :telemetry_metrics) — must exist
+    # before any GenServer or template calls Telemetry.start_span/2.
+    OptimalSystemAgent.Observability.Telemetry.init_tracer()
+
     children =
       platform_repo_children() ++
       [
@@ -118,6 +132,12 @@ defmodule OptimalSystemAgent.Application do
         # Fortune 5 Compliance Verifier (SOC2, GDPR, HIPAA, SOX)
         {OptimalSystemAgent.Integrations.Compliance.Verifier,
          [name: :compliance_verifier, bos_path: "bos"]},
+
+        # Board Intelligence — single-principal auth and encrypted push delivery.
+        # PERMANENT: cannot be stopped via HTTP endpoint or admin command.
+        # Started after TaskSupervisor and AgentServices; before HTTP endpoint.
+        # Board chair is the only human who can ever decrypt a briefing.
+        OptimalSystemAgent.Board.Supervisor,
 
         # Deferred channel startup — starts configured channels in handle_continue
         OptimalSystemAgent.Channels.Starter,

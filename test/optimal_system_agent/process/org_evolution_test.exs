@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Process.OrgEvolutionTest do
   """
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Process.OrgEvolution
 
   setup_all do

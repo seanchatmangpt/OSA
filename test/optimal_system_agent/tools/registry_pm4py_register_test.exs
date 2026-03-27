@@ -8,6 +8,7 @@ defmodule OptimalSystemAgent.Tools.Registry.PM4PyRegisterTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Tools.Registry
 
   setup_all do

@@ -91,6 +91,17 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdSpanNames do
   def jtbd_scenario_retrofit_complexity_scoring, do: "jtbd.scenario.retrofit_complexity_scoring"
 
   @doc """
+  DMAIC phase transition in a JTBD Wave 12 scenario — tracks each step through
+  the Define/Measure/Analyze/Improve/Control cycle.
+
+  Span: `span.jtbd.dmaic.phase`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec jtbd_dmaic_phase() :: String.t()
+  def jtbd_dmaic_phase, do: "jtbd.dmaic.phase"
+
+  @doc """
   All span names in this namespace.
   """
   @spec all() :: [String.t()]
@@ -103,7 +114,8 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdSpanNames do
       jtbd_scenario_icp_qualification(),
       jtbd_scenario_outreach_sequence_execution(),
       jtbd_scenario_process_intelligence_query(),
-      jtbd_scenario_retrofit_complexity_scoring()
+      jtbd_scenario_retrofit_complexity_scoring(),
+      jtbd_dmaic_phase()
     ]
   end
 end

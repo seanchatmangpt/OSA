@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Agent.ScratchpadTest do
 
   use ExUnit.Case, async: true
 
+
   alias OptimalSystemAgent.Agent.Scratchpad
 
   @moduletag :capture_log
@@ -191,17 +192,17 @@ defmodule OptimalSystemAgent.Agent.ScratchpadTest do
     end
 
     test "handles unclosed think tag" do
-      {clean, thinking} = Scratchpad.extract("<think>Unclosed")
+      {_clean, thinking} = Scratchpad.extract("<think>Unclosed")
       assert thinking == []
     end
 
     test "handles text with only closing tag" do
-      {clean, thinking} = Scratchpad.extract("Only </think> tag")
+      {_clean, thinking} = Scratchpad.extract("Only </think> tag")
       assert thinking == []
     end
 
     test "handles nested think-like tags" do
-      {clean, thinking} = Scratchpad.extract("<think>Outer <think>Inner</think></think>")
+      {_clean, thinking} = Scratchpad.extract("<think>Outer <think>Inner</think></think>")
       # Pattern is non-greedy so will match inner first
       assert is_list(thinking)
     end

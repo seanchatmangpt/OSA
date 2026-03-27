@@ -20,6 +20,7 @@ defmodule OptimalSystemAgent.Integrations.FIBO.DealCoordinatorTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Integrations.FIBO.DealCoordinator
 
   setup_all do

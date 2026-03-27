@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.Process.Mining.ClientTest do
   """
   use ExUnit.Case, async: true
 
+
   # The client is already started by OptimalSystemAgent.Supervisors.AgentServices
   # during application startup, so we don't need to start it in the setup.
   # Tests with async: true don't share state, so no teardown needed.

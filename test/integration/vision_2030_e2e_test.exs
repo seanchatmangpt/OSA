@@ -299,7 +299,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
   describe "Innovation 9: Agent Marketplace" do
     setup do
       # Publish a test skill
-      skill_id = "e2e_test_skill_#{:erlang.unique_integer([:positive])}"
+      _skill_id = "e2e_test_skill_#{:erlang.unique_integer([:positive])}"
 
       {:ok, published_id} =
         OptimalSystemAgent.Commerce.Marketplace.publish_skill("e2e-publisher", %{
@@ -360,7 +360,7 @@ defmodule OptimalSystemAgent.Integration.Vision2030E2ETest do
 
   describe "Innovation 10: Chatman Equation" do
     test "demo files exist" do
-      demo_dir = Path.join(:code.priv_dir(:optimal_system_agent), "../../demo/chatman-equation")
+      _demo_dir = Path.join(:code.priv_dir(:optimal_system_agent), "../../demo/chatman-equation")
 
       files = [
         "README.md",

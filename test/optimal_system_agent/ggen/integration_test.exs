@@ -39,7 +39,7 @@ defmodule OptimalSystemAgent.Ggen.IntegrationTest do
         "ggen/sparql should contain at least one CONSTRUCT query"
     end
 
-    test "ggen/sparql/construct_modules.rq exists and is valid", %{output_dir: output_dir} do
+    test "ggen/sparql/construct_modules.rq exists and is valid", %{output_dir: _output_dir} do
       query_path = Path.join(File.cwd!(), "ggen/sparql/construct_modules.rq")
       assert File.exists?(query_path)
 
@@ -49,7 +49,7 @@ defmodule OptimalSystemAgent.Ggen.IntegrationTest do
       assert String.contains?(content, "WHERE")
     end
 
-    test "ggen/sparql/construct_deps.rq exists and is valid", %{output_dir: output_dir} do
+    test "ggen/sparql/construct_deps.rq exists and is valid", %{output_dir: _output_dir} do
       query_path = Path.join(File.cwd!(), "ggen/sparql/construct_deps.rq")
       assert File.exists?(query_path)
 
@@ -59,7 +59,7 @@ defmodule OptimalSystemAgent.Ggen.IntegrationTest do
       assert String.contains?(content, "WHERE")
     end
 
-    test "ggen/sparql/construct_patterns.rq exists and is valid", %{output_dir: output_dir} do
+    test "ggen/sparql/construct_patterns.rq exists and is valid", %{output_dir: _output_dir} do
       query_path = Path.join(File.cwd!(), "ggen/sparql/construct_patterns.rq")
       assert File.exists?(query_path)
 

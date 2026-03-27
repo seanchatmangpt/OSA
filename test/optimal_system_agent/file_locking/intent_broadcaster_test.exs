@@ -8,6 +8,7 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.FileLocking.IntentBroadcaster
 
   @moduletag :capture_log

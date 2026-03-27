@@ -84,16 +84,47 @@ defmodule OptimalSystemAgent.Agent.Hooks do
   @doc """
   Run hooks asynchronously (fire-and-forget). Use for post-event hooks
   whose results are not needed by the caller (e.g. post_tool_use).
+
+  Uses supervised Task.Supervisor for Armstrong fault tolerance.
+  Each async hook execution has a bounded iteration count to respect
+  WvdA liveness guarantee (no infinite loops).
   """
   @spec run_async(hook_event(), map()) :: :ok
   def run_async(event, payload) do
-    Task.start(fn ->
+    # Spawn supervised async hook execution under OptimalSystemAgent.TaskSupervisor
+    # (Armstrong: supervised, let-it-crash; WvdA: bounded execution)
+    Task.Supervisor.start_child(
+      OptimalSystemAgent.TaskSupervisor,
+      __MODULE__,
+      :bounded_async_execution,
+      [event, payload, 0]
+    )
+    :ok
+  end
+
+  @doc false
+  def bounded_async_execution(event, payload, iteration) when iteration < 1 do
+    # Bounded to 1 iteration per hook async execution (no loops in run_async)
+    # If hook logic needs looping, it goes in the hook handler itself
+    try do
       hooks = hooks_for_event(event)
       started_at = System.monotonic_time(:microsecond)
       result = run_chain(hooks, payload, event)
       elapsed_us = System.monotonic_time(:microsecond) - started_at
       update_metrics_ets(event, elapsed_us, result)
-    end)
+    rescue
+      e ->
+        Logger.error(
+          "[Hooks] Async hook execution crashed: #{Exception.message(e)}\n" <>
+          Exception.format_stacktrace(__STACKTRACE__)
+        )
+        # Crash visible in supervisor (Armstrong: let-it-crash)
+        reraise(e, __STACKTRACE__)
+    end
+  end
+
+  def bounded_async_execution(_event, _payload, _iteration) do
+    # Should not reach here (max 1 iteration enforced above)
     :ok
   end
 

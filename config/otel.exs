@@ -3,10 +3,12 @@ import Config
 # OpenTelemetry Configuration — Distributed Tracing & Metrics
 #
 # This configuration sets up OpenTelemetry exporters to send traces and metrics
-# to an OTLP (OpenTelemetry Protocol) collector. The default endpoint is localhost:4317.
-# Override with environment variable: OTEL_EXPORTER_OTLP_ENDPOINT
+# to an OTLP (OpenTelemetry Protocol) collector.
+# - HTTP/protobuf (this file): default port 4318 (collector HTTP OTLP).
+# - gRPC (Weaver live-check): use WEAVER_OTLP_ENDPOINT in test.exs / weaver.exs, typically :4317.
+# Override with: OTEL_EXPORTER_OTLP_ENDPOINT
 #
-# SDK configuration for batch span processing with HTTP/protobuf export.
+# SDK: batch span processing with HTTP/protobuf export.
 
 config :opentelemetry, :resource,
   service: [name: "osa", version: "1.0.0"]

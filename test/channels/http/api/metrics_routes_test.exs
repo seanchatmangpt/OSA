@@ -1,6 +1,7 @@
 defmodule OptimalSystemAgent.Channels.HTTP.API.MetricsRoutesTest do
   use ExUnit.Case, async: true
 
+
   alias OptimalSystemAgent.Channels.HTTP.API.MetricsRoutes
   alias OptimalSystemAgent.Telemetry.Metrics
 

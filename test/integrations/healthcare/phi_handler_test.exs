@@ -38,6 +38,7 @@ defmodule OptimalSystemAgent.Integrations.Healthcare.PHIHandlerTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Integrations.Healthcare.PHIHandler
 
   setup do

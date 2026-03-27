@@ -55,26 +55,26 @@ defmodule OptimalSystemAgent.Providers.GoogleTest do
   describe "format_messages/1 (private behavior)" do
     test "converts atom role to string" do
       # From module: %{role => to_string(role), ...}
-      messages = [%{role: :user, content: "test"}]
+      _messages = [%{role: :user, content: "test"}]
       # Should convert to "user"
       assert true
     end
 
     test "preserves string roles" do
       # From module: %{role => role, ...}
-      messages = [%{"role" => "user", "parts" => [%{"text" => "test"}]}]
+      _messages = [%{"role" => "user", "parts" => [%{"text" => "test"}]}]
       assert true
     end
 
     test "wraps content in parts list with text map" do
       # From module: parts: [%{"text" => content}]
-      messages = [%{role: "user", content: "test"}]
+      _messages = [%{role: "user", content: "test"}]
       assert true
     end
 
     test "handles map with string role" do
       # From module: %{role => role} = msg -> Map.put(msg, :role, normalize_role(role))
-      messages = [%{"role" => "USER", "content" => "test"}]
+      _messages = [%{"role" => "USER", "content" => "test"}]
       assert true
     end
 
@@ -86,7 +86,7 @@ defmodule OptimalSystemAgent.Providers.GoogleTest do
 
     test "preserves existing parts structure" do
       # From module: %{parts => parts} = msg -> msg
-      messages = [%{role: "user", parts: [%{"text" => "test"}]}]
+      _messages = [%{role: "user", parts: [%{"text" => "test"}]}]
       assert true
     end
   end
@@ -102,7 +102,7 @@ defmodule OptimalSystemAgent.Providers.GoogleTest do
       #     }
       #   ]
       # }
-      tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
+      _tool = %{name: "test_func", description: "A test function", parameters: %{"type" => "object"}}
       # Should wrap in function_declarations list
       assert true
     end
@@ -285,13 +285,13 @@ defmodule OptimalSystemAgent.Providers.GoogleTest do
 
   describe "edge cases" do
     test "handles empty messages list" do
-      messages = []
+      _messages = []
       # Should format to empty list
       assert true
     end
 
     test "handles messages with mixed atom and string keys" do
-      messages = [
+      _messages = [
         %{role: :user, content: "test1"},
         %{"role" => "assistant", "content" => "test2"}
       ]

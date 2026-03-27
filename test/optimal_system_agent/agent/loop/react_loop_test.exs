@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoopTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Agent.Loop.ReactLoop
 
   @moduletag :capture_log

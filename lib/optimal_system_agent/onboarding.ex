@@ -30,12 +30,8 @@ defmodule OptimalSystemAgent.Onboarding do
       :ok
     else
       # Try Ollama auto-detect as a sensible default
-      try do
-        OptimalSystemAgent.Providers.Ollama.auto_detect_model()
-      rescue
-        _ -> :ok
-      end
-
+      # Let exceptions propagate to supervisor; supervisor decides restart strategy
+      OptimalSystemAgent.Providers.Ollama.auto_detect_model()
       :ok
     end
   end

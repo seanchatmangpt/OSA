@@ -3,7 +3,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
   Live task tracking — persistent, event-driven per-session checklist.
 
   Tasks progress through :pending → :in_progress → :completed | :failed,
-  emitting Events.Bus events on each transition. Auto-extraction from agent
+  emitting telemetry events on each transition. Auto-extraction from agent
   responses is handled via the Hooks system.
 
   Persistence: ~/.osa/sessions/{session_id}/tasks.json (atomic .tmp→rename).
@@ -11,8 +11,8 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
 
   require Logger
 
-  alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.Agent.Tasks.Persistence
+  alias OptimalSystemAgent.Events.Bus
 
   # ── Task struct ──────────────────────────────────────────────────────────
 
@@ -45,7 +45,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     sessions = Map.put(sessions, session_id, tasks)
     Persistence.save_tasks(session_id, Enum.map(tasks, &serialize_task/1))
 
-    safe_emit(:system_event, %{
+    Bus.emit(:system_event, %{
       event: :task_tracker_task_added,
       session_id: session_id,
       task_id: task.id,
@@ -54,7 +54,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
       description: task.description
     })
 
-    safe_emit(:system_event, %{
+    Bus.emit(:system_event, %{
       event: :task_created,
       task_id: task.id,
       subject: title,
@@ -77,14 +77,14 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     ids = Enum.map(new_tasks, & &1.id)
 
     Enum.each(new_tasks, fn t ->
-      safe_emit(:system_event, %{
+      Bus.emit(:system_event, %{
         event: :task_tracker_task_added,
         session_id: session_id,
         task_id: t.id,
         title: t.title
       })
 
-      safe_emit(:system_event, %{
+      Bus.emit(:system_event, %{
         event: :task_created,
         task_id: t.id,
         subject: t.title,
@@ -103,8 +103,8 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     do_update_task(sessions, session_id, task_id, fn task ->
       %{task | status: :in_progress, started_at: DateTime.utc_now()}
     end, fn task ->
-      safe_emit(:system_event, %{event: :task_tracker_task_started, session_id: session_id, task_id: task_id, title: task.title})
-      safe_emit(:system_event, %{event: :task_updated, task_id: task_id, status: "in_progress", session_id: session_id})
+      Bus.emit(:system_event, %{event: :task_tracker_task_started, session_id: session_id, task_id: task_id, title: task.title})
+      Bus.emit(:system_event, %{event: :task_updated, task_id: task_id, status: "in_progress", session_id: session_id})
     end)
   end
 
@@ -115,8 +115,8 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     do_update_task(sessions, session_id, task_id, fn task ->
       %{task | status: :completed, completed_at: DateTime.utc_now()}
     end, fn task ->
-      safe_emit(:system_event, %{event: :task_tracker_task_completed, session_id: session_id, task_id: task_id, title: task.title})
-      safe_emit(:system_event, %{event: :task_updated, task_id: task_id, status: "completed", session_id: session_id})
+      Bus.emit(:system_event, %{event: :task_tracker_task_completed, session_id: session_id, task_id: task_id, title: task.title})
+      Bus.emit(:system_event, %{event: :task_updated, task_id: task_id, status: "completed", session_id: session_id})
     end)
   end
 
@@ -127,8 +127,8 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     do_update_task(sessions, session_id, task_id, fn task ->
       %{task | status: :failed, reason: reason, completed_at: DateTime.utc_now()}
     end, fn task ->
-      safe_emit(:system_event, %{event: :task_tracker_task_failed, session_id: session_id, task_id: task_id, title: task.title, reason: reason})
-      safe_emit(:system_event, %{event: :task_updated, task_id: task_id, status: "failed", session_id: session_id})
+      Bus.emit(:system_event, %{event: :task_tracker_task_failed, session_id: session_id, task_id: task_id, title: task.title, reason: reason})
+      Bus.emit(:system_event, %{event: :task_updated, task_id: task_id, status: "failed", session_id: session_id})
     end)
   end
 
@@ -141,7 +141,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     do_update_task(sessions, session_id, task_id, fn task ->
       Map.merge(task, allowed)
     end, fn task ->
-      safe_emit(:system_event, %{
+      Bus.emit(:system_event, %{
         event: :task_tracker_task_updated,
         session_id: session_id,
         task_id: task_id,
@@ -178,7 +178,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
         if blocker_id in blocked_by, do: task,
           else: %{task | blocked_by: blocked_by ++ [blocker_id]}
       end, fn task ->
-        safe_emit(:system_event, %{event: :task_tracker_dependency_added, session_id: session_id, task_id: task_id, blocker_id: blocker_id, title: task.title})
+        Bus.emit(:system_event, %{event: :task_tracker_dependency_added, session_id: session_id, task_id: task_id, blocker_id: blocker_id, title: task.title})
       end)
     end
   end
@@ -191,7 +191,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     do_update_task(sessions, session_id, task_id, fn task ->
       %{task | blocked_by: (task.blocked_by || []) -- [blocker_id]}
     end, fn task ->
-      safe_emit(:system_event, %{event: :task_tracker_dependency_removed, session_id: session_id, task_id: task_id, blocker_id: blocker_id, title: task.title})
+      Bus.emit(:system_event, %{event: :task_tracker_dependency_removed, session_id: session_id, task_id: task_id, blocker_id: blocker_id, title: task.title})
     end)
   end
 
@@ -201,7 +201,7 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     sessions = Map.put(sessions, session_id, [])
     Persistence.save_tasks(session_id, [])
 
-    safe_emit(:system_event, %{event: :task_tracker_tasks_cleared, session_id: session_id})
+    Bus.emit(:system_event, %{event: :task_tracker_tasks_cleared, session_id: session_id})
     sessions
   end
 
@@ -360,19 +360,6 @@ defmodule OptimalSystemAgent.Agent.Tasks.Tracker do
     end
   end
 
-  defp safe_emit(event_type, payload) do
-    spawn(fn ->
-      try do
-        Bus.emit(event_type, payload)
-      rescue
-        _ -> :ok
-      catch
-        :exit, _ -> :ok
-      end
-    end)
-
-    :ok
-  end
 
   defp parse_datetime(nil), do: nil
   defp parse_datetime(str) when is_binary(str) do

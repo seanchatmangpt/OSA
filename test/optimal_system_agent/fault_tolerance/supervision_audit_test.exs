@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.FaultTolerance.SupervisionAuditTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.FaultTolerance.SupervisionAudit
 
   @moduletag :capture_log

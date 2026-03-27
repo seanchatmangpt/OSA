@@ -72,12 +72,14 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebFetch do
   end
 
   defp do_fetch(url, max_length) do
-    response =
-      Req.get(url,
-        receive_timeout: 30_000,
-        redirect: true,
-        max_redirects: 3
-      )
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      receive_timeout: 30_000,
+      redirect: true,
+      max_redirects: 3
+    ])
+
+    response = Req.get(url, opts)
 
     case response do
       {:ok, %Req.Response{status: status, body: body, headers: headers}} when status in 200..299 ->

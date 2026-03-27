@@ -292,6 +292,64 @@ defmodule OptimalSystemAgent.Providers.Registry do
     end
   end
 
+  @impl true
+  def handle_call({:get_or_fetch_context, model}, _from, state) do
+    # Atomic cache lookup + fetch: all operations in single GenServer call prevent TOCTOU
+    result =
+      case :ets.whereis(:osa_context_cache) do
+        :undefined ->
+          :error
+
+        _ ->
+          case :ets.lookup(:osa_context_cache, model) do
+            [{^model, cached_ctx}] ->
+              {:ok, cached_ctx}
+
+            [] ->
+              # Cache miss: fetch from Ollama and cache atomically (no interleaving)
+              fetch_ollama_context_and_cache(model)
+          end
+      end
+
+    {:reply, result, state}
+  end
+
+  # Fetch from Ollama API and cache result atomically
+  defp fetch_ollama_context_and_cache(model) do
+    url = Application.get_env(:optimal_system_agent, :ollama_url, "http://localhost:11434")
+
+    case Req.post("#{url}/api/show", json: %{name: model}, receive_timeout: 3_000, retry: false) do
+      {:ok, %{status: 200, body: %{"model_info" => info}}} ->
+        # Ollama returns context length in model_info under various keys
+        ctx =
+          info
+          |> Enum.find_value(fn
+            {k, v} when is_integer(v) and v > 0 ->
+              if String.contains?(k, "context_length"), do: v
+
+            _ ->
+              nil
+          end)
+
+        if ctx do
+          # Cache the result atomically (within this GenServer call, no races)
+          case :ets.whereis(:osa_context_cache) do
+            :undefined -> :ok
+            _ -> :ets.insert(:osa_context_cache, {model, ctx})
+          end
+
+          {:ok, ctx}
+        else
+          :error
+        end
+
+      _ ->
+        :error
+    end
+  rescue
+    _ -> :error
+  end
+
   # --- Private ---
 
   defp call_with_fallback(provider, module, messages, opts) do
@@ -491,53 +549,11 @@ defmodule OptimalSystemAgent.Providers.Registry do
   def context_window(_), do: Application.get_env(:optimal_system_agent, :max_context_tokens, 128_000)
 
   defp get_ollama_context(model) do
-    # Check ETS cache first
-    case :ets.whereis(:osa_context_cache) do
-      :undefined -> :ok
-      _ ->
-        case :ets.lookup(:osa_context_cache, model) do
-          [{^model, cached_ctx}] -> return_cached(cached_ctx)
-          _ -> :ok
-        end
-    end
-    |> case do
-      {:ok, _ctx} = hit -> hit
-      _ -> fetch_ollama_context(model)
-    end
-  end
-
-  defp return_cached(ctx), do: {:ok, ctx}
-
-  defp fetch_ollama_context(model) do
-    url = Application.get_env(:optimal_system_agent, :ollama_url, "http://localhost:11434")
-
-    case Req.post("#{url}/api/show", json: %{name: model}, receive_timeout: 3_000, retry: false) do
-      {:ok, %{status: 200, body: %{"model_info" => info}}} ->
-        # Ollama returns context length in model_info under various keys
-        ctx =
-          info
-          |> Enum.find_value(fn
-            {k, v} when is_integer(v) and v > 0 ->
-              if String.contains?(k, "context_length"), do: v
-            _ -> nil
-          end)
-
-        if ctx do
-          # Cache the result
-          case :ets.whereis(:osa_context_cache) do
-            :undefined -> :ok
-            _ -> :ets.insert(:osa_context_cache, {model, ctx})
-          end
-          {:ok, ctx}
-        else
-          :error
-        end
-
-      _ ->
-        :error
-    end
-  rescue
-    _ -> :error
+    # Serialize cache operations through GenServer to prevent TOCTOU (Time-of-check-time-of-use)
+    # race where two concurrent requests both miss cache and both fetch from upstream
+    GenServer.call(__MODULE__, {:get_or_fetch_context, model}, 10_000)
+  catch
+    :exit, _ -> :error
   end
 
   @doc """

@@ -26,32 +26,32 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
     end
 
     test "accepts initial balance" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_balance, balance: 100.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_balance, balance: 100.0])
       GenServer.stop(:test_treasury_balance)
     end
 
     test "accepts daily_limit" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_daily, daily_limit: 50.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_daily, daily_limit: 50.0])
       GenServer.stop(:test_treasury_daily)
     end
 
     test "accepts monthly_limit" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_monthly, monthly_limit: 500.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_monthly, monthly_limit: 500.0])
       GenServer.stop(:test_treasury_monthly)
     end
 
     test "accepts max_single" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_max, max_single: 25.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_max, max_single: 25.0])
       GenServer.stop(:test_treasury_max)
     end
 
     test "accepts min_reserve" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_min, min_reserve: 100.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_min, min_reserve: 100.0])
       GenServer.stop(:test_treasury_min)
     end
 
     test "accepts approval_threshold" do
-      assert {:ok, pid} = Treasury.start_link([name: :test_treasury_approval, approval_threshold: 50.0])
+      assert {:ok, _pid} = Treasury.start_link([name: :test_treasury_approval, approval_threshold: 50.0])
       GenServer.stop(:test_treasury_approval)
     end
   end
@@ -162,7 +162,7 @@ defmodule OptimalSystemAgent.Budget.TreasuryTest do
   describe "integration" do
     test "full treasury lifecycle" do
       # Get initial balance
-      {:ok, initial} = GenServer.call(:test_treasury, :get_balance)
+      {:ok, _initial} = GenServer.call(:test_treasury, :get_balance)
 
       # Deposit
       assert {:ok, deposit_txn} = GenServer.call(:test_treasury, {:deposit, 100.0, "test deposit"})

@@ -134,6 +134,7 @@ defmodule OptimalSystemAgent.A2A.TaskStream do
   defp topic(task_id), do: @topic_prefix <> task_id
 
   defp sse_loop(conn, task_id) do
+    # WvdA Soundness: bounded receive with 120s timeout to prevent indefinite blocking
     receive do
       {:a2a_task_event, %{task_id: ^task_id, status: status} = event} ->
         case Plug.Conn.chunk(conn, sse_event(status, event)) do
@@ -149,7 +150,8 @@ defmodule OptimalSystemAgent.A2A.TaskStream do
             conn
         end
     after
-      30_000 ->
+      120_000 ->
+        # Hard timeout after 120 seconds of inactivity; escalate to keepalive or close
         case Plug.Conn.chunk(conn, ": keepalive\n\n") do
           {:ok, conn} ->
             sse_loop(conn, task_id)

@@ -7,6 +7,7 @@ defmodule OptimalSystemAgent.Events.BusTest do
 
   use ExUnit.Case, async: false
 
+
   alias OptimalSystemAgent.Events.Bus
 
   @moduletag :capture_log

@@ -47,6 +47,7 @@ defmodule OptimalSystemAgent.Agent.Loop do
     :provider,
     :model,
     :working_dir,
+    :trace_id,
     messages: [],
     iteration: 0,
     overflow_retries: 0,
@@ -100,7 +101,10 @@ defmodule OptimalSystemAgent.Agent.Loop do
   def start_link(opts) do
     session_id = Keyword.fetch!(opts, :session_id)
     user_id = Keyword.get(opts, :user_id)
-    GenServer.start_link(__MODULE__, opts, name: {:via, Registry, {OptimalSystemAgent.SessionRegistry, session_id, user_id}})
+
+    GenServer.start_link(__MODULE__, opts,
+      name: {:via, Registry, {OptimalSystemAgent.SessionRegistry, session_id, user_id}}
+    )
   end
 
   def process_message(session_id, message, opts \\ []) do
@@ -141,6 +145,7 @@ defmodule OptimalSystemAgent.Agent.Loop do
             :ets.insert(@cancel_table, {key, true})
             Logger.info("[loop] Cancel propagated to sub-agent #{key}")
           end
+
           acc
         end,
         :ok,
@@ -204,12 +209,18 @@ defmodule OptimalSystemAgent.Agent.Loop do
     plan_mode = Map.get(restored, :plan_mode, false)
     turn_count = Map.get(restored, :turn_count, 0)
 
+    # Initialize trace_id: look up from YAWL if work item is available,
+    # otherwise generate deterministically from session_id
+    case_id = Keyword.get(opts, :case_id)
+    trace_id = initialize_trace_id(case_id, session_id)
+
     state = %__MODULE__{
       session_id: session_id,
       user_id: Keyword.get(opts, :user_id),
       channel: Keyword.get(opts, :channel, :cli),
       provider: Keyword.get(opts, :provider),
       model: Keyword.get(opts, :model),
+      trace_id: trace_id,
       messages: messages,
       iteration: iteration,
       plan_mode: plan_mode,
@@ -221,15 +232,21 @@ defmodule OptimalSystemAgent.Agent.Loop do
       allowed_tools: Keyword.get(opts, :allowed_tools),
       blocked_tools: Keyword.get(opts, :blocked_tools, []),
       system_prompt_override: Keyword.get(opts, :system_prompt_override),
-      working_dir: Keyword.get(opts, :working_dir) || Application.get_env(:optimal_system_agent, :working_dir),
+      working_dir:
+        Keyword.get(opts, :working_dir) ||
+          Application.get_env(:optimal_system_agent, :working_dir),
       strategy: nil,
       strategy_state: %{},
       started_at: DateTime.utc_now()
     }
 
     if restored != %{} do
-      Logger.info("[loop] Restored checkpoint for session #{session_id} — iteration=#{iteration}, messages=#{length(messages)}")
+      Logger.info(
+        "[loop] Restored checkpoint for session #{session_id} — iteration=#{iteration}, messages=#{length(messages)}"
+      )
     end
+
+    Logger.debug("[loop] Initialized trace_id=#{trace_id} for session #{session_id}")
 
     {:ok, state}
   end
@@ -252,6 +269,24 @@ defmodule OptimalSystemAgent.Agent.Loop do
     state = apply_overrides(state, opts)
     state = %{state | turn_count: state.turn_count + 1}
 
+    # Start OTEL span for this message processing iteration
+    {:ok, span_ctx} =
+      OptimalSystemAgent.Observability.Telemetry.start_span(
+        "agent.loop.iteration",
+        %{
+          "agent_id" => state.session_id,
+          "turn_count" => state.turn_count,
+          "iteration" => state.iteration
+        }
+      )
+
+    # Store span context in process dictionary for later cleanup
+    Process.put(:otel_span_context, %{
+      trace_id: span_ctx["trace_id"],
+      span_id: span_ctx["span_id"],
+      iteration_span: span_ctx
+    })
+
     # Clear per-message process caches
     Process.delete(:osa_git_info_cache)
     Process.delete(:osa_workspace_overview_cache)
@@ -261,13 +296,16 @@ defmodule OptimalSystemAgent.Agent.Loop do
     # 0. Prompt injection guard
     if Guardrails.prompt_injection?(message) do
       refusal = Guardrails.prompt_extraction_refusal()
+      end_iteration_span(:ok)
       {:reply, {:ok, refusal}, %{state | status: :idle}}
     else
       signal_weight = Keyword.get(opts, :signal_weight, nil)
       state = %{state | signal_weight: signal_weight}
 
       # Compact message history if needed
-      compacted = OptimalSystemAgent.Agent.Compactor.maybe_compact(state.messages) || state.messages
+      compacted =
+        OptimalSystemAgent.Agent.Compactor.maybe_compact(state.messages) || state.messages
+
       state = %{state | messages: compacted}
 
       # Build decorated message list (nudges + pre-directives + user message)
@@ -290,9 +328,26 @@ defmodule OptimalSystemAgent.Agent.Loop do
       case genre_route do
         {:respond, genre_response} ->
           state = %{state | status: :idle}
-          Bus.emit(:agent_response, %{session_id: state.session_id, response: genre_response, agent: state.session_id})
-          Phoenix.PubSub.broadcast(OptimalSystemAgent.PubSub, "osa:session:#{state.session_id}",
-            {:osa_event, %{type: :agent_response, session_id: state.session_id, response: genre_response, response_type: "genre"}})
+
+          Bus.emit(:agent_response, %{
+            session_id: state.session_id,
+            response: genre_response,
+            agent: state.session_id
+          })
+
+          Phoenix.PubSub.broadcast(
+            OptimalSystemAgent.PubSub,
+            "osa:session:#{state.session_id}",
+            {:osa_event,
+             %{
+               type: :agent_response,
+               session_id: state.session_id,
+               response: genre_response,
+               response_type: "genre"
+             }}
+          )
+
+          end_iteration_span(:ok)
           {:reply, {:ok, genre_response}, state}
 
         :execute_tools ->
@@ -381,8 +436,14 @@ defmodule OptimalSystemAgent.Agent.Loop do
         {:ok, plan_text, state} ->
           state = %{state | status: :idle}
           Telemetry.emit_context_pressure(state)
-          Phoenix.PubSub.broadcast(OptimalSystemAgent.PubSub, "osa:session:#{state.session_id}",
-            {:osa_event, %{type: :done, session_id: state.session_id}})
+
+          Phoenix.PubSub.broadcast(
+            OptimalSystemAgent.PubSub,
+            "osa:session:#{state.session_id}",
+            {:osa_event, %{type: :done, session_id: state.session_id}}
+          )
+
+          end_iteration_span(:ok)
           {:reply, {:plan, plan_text}, state}
 
         {:error, _reason, state} ->
@@ -396,27 +457,36 @@ defmodule OptimalSystemAgent.Agent.Loop do
   defp run_and_reply(state) do
     Logger.info("[loop] Entering ReactLoop for session #{state.session_id}")
 
-    {response, state} =
+    {response, state, error_status} =
       try do
-        ReactLoop.run(state)
+        {resp, st} = ReactLoop.run(state)
+        {resp, st, :ok}
       rescue
         e ->
-          Logger.error("[loop] CRASH in ReactLoop: #{Exception.message(e)}\n#{Exception.format_stacktrace(__STACKTRACE__)}")
+          Logger.error(
+            "[loop] CRASH in ReactLoop: #{Exception.message(e)}\n#{Exception.format_stacktrace(__STACKTRACE__)}"
+          )
+
           {_cat, _sev, retryable?} = ErrorClassifier.classify(e)
           state = maybe_request_healing(state, e, retryable?)
-          {"I hit an error processing that request. Check the logs for details.", state}
+          {"I hit an error processing that request. Check the logs for details.", state, :error}
       catch
         :exit, reason ->
           Logger.error("[loop] EXIT in ReactLoop: #{inspect(reason)}")
           {_cat, _sev, retryable?} = ErrorClassifier.classify(reason)
           state = maybe_request_healing(state, reason, retryable?)
-          {"I hit a timeout or process error. This usually means the LLM connection dropped — try again.", state}
+
+          {"I hit a timeout or process error. This usually means the LLM connection dropped — try again.",
+           state, :error}
       end
 
     response = maybe_scrub_prompt_leak(response)
     response = maybe_strip_dead_phrases(response)
 
-    meta = %{iteration_count: state.iteration, tools_used: Telemetry.extract_tools_used(state.messages)}
+    meta = %{
+      iteration_count: state.iteration,
+      tools_used: Telemetry.extract_tools_used(state.messages)
+    }
 
     state = %{
       state
@@ -427,13 +497,31 @@ defmodule OptimalSystemAgent.Agent.Loop do
 
     Telemetry.emit_context_pressure(state)
 
-    Bus.emit(:agent_response, %{session_id: state.session_id, response: response, agent: state.session_id})
+    Bus.emit(:agent_response, %{
+      session_id: state.session_id,
+      response: response,
+      agent: state.session_id
+    })
 
-    Phoenix.PubSub.broadcast(OptimalSystemAgent.PubSub, "osa:session:#{state.session_id}",
-      {:osa_event, %{type: :agent_response, session_id: state.session_id, response: response, response_type: "agent"}})
-    Phoenix.PubSub.broadcast(OptimalSystemAgent.PubSub, "osa:session:#{state.session_id}",
-      {:osa_event, %{type: :done, session_id: state.session_id}})
+    Phoenix.PubSub.broadcast(
+      OptimalSystemAgent.PubSub,
+      "osa:session:#{state.session_id}",
+      {:osa_event,
+       %{
+         type: :agent_response,
+         session_id: state.session_id,
+         response: response,
+         response_type: "agent"
+       }}
+    )
 
+    Phoenix.PubSub.broadcast(
+      OptimalSystemAgent.PubSub,
+      "osa:session:#{state.session_id}",
+      {:osa_event, %{type: :done, session_id: state.session_id}}
+    )
+
+    end_iteration_span(error_status)
     {:reply, {:ok, response}, state}
   end
 
@@ -441,7 +529,10 @@ defmodule OptimalSystemAgent.Agent.Loop do
 
   defp maybe_scrub_prompt_leak(response) do
     if Guardrails.response_contains_prompt_leak?(response) do
-      Logger.warning("[loop] Output guardrail: LLM response contained system prompt content — replacing with refusal")
+      Logger.warning(
+        "[loop] Output guardrail: LLM response contained system prompt content — replacing with refusal"
+      )
+
       Guardrails.prompt_extraction_refusal()
     else
       response
@@ -460,6 +551,46 @@ defmodule OptimalSystemAgent.Agent.Loop do
   defp maybe_strip_dead_phrases(response), do: response
 
   # --- Helpers ---
+
+  @doc false
+  defp initialize_trace_id(case_id, session_id)
+       when is_binary(case_id) and is_binary(session_id) do
+    # Try to look up trace_id from YAWL event stream first
+    case OptimalSystemAgent.Yawl.EventStream.lookup_trace_id(case_id) do
+      trace_id when is_binary(trace_id) ->
+        trace_id
+
+      nil ->
+        # Fall back to generating from session_id
+        generate_trace_id(session_id)
+    end
+  end
+
+  defp initialize_trace_id(_case_id, session_id) when is_binary(session_id) do
+    # No case_id provided, generate from session_id
+    generate_trace_id(session_id)
+  end
+
+  # Generate a W3C-compliant 128-bit trace_id (32 hex chars) deterministically
+  # from session_id via SHA-256 hash (first 16 bytes)
+  defp generate_trace_id(session_id) when is_binary(session_id) do
+    :crypto.hash(:sha256, session_id)
+    |> binary_part(0, 16)
+    |> Base.encode16(case: :lower)
+  end
+
+  @doc false
+  @spec end_iteration_span(atom) :: :ok
+  defp end_iteration_span(status) do
+    case Process.get(:otel_span_context) do
+      %{iteration_span: span_ctx} when is_map(span_ctx) ->
+        OptimalSystemAgent.Observability.Telemetry.end_span(span_ctx, status)
+        Process.delete(:otel_span_context)
+
+      _ ->
+        :ok
+    end
+  end
 
   defp via(session_id), do: {:via, Registry, {OptimalSystemAgent.SessionRegistry, session_id}}
 
@@ -514,7 +645,9 @@ defmodule OptimalSystemAgent.Agent.Loop do
 
   defp maybe_request_healing(state, error, retryable?) do
     if retryable? do
-      Logger.info("[loop] Requesting healing for session #{state.session_id} (error=#{inspect(error)})")
+      Logger.info(
+        "[loop] Requesting healing for session #{state.session_id} (error=#{inspect(error)})"
+      )
 
       healing_context = %{
         agent_pid: self(),
@@ -527,15 +660,24 @@ defmodule OptimalSystemAgent.Agent.Loop do
 
       case HealingOrchestrator.request_healing(state.session_id, error, healing_context) do
         {:ok, session_id} ->
-          Logger.info("[loop] Healing session #{session_id} started for agent #{state.session_id}")
+          Logger.info(
+            "[loop] Healing session #{session_id} started for agent #{state.session_id}"
+          )
+
           %{state | healing_attempted: true}
 
         {:error, reason} ->
-          Logger.warning("[loop] Healing request failed for session #{state.session_id}: #{inspect(reason)}")
+          Logger.warning(
+            "[loop] Healing request failed for session #{state.session_id}: #{inspect(reason)}"
+          )
+
           state
       end
     else
-      Logger.debug("[loop] Error not retryable — skipping healing for session #{state.session_id}")
+      Logger.debug(
+        "[loop] Error not retryable — skipping healing for session #{state.session_id}"
+      )
+
       state
     end
   end

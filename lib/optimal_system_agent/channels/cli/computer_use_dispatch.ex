@@ -174,7 +174,7 @@ defmodule OptimalSystemAgent.Channels.CLI.ComputerUseDispatch do
   defp execute_multi_tool("launch_app", %{"app" => app} = params) do
     args = params["args"] || ""
     cmd_args = if args != "", do: String.split(args), else: []
-    spawn(fn -> System.cmd("nohup", [app | cmd_args], stderr_to_stdout: true) end)
+    Task.Supervisor.start_child(OptimalSystemAgent.Events.TaskSupervisor, fn -> System.cmd("nohup", [app | cmd_args], stderr_to_stdout: true) end)
     Process.sleep(2000)
     "Launched #{app} #{args}"
   rescue
