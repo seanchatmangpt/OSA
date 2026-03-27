@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `1024`, `16384`, `100000`
   """
-  @spec conversation_context_tokens() :: :"conversation.context_tokens"
-  def conversation_context_tokens, do: :"conversation.context_tokens"
+  @spec conversation_context_tokens() :: :conversation_context_tokens
+  def conversation_context_tokens, do: :conversation_context_tokens
 
   @doc """
   Unique identifier for this conversation session.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `conv-abc123-x7y`, `session-20260325-001`
   """
-  @spec conversation_id() :: :"conversation.id"
-  def conversation_id, do: :"conversation.id"
+  @spec conversation_id() :: :conversation_id
+  def conversation_id, do: :conversation_id
 
   @doc """
   Role of the message sender in the conversation.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `user`, `assistant`
   """
-  @spec conversation_message_role() :: :"conversation.message.role"
-  def conversation_message_role, do: :"conversation.message.role"
+  @spec conversation_message_role() :: :conversation_message_role
+  def conversation_message_role, do: :conversation_message_role
 
   @doc """
   Enumerated values for `conversation.message.role`.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `claude-sonnet-4-6`, `claude-opus-4-6`
   """
-  @spec conversation_model() :: :"conversation.model"
-  def conversation_model, do: :"conversation.model"
+  @spec conversation_model() :: :conversation_model
+  def conversation_model, do: :conversation_model
 
   @doc """
   Current phase of the conversation lifecycle.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `active`, `complete`
   """
-  @spec conversation_phase() :: :"conversation.phase"
-  def conversation_phase, do: :"conversation.phase"
+  @spec conversation_phase() :: :conversation_phase
+  def conversation_phase, do: :conversation_phase
 
   @doc """
   Enumerated values for `conversation.phase`.
@@ -182,8 +182,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `512`, `1024`, `2048`
   """
-  @spec conversation_summary_tokens() :: :"conversation.summary.tokens"
-  def conversation_summary_tokens, do: :"conversation.summary.tokens"
+  @spec conversation_summary_tokens() :: :conversation_summary_tokens
+  def conversation_summary_tokens, do: :conversation_summary_tokens
 
   @doc """
   Cumulative number of tool calls made during this conversation.
@@ -194,8 +194,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `100`
   """
-  @spec conversation_tool_calls() :: :"conversation.tool_calls"
-  def conversation_tool_calls, do: :"conversation.tool_calls"
+  @spec conversation_tool_calls() :: :conversation_tool_calls
+  def conversation_tool_calls, do: :conversation_tool_calls
 
   @doc """
   Total number of turns (human+assistant message pairs) in this conversation.
@@ -206,8 +206,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `50`
   """
-  @spec conversation_turn_count() :: :"conversation.turn_count"
-  def conversation_turn_count, do: :"conversation.turn_count"
+  @spec conversation_turn_count() :: :conversation_turn_count
+  def conversation_turn_count, do: :conversation_turn_count
 
   @doc """
   Anonymized identifier of the user in this conversation (for correlation, not PII).
@@ -218,7 +218,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ConversationAttributes do
   Requirement: `recommended`
   Examples: `user-hash-abc123`, `anon-7f8d9e`
   """
-  @spec conversation_user_id() :: :"conversation.user_id"
-  def conversation_user_id, do: :"conversation.user_id"
+  @spec conversation_user_id() :: :conversation_user_id
+  def conversation_user_id, do: :conversation_user_id
 
 end

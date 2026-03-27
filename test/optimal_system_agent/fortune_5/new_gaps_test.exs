@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   @moduledoc """
   Discover additional gaps in Fortune 5 implementation.

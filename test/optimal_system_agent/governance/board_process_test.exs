@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Governance.BoardProcessTest do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
   @moduletag :governance
   @moduletag :board_process
 

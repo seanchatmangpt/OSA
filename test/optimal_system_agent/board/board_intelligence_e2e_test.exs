@@ -2,7 +2,7 @@ defmodule OptimalSystemAgent.Board.BoardIntelligenceE2ETest do
   @moduledoc """
   Pure-logic tests for the Board Chair Intelligence System.
 
-  No infrastructure required — all tests run with mix test --no-start.
+  All tests run with full OTP application startup.
   Integration tests (requiring Oxigraph) are tagged @tag :integration.
 
   WvdA: Every claim backed by assertion on actual data transformation.

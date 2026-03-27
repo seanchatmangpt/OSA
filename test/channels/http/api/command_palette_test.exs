@@ -8,7 +8,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.CommandPaletteTest do
   """
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   use Plug.Test
 

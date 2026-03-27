@@ -135,13 +135,11 @@ defmodule OptimalSystemAgent.Swarm.PatternsYawlTest do
       end
     end
 
-    test "graceful degradation: yawl_unavailable is treated as :ok by caller" do
-      # This test verifies the contract documented in patterns.ex:
-      # {:error, :yawl_unavailable} must NOT block spawning.
-      # We encode that as: the result is NOT {:error, :unsound_topology}.
+    test "yawl_unavailable returns error (fail fast)" do
+      # Phase B: YAWL Primary — fail fast when YAWL engine is unavailable
       result = simulate_yawl_check({:error, :yawl_unavailable})
-      refute result == {:error, :unsound_topology},
-             "YAWL unavailable should never block spawning"
+      assert result == {:error, :yawl_unavailable},
+             "YAWL unavailable should return error, not proceed silently"
     end
 
     test "unsound topology (fitness == 0.0) blocks spawning" do
@@ -156,10 +154,10 @@ defmodule OptimalSystemAgent.Swarm.PatternsYawlTest do
              "fitness > 0.0 must return :ok to allow agent spawning"
     end
 
-    test "yawl engine error (non-unavailable) is treated as graceful degradation" do
+    test "yawl engine error (non-unavailable) returns error (fail fast)" do
       result = simulate_yawl_check({:error, :timeout})
-      refute result == {:error, :unsound_topology},
-             "Generic YAWL error should not block spawning"
+      assert result == {:error, :yawl_unavailable},
+             "Generic YAWL error should fail fast as unavailable"
     end
   end
 
@@ -182,13 +180,14 @@ defmodule OptimalSystemAgent.Swarm.PatternsYawlTest do
 
   # Mirrors the case logic in Patterns.validate_yawl_topology/2 so we can
   # unit-test the decision table without needing the YAWL engine running.
+  # Phase B: YAWL Primary — fail fast on any error.
   defp simulate_yawl_check(yawl_result) do
     case yawl_result do
       {:error, :yawl_unavailable} ->
-        :yawl_unavailable
+        {:error, :yawl_unavailable}
 
       {:error, _reason} ->
-        :yawl_unavailable
+        {:error, :yawl_unavailable}
 
       {:ok, %{fitness: fitness}} when fitness == 0.0 ->
         {:error, :unsound_topology}

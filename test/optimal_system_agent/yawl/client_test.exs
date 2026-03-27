@@ -1,6 +1,5 @@
 defmodule OptimalSystemAgent.Yawl.ClientTest do
   use ExUnit.Case, async: false
-  @moduletag :requires_application
   alias OptimalSystemAgent.Yawl.Client
 
   setup do

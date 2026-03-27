@@ -15,6 +15,7 @@ defmodule OptimalSystemAgent.Orchestrator do
   alias OptimalSystemAgent.Agent.Tier
   alias OptimalSystemAgent.Agent.Hooks
   alias OptimalSystemAgent.Team
+  alias OptimalSystemAgent.Tracing.Context
 
 
   @doc """
@@ -38,6 +39,11 @@ defmodule OptimalSystemAgent.Orchestrator do
 
     # Create team for task tracking
     team_id = "team:#{parent_id}:#{System.unique_integer([:positive])}"
+
+    # Capture parent trace context for propagation to waves
+    parent_ctx = Context.capture()
+    trace_log = Context.format_for_logging(parent_ctx)
+    Logger.debug("[Orchestrator] run_parallel capturing parent trace: #{trace_log}")
 
     # Emit task started
     emit_event(parent_id, %{
@@ -64,7 +70,11 @@ defmodule OptimalSystemAgent.Orchestrator do
             {original_idx,
              Task.Supervisor.async_nolink(
                OptimalSystemAgent.TaskSupervisor,
-               fn -> run_subagent(config) end
+               fn ->
+                 # Restore parent trace context in child task
+                 Context.restore(parent_ctx)
+                 run_subagent(config)
+               end
              )}
           end)
 

@@ -11,7 +11,6 @@ defmodule OptimalSystemAgent.Integrations.Mesh.ConsumerTest do
 
   use ExUnit.Case
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Integrations.Mesh.Consumer
 

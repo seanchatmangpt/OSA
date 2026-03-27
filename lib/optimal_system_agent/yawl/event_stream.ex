@@ -50,6 +50,10 @@ defmodule OptimalSystemAgent.Yawl.EventStream do
 
   @doc """
   Look up the W3C trace_id derived from a YAWL case_id. Returns `nil` if not known.
+
+  Requires: Application running (ETS table initialized by supervisor).
+  Will crash if EventStream GenServer not started — this is intentional (Armstrong).
+  Use `@tag :requires_application` in tests that call this.
   """
   @spec lookup_trace_id(String.t()) :: String.t() | nil
   def lookup_trace_id(case_id) when is_binary(case_id) do

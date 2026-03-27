@@ -8,7 +8,6 @@ defmodule OptimalSystemAgent.FileLocking.RegionLockTest do
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.FileLocking.RegionLock
 

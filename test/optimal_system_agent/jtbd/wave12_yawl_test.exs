@@ -2,7 +2,7 @@ defmodule OptimalSystemAgent.Jtbd.Wave12YawlTest do
   @moduledoc """
   Tests YAWL DMAIC phase spec integration.
   Pure logic tests — no YAWL engine required.
-  All tests compatible with --no-start.
+  All tests run with full OTP application.
   """
 
   use ExUnit.Case, async: true
@@ -55,50 +55,54 @@ defmodule OptimalSystemAgent.Jtbd.Wave12YawlTest do
   end
 
   describe "validate_phase_transition/2" do
-    test "forward transition define->measure returns :ok" do
-      # Works even without YAWL engine (graceful degradation)
+    test "forward transition define->measure fails fast with YAWL unavailable" do
+      # Phase B: YAWL Primary — fail fast on YAWL unavailable (no graceful degradation)
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("define", "measure")
 
-      assert result == :ok
+      # In --no-start mode, YAWL is unavailable, so fail fast
+      assert {:error, :yawl_unavailable} = result
     end
 
-    test "forward transition measure->analyze returns :ok" do
+    test "forward transition measure->analyze fails fast with YAWL unavailable" do
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("measure", "analyze")
 
-      assert result == :ok
+      assert {:error, :yawl_unavailable} = result
     end
 
-    test "forward transition analyze->improve returns :ok" do
+    test "forward transition analyze->improve fails fast with YAWL unavailable" do
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("analyze", "improve")
 
-      assert result == :ok
+      assert {:error, :yawl_unavailable} = result
     end
 
-    test "forward transition improve->control returns :ok" do
+    test "forward transition improve->control fails fast with YAWL unavailable" do
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("improve", "control")
 
-      assert result == :ok
+      assert {:error, :yawl_unavailable} = result
     end
 
     test "backward transition measure->define returns error" do
+      # Backward transitions are caught by index logic before YAWL check
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("measure", "define")
 
-      assert {:error, _} = result
+      assert {:error, :invalid_transition} = result
     end
 
     test "backward transition control->analyze returns error" do
+      # Backward transitions are caught by index logic before YAWL check
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("control", "analyze")
 
-      assert {:error, _} = result
+      assert {:error, :invalid_transition} = result
     end
 
     test "skipping a phase returns error" do
+      # Skipped phases are caught by index logic before YAWL check
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("define", "analyze")
 
@@ -106,6 +110,7 @@ defmodule OptimalSystemAgent.Jtbd.Wave12YawlTest do
     end
 
     test "invalid current phase name returns :invalid_phase error" do
+      # Invalid phases are caught immediately, no YAWL check needed
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition(
           "invalid_phase",
@@ -116,6 +121,7 @@ defmodule OptimalSystemAgent.Jtbd.Wave12YawlTest do
     end
 
     test "invalid next phase name returns :invalid_phase error" do
+      # Invalid phases are caught immediately, no YAWL check needed
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("define", "invalid_phase")
 
@@ -123,6 +129,7 @@ defmodule OptimalSystemAgent.Jtbd.Wave12YawlTest do
     end
 
     test "both phases invalid returns :invalid_phase error" do
+      # Invalid phases are caught immediately, no YAWL check needed
       result =
         OptimalSystemAgent.JTBD.Wave12Scenario.validate_phase_transition("foo", "bar")
 

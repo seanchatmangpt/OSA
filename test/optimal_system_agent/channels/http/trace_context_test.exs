@@ -238,7 +238,6 @@ defmodule OptimalSystemAgent.Channels.HTTP.TraceContextTest do
   end
 
   describe "HTTP integration test" do
-    @moduletag :requires_application
 
     test "middleware integrates with API router" do
       # This test verifies that the middleware is registered and working

@@ -6,7 +6,6 @@ defmodule OptimalSystemAgent.Commerce.MarketplaceTest do
   """
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Commerce.Marketplace
 

@@ -109,8 +109,27 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkflow do
   defp dispatch("launch_case", %{"spec_id" => spec_id}) when is_binary(spec_id) do
     case ia_post(%{"action" => "launchCase", "specID" => spec_id}) do
       {:ok, %{"status" => "success", "value" => case_id} = result} when case_id != "" ->
+        # Step 4: Subscribe EventStream to create case → trace_id mapping
         OptimalSystemAgent.Yawl.EventStream.subscribe(case_id)
-        {:ok, result}
+
+        # Step 5: Verify trace_id created and log for task correlation
+        trace_id = OptimalSystemAgent.Yawl.EventStream.lookup_trace_id(case_id)
+
+        if trace_id do
+          Logger.debug(
+            "[YawlWorkflow] Launched case #{case_id} with trace_id=#{trace_id}"
+          )
+
+          # Return result with trace_id embedded for downstream task correlation
+          {:ok, Map.put(result, "trace_id", trace_id)}
+        else
+          Logger.warning(
+            "[YawlWorkflow] Case #{case_id} launched but trace_id not yet in ETS (EventStream may be async)"
+          )
+
+          # Still succeed — trace_id will be available shortly via EventStream
+          {:ok, result}
+        end
 
       other ->
         other
@@ -159,7 +178,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkflow do
       receive_timeout: @default_timeout
     ]
 
-    execute_request(req_opts, form_params)
+    # Step 3: Inject W3C traceparent header for distributed tracing
+    req_opts_with_trace = OptimalSystemAgent.Observability.Traceparent.add_to_request(req_opts)
+
+    execute_request(req_opts_with_trace, form_params)
   end
 
   defp ia_get(query_params) do
@@ -173,7 +195,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkflow do
       receive_timeout: @default_timeout
     ]
 
-    execute_request(req_opts, query_params)
+    # Step 3: Inject W3C traceparent header for distributed tracing
+    req_opts_with_trace = OptimalSystemAgent.Observability.Traceparent.add_to_request(req_opts)
+
+    execute_request(req_opts_with_trace, query_params)
   end
 
   defp execute_request(req_opts, context_params) do

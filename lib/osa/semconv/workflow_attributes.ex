@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec workflow_active_branches() :: :"workflow.active_branches"
-  def workflow_active_branches, do: :"workflow.active_branches"
+  @spec workflow_active_branches() :: :workflow_active_branches
+  def workflow_active_branches, do: :workflow_active_branches
 
   @doc """
   Number of active branches in a parallel split or join pattern.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`, `5`
   """
-  @spec workflow_branch_count() :: :"workflow.branch_count"
-  def workflow_branch_count, do: :"workflow.branch_count"
+  @spec workflow_branch_count() :: :workflow_branch_count
+  def workflow_branch_count, do: :workflow_branch_count
 
   @doc """
   Reason for cancellation of the workflow activity or region.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `timeout`, `user_cancelled`, `sla_breach`
   """
-  @spec workflow_cancel_reason() :: :"workflow.cancel.reason"
-  def workflow_cancel_reason, do: :"workflow.cancel.reason"
+  @spec workflow_cancel_reason() :: :workflow_cancel_reason
+  def workflow_cancel_reason, do: :workflow_cancel_reason
 
   @doc """
   The evaluated condition expression used to select an XOR branch.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `status == approved`, `amount > 1000`
   """
-  @spec workflow_choice_condition() :: :"workflow.choice.condition"
-  def workflow_choice_condition, do: :"workflow.choice.condition"
+  @spec workflow_choice_condition() :: :workflow_choice_condition
+  def workflow_choice_condition, do: :workflow_choice_condition
 
   @doc """
   Workflow engine executing the workflow.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `canopy`, `yawl`
   """
-  @spec workflow_engine() :: :"workflow.engine"
-  def workflow_engine, do: :"workflow.engine"
+  @spec workflow_engine() :: :workflow_engine
+  def workflow_engine, do: :workflow_engine
 
   @doc """
   Enumerated values for `workflow.engine`.
@@ -120,8 +120,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`
   """
-  @spec workflow_fired_branches() :: :"workflow.fired_branches"
-  def workflow_fired_branches, do: :"workflow.fired_branches"
+  @spec workflow_fired_branches() :: :workflow_fired_branches
+  def workflow_fired_branches, do: :workflow_fired_branches
 
   @doc """
   Unique identifier for the workflow instance.
@@ -132,8 +132,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `wf-20260324-001`, `canopy-workflow-abc123`
   """
-  @spec workflow_id() :: :"workflow.id"
-  def workflow_id, do: :"workflow.id"
+  @spec workflow_id() :: :workflow_id
+  def workflow_id, do: :workflow_id
 
   @doc """
   Number of completed instances out of total in multi-instance activity.
@@ -144,8 +144,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `2`, `5`
   """
-  @spec workflow_instance_completed() :: :"workflow.instance.completed"
-  def workflow_instance_completed, do: :"workflow.instance.completed"
+  @spec workflow_instance_completed() :: :workflow_instance_completed
+  def workflow_instance_completed, do: :workflow_instance_completed
 
   @doc """
   Number of active instances in a multi-instance activity pattern.
@@ -156,8 +156,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `3`, `10`, `50`
   """
-  @spec workflow_instance_count() :: :"workflow.instance.count"
-  def workflow_instance_count, do: :"workflow.instance.count"
+  @spec workflow_instance_count() :: :workflow_instance_count
+  def workflow_instance_count, do: :workflow_instance_count
 
   @doc """
   Current iteration count of a structured loop activity.
@@ -168,8 +168,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `100`
   """
-  @spec workflow_loop_iteration() :: :"workflow.loop.iteration"
-  def workflow_loop_iteration, do: :"workflow.loop.iteration"
+  @spec workflow_loop_iteration() :: :workflow_loop_iteration
+  def workflow_loop_iteration, do: :workflow_loop_iteration
 
   @doc """
   Maximum allowed iterations for a structured loop (boundedness guarantee).
@@ -180,8 +180,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `100`, `1000`
   """
-  @spec workflow_loop_max_iterations() :: :"workflow.loop.max_iterations"
-  def workflow_loop_max_iterations, do: :"workflow.loop.max_iterations"
+  @spec workflow_loop_max_iterations() :: :workflow_loop_max_iterations
+  def workflow_loop_max_iterations, do: :workflow_loop_max_iterations
 
   @doc """
   Policy for merging concurrent branches at a join point.
@@ -192,8 +192,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `all`, `first`
   """
-  @spec workflow_merge_policy() :: :"workflow.merge.policy"
-  def workflow_merge_policy, do: :"workflow.merge.policy"
+  @spec workflow_merge_policy() :: :workflow_merge_policy
+  def workflow_merge_policy, do: :workflow_merge_policy
 
   @doc """
   Enumerated values for `workflow.merge.policy`.
@@ -245,8 +245,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `process.state == 'approved'`, `budget_approved == true`
   """
-  @spec workflow_milestone_condition() :: :"workflow.milestone.condition"
-  def workflow_milestone_condition, do: :"workflow.milestone.condition"
+  @spec workflow_milestone_condition() :: :workflow_milestone_condition
+  def workflow_milestone_condition, do: :workflow_milestone_condition
 
   @doc """
   Human-readable name of the workflow definition.
@@ -257,8 +257,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `agent_onboarding`, `deal_approval`, `compliance_check`
   """
-  @spec workflow_name() :: :"workflow.name"
-  def workflow_name, do: :"workflow.name"
+  @spec workflow_name() :: :workflow_name
+  def workflow_name, do: :workflow_name
 
   @doc """
   YAWL workflow control-flow pattern applied in this step.
@@ -269,8 +269,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `sequence`, `parallel_split`, `exclusive_choice`
   """
-  @spec workflow_pattern() :: :"workflow.pattern"
-  def workflow_pattern, do: :"workflow.pattern"
+  @spec workflow_pattern() :: :workflow_pattern
+  def workflow_pattern, do: :workflow_pattern
 
   @doc """
   Enumerated values for `workflow.pattern`.
@@ -462,8 +462,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`
   """
-  @spec workflow_required_branches() :: :"workflow.required_branches"
-  def workflow_required_branches, do: :"workflow.required_branches"
+  @spec workflow_required_branches() :: :workflow_required_branches
+  def workflow_required_branches, do: :workflow_required_branches
 
   @doc """
   Number of concurrent branches created in a parallel split (WP-2).
@@ -474,8 +474,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`, `5`
   """
-  @spec workflow_split_count() :: :"workflow.split.count"
-  def workflow_split_count, do: :"workflow.split.count"
+  @spec workflow_split_count() :: :workflow_split_count
+  def workflow_split_count, do: :workflow_split_count
 
   @doc """
   Execution state of the workflow instance.
@@ -486,8 +486,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `active`, `completed`, `failed`
   """
-  @spec workflow_state() :: :"workflow.state"
-  def workflow_state, do: :"workflow.state"
+  @spec workflow_state() :: :workflow_state
+  def workflow_state, do: :workflow_state
 
   @doc """
   Enumerated values for `workflow.state`.
@@ -560,8 +560,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `validate_input`, `route_to_agent`, `generate_report`
   """
-  @spec workflow_step() :: :"workflow.step"
-  def workflow_step, do: :"workflow.step"
+  @spec workflow_step() :: :workflow_step
+  def workflow_step, do: :workflow_step
 
   @doc """
   Total number of steps completed so far in the workflow.
@@ -572,8 +572,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `12`
   """
-  @spec workflow_step_count() :: :"workflow.step_count"
-  def workflow_step_count, do: :"workflow.step_count"
+  @spec workflow_step_count() :: :workflow_step_count
+  def workflow_step_count, do: :workflow_step_count
 
   @doc """
   Timeout in milliseconds for synchronized merge to complete (Armstrong WvdA bounded).
@@ -584,8 +584,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec workflow_sync_timeout_ms() :: :"workflow.sync.timeout_ms"
-  def workflow_sync_timeout_ms, do: :"workflow.sync.timeout_ms"
+  @spec workflow_sync_timeout_ms() :: :workflow_sync_timeout_ms
+  def workflow_sync_timeout_ms, do: :workflow_sync_timeout_ms
 
   @doc """
   Total number of branches in a parallel split pattern (M in N-out-of-M).
@@ -596,8 +596,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`
   """
-  @spec workflow_total_branches() :: :"workflow.total_branches"
-  def workflow_total_branches, do: :"workflow.total_branches"
+  @spec workflow_total_branches() :: :workflow_total_branches
+  def workflow_total_branches, do: :workflow_total_branches
 
   @doc """
   The type of trigger that initiated the workflow transition.
@@ -608,8 +608,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkflowAttributes do
   Requirement: `recommended`
   Examples: `timer`, `event`, `message`, `external`, `condition`
   """
-  @spec workflow_trigger_type() :: :"workflow.trigger_type"
-  def workflow_trigger_type, do: :"workflow.trigger_type"
+  @spec workflow_trigger_type() :: :workflow_trigger_type
+  def workflow_trigger_type, do: :workflow_trigger_type
 
   @doc """
   Enumerated values for `workflow.trigger_type`.

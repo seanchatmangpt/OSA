@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Signal.PersistenceTest do
   use ExUnit.Case, async: true
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Signal.Persistence
   alias OptimalSystemAgent.Store.Signal

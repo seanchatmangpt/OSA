@@ -21,7 +21,6 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebFetchTimeoutWvDATest do
 
   use ExUnit.Case, async: true
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Tools.Builtins.WebFetch
 

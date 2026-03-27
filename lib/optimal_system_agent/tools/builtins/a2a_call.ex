@@ -85,7 +85,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url)
 
-    case Req.get(url, receive_timeout: @default_timeout) do
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      receive_timeout: @default_timeout
+    ])
+
+    case Req.get(url, opts) do
       {:ok, %{status: 200, body: body}} ->
         duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Discovered agent at #{url}")
@@ -126,11 +131,13 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url)
 
-    case Req.post(
-           url,
-           json: %{message: message},
-           receive_timeout: 60_000
-         ) do
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      json: %{message: message},
+      receive_timeout: 60_000
+    ])
+
+    case Req.post(url, opts) do
       {:ok, %{status: 200, body: body}} ->
         duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Called agent at #{url}")
@@ -173,7 +180,12 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url <> "/tools")
 
-    case Req.get(url, receive_timeout: @default_timeout) do
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      receive_timeout: @default_timeout
+    ])
+
+    case Req.get(url, opts) do
       {:ok, %{status: 200, body: body}} ->
         duration = System.monotonic_time(:microsecond) - start_time
         tools = Map.get(body, "tools", [])
@@ -215,11 +227,13 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     start_time = System.monotonic_time(:microsecond)
     url = normalize_url(agent_url <> "/tools/#{URI.encode(tool_name)}")
 
-    case Req.post(
-           url,
-           json: arguments,
-           receive_timeout: @default_timeout
-         ) do
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      json: arguments,
+      receive_timeout: @default_timeout
+    ])
+
+    case Req.post(url, opts) do
       {:ok, %{status: 200, body: body}} ->
         duration = System.monotonic_time(:microsecond) - start_time
         Logger.info("[A2A] Executed tool #{tool_name} on #{agent_url}")

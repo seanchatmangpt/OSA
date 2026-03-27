@@ -5,9 +5,9 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   Used by `test/jtbd/wave12_scenario_test.exs` and Weaver live-check spans.
 
   Also provides DMAIC phase sequence validation backed by the YAWL spec engine
-  (WCP-1 sequence pattern).  YAWL engine availability is optional: if the
-  engine is not running the function degrades gracefully and index-based logic
-  governs the decision.
+  (WCP-1 sequence pattern). Phase B: YAWL Primary — requires YAWL engine
+  availability. If the engine is unavailable, the function fails fast rather
+  than gracefully degrading to index-based logic.
   """
 
   @dmaic_phases ["define", "measure", "analyze", "improve", "control"]
@@ -101,12 +101,13 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   - `:ok`                         — valid forward transition
   - `{:error, :invalid_phase}`    — unknown phase name
   - `{:error, :invalid_transition}` — backward or non-adjacent move
+  - `{:error, :yawl_unavailable}` — YAWL engine unavailable (Phase B: YAWL Primary)
 
-  YAWL engine check is opportunistic: if the engine is unavailable the
-  index-based logic alone determines the result (graceful degradation).
+  YAWL engine check is required (fail-fast): if the engine is unavailable,
+  the error propagates rather than gracefully degrading to index-based logic.
   """
   @spec validate_phase_transition(String.t(), String.t()) ::
-          :ok | {:error, :invalid_phase | :invalid_transition}
+          :ok | {:error, :invalid_phase | :invalid_transition | :yawl_unavailable}
   def validate_phase_transition(current, next) do
     current_idx = Enum.find_index(@dmaic_phases, &(&1 == current))
     next_idx = Enum.find_index(@dmaic_phases, &(&1 == next))
@@ -121,7 +122,7 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
 
         case check_yawl_transition(dmaic_spec(), partial_log) do
           {:ok, _} -> :ok
-          {:error, :yawl_unavailable} -> :ok
+          {:error, :yawl_unavailable} -> {:error, :yawl_unavailable}
           {:error, _} -> {:error, :invalid_transition}
         end
 

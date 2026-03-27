@@ -2,10 +2,9 @@ defmodule OptimalSystemAgent.Agent.Loop.ToolExecutorNudgeTest do
   @moduledoc """
   Tests for ToolExecutor inject_read_nudges/2.
 
-  Tests the read-before-write nudge logic without starting GenServers.
-  Since inject_read_nudges depends on ETS tables that may not exist in
-  --no-start mode, we test the function's resilience and the patterns
-  it implements when ETS is available.
+  Tests the read-before-write nudge logic with full OTP startup.
+  inject_read_nudges depends on ETS tables that are created during
+  OTP application initialization.
   """
   use ExUnit.Case, async: false
 

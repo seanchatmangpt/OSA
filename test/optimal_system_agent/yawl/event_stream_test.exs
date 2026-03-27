@@ -151,7 +151,6 @@ defmodule OptimalSystemAgent.Yawl.EventStreamTest do
   # ──────────────────────────────────────────────────────────────────────────
 
   describe "telemetry metadata keys use semconv constants" do
-    @tag :requires_application
     test "INSTANCE_CREATED telemetry uses yawl.case.id key" do
       {:ok, handler_ref} = attach_telemetry_handler([:osa, :yawl, :case, :started])
 
@@ -173,7 +172,6 @@ defmodule OptimalSystemAgent.Yawl.EventStreamTest do
       :telemetry.detach(handler_ref)
     end
 
-    @tag :requires_application
     test "TASK_STARTED telemetry uses yawl.token.consumed=1 (Petri net token consumed)" do
       {:ok, handler_ref} = attach_telemetry_handler([:osa, :yawl, :task, :execution])
 
@@ -198,7 +196,6 @@ defmodule OptimalSystemAgent.Yawl.EventStreamTest do
       :telemetry.detach(handler_ref)
     end
 
-    @tag :requires_application
     test "TASK_COMPLETED telemetry uses yawl.token.produced=1 (Petri net token produced)" do
       {:ok, handler_ref} = attach_telemetry_handler([:osa, :yawl, :task, :execution])
 
@@ -220,7 +217,6 @@ defmodule OptimalSystemAgent.Yawl.EventStreamTest do
       :telemetry.detach(handler_ref)
     end
 
-    @tag :requires_application
     test "INSTANCE_COMPLETED telemetry uses yawl.case.id key" do
       {:ok, handler_ref} = attach_telemetry_handler([:osa, :yawl, :case, :completed])
 

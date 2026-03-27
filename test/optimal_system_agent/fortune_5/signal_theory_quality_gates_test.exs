@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Fortune5.SignalTheoryQualityGates do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   @moduledoc """
   Signal Theory Quality Gates for Fortune 5 outputs.

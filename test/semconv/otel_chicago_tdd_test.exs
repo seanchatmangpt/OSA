@@ -16,7 +16,6 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   """
   use ExUnit.Case, async: true
 
-  @moduletag :requires_application
 
   alias OpenTelemetry.SemConv.Incubating.HealingAttributes
   alias OpenTelemetry.SemConv.Incubating.AgentAttributes

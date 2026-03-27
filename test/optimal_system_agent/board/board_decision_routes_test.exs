@@ -4,9 +4,8 @@ defmodule OptimalSystemAgent.Board.DecisionRoutesTest do
   @moduledoc """
   Pure-logic unit tests for board decision route validation.
 
-  Tests the validation rules encoded in BoardDecisionRoutes without starting
-  the HTTP server, ETS tables, or any application process.
-  Compatible with `mix test --no-start`.
+  Tests the validation rules encoded in BoardDecisionRoutes.
+  Runs with full OTP application startup.
 
   Chicago TDD: each test asserts one specific behavior claim.
   """

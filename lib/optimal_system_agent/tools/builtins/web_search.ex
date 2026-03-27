@@ -53,15 +53,17 @@ defmodule OptimalSystemAgent.Tools.Builtins.WebSearch do
     encoded = URI.encode_query(%{"q" => query})
     url = @ddg_url <> "?" <> encoded
 
-    response =
-      Req.get(url,
-        receive_timeout: 20_000,
-        max_redirects: 3,
-        headers: [
-          {"user-agent", "Mozilla/5.0 (compatible; OSAAgent/1.0)"},
-          {"accept", "text/html,application/xhtml+xml"}
-        ]
-      )
+    # Step 3: Build request with W3C traceparent header
+    opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
+      receive_timeout: 20_000,
+      max_redirects: 3,
+      headers: [
+        {"user-agent", "Mozilla/5.0 (compatible; OSAAgent/1.0)"},
+        {"accept", "text/html,application/xhtml+xml"}
+      ]
+    ])
+
+    response = Req.get(url, opts)
 
     case response do
       {:ok, %Req.Response{status: status, body: body}} when status in 200..299 ->

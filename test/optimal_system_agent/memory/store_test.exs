@@ -10,9 +10,8 @@ defmodule OptimalSystemAgent.Memory.StoreTest do
   - SQLite persistence via Ecto
   - Periodic decay timers for relevance scoring
 
-  These tests require GenServer start and cannot run with --no-start flag.
-  The expected API (init_table/2, insert/3, get/2, etc.) differs from the
-  GenServer-based implementation which uses save/1, recall/1, and get/1 calls.
+  These tests require full OTP application startup. All OTP dependencies
+  (GenServers, ETS, supervision) are available.
   """
 
   use ExUnit.Case, async: false

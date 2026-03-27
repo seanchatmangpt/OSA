@@ -20,7 +20,6 @@ defmodule OptimalSystemAgent.Board.BriefingGeneratorTest do
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Board.BriefingTemplate
 

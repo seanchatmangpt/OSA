@@ -13,7 +13,6 @@ defmodule OptimalSystemAgent.FaultTolerance.AutonomousHealerTest do
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.FaultTolerance.AutonomousHealer
 

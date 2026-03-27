@@ -9,13 +9,11 @@ defmodule OptimalSystemAgent.Signal.PersistenceChicagoTDDTest do
   - signal_stats/0 — aggregated statistics
   - signal_patterns/1 — pattern analysis over time
 
-  Note: These tests require database access.
-  They are skipped in --no-start mode.
+  Note: These tests require full OTP application startup and database access.
   """
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Signal.Persistence
 

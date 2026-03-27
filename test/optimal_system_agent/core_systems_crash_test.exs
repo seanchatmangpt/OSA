@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.CoreSystemsCrashTest do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   @moduledoc """
   Discover gaps in OSA core systems via crash testing.

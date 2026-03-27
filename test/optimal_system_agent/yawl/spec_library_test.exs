@@ -2,7 +2,7 @@ defmodule OptimalSystemAgent.Yawl.SpecLibraryTest do
   @moduledoc """
   Tests for YAWL spec library discovery and loading.
 
-  Pure file I/O tests — compatible with --no-start.
+  Pure file I/O tests — run with full OTP application.
   Tests that depend on the actual ~/yawlv6 checkout are tagged
   :requires_yawlv6 and are skipped when the directory is absent.
   """

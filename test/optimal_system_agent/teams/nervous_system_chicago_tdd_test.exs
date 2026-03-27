@@ -14,13 +14,11 @@ defmodule OptimalSystemAgent.Teams.NervousSystemChicagoTDDTest do
 
   All public functions tested with observable behavior claims.
 
-  Note: These tests require the application to be running (Teams.Supervisor).
-  They are skipped in --no-start mode.
+  Note: These tests require full OTP application startup (Teams.Supervisor).
   """
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Teams.NervousSystem
 

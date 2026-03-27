@@ -25,6 +25,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       :description,
       :reason,
       :owner,
+      :trace_id,
+      :span_id,
       status: :pending,
       tokens_used: 0,
       blocked_by: [],
@@ -42,6 +44,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
         "description" => task.description,
         "reason" => task.reason,
         "owner" => task.owner,
+        "trace_id" => task.trace_id,
+        "span_id" => task.span_id,
         "status" => to_string(task.status),
         "tokens_used" => task.tokens_used,
         "blocked_by" => task.blocked_by,
@@ -71,7 +75,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
   Add a single task. Returns `{:ok, task_id}`.
 
   The third argument can be:
-  - a map of opts (`:description`, `:owner`, `:blocked_by`, `:metadata`)
+  - a map of opts (`:description`, `:owner`, `:blocked_by`, `:metadata`, `:trace_id`, `:span_id`)
   - a server name/pid (backward compat)
 
   When passing opts, provide the server as the fourth argument.
@@ -189,7 +193,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     state = put_in(state.sessions[session_id], tasks)
     persist(session_id, tasks)
 
-    safe_emit(:system_event, %{
+    Bus.emit(:system_event, %{
       event: :task_tracker_task_added,
       session_id: session_id,
       task_id: task.id,
@@ -199,7 +203,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     })
 
     # Emit task_created for the TUI task checklist.
-    safe_emit(:system_event, %{
+    Bus.emit(:system_event, %{
       event: :task_created,
       task_id: task.id,
       subject: title,
@@ -221,7 +225,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     ids = Enum.map(new_tasks, & &1.id)
 
     Enum.each(new_tasks, fn t ->
-      safe_emit(:system_event, %{
+      Bus.emit(:system_event, %{
         event: :task_tracker_task_added,
         session_id: session_id,
         task_id: t.id,
@@ -229,7 +233,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       })
 
       # Emit task_created for the TUI task checklist.
-      safe_emit(:system_event, %{
+      Bus.emit(:system_event, %{
         event: :task_created,
         task_id: t.id,
         subject: t.title,
@@ -251,7 +255,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       {:ok, updated_state, task} ->
         persist(session_id, updated_state.sessions[session_id])
 
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_tracker_task_started,
           session_id: session_id,
           task_id: task_id,
@@ -259,7 +263,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
         })
 
         # Emit task_updated for the TUI task checklist.
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_updated,
           task_id: task_id,
           status: "in_progress",
@@ -283,7 +287,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       {:ok, updated_state, task} ->
         persist(session_id, updated_state.sessions[session_id])
 
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_tracker_task_completed,
           session_id: session_id,
           task_id: task_id,
@@ -291,7 +295,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
         })
 
         # Emit task_updated for the TUI task checklist.
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_updated,
           task_id: task_id,
           status: "completed",
@@ -315,7 +319,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       {:ok, updated_state, task} ->
         persist(session_id, updated_state.sessions[session_id])
 
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_tracker_task_failed,
           session_id: session_id,
           task_id: task_id,
@@ -324,7 +328,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
         })
 
         # Emit task_updated for the TUI task checklist.
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_updated,
           task_id: task_id,
           status: "failed",
@@ -349,7 +353,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       {:ok, updated_state, task} ->
         persist(session_id, updated_state.sessions[session_id])
 
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_tracker_task_updated,
           session_id: session_id,
           task_id: task_id,
@@ -385,7 +389,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
         {:ok, updated_state, task} ->
           persist(session_id, updated_state.sessions[session_id])
 
-          safe_emit(:system_event, %{
+          Bus.emit(:system_event, %{
             event: :task_tracker_dependency_added,
             session_id: session_id,
             task_id: task_id,
@@ -412,7 +416,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       {:ok, updated_state, task} ->
         persist(session_id, updated_state.sessions[session_id])
 
-        safe_emit(:system_event, %{
+        Bus.emit(:system_event, %{
           event: :task_tracker_dependency_removed,
           session_id: session_id,
           task_id: task_id,
@@ -451,7 +455,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
     state = put_in(state.sessions[session_id], [])
     persist(session_id, [])
 
-    safe_emit(:system_event, %{
+    Bus.emit(:system_event, %{
       event: :task_tracker_tasks_cleared,
       session_id: session_id
     })
@@ -500,20 +504,6 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
 
   # ── Private ────────────────────────────────────────────────────────
 
-  defp safe_emit(event_type, payload) do
-    # Spawn to isolate from goldrush/Bus crashes in test environment
-    spawn(fn ->
-      try do
-        Bus.emit(event_type, payload)
-      rescue
-        _ -> :ok
-      catch
-        :exit, _ -> :ok
-      end
-    end)
-
-    :ok
-  end
 
   defp schedule_hook_registration do
     Process.send_after(self(), :register_hook, 500)
@@ -525,6 +515,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       title: title,
       description: Map.get(opts, :description),
       owner: Map.get(opts, :owner),
+      trace_id: Map.get(opts, :trace_id),
+      span_id: Map.get(opts, :span_id),
       status: :pending,
       tokens_used: 0,
       blocked_by: Map.get(opts, :blocked_by, []),
@@ -621,6 +613,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       "description" => t.description,
       "reason" => t.reason,
       "owner" => t.owner,
+      "trace_id" => t.trace_id,
+      "span_id" => t.span_id,
       "status" => to_string(t.status),
       "tokens_used" => t.tokens_used,
       "blocked_by" => t.blocked_by || [],
@@ -638,6 +632,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
       description: map["description"],
       reason: map["reason"],
       owner: map["owner"],
+      trace_id: map["trace_id"],
+      span_id: map["span_id"],
       status: String.to_existing_atom(map["status"] || "pending"),
       tokens_used: map["tokens_used"] || 0,
       blocked_by: map["blocked_by"] || [],

@@ -115,9 +115,9 @@ defmodule OptimalSystemAgent.MixProject do
       # Usage: mix test.slow
       "test.slow": ["test", "--include", "slow"],
 
-      # Unit tests without app startup (pure logic)
+      # Unit tests without integration or slow tests (full OTP)
       # Usage: mix test.unit
-      "test.unit": ["test", "--no-start", "--exclude", "integration", "--exclude", "slow"]
+      "test.unit": ["test", "--exclude", "integration", "--exclude", "slow"]
     ]
   end
 

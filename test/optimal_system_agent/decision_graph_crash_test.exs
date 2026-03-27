@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.DecisionGraphCrashTest do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   @moduledoc """
   Decision Graph crash testing - discover gaps in distributed consensus.

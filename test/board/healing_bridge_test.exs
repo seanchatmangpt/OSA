@@ -13,7 +13,6 @@ defmodule OptimalSystemAgent.Board.HealingBridgeWave9Test do
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
   @moduletag :board_healing
 
   alias OptimalSystemAgent.Board.HealingBridge

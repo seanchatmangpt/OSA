@@ -8,7 +8,6 @@ defmodule OptimalSystemAgent.Process.ProcessMiningTest do
   """
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Process.ProcessMining
 

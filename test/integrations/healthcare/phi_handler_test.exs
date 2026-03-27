@@ -38,7 +38,6 @@ defmodule OptimalSystemAgent.Integrations.Healthcare.PHIHandlerTest do
 
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   alias OptimalSystemAgent.Integrations.Healthcare.PHIHandler
 

@@ -1,7 +1,6 @@
 defmodule OptimalSystemAgent.Idempotency.KeyStoreTest do
   use ExUnit.Case, async: false
 
-  @moduletag :requires_application
 
   setup do
     case OptimalSystemAgent.Idempotency.KeyStore.start_link() do

@@ -10,7 +10,7 @@ mix setup                              # deps.get + ecto.setup + compile
 mix test                               # full suite
 mix test test/tools/                    # tool tests only
 mix test test/providers/                # provider tests only
-mix test --no-start                    # unit tests without app boot
+mix test                               # always boot the app — no --no-start
 mix test --include integration          # integration tests
 mix compile --warnings-as-errors        # zero-tolerance compilation
 mix osa.serve                          # start HTTP API server
@@ -80,6 +80,6 @@ lib/optimal_system_agent/
 ## Testing Notes
 
 - Pre-existing compile error in `consensus/proposal_test.exs` (not our code)
-- `mix test --no-start` skips ETS/application setup — pure logic tests only
+- `mix test` always — boots full OTP application. Never use `--no-start`.
 - Smoke test: `scripts/vision2030-smoke-test.sh` (16/16 tests)
 - 1730+ tests across the full suite

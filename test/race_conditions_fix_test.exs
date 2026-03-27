@@ -6,7 +6,7 @@ defmodule OptimalSystemAgent.RaceConditionsFixTest do
   3. OSA AuditTrail (Index assignment) — fixed with atomic update_counter
   4. OSA Providers.Registry (Cache lookup) — fixed with GenServer call serialization
 
-  These tests require app startup to run (not compatible with --no-start).
+  These tests require full OTP application startup with all supervision infrastructure.
   Run with: mix test test/race_conditions_fix_test.exs
   """
 

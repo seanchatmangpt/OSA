@@ -5,7 +5,7 @@ defmodule OptimalSystemAgent.Ontology.InferenceChainTest do
   Tests follow Chicago School (black-box behavior verification):
   - Real GenServer started per test (no mocks of internal state)
   - HTTP tests use an in-process raw TCP mock server (no external deps)
-  - Pure-logic tests (ETS/cascade/status) run with --no-start
+  - All tests run with full OTP application
   - HTTP tests require app (Finch pool) — tagged :integration
 
   FIRST: Fast (<100ms), Independent (isolated ETS + named server), Repeatable,

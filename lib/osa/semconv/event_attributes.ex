@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `evt-deadbeef01`, `span-4bf92f35`
   """
-  @spec event_causation_id() :: :"event.causation_id"
-  def event_causation_id, do: :"event.causation_id"
+  @spec event_causation_id() :: :event_causation_id
+  def event_causation_id, do: :event_causation_id
 
   @doc """
   Correlation ID linking related events across distributed services (trace-level grouping).
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `corr-abc123-x7y`, `req-00f067aa0ba902b7`
   """
-  @spec event_correlation_id() :: :"event.correlation_id"
-  def event_correlation_id, do: :"event.correlation_id"
+  @spec event_correlation_id() :: :event_correlation_id
+  def event_correlation_id, do: :event_correlation_id
 
   @doc """
   Delivery status of the event in the event bus.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `delivered`, `failed`
   """
-  @spec event_delivery_status() :: :"event.delivery.status"
-  def event_delivery_status, do: :"event.delivery.status"
+  @spec event_delivery_status() :: :event_delivery_status
+  def event_delivery_status, do: :event_delivery_status
 
   @doc """
   Enumerated values for `event.delivery.status`.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `agent`, `compliance`
   """
-  @spec event_domain() :: :"event.domain"
-  def event_domain, do: :"event.domain"
+  @spec event_domain() :: :event_domain
+  def event_domain, do: :event_domain
 
   @doc """
   Enumerated values for `event.domain`.
@@ -170,8 +170,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `5`
   """
-  @spec event_handler_count() :: :"event.handler.count"
-  def event_handler_count, do: :"event.handler.count"
+  @spec event_handler_count() :: :event_handler_count
+  def event_handler_count, do: :event_handler_count
 
   @doc """
   The name of the event (e.g., "agent.started", "compliance.violation.detected").
@@ -182,8 +182,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `agent.started`, `healing.triggered`, `compliance.violation.detected`
   """
-  @spec event_name() :: :"event.name"
-  def event_name, do: :"event.name"
+  @spec event_name() :: :event_name
+  def event_name, do: :event_name
 
   @doc """
   Whether this event is a replay of a previously emitted event (idempotency tracking).
@@ -193,8 +193,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec event_replay() :: :"event.replay"
-  def event_replay, do: :"event.replay"
+  @spec event_replay() :: :event_replay
+  def event_replay, do: :event_replay
 
   @doc """
   Number of routing filters applied to determine event delivery targets.
@@ -205,8 +205,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `0`, `2`, `5`
   """
-  @spec event_routing_filter_count() :: :"event.routing.filter_count"
-  def event_routing_filter_count, do: :"event.routing.filter_count"
+  @spec event_routing_filter_count() :: :event_routing_filter_count
+  def event_routing_filter_count, do: :event_routing_filter_count
 
   @doc """
   Routing strategy used to deliver the event to subscribers.
@@ -217,8 +217,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `broadcast`, `topic_based`
   """
-  @spec event_routing_strategy() :: :"event.routing.strategy"
-  def event_routing_strategy, do: :"event.routing.strategy"
+  @spec event_routing_strategy() :: :event_routing_strategy
+  def event_routing_strategy, do: :event_routing_strategy
 
   @doc """
   Enumerated values for `event.routing.strategy`.
@@ -284,8 +284,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `2.3`, `3.0-rc1`
   """
-  @spec event_schema_version() :: :"event.schema.version"
-  def event_schema_version, do: :"event.schema.version"
+  @spec event_schema_version() :: :event_schema_version
+  def event_schema_version, do: :event_schema_version
 
   @doc """
   The severity level of the event.
@@ -296,8 +296,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `info`, `error`
   """
-  @spec event_severity() :: :"event.severity"
-  def event_severity, do: :"event.severity"
+  @spec event_severity() :: :event_severity
+  def event_severity, do: :event_severity
 
   @doc """
   Enumerated values for `event.severity`.
@@ -363,8 +363,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `osa.healing`, `businessos.compliance`, `canopy.heartbeat`
   """
-  @spec event_source() :: :"event.source"
-  def event_source, do: :"event.source"
+  @spec event_source() :: :event_source
+  def event_source, do: :event_source
 
   @doc """
   Service that emitted this event (e.g., osa, businessos, canopy).
@@ -375,8 +375,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `osa`, `businessos`, `canopy`, `pm4py-rust`
   """
-  @spec event_source_service() :: :"event.source.service"
-  def event_source_service, do: :"event.source.service"
+  @spec event_source_service() :: :event_source_service
+  def event_source_service, do: :event_source_service
 
   @doc """
   Number of subscribers that received the event.
@@ -387,8 +387,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `100`
   """
-  @spec event_subscriber_count() :: :"event.subscriber.count"
-  def event_subscriber_count, do: :"event.subscriber.count"
+  @spec event_subscriber_count() :: :event_subscriber_count
+  def event_subscriber_count, do: :event_subscriber_count
 
   @doc """
   Service that is the intended consumer of this event.
@@ -399,8 +399,8 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `businessos`, `canopy`
   """
-  @spec event_target_service() :: :"event.target.service"
-  def event_target_service, do: :"event.target.service"
+  @spec event_target_service() :: :event_target_service
+  def event_target_service, do: :event_target_service
 
   @doc """
   Schema version of the event payload for forward-compatibility tracking.
@@ -411,7 +411,7 @@ defmodule OpenTelemetry.SemConv.Incubating.EventAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `2.3.1`
   """
-  @spec event_version() :: :"event.version"
-  def event_version, do: :"event.version"
+  @spec event_version() :: :event_version
+  def event_version, do: :event_version
 
 end

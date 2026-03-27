@@ -3,8 +3,8 @@ defmodule OptimalSystemAgent.Agent.LoopIterationSpansTest do
   Tests for OTEL span emission during agent loop iterations.
   Tests the OTEL Step 2 implementation.
 
-  Uses --no-start mode, so we test span mechanics directly without
-  full app initialization.
+  Runs with full OTP application startup. Tests span mechanics
+  with the complete supervision tree.
   """
   use ExUnit.Case
 

@@ -52,9 +52,9 @@ dev: ## Start OSA server (:8089, ReAct loop, tools)
 
 # ── Testing ────────────────────────────────────────────────────────────────
 
-test: ## Run unit tests (no app boot, fast)
-	@printf '$(BOLD)Running unit tests (--no-start)...$(RESET)\n'
-	mix test --no-start
+test: ## Run unit tests (with full OTP)
+	@printf '$(BOLD)Running unit tests...$(RESET)\n'
+	mix test
 
 test-all: ## Run all tests (with app + ETS + GenServers)
 	@printf '$(BOLD)Running all tests (including integration)...$(RESET)\n'

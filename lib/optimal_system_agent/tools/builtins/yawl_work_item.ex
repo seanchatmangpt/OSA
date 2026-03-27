@@ -382,7 +382,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkItem do
       receive_timeout: timeout()
     ]
 
-    case Req.request(req_opts) do
+    # Step 3: Inject W3C traceparent header for distributed tracing
+    req_opts_with_trace = OptimalSystemAgent.Observability.Traceparent.add_to_request(req_opts)
+
+    case Req.request(req_opts_with_trace) do
       {:ok, %{status: status, body: body}} when status in 200..299 ->
         {:ok, body}
 
@@ -412,7 +415,10 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkItem do
       receive_timeout: timeout()
     ]
 
-    case Req.request(req_opts) do
+    # Step 3: Inject W3C traceparent header for distributed tracing
+    req_opts_with_trace = OptimalSystemAgent.Observability.Traceparent.add_to_request(req_opts)
+
+    case Req.request(req_opts_with_trace) do
       {:ok, %{status: status, body: body}} when status in 200..299 ->
         {:ok, body}
 
