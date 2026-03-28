@@ -70,7 +70,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       {OptimalSystemAgent.Health.PM4PyMonitor, []},
 
       # Metrics collection GenServer — collects tool, provider, noise filter, and signal weight metrics
-      OptimalSystemAgent.Telemetry.Metrics
+      OptimalSystemAgent.Telemetry.Metrics,
+
+      # Native MCP server session manager (ETS-backed, max 500 sessions, 5-min TTL sweep)
+      OptimalSystemAgent.MCP.Native.SessionManager
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

@@ -377,6 +377,10 @@ defmodule OptimalSystemAgent.Channels.HTTP do
     end
   end
 
+  # ── MCP native HTTP+SSE server (Claude Desktop connectivity) ────────────
+
+  forward("/mcp", to: OptimalSystemAgent.MCP.Native.Router)
+
   # ── A2A well-known agent card (no auth) ─────────────────────────────────
 
   get "/.well-known/agent.json" do
