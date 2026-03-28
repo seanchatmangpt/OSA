@@ -81,6 +81,16 @@ defmodule OpenTelemetry.SemConv.Incubating.McpSpanNames do
   def mcp_server_metrics_collect, do: "mcp.server.metrics.collect"
 
   @doc """
+  New MCP session allocation by the StreamableHttpService server.
+
+  Span: `span.mcp.session.create`
+  Kind: `server`
+  Stability: `development`
+  """
+  @spec mcp_session_create() :: String.t()
+  def mcp_session_create, do: "mcp.session.create"
+
+  @doc """
   MCP tool analytics recording — capturing tool usage statistics for performance monitoring and capacity planning.
 
   Span: `span.mcp.tool.analytics.record`
@@ -193,6 +203,7 @@ defmodule OpenTelemetry.SemConv.Incubating.McpSpanNames do
       mcp_resource_read(),
       mcp_server_health_check(),
       mcp_server_metrics_collect(),
+      mcp_session_create(),
       mcp_tool_analytics_record(),
       mcp_tool_cache_lookup(),
       mcp_tool_compose(),

@@ -16,9 +16,9 @@ Auto-detected as priority 3 (after Anthropic, OpenAI).
 
 | Model | Speed | Context | Best For |
 |-------|-------|---------|----------|
-| `llama-3.3-70b-versatile` | ~500 tok/s | 128K | General purpose |
-| `llama-3.1-8b-instant` | ~1000 tok/s | 128K | Quick tasks |
-| `mixtral-8x7b-32768` | ~500 tok/s | 32K | Long context |
+| `openai/gpt-oss-20b` | ~500 tok/s | 128K | General purpose |
+| `openai/gpt-oss-20b` | ~1000 tok/s | 128K | Quick tasks |
+| `openai/gpt-oss-20b` | ~500 tok/s | 32K | Long context |
 
 ## Why Use Groq
 
@@ -31,5 +31,5 @@ Auto-detected as priority 3 (after Anthropic, OpenAI).
 
 ```
 /model groq
-/model groq llama-3.3-70b-versatile
+/model groq openai/gpt-oss-20b
 ```

@@ -226,7 +226,7 @@ overridden via options. Applies the fallback chain automatically on failure.
 {:ok, response} = OptimalSystemAgent.Providers.Registry.chat(
   [%{role: "user", content: "Hello"}],
   provider: :groq,
-  model: "llama-3.3-70b-versatile",
+  model: "openai/gpt-oss-20b",
   temperature: 0.7
 )
 

@@ -513,7 +513,7 @@ defmodule OptimalSystemAgent.Providers.Registry do
     # DeepSeek
     "deepseek-chat" => 128_000,
     "deepseek-reasoner" => 128_000,
-    # Groq (context varies by model)
+    # Groq
     "openai/gpt-oss-20b" => 131_072,
     # Mistral
     "mistral-large-latest" => 128_000,

@@ -131,7 +131,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           :telemetry.execute(
             [:osa, :providers, :chat, :complete],
             %{duration: duration_ms},
-            %{provider: provider_from_url(base_url), model: model}
+            %{provider: provider_from_url(base_url), model: model, correlation_id: Process.get(:chatmangpt_correlation_id)}
           )
 
           raw_content = msg["content"] || ""

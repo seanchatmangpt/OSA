@@ -44,7 +44,7 @@ MiosaProviders.Registry.chat(messages, opts)
 
 | Provider | Package Atom | Default Model |
 |----------|-------------|---------------|
-| Groq (LPU) | `:groq` | `llama-3.3-70b-versatile` |
+| Groq (LPU) | `:groq` | `openai/gpt-oss-20b` |
 | Fireworks | `:fireworks` | `llama-v3p3-70b` |
 | Together AI | `:together` | `Llama-3.3-70B` |
 | DeepSeek | `:deepseek` | `deepseek-chat` |

@@ -176,18 +176,6 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   def yawl_token_produced, do: :"yawl.token.produced"
 
   @doc """
-  YAWL work item unique identifier in caseID:taskID:uniqueID format.
-
-  Attribute: `yawl.work_item.id`
-  Type: `string`
-  Stability: `development`
-  Requirement: `recommended`
-  Examples: `case-001:TaskA:001`, `repair-7391:diagnose:002`
-  """
-  @spec yawl_work_item_id() :: :"yawl.work_item.id"
-  def yawl_work_item_id, do: :"yawl.work_item.id"
-
-  @doc """
   YAWL Workflow Control-flow Pattern identifier being exercised.
 
   Attribute: `yawl.wcp_pattern`
@@ -198,5 +186,17 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   """
   @spec yawl_wcp_pattern() :: :"yawl.wcp_pattern"
   def yawl_wcp_pattern, do: :"yawl.wcp_pattern"
+
+  @doc """
+  YAWL work item unique identifier in caseID:taskID:uniqueID format.
+
+  Attribute: `yawl.work_item.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `case-001:TaskA:001`, `repair-7391:diagnose:002`
+  """
+  @spec yawl_work_item_id() :: :"yawl.work_item.id"
+  def yawl_work_item_id, do: :"yawl.work_item.id"
 
 end

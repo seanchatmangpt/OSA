@@ -274,21 +274,21 @@ export OSA_DEFAULT_PROVIDER=groq
 export GROQ_API_KEY=your_key_here
 
 # Or via the /model command at runtime:
-# /model groq llama-3.3-70b-versatile
+# /model groq openai/gpt-oss-20b
 ```
 
 **Recovery — Hot-swap provider for a specific session**
 
 ```elixir
 # Override provider for a session via ETS (no restart needed):
-:ets.insert(:osa_session_provider_overrides, {"session_id", :groq, "llama-3.3-70b-versatile"})
+:ets.insert(:osa_session_provider_overrides, {"session_id", :groq, "openai/gpt-oss-20b"})
 ```
 
 Or via the HTTP API:
 ```bash
 curl -X POST http://localhost:8089/sessions/{id}/provider \
   -H "Content-Type: application/json" \
-  -d '{"provider": "groq", "model": "llama-3.3-70b-versatile"}'
+  -d '{"provider": "groq", "model": "openai/gpt-oss-20b"}'
 ```
 
 **Recovery — Update fallback chain at runtime**

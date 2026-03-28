@@ -194,6 +194,30 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardAttributes do
   def board_healings_triggered, do: :"board.healings_triggered"
 
   @doc """
+  ISO 8601 timestamp when Canopy received the intelligence from BusinessOS.
+
+  Attribute: `board.intelligence_received_at`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2026-03-28T12:00:00Z`
+  """
+  @spec board_intelligence_received_at() :: :"board.intelligence_received_at"
+  def board_intelligence_received_at, do: :"board.intelligence_received_at"
+
+  @doc """
+  Origin system that produced the board intelligence payload.
+
+  Attribute: `board.intelligence_source`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `business_os`, `canopy`, `osa`
+  """
+  @spec board_intelligence_source() :: :"board.intelligence_source"
+  def board_intelligence_source, do: :"board.intelligence_source"
+
+  @doc """
   Whether a Conway violation was detected (boundary time > 40% of cycle time)
 
   Attribute: `board.is_violation`
@@ -204,6 +228,30 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardAttributes do
   """
   @spec board_is_violation() :: :"board.is_violation"
   def board_is_violation, do: :"board.is_violation"
+
+  @doc """
+  Number of active cases synced to Oxigraph in this L0 sync run.
+
+  Attribute: `board.l0_sync.case_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `42`, `1500`
+  """
+  @spec board_l0_sync_case_count() :: :"board.l0_sync.case_count"
+  def board_l0_sync_case_count, do: :"board.l0_sync.case_count"
+
+  @doc """
+  Number of handoff events synced to Oxigraph in this L0 sync run.
+
+  Attribute: `board.l0_sync.handoff_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `10`, `300`
+  """
+  @spec board_l0_sync_handoff_count() :: :"board.l0_sync.handoff_count"
+  def board_l0_sync_handoff_count, do: :"board.l0_sync.handoff_count"
 
   @doc """
   Number of departments with Little's Law queue violations

@@ -711,7 +711,7 @@ Request arrives at Agent.Loop
 │         anthropic: claude-opus-4-6                             │
 │         openai:    gpt-4o                                      │
 │         google:    gemini-2.5-pro                              │
-│         groq:      llama-3.3-70b-versatile                     │
+│         groq:      openai/gpt-oss-20b                     │
 │       :specialist → sonnet-class                               │
 │         anthropic: claude-sonnet-4-6                           │
 │         openai:    gpt-4o-mini                                 │

@@ -41,46 +41,57 @@ defmodule OptimalSystemAgent.Channels.HTTP.TraceContext do
   """
   @impl Plug
   def call(conn, _opts) do
-    case get_req_header(conn, "traceparent") do
-      [header | _] ->
-        case parse_traceparent(header) do
-          {:ok, trace_id, parent_span_id, flags} ->
-            trace_context = %{
-              trace_id: trace_id,
-              parent_span_id: parent_span_id,
-              flags: flags,
-              source: :http_header
-            }
-            Process.put(:otel_trace_context, trace_context)
-            Logger.debug("[TraceContext] Extracted from header: trace_id=#{trace_id}, parent_span_id=#{parent_span_id}, flags=#{flags}")
-            conn
+    conn =
+      case get_req_header(conn, "traceparent") do
+        [header | _] ->
+          case parse_traceparent(header) do
+            {:ok, trace_id, parent_span_id, flags} ->
+              trace_context = %{
+                trace_id: trace_id,
+                parent_span_id: parent_span_id,
+                flags: flags,
+                source: :http_header
+              }
+              Process.put(:otel_trace_context, trace_context)
+              Logger.debug("[TraceContext] Extracted from header: trace_id=#{trace_id}, parent_span_id=#{parent_span_id}, flags=#{flags}")
+              conn
 
-          {:error, reason} ->
-            Logger.warning("[TraceContext] Failed to parse traceparent header: #{reason}, generating new trace_id")
-            trace_id = generate_trace_id()
-            trace_context = %{
-              trace_id: trace_id,
-              parent_span_id: nil,
-              flags: "00",
-              source: :generated
-            }
-            Process.put(:otel_trace_context, trace_context)
-            conn
-        end
+            {:error, reason} ->
+              Logger.warning("[TraceContext] Failed to parse traceparent header: #{reason}, generating new trace_id")
+              trace_id = generate_trace_id()
+              trace_context = %{
+                trace_id: trace_id,
+                parent_span_id: nil,
+                flags: "00",
+                source: :generated
+              }
+              Process.put(:otel_trace_context, trace_context)
+              conn
+          end
 
-      [] ->
-        # No traceparent header: generate new trace_id
-        trace_id = generate_trace_id()
-        trace_context = %{
-          trace_id: trace_id,
-          parent_span_id: nil,
-          flags: "00",
-          source: :generated
-        }
-        Process.put(:otel_trace_context, trace_context)
-        Logger.debug("[TraceContext] No traceparent header, generated new trace_id=#{trace_id}")
-        conn
+        [] ->
+          # No traceparent header: generate new trace_id
+          trace_id = generate_trace_id()
+          trace_context = %{
+            trace_id: trace_id,
+            parent_span_id: nil,
+            flags: "00",
+            source: :generated
+          }
+          Process.put(:otel_trace_context, trace_context)
+          Logger.debug("[TraceContext] No traceparent header, generated new trace_id=#{trace_id}")
+          conn
+      end
+
+    # Extract X-Correlation-ID into process dict for provider telemetry correlation
+    case get_req_header(conn, "x-correlation-id") do
+      [cid | _] when byte_size(cid) > 0 ->
+        Process.put(:chatmangpt_correlation_id, cid)
+      _ ->
+        :ok
     end
+
+    conn
   end
 
   @doc """

@@ -168,7 +168,7 @@ defmodule OptimalSystemAgent.Providers.Ollama do
           :telemetry.execute(
             [:osa, :providers, :chat, :complete],
             %{duration: duration_ms},
-            %{provider: :ollama, model: model}
+            %{provider: :ollama, model: model, correlation_id: Process.get(:chatmangpt_correlation_id)}
           )
 
           # Emit telemetry for tool calls if present

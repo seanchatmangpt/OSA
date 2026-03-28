@@ -54,7 +54,7 @@ defmodule OptimalSystemAgent.AgentTierChicagoTDDTest do
     end
 
     test "CRASH: Returns utility Groq model" do
-      assert Tier.model_for(:utility, :groq) == "qwen-qwq-32b"
+      assert Tier.model_for(:utility, :groq) == "openai/gpt-oss-20b"
     end
 
     test "CRASH: Returns detected model for Ollama (dynamic)" do

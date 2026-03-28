@@ -4,7 +4,7 @@
 **Tester:** Javaris Tavel
 **Platform:** Windows 11 Home (10.0.26200)
 **Elixir:** 1.19.5 | **Erlang/OTP:** 28 (erts-16.2.2)
-**Provider:** Groq (llama-3.3-70b-versatile)
+**Provider:** Groq (openai/gpt-oss-20b)
 **Repo:** https://github.com/Miosa-osa/OSA (commit: main)
 
 ---
@@ -243,7 +243,7 @@ Shell:    Git Bash (C:\Program Files\Git\usr\bin\bash.exe)
 Elixir:   1.19.5 (compiled with Erlang/OTP 28)
 Erlang:   OTP 28 [erts-16.2.2] [64-bit] [smp:12:12]
 Go:       1.25.5 windows/amd64
-Provider: Groq (llama-3.3-70b-versatile)
+Provider: Groq (openai/gpt-oss-20b)
 API Key:  GROQ_API_KEY set via config.json + env var
 NIF:      Skipped (OSA_SKIP_NIF=true)
 ```
@@ -545,7 +545,7 @@ f03aa7e fix: SSE event routing, model display, runtime paths, port handling
 
 ### Bug 19 (NEW): Health endpoint reports wrong model name
 - **`/health` returns:** `{"provider":"groq","model":"llama3.2:latest"}`
-- **Expected:** `{"provider":"groq","model":"llama-3.3-70b-versatile"}`
+- **Expected:** `{"provider":"groq","model":"openai/gpt-oss-20b"}`
 - **Root cause:** `config/runtime.exs:104` sets `:default_model` from `System.get_env("OLLAMA_MODEL")` even when provider is Groq. When `.env` contains `OLLAMA_MODEL=llama3.2:latest`, this becomes the global `:default_model` regardless of active provider.
 - **Impact:** TUI banner shows wrong model. Health endpoint reports wrong model. May confuse users and monitoring.
 - **Where to fix:** `config/runtime.exs:104` — should resolve `:default_model` based on the active provider, not hardcode OLLAMA_MODEL as the fallback. Or the health endpoint should read the provider-specific model key (e.g., `:groq_model`) instead of `:default_model`.
@@ -558,7 +558,7 @@ f03aa7e fix: SSE event routing, model display, runtime paths, port handling
   1. TUI may be sending the wrong model name from health response
   2. Groq intermittent rate limiting (seen empty responses during testing)
   3. Something different about TUI's request format vs raw curl
-- **Note:** User started backend with `iex -S mix` (not `mix osa.serve`), so `apply_config()` was never called. However, `runtime.exs` sets `:groq_api_key` and `:default_provider` directly from env vars, and the Groq provider reads `:groq_model` with a hardcoded fallback to `"llama-3.3-70b-versatile"`. Curl works fine, suggesting the issue is TUI-specific.
+- **Note:** User started backend with `iex -S mix` (not `mix osa.serve`), so `apply_config()` was never called. However, `runtime.exs` sets `:groq_api_key` and `:default_provider` directly from env vars, and the Groq provider reads `:groq_model` with a hardcoded fallback to `"openai/gpt-oss-20b"`. Curl works fine, suggesting the issue is TUI-specific.
 
 ---
 
@@ -777,7 +777,7 @@ b9fe501 fix: resolve remaining 4 bugs (7, 9, 14, 16)
 - **Verdict:** 4/5 FIXED, `/machines` still broken.
 
 ### Bug 19: Health Reports Wrong Model — STILL OPEN
-- `/health` still returns `"model":"llama3.2:latest"` instead of `"llama-3.3-70b-versatile"`
+- `/health` still returns `"model":"llama3.2:latest"` instead of `"openai/gpt-oss-20b"`
 - Root cause unchanged: `runtime.exs:104` sets `:default_model` from `OLLAMA_MODEL` env var regardless of active provider
 - `apply_config()` sets `:groq_model` correctly but health endpoint reads `:default_model`
 - **Verdict:** STILL OPEN. Not addressed in these commits.
@@ -1202,9 +1202,9 @@ After model switch, `GET /api/v1/models` now returns full provider catalogs:
     {"name": "claude-opus-4-6", "provider": "anthropic", "active": false},
     {"name": "claude-sonnet-4-6", "provider": "anthropic", "active": true},
     {"name": "claude-haiku-4-5", "provider": "anthropic", "active": false},
-    {"name": "llama-3.3-70b-versatile", "provider": "groq", "active": false},
-    {"name": "llama-3.1-8b-instant", "provider": "groq", "active": false},
-    {"name": "mixtral-8x7b-32768", "provider": "groq", "active": false}
+    {"name": "openai/gpt-oss-20b", "provider": "groq", "active": false},
+    {"name": "openai/gpt-oss-20b", "provider": "groq", "active": false},
+    {"name": "openai/gpt-oss-20b", "provider": "groq", "active": false}
   ]
 }
 ```

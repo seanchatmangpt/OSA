@@ -100,14 +100,14 @@ curl http://localhost:8089/health
   "status": "ok",
   "version": "0.2.5",
   "provider": "groq",
-  "model": "llama-3.3-70b-versatile"
+  "model": "openai/gpt-oss-20b"
 }
 ```
 
 The `model` field resolves from:
 1. `OSA_MODEL` env var (explicit override)
 2. Provider-specific env var (`GROQ_MODEL`, `ANTHROPIC_MODEL`, `OPENAI_MODEL`, etc.)
-3. Provider's built-in default (e.g., Groq → `llama-3.3-70b-versatile`)
+3. Provider's built-in default (e.g., Groq → `openai/gpt-oss-20b`)
 
 ---
 

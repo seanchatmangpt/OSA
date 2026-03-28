@@ -77,7 +77,7 @@ defmodule OptimalSystemAgent.Providers.Cohere do
           :telemetry.execute(
             [:osa, :providers, :chat, :complete],
             %{duration: duration_ms},
-            %{provider: :cohere, model: model}
+            %{provider: :cohere, model: model, correlation_id: Process.get(:chatmangpt_correlation_id)}
           )
 
           # Emit telemetry for tool calls if present

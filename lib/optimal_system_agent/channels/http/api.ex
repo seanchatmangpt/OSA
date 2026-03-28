@@ -45,6 +45,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
     /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
     /yawl        → YawlRoutes       GET /patterns, POST /check-conformance, GET /health
+    /ontology    → OntologyRoutes   POST /inference-chain/invalidate
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -179,6 +180,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── FIBO financial deal coordination (Agent 16) ───────────────────────────
   forward "/fibo", to: API.FIBORoutes
+
+  # ── Ontology / inference-chain management ────────────────────────────
+  forward "/ontology", to: API.OntologyRoutes
 
   # ── Board Chair Intelligence System — briefing + decisions + deviation ────
   # Order matters: more-specific paths first so they match before /board catch-all.

@@ -112,7 +112,7 @@ defmodule OptimalSystemAgent.Providers.Anthropic do
           :telemetry.execute(
             [:osa, :providers, :chat, :complete],
             %{duration: duration_ms},
-            %{provider: :anthropic, model: model}
+            %{provider: :anthropic, model: model, correlation_id: Process.get(:chatmangpt_correlation_id)}
           )
 
           # Emit telemetry for tool calls if present

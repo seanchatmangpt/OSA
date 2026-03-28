@@ -16,7 +16,7 @@ defmodule OptimalSystemAgent.GroqLiveTest do
 
   @moduletag :integration
 
-  @groq_model "llama-3.3-70b-versatile"
+  @groq_model "openai/gpt-oss-20b"
 
   setup do
     api_key = Application.get_env(:optimal_system_agent, :groq_api_key)

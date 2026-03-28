@@ -182,7 +182,7 @@ config :optimal_system_agent,
       case default_provider do
         :miosa -> System.get_env("MIOSA_MODEL") || "nemotron-3-miosa"
         :ollama -> System.get_env("OLLAMA_MODEL") || Application.compile_env(:optimal_system_agent, :ollama_model, "nemotron-3-super:cloud")
-        :groq -> System.get_env("GROQ_MODEL")
+        :groq -> System.get_env("GROQ_MODEL") || "openai/gpt-oss-20b"
         :anthropic -> System.get_env("ANTHROPIC_MODEL")
         :openai -> System.get_env("OPENAI_MODEL")
         :openrouter -> System.get_env("OPENROUTER_MODEL")

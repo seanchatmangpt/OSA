@@ -23,6 +23,30 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   def a2a_agent_id, do: :"a2a.agent.id"
 
   @doc """
+  Human-readable name of the A2A agent serving the request.
+
+  Attribute: `a2a.agent.name`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pm4py-rust`, `osa-agent`, `canopy-orchestrator`
+  """
+  @spec a2a_agent_name() :: :"a2a.agent.name"
+  def a2a_agent_name, do: :"a2a.agent.name"
+
+  @doc """
+  Number of output artifacts produced by a completed A2A task.
+
+  Attribute: `a2a.artifact.count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `1`, `3`, `10`
+  """
+  @spec a2a_artifact_count() :: :"a2a.artifact.count"
+  def a2a_artifact_count, do: :"a2a.artifact.count"
+
+  @doc """
   Number of bids received in the A2A auction.
 
   Attribute: `a2a.auction.bid_count`
@@ -1369,6 +1393,51 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   end
 
   @doc """
+  Role of the sender of an A2A message.
+
+  Attribute: `a2a.message.role`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  """
+  @spec a2a_message_role() :: :"a2a.message.role"
+  def a2a_message_role, do: :"a2a.message.role"
+
+  @doc """
+  Enumerated values for `a2a.message.role`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `user` | `"user"` | Message originated from a user or calling agent. |
+  | `agent` | `"agent"` | Message originated from this agent. |
+  """
+  @spec a2a_message_role_values() :: %{
+    user: :user,
+    agent: :agent
+  }
+  def a2a_message_role_values do
+    %{
+      user: :user,
+      agent: :agent
+    }
+  end
+
+  defmodule A2aMessageRoleValues do
+    @moduledoc """
+    Typed constants for the `a2a.message.role` attribute.
+    """
+
+    @doc "Message originated from a user or calling agent."
+    @spec user() :: :user
+    def user, do: :user
+
+    @doc "Message originated from this agent."
+    @spec agent() :: :agent
+    def agent, do: :agent
+
+  end
+
+  @doc """
   Size of the A2A message payload in bytes.
 
   Attribute: `a2a.message.size_bytes`
@@ -1989,6 +2058,18 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   end
 
   @doc """
+  Identifier of the A2A skill being invoked, matching the AgentCard skill list.
+
+  Attribute: `a2a.skill.id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pm4py_statistics`, `pm4py_discover_alpha`, `pm4py_conformance_token_replay`
+  """
+  @spec a2a_skill_id() :: :"a2a.skill.id"
+  def a2a_skill_id, do: :"a2a.skill.id"
+
+  @doc """
   Whether the A2A operation violated its SLA deadline.
 
   Attribute: `a2a.sla.breach`
@@ -2165,6 +2246,117 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
     @doc "low"
     @spec low() :: :low
     def low, do: :low
+
+  end
+
+  @doc """
+  Lifecycle state of an A2A task.
+
+  Attribute: `a2a.task.state`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  """
+  @spec a2a_task_state() :: :"a2a.task.state"
+  def a2a_task_state, do: :"a2a.task.state"
+
+  @doc """
+  Enumerated values for `a2a.task.state`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `submitted` | `"submitted"` | Task has been received but work has not started. |
+  | `working` | `"working"` | Task is actively being processed. |
+  | `completed` | `"completed"` | Task finished successfully. |
+  | `failed` | `"failed"` | Task terminated with an error. |
+  | `canceled` | `"canceled"` | Task was explicitly canceled. |
+  """
+  @spec a2a_task_state_values() :: %{
+    submitted: :submitted,
+    working: :working,
+    completed: :completed,
+    failed: :failed,
+    canceled: :canceled
+  }
+  def a2a_task_state_values do
+    %{
+      submitted: :submitted,
+      working: :working,
+      completed: :completed,
+      failed: :failed,
+      canceled: :canceled
+    }
+  end
+
+  defmodule A2aTaskStateValues do
+    @moduledoc """
+    Typed constants for the `a2a.task.state` attribute.
+    """
+
+    @doc "Task has been received but work has not started."
+    @spec submitted() :: :submitted
+    def submitted, do: :submitted
+
+    @doc "Task is actively being processed."
+    @spec working() :: :working
+    def working, do: :working
+
+    @doc "Task finished successfully."
+    @spec completed() :: :completed
+    def completed, do: :completed
+
+    @doc "Task terminated with an error."
+    @spec failed() :: :failed
+    def failed, do: :failed
+
+    @doc "Task was explicitly canceled."
+    @spec canceled() :: :canceled
+    def canceled, do: :canceled
+
+  end
+
+  @doc """
+  Transport protocol used for the A2A exchange.
+
+  Attribute: `a2a.transport`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  """
+  @spec a2a_transport() :: :"a2a.transport"
+  def a2a_transport, do: :"a2a.transport"
+
+  @doc """
+  Enumerated values for `a2a.transport`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `http` | `"http"` | Standard HTTP JSON-RPC transport. |
+  | `websocket` | `"websocket"` | WebSocket streaming transport. |
+  """
+  @spec a2a_transport_values() :: %{
+    http: :http,
+    websocket: :websocket
+  }
+  def a2a_transport_values do
+    %{
+      http: :http,
+      websocket: :websocket
+    }
+  end
+
+  defmodule A2aTransportValues do
+    @moduledoc """
+    Typed constants for the `a2a.transport` attribute.
+    """
+
+    @doc "Standard HTTP JSON-RPC transport."
+    @spec http() :: :http
+    def http, do: :http
+
+    @doc "WebSocket streaming transport."
+    @spec websocket() :: :websocket
+    def websocket, do: :websocket
 
   end
 

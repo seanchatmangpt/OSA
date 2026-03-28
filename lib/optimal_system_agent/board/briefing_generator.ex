@@ -45,7 +45,7 @@ defmodule OptimalSystemAgent.Board.BriefingGenerator do
   @staleness_threshold_s 7_200
 
   @sparql_query """
-  PREFIX bos: <http://businessos.dev/ontology#>
+  PREFIX bos: <https://chatmangpt.com/ontology/businessos/>
   SELECT ?property ?value
   WHERE {
     ?briefing a bos:BoardIntelligence ;
@@ -212,7 +212,7 @@ defmodule OptimalSystemAgent.Board.BriefingGenerator do
   end
 
   defp uri_to_prefixed(uri) when is_binary(uri) do
-    bos_ns = "http://businessos.dev/ontology#"
+    bos_ns = "https://chatmangpt.com/ontology/businessos/"
 
     if String.starts_with?(uri, bos_ns) do
       local = String.replace_prefix(uri, bos_ns, "")
