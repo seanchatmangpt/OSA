@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcasterTest do
   alias OptimalSystemAgent.FileLocking.IntentBroadcaster
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # Initialize ETS tables
