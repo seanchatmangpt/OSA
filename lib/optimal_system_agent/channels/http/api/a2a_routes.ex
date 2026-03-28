@@ -62,6 +62,17 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.A2ARoutes do
     |> send_resp(200, Jason.encode!(%{agents: agents}))
   end
 
+  # ── GET /registry ─────────────────────────────────────────────────
+  # Returns all agents discovered via /.well-known/agent.json probing.
+
+  get "/registry" do
+    agents = OptimalSystemAgent.A2A.Registry.all_agents()
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{agents: agents, count: length(agents)}))
+  end
+
   # ── GET /tools ───────────────────────────────────────────────────
 
   get "/tools" do

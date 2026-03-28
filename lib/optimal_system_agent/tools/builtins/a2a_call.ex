@@ -111,48 +111,49 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
 
   defp discover_agent(agent_url) do
     start_time = System.monotonic_time(:microsecond)
-    url = normalize_url(agent_url)
+    base_url = normalize_url(agent_url)
 
-    # Step 3: Build request with W3C traceparent header
+    # Try /.well-known/agent.json (MCP/A2A standard) first,
+    # fall back to /api/v1/a2a/agent-card for legacy compatibility.
+    well_known_url = "#{base_url}/.well-known/agent.json"
+    legacy_url = "#{base_url}/api/v1/a2a/agent-card"
+
     opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
-      receive_timeout: @default_timeout
+      receive_timeout: @default_timeout,
+      retry: false
     ])
 
-    case Req.get(url, opts) do
-      {:ok, %{status: 200, body: body}} ->
-        duration = System.monotonic_time(:microsecond) - start_time
-        Logger.info("[A2A] Discovered agent at #{url}")
+    result =
+      case Req.get(well_known_url, opts) do
+        {:ok, %{status: 200, body: body}} when is_map(body) ->
+          Logger.info("[A2A] Discovered agent via /.well-known/agent.json at #{base_url}")
+          {:ok, body}
 
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :ok}
-        )
+        _ ->
+          # Fall back to legacy agent-card endpoint
+          case Req.get(legacy_url, opts) do
+            {:ok, %{status: 200, body: body}} ->
+              Logger.info("[A2A] Discovered agent via legacy agent-card at #{base_url}")
+              {:ok, body}
 
-        {:ok, body}
+            {:ok, %{status: status, body: body}} ->
+              {:error, "Agent discovery failed: HTTP #{status} — #{inspect(body)}"}
 
-      {:ok, %{status: status, body: body}} ->
-        duration = System.monotonic_time(:microsecond) - start_time
+            {:error, reason} ->
+              {:error, "Agent discovery failed: #{inspect(reason)}"}
+          end
+      end
 
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :error, http_status: status}
-        )
+    duration = System.monotonic_time(:microsecond) - start_time
+    status_atom = if match?({:ok, _}, result), do: :ok, else: :error
 
-        {:error, "Agent discovery failed: HTTP #{status} — #{inspect(body)}"}
+    :telemetry.execute(
+      [:osa, :a2a, :agent_call],
+      %{duration: duration},
+      %{action: :discover, agent_url: agent_url, status: status_atom}
+    )
 
-      {:error, reason} ->
-        duration = System.monotonic_time(:microsecond) - start_time
-
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :error, reason: :connection_failed}
-        )
-
-        {:error, "Agent discovery failed: #{inspect(reason)}"}
-    end
+    result
   end
 
   defp call_agent(agent_url, message) when is_binary(message) and message != "" do

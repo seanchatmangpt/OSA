@@ -73,7 +73,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       OptimalSystemAgent.Telemetry.Metrics,
 
       # Native MCP server session manager (ETS-backed, max 500 sessions, 5-min TTL sweep)
-      OptimalSystemAgent.MCP.Native.SessionManager
+      OptimalSystemAgent.MCP.Native.SessionManager,
+
+      # A2A agent registry — probes /.well-known/agent.json for all 4 agents every 60s
+      OptimalSystemAgent.A2A.Registry
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)
