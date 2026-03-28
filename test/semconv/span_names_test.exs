@@ -15,7 +15,7 @@ defmodule OptimalSystemAgent.Semconv.SpanNamesTest do
 
   test "mcp span names match schema" do
     assert SpanNames.mcp_call() == "mcp.call"
-    assert SpanNames.mcp_tool_execute() == "mcp.tool.execute"
+    assert SpanNames.mcp_tool_execute() == "mcp.tool_execute"
   end
 
   test "process mining span names match schema" do

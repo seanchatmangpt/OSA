@@ -15,7 +15,7 @@ defmodule OptimalSystemAgent.Semconv.SpanNames do
 
   # MCP
   def mcp_call, do: "mcp.call"
-  def mcp_tool_execute, do: "mcp.tool.execute"
+  def mcp_tool_execute, do: "mcp.tool_execute"
 
   # Agent
   def agent_decision, do: "agent.decision"

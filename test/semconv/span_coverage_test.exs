@@ -19,6 +19,8 @@ defmodule OSA.Semconv.SpanCoverageTest do
   alias OpenTelemetry.SemConv.Incubating.YawlSpanNames
   alias OpenTelemetry.SemConv.Incubating.BoardSpanNames
   alias OpenTelemetry.SemConv.Incubating.JtbdSpanNames
+  alias OpenTelemetry.SemConv.Incubating.McpSpanNames
+  alias OpenTelemetry.SemConv.Incubating.A2aSpanNames
 
   # ──────────────────────────────────────────────────────────────────────────
   # Part 1: Primary SpanNames module — all constants are valid dotted strings
@@ -200,17 +202,87 @@ defmodule OSA.Semconv.SpanCoverageTest do
   # ──────────────────────────────────────────────────────────────────────────
 
   describe "no duplicate span names" do
-    test "all span names across healing + yawl + jtbd + board are unique" do
+    test "all span names across healing + yawl + jtbd + board + mcp + a2a are unique" do
       all_spans =
         HealingSpanNames.all() ++
           YawlSpanNames.all() ++
           JtbdSpanNames.all() ++
-          BoardSpanNames.all()
+          BoardSpanNames.all() ++
+          McpSpanNames.all() ++
+          A2aSpanNames.all()
 
       unique_spans = Enum.uniq(all_spans)
 
       assert length(all_spans) == length(unique_spans),
              "Duplicate span names found: #{inspect(all_spans -- unique_spans)}"
+    end
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Part 8: MCP domain spans
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe "mcp domain spans" do
+    test "mcp.tool_execute is defined in McpSpanNames" do
+      assert McpSpanNames.mcp_tool_execute() == "mcp.tool_execute"
+    end
+
+    test "McpSpanNames.all/0 contains mcp.call and mcp.connection.establish" do
+      all = McpSpanNames.all()
+      assert is_list(all)
+      assert "mcp.call" in all,
+             "McpSpanNames.all() must contain mcp.call"
+      assert "mcp.connection.establish" in all,
+             "McpSpanNames.all() must contain mcp.connection.establish"
+      assert length(all) >= 17,
+             "McpSpanNames.all() must contain at least 17 spans, got #{length(all)}"
+    end
+
+    test "all McpSpanNames constants are non-empty dotted strings with mcp. prefix" do
+      for span_name <- McpSpanNames.all() do
+        assert is_binary(span_name),
+               "McpSpanNames entry must be a string, got: #{inspect(span_name)}"
+        assert String.contains?(span_name, "."),
+               "McpSpanNames '#{span_name}' must use dotted namespace format"
+        assert String.starts_with?(span_name, "mcp."),
+               "McpSpanNames '#{span_name}' must start with 'mcp.'"
+      end
+    end
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Part 9: A2A domain spans
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe "a2a domain spans" do
+    test "a2a.call is defined in A2aSpanNames" do
+      assert A2aSpanNames.a2a_call() == "a2a.call"
+    end
+
+    test "a2a.task.delegate is defined in A2aSpanNames" do
+      assert A2aSpanNames.a2a_task_delegate() == "a2a.task.delegate"
+    end
+
+    test "A2aSpanNames.all/0 contains a2a.call and a2a.negotiate" do
+      all = A2aSpanNames.all()
+      assert is_list(all)
+      assert "a2a.call" in all,
+             "A2aSpanNames.all() must contain a2a.call"
+      assert "a2a.negotiate" in all,
+             "A2aSpanNames.all() must contain a2a.negotiate"
+      assert length(all) >= 29,
+             "A2aSpanNames.all() must contain at least 29 spans, got #{length(all)}"
+    end
+
+    test "all A2aSpanNames constants are non-empty dotted strings with a2a. prefix" do
+      for span_name <- A2aSpanNames.all() do
+        assert is_binary(span_name),
+               "A2aSpanNames entry must be a string, got: #{inspect(span_name)}"
+        assert String.contains?(span_name, "."),
+               "A2aSpanNames '#{span_name}' must use dotted namespace format"
+        assert String.starts_with?(span_name, "a2a."),
+               "A2aSpanNames '#{span_name}' must start with 'a2a.'"
+      end
     end
   end
 end
