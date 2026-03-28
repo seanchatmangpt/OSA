@@ -82,7 +82,7 @@ defmodule OptimalSystemAgent.Yawl.CaseLifecycle do
   Returns `{:ok, %{"id" => ..., "status" => "Complete"}}` or `{:error, reason}`.
   """
   @spec complete_workitem(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
-  def complete_workitem(case_id, workitem_id, data \\ "") do
+  def complete_workitem(case_id, workitem_id, data \\ "<data/>") do
     call({:complete_workitem, case_id, workitem_id, data})
   end
 

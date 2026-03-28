@@ -46,7 +46,7 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
     first = List.first(tasks) || "OutputCondition"
 
     body = input_condition(first) <> "\n" <> task_elements <> "\n" <> output_condition()
-    wrap("OSA_Sequence", body)
+    wrap("OSA_Sequence", body, tasks)
   end
 
   # ---------------------------------------------------------------------------
@@ -69,7 +69,8 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
     trigger_element =
       "<task id=\"#{trigger}\">\n" <>
         branch_flows <>
-        "\n      <join code=\"xor\"/>\n      <split code=\"and\"/>\n    </task>"
+        "\n      <join code=\"xor\"/>\n      <split code=\"and\"/>\n" <>
+        "      <decomposesTo id=\"#{trigger}\"/>\n    </task>"
 
     branch_elements =
       Enum.map_join(branches, "\n", fn b ->
@@ -85,7 +86,7 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
         "\n" <>
         output_condition()
 
-    wrap("OSA_ParallelSplit", body)
+    wrap("OSA_ParallelSplit", body, [trigger | branches])
   end
 
   # ---------------------------------------------------------------------------
@@ -101,16 +102,26 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
   @spec synchronization([String.t()], String.t()) :: String.t()
   def synchronization(branches, join_task)
       when is_list(branches) and is_binary(join_task) do
+    # InputCondition flows to ALL branches simultaneously (parallel start)
+    branch_flows =
+      Enum.map_join(branches, "\n      ", fn b ->
+        "<flowsInto><nextElementRef id=\"#{b}\"/></flowsInto>"
+      end)
+
+    input_cond =
+      "<inputCondition id=\"InputCondition\">\n" <>
+        "      " <> branch_flows <> "\n" <>
+        "    </inputCondition>"
+
     branch_elements =
       Enum.map_join(branches, "\n", fn b ->
         task_xml(b, join_task, "xor", "and")
       end)
 
-    first_branch = List.first(branches) || join_task
     join_element = task_xml(join_task, "OutputCondition", "and", "and")
 
     body =
-      input_condition(first_branch) <>
+      input_cond <>
         "\n" <>
         branch_elements <>
         "\n" <>
@@ -118,7 +129,7 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
         "\n" <>
         output_condition()
 
-    wrap("OSA_Synchronization", body)
+    wrap("OSA_Synchronization", body, branches ++ [join_task])
   end
 
   # ---------------------------------------------------------------------------
@@ -142,7 +153,8 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
     decision_element =
       "<task id=\"#{decision}\">\n" <>
         decision_flows <>
-        "\n      <join code=\"xor\"/>\n      <split code=\"xor\"/>\n    </task>"
+        "\n      <join code=\"xor\"/>\n      <split code=\"xor\"/>\n" <>
+        "      <decomposesTo id=\"#{decision}\"/>\n    </task>"
 
     branch_elements =
       Enum.map_join(branches, "\n", fn {_cond, task_name} ->
@@ -158,7 +170,8 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
         "\n" <>
         output_condition()
 
-    wrap("OSA_ExclusiveChoice", body)
+    branch_task_ids = Enum.map(branches, fn {_cond, task_name} -> task_name end)
+    wrap("OSA_ExclusiveChoice", body, [decision | branch_task_ids])
   end
 
   # ---------------------------------------------------------------------------
@@ -174,7 +187,15 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
       ~s( xsi:schemaLocation="#{@schema_location}">)
   end
 
-  defp wrap(uri, body) do
+  defp wrap(uri, body, task_ids) do
+    decompositions =
+      task_ids
+      |> Enum.uniq()
+      |> Enum.map(fn t ->
+        ~s(  <decomposition id="#{t}" xsi:type="WebServiceGatewayFactsType"/>)
+      end)
+      |> Enum.join("\n")
+
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" <>
       open_tag() <>
       "\n  <specification uri=\"#{uri}\">\n" <>
@@ -185,7 +206,8 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
       String.trim(body) <>
       "\n      </processControlElements>\n" <>
       "    </rootNet>\n" <>
-      "  </specification>\n" <>
+      decompositions <>
+      "\n  </specification>\n" <>
       "</specificationSet>\n"
   end
 
@@ -208,6 +230,7 @@ defmodule OptimalSystemAgent.Yawl.SpecBuilder do
       "      <flowsInto><nextElementRef id=\"#{next_id}\"/></flowsInto>\n" <>
       "      <join code=\"#{join_code}\"/>\n" <>
       "      <split code=\"#{split_code}\"/>\n" <>
+      "      <decomposesTo id=\"#{task_id}\"/>\n" <>
       "    </task>"
   end
 end

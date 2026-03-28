@@ -187,4 +187,16 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   @spec yawl_work_item_id() :: :"yawl.work_item.id"
   def yawl_work_item_id, do: :"yawl.work_item.id"
 
+  @doc """
+  YAWL Workflow Control-flow Pattern identifier being exercised.
+
+  Attribute: `yawl.wcp_pattern`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `WCP01`, `WCP02`, `WCP03`, `WCP04`
+  """
+  @spec yawl_wcp_pattern() :: :"yawl.wcp_pattern"
+  def yawl_wcp_pattern, do: :"yawl.wcp_pattern"
+
 end
