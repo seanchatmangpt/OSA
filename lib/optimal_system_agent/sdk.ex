@@ -522,10 +522,39 @@ defmodule OptimalSystemAgent.SDK do
   # ── Command ───────────────────────────────────────────────────────────
 
   defmodule Command do
-    @moduledoc "SDK command execution facade. CommandRunner not yet implemented."
+    @moduledoc """
+    SDK command execution facade.
 
-    def execute(_input, _session_id \\ "sdk"), do: {:ok, "Command executed (stub)"}
+    Phase 0 stub: this module is NOT YET IMPLEMENTED. All functions return
+    graceful no-ops or empty results so the SDK API surface is stable.
+    External code calling these functions will not break; they will simply
+    get empty/no-op responses until a real CommandRunner is wired in.
+
+    To enable command execution:
+      1. Implement OptimalSystemAgent.Agent.CommandRunner GenServer
+      2. Update execute/2 to dispatch to CommandRunner.run/2
+      3. Update list/0 to query CommandRunner for registered commands
+      4. Update register/3 to persist to CommandRunner
+    """
+
+    @doc """
+    Execute a slash command (NOT YET IMPLEMENTED).
+
+    Returns {:ok, message} with a deprecation notice that command execution
+    is not yet available. The stub returns a fixed message rather than
+    treating input as a command.
+
+    When CommandRunner is implemented, this will accept arbitrary command
+    input and execute it through the registered command handlers.
+    """
+    def execute(_input, _session_id \\ "sdk") do
+      {:ok, "Command execution not yet available in Phase 0 SDK. Define custom tools or agents using define_tool/4 or define_agent/2 instead."}
+    end
+
+    @doc "List all registered slash commands (not yet implemented, returns empty list)."
     def list, do: []
+
+    @doc "Register a custom slash command (not yet implemented, no-op)."
     def register(_name, _description, _template), do: :ok
   end
 
