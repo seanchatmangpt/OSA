@@ -391,6 +391,25 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
     end
   end
 
+  # Private helper: Emit OTEL span when deadlock condition is resolved
+  defp emit_deadlock_resolution_span(process_id, velocity, span_weeks) do
+    require OpenTelemetry.Tracer
+
+    OpenTelemetry.Tracer.with_span "stagnation.deadlock_resolved", %{} do
+      OpenTelemetry.Tracer.set_attribute("process.id", process_id)
+      OpenTelemetry.Tracer.set_attribute("stagnation.velocity", velocity)
+      OpenTelemetry.Tracer.set_attribute("stagnation.span_weeks", span_weeks)
+      OpenTelemetry.Tracer.set_attribute("stagnation.deadlock_condition", "low_velocity_short_span")
+      OpenTelemetry.Tracer.set_attribute("stagnation.resolution", "forced_recovery_state")
+    end
+
+    Logger.info(
+      "[Temporal] Deadlock resolved for process=#{process_id}: " <>
+        "velocity=#{Float.round(velocity, 3)}/wk < 0.1, span_weeks=#{Float.round(span_weeks, 1)} < 2, " <>
+        "forced recovery state to prevent hang"
+    )
+  end
+
   @doc """
   Stagnation detection with exponential backoff retry on timeout.
 

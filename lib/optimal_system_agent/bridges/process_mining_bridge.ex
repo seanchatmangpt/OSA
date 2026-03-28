@@ -256,52 +256,66 @@ defmodule OptimalSystemAgent.Bridges.ProcessMiningBridge do
   # -- Private: HTTP Calls (all with 3s WvdA timeout) --
 
   defp check_health(base_url) do
-    url = "#{base_url}/api/health"
+    # Wrap HTTP call with circuit breaker to prevent cascading failures
+    case OptimalSystemAgent.Resilience.CircuitBreaker.call(fn ->
+      url = "#{base_url}/api/health"
 
-    case Req.get(url, receive_timeout: @http_timeout_ms, connect_options: [timeout: @http_timeout_ms], retry: false) do
-      {:ok, %{status: status}} when status in 200..299 ->
-        :ok
+      case Req.get(url, receive_timeout: @http_timeout_ms, connect_options: [timeout: @http_timeout_ms], retry: false) do
+        {:ok, %{status: status}} when status in 200..299 ->
+          {:ok, :ok}
 
-      {:ok, %{status: status}} ->
-        {:error, {:http_status, status}}
+        {:ok, %{status: status}} ->
+          {:error, {:http_status, status}}
 
-      {:error, %{reason: :timeout}} ->
-        {:error, :timeout}
+        {:error, %{reason: :timeout}} ->
+          {:error, :timeout}
 
-      {:error, reason} ->
-        {:error, {:unreachable, reason}}
+        {:error, reason} ->
+          {:error, {:unreachable, reason}}
+      end
+    end) do
+      {:ok, result} -> result
+      {:error, :circuit_open} -> {:error, :circuit_open}
+      {:error, reason} -> {:error, reason}
     end
   rescue
     e -> {:error, {:exception, Exception.message(e)}}
   end
 
   defp fetch_conformance(base_url) do
-    url = "#{base_url}/api/conformance/check"
+    # Wrap HTTP call with circuit breaker to prevent cascading failures
+    case OptimalSystemAgent.Resilience.CircuitBreaker.call(fn ->
+      url = "#{base_url}/api/conformance/check"
 
-    case Req.post(url,
-           json: %{},
-           receive_timeout: @http_timeout_ms,
-           connect_options: [timeout: @http_timeout_ms],
-           retry: false
-         ) do
-      {:ok, %{status: status, body: body}} when status in 200..299 ->
-        parsed =
-          case body do
-            map when is_map(map) -> map
-            binary when is_binary(binary) -> Jason.decode!(binary)
-            other -> %{"raw" => other}
-          end
+      case Req.post(url,
+             json: %{},
+             receive_timeout: @http_timeout_ms,
+             connect_options: [timeout: @http_timeout_ms],
+             retry: false
+           ) do
+        {:ok, %{status: status, body: body}} when status in 200..299 ->
+          parsed =
+            case body do
+              map when is_map(map) -> map
+              binary when is_binary(binary) -> Jason.decode!(binary)
+              other -> %{"raw" => other}
+            end
 
-        {:ok, parsed}
+          {:ok, parsed}
 
-      {:ok, %{status: status}} ->
-        {:error, {:http_status, status}}
+        {:ok, %{status: status}} ->
+          {:error, {:http_status, status}}
 
-      {:error, %{reason: :timeout}} ->
-        {:error, :timeout}
+        {:error, %{reason: :timeout}} ->
+          {:error, :timeout}
 
-      {:error, reason} ->
-        {:error, {:unreachable, reason}}
+        {:error, reason} ->
+          {:error, {:unreachable, reason}}
+      end
+    end) do
+      {:ok, result} -> result
+      {:error, :circuit_open} -> {:error, :circuit_open}
+      {:error, reason} -> {:error, reason}
     end
   rescue
     e -> {:error, {:exception, Exception.message(e)}}

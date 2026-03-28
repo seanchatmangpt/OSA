@@ -75,6 +75,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   plug :cors
   plug OptimalSystemAgent.Channels.HTTP.TraceContext
   plug OptimalSystemAgent.Channels.HTTP.RateLimiter
+  plug OptimalSystemAgent.Channels.HTTP.Idempotency
   plug :validate_content_type
   plug :authenticate
   plug OptimalSystemAgent.Channels.HTTP.Integrity

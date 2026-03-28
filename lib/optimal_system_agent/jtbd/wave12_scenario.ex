@@ -21,7 +21,8 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
     :outcome,
     :system,
     :latency_ms,
-    :tier
+    :tier,
+    :span_attributes
   ]
 
   defmodule Slot do
@@ -246,11 +247,26 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
     end
   end
 
+  defp run_tool("process_discovery", _params, _timeout_ms, _request) do
+    # Process discovery tool for JTBD scenarios — returns process mining metrics
+    # Simulate process discovery work
+    start_ms = System.monotonic_time(:millisecond)
+    _ = :crypto.hash(:sha256, "process_discovery")
+    elapsed = System.monotonic_time(:millisecond) - start_ms
+    latency = max(1, elapsed)
+
+    # Build result with process mining metrics
+    {:ok, success_result("process_discovery", latency, "completed")}
+  end
+
   defp run_tool(other, _params, _timeout_ms, _request) do
     {:ok, success_result(other, params_for_latency(1), "completed")}
   end
 
   defp success_result(tool_name, latency_ms, status) do
+    # Get process mining metrics for span attributes
+    {fitness, model_format, place_count, transition_count} = process_analyzer_metrics(tool_name)
+
     if System.get_env("WEAVER_LIVE_CHECK") == "true" do
       emit_weaver_live_check_span(tool_name, latency_ms)
     end
@@ -266,7 +282,13 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
       outcome: "success",
       system: "osa",
       latency_ms: latency_ms,
-      tier: nil
+      tier: nil,
+      span_attributes: %{
+        "jtbd.scenario.fitness" => fitness,
+        "jtbd.scenario.model_format" => model_format,
+        "jtbd.scenario.place_count" => place_count,
+        "jtbd.scenario.transition_count" => transition_count
+      }
     }
 
     broadcast_result(struct_result)
@@ -327,6 +349,10 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
     case tool_name do
       "process_analyzer" ->
         # Simulated process discovery results
+        {0.95, "pnml", 14, 8}
+
+      "process_discovery" ->
+        # Process discovery returns process mining metrics
         {0.95, "pnml", 14, 8}
 
       "slow_tool" ->
