@@ -50,6 +50,14 @@ defmodule OptimalSystemAgent.Supervisors.AgentServices do
       OptimalSystemAgent.Process.OrgEvolution,
       OptimalSystemAgent.Process.Mining.Client,
 
+      # OCEL 2.0 Collector — records OSA runtime events as OCEL log for RAG grounding
+      %{
+        id: OptimalSystemAgent.ProcessMining.OcelCollector,
+        start: {OptimalSystemAgent.ProcessMining.OcelCollector, :start_link, [[]]},
+        restart: :permanent,
+        type: :worker
+      },
+
       # Agent Commerce Marketplace — skill publishing, discovery, trading
       OptimalSystemAgent.Commerce.Marketplace,
 

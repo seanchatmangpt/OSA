@@ -97,6 +97,10 @@ defmodule OptimalSystemAgent.Application do
     OptimalSystemAgent.Process.ProcessMining.init_table()
     OptimalSystemAgent.Process.OrgEvolution.init_tables()
 
+    # OCEL 2.0 collector ETS tables — must exist before OcelCollector GenServer starts
+    # (Armstrong: ETS tables created in Application.start/2, NOT in GenServer.init/1)
+    OptimalSystemAgent.ProcessMining.OcelCollector.init_tables()
+
     # SPR Sensor ETS tables (Fortune 5 Layer 1: Signal Collection)
     OptimalSystemAgent.Sensors.SensorRegistry.init_tables()
 
