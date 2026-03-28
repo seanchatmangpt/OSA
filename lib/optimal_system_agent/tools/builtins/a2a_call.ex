@@ -15,6 +15,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
   alias OptimalSystemAgent.Observability.Telemetry
 
   @default_timeout 30_000
+  @agent_call_timeout 60_000  # call_agent needs longer timeout due to additional processing
 
   @impl true
   def safety, do: :sandboxed
@@ -161,7 +162,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     # Step 3: Build request with W3C traceparent header
     opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
       json: %{message: message},
-      receive_timeout: 60_000
+      receive_timeout: @agent_call_timeout
     ])
 
     case Req.post(url, opts) do

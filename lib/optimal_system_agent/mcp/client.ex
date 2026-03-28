@@ -36,6 +36,11 @@ defmodule OptimalSystemAgent.MCP.Client do
   @max_retries 3
   @default_tool_cache_ttl 60_000
 
+  # Armstrong timeout boundaries (WvdA deadlock-free)
+  @call_timeout_default 10_000      # list_servers, list_tools, register_tools
+  @call_timeout_tool 35_000         # call_tool (retry loop can block 7s+)
+  @call_timeout_reload 60_000       # reload_servers (unbounded restart time)
+
   defstruct [:config_path, :servers]
 
   # ── Public API ────────────────────────────────────────────────────────
@@ -48,26 +53,26 @@ defmodule OptimalSystemAgent.MCP.Client do
   @doc "List all configured MCP server names."
   @spec list_servers() :: [String.t()]
   def list_servers do
-    GenServer.call(__MODULE__, :list_servers)
+    GenServer.call(__MODULE__, :list_servers, @call_timeout_default)
   end
 
   @doc "List tools from a specific MCP server."
   @spec list_tools(String.t()) :: [map()] | {:error, String.t()}
   def list_tools(server_name) when is_binary(server_name) do
-    GenServer.call(__MODULE__, {:list_tools, server_name})
+    GenServer.call(__MODULE__, {:list_tools, server_name}, @call_timeout_default)
   end
 
   @doc "Call a tool on a specific MCP server."
   @spec call_tool(String.t(), String.t(), map()) ::
           {:ok, map()} | {:error, term()}
   def call_tool(server_name, tool_name, arguments) when is_binary(server_name) do
-    GenServer.call(__MODULE__, {:call_tool, server_name, tool_name, arguments})
+    GenServer.call(__MODULE__, {:call_tool, server_name, tool_name, arguments}, @call_timeout_tool)
   end
 
   @doc "Reload servers from config file. Stops removed servers, starts new ones."
   @spec reload_servers() :: :ok
   def reload_servers do
-    GenServer.call(__MODULE__, :reload_servers)
+    GenServer.call(__MODULE__, :reload_servers, @call_timeout_reload)
   end
 
   @doc """
@@ -85,7 +90,7 @@ defmodule OptimalSystemAgent.MCP.Client do
   """
   @spec register_tools() :: :ok
   def register_tools do
-    GenServer.call(__MODULE__, :register_tools)
+    GenServer.call(__MODULE__, :register_tools, @call_timeout_default)
   end
 
   @doc """
@@ -583,9 +588,13 @@ defmodule OptimalSystemAgent.MCP.Client do
       try do
         OptimalSystemAgent.MCP.Server.list_tools(server_name)
       rescue
-        _ -> []
+        e ->
+          Logger.warning("MCP list_tools failed for server #{server_name}: #{Exception.message(e)}")
+          []
       catch
-        :exit, _ -> []
+        :exit, reason ->
+          Logger.warning("MCP list_tools exited for server #{server_name}: #{inspect(reason)}")
+          []
       end
       |> Enum.map(fn tool ->
         prefixed_name = "mcp_#{server_name}_#{tool.name}"
