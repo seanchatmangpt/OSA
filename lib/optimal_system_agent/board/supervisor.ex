@@ -83,7 +83,10 @@ defmodule OptimalSystemAgent.Board.Supervisor do
         start: {OptimalSystemAgent.Board.DecisionRecorder, :start_link, [[]]},
         restart: :permanent,
         type: :worker
-      }
+      },
+
+      # permanent: autonomous process drift monitor — polls pm4py-rust every 5 min
+      {OptimalSystemAgent.Board.MonitoringScheduler, [interval_ms: 300_000]}
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

@@ -46,6 +46,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
     /yawl        → YawlRoutes       GET /patterns, POST /check-conformance, GET /health
     /ontology    → OntologyRoutes   POST /inference-chain/invalidate
+    /metrics/stream → MetricsStreamRoutes  GET /stream (SSE — Wave12 pm4py:metrics events)
   """
   use Plug.Router
   import OptimalSystemAgent.Channels.HTTP.API.Shared
@@ -191,6 +192,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
   forward "/board/decision", to: API.BoardDecisionRoutes
   forward "/board/decisions", to: API.BoardDecisionRoutes
   forward "/board", to: API.BoardDeviationRoutes
+
+  # ── Wave12 process metrics SSE stream (BusinessOS frontend) ─────────
+  forward "/metrics/stream", to: API.MetricsStreamRoutes
 
   # ── YAWL engine integration (WCP patterns, conformance, health proxy) ─
   forward "/yawl", to: API.YawlRoutes

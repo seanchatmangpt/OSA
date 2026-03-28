@@ -295,22 +295,29 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   end
 
   defp broadcast_result(result) do
+    metrics_payload = %{
+      scenarios: [%{
+        id: result.tool_name,
+        outcome: result.outcome,
+        latency_ms: Map.get(result, :latency_ms, 0),
+        system: Map.get(result, :system, "unknown")
+      }],
+      pass_count: if(result.outcome == "success", do: 1, else: 0),
+      fail_count: if(result.outcome == "success", do: 0, else: 1)
+    }
+
+    # Broadcast to Canopy PubSub for terminal dashboard (jtbd:wave12)
     if Process.whereis(Canopy.PubSub) != nil do
-      Phoenix.PubSub.broadcast(
-        Canopy.PubSub,
-        "jtbd:wave12",
-        {:scenario_result, %{
-          scenarios: [%{
-            id: result.tool_name,
-            outcome: result.outcome,
-            latency_ms: Map.get(result, :latency_ms, 0),
-            system: Map.get(result, :system, "unknown")
-          }],
-          pass_count: if(result.outcome == "success", do: 1, else: 0),
-          fail_count: if(result.outcome == "success", do: 0, else: 1)
-        }}
-      )
+      Phoenix.PubSub.broadcast(Canopy.PubSub, "jtbd:wave12", {:scenario_result, metrics_payload})
     end
+
+    # Broadcast to OSA PubSub for BusinessOS frontend SSE stream (pm4py:metrics)
+    # OptimalSystemAgent.PubSub is always available inside OSA.
+    Phoenix.PubSub.broadcast(
+      OptimalSystemAgent.PubSub,
+      "pm4py:metrics",
+      {:metrics_update, metrics_payload}
+    )
 
     result
   end
