@@ -94,7 +94,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
         temperature: Keyword.get(opts, :temperature, 0.7)
       }
       |> maybe_add_tools(opts_with_model)
-      |> maybe_add_max_tokens(opts)
+      |> maybe_add_max_tokens(model, opts)
       |> maybe_add_reasoning(model, opts)
       |> maybe_add_response_format(opts)
 
@@ -236,7 +236,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
         stream: true
       }
       |> maybe_add_tools(opts)
-      |> maybe_add_max_tokens(opts)
+      |> maybe_add_max_tokens(model, opts)
       |> maybe_add_reasoning(model, opts)
 
     extra_headers = Keyword.get(opts, :extra_headers, [])
@@ -816,10 +816,23 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
-  defp maybe_add_max_tokens(body, opts) do
+  # Reasoning models (gpt-oss, o3, deepseek-reasoner, etc.) use internal
+  # reasoning tokens that count against max_tokens.  A low budget (e.g. 80
+  # or 150) is entirely consumed by reasoning, producing an EMPTY response.
+  # Floor: 500 tokens when the model is a reasoning model.
+  @reasoning_min_tokens 500
+
+  defp maybe_add_max_tokens(body, model, opts) do
     case Keyword.get(opts, :max_tokens) do
-      nil -> body
-      n -> Map.put(body, :max_tokens, n)
+      nil ->
+        body
+
+      n when is_integer(n) ->
+        effective = if reasoning_model?(model) and n < @reasoning_min_tokens, do: @reasoning_min_tokens, else: n
+        Map.put(body, :max_tokens, effective)
+
+      n ->
+        Map.put(body, :max_tokens, n)
     end
   end
 
