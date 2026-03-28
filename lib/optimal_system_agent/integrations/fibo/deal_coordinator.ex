@@ -153,14 +153,7 @@ defmodule OptimalSystemAgent.Integrations.FIBO.DealCoordinator do
   """
   @spec create_deal(deal_input()) :: {:ok, deal()} | {:error, String.t()}
   def create_deal(input) do
-    case GenServer.call(__MODULE__, {:create_deal, input}, @operation_timeout_ms) do
-      result ->
-        result
-
-      :timeout ->
-        Logger.error("[FIBO.DealCoordinator] create_deal timeout after #{@operation_timeout_ms}ms")
-        {:error, "operation timeout"}
-    end
+    GenServer.call(__MODULE__, {:create_deal, input}, @operation_timeout_ms)
   catch
     :exit, {:timeout, _} ->
       Logger.error("[FIBO.DealCoordinator] create_deal genserver timeout")
