@@ -15,8 +15,6 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
 
   use ExUnit.Case
 
-  import ExUnit.CaptureLog
-
   setup do
     # Create test agent registry
     :ets.new(:test_agent_registry, [:named_table, :public, :set])
@@ -363,6 +361,91 @@ defmodule OptimalSystemAgent.ByzantineCoordinatorTest do
         {_consensus, valid, _byzantine} = validate_responses(responses, 2)
         assert valid == true, "Should tolerate 1 Byzantine in mode #{mode}"
       end
+    end
+  end
+
+  describe "5-agent cluster (default, tolerates 1 Byzantine with 0.7 threshold)" do
+    test "reaches consensus with 1 Byzantine" do
+      assert_cluster_tolerates(5, 1)
+    end
+
+    test "reaches consensus with 2 Byzantine (0.7 threshold requires 4/5)" do
+      # With 5 agents and 0.7 threshold: need ⌈5×0.7⌉ = 4 agents to agree
+      # If 2 are Byzantine, we have 3 honest, which is <4, so consensus should fail
+      model = %{id: "m", transitions: [{"a", "b"}]}
+      honest_responses = List.duplicate({:ok, model}, 3)
+      byzantine_responses = generate_byzantine_responses(2, :crash)
+
+      responses = honest_responses ++ byzantine_responses
+
+      # Quorum with 0.7 threshold on 5 agents = 4
+      {_consensus, valid, _byzantine} =
+        validate_responses(responses, 4)
+
+      # Should fail because we only have 3 honest (need 4 for 0.7 threshold)
+      assert valid == false,
+        "Expected consensus to fail with 2 Byzantine crashes out of 5 agents (need 4/5 with 0.7 threshold, have 3/5)"
+    end
+
+    test "all failure modes with 1 Byzantine" do
+      modes = [:invalid_model, :crash, :state_flip, :timeout, :conflicting_votes]
+
+      for mode <- modes do
+        responses = generate_responses(5, 4, mode)
+        {_consensus, valid, _byzantine} = validate_responses(responses, 4)
+        assert valid == true, "Should tolerate 1 Byzantine in mode #{mode} with 5 agents"
+      end
+    end
+
+    test "mixed Byzantine modes with 1 failure" do
+      model = %{id: "m", transitions: [{"a", "b"}]}
+      honest_responses = List.duplicate({:ok, model}, 4)
+
+      # Single Byzantine agent with random failure mode
+      byzantine_response = generate_byzantine_response(:invalid_model)
+      responses = honest_responses ++ [byzantine_response]
+
+      {_consensus, valid, _byzantine} = validate_responses(responses, 4)
+
+      assert valid == true,
+        "Should tolerate 1 Byzantine agent in 5-agent cluster (4 honest vs 1 Byzantine)"
+    end
+  end
+
+  describe "5-agent cluster with 2 Byzantine (edge case)" do
+    test "consensus fails when 2 agents crash with 0.7 threshold" do
+      # BFT: 5 agents, 0.7 threshold requires 4/5 agreement
+      # With 2 crashes, only 3 remain (3/5 < 0.7), so consensus fails
+      model = %{id: "m", transitions: [{"a", "b"}]}
+      honest_responses = List.duplicate({:ok, model}, 3)
+      byzantine_responses = generate_byzantine_responses(2, :crash)
+
+      responses = honest_responses ++ byzantine_responses
+
+      # Need 4 for 0.7 threshold on 5 agents
+      {_consensus, valid, _byzantine} = validate_responses(responses, 4)
+
+      assert valid == false,
+        "Should fail with 2 crashes (3/5 < 4 needed for 0.7 threshold)"
+    end
+
+    test "consensus reaches majority with 2 invalid models (but detects Byzantine)" do
+      # With 5 agents: 3 return correct model, 2 return different models
+      # All 5 responses are valid format, so we have 5 "valid" responses
+      # But Byzantine detection finds the 2 agents with different models
+      model = %{id: "m", transitions: [{"a", "b"}]}
+      honest_responses = List.duplicate({:ok, model}, 3)
+      byzantine_responses = generate_byzantine_responses(2, :invalid_model)
+
+      responses = honest_responses ++ byzantine_responses
+
+      # All 5 are valid format, so quorum is reached
+      {_consensus, valid, byzantine_detected} = validate_responses(responses, 4)
+
+      assert valid == true,
+        "Should reach consensus with 5 valid-format responses (3 honest + 2 invalid)"
+      assert byzantine_detected == true,
+        "Should detect 2 Byzantine agents with different models"
     end
   end
 

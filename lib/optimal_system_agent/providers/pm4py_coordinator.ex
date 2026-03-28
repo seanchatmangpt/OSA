@@ -13,15 +13,27 @@ defmodule OptimalSystemAgent.Providers.PM4PyCoordinator do
   - Byzantine voting: invalid/corrupted models are rejected
   - Final consensus on model structure
 
+  ## Byzantine Fault Tolerance
+
+  Default: 5 agents with 0.7 threshold achieves f=1 (tolerates 1 Byzantine agent).
+
+  BFT Math:
+  - N=5, threshold=0.7 requires 4 agents to agree (⌈5×0.7⌉ = 4)
+  - System tolerates f=1 Byzantine agent (1 agent can lie/crash)
+  - Safety: 4 honest agents outvote 1 Byzantine agent
+  - Liveness: Consensus reached if ≥4 agents respond correctly
+
   Configuration via env vars:
-    PM4PY_COORDINATOR_AGENTS    — Number of agents (default: 3)
+    PM4PY_COORDINATOR_AGENTS    — Number of agents (default: 5)
     PM4PY_COORDINATOR_ALGORITHM — Discovery algorithm (default: inductive_miner)
     PM4PY_COORDINATOR_BYZANTINE — Byzantine tolerance threshold (default: 0.7)
   """
 
   require Logger
 
-  @default_agent_count 3
+  # BFT: 5 agents with 0.7 threshold achieves f=1 fault tolerance
+  # Formula: requires ⌈N×threshold⌉ = ⌈5×0.7⌉ = 4 honest agents
+  @default_agent_count 5
   @default_algorithm "inductive_miner"
   @default_byzantine_threshold 0.7
 
