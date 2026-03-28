@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1000`, `42000`
   """
-  @spec consensus_block_height() :: :"consensus.block.height"
-  def consensus_block_height, do: :"consensus.block.height"
+  @spec consensus_block_height() :: :consensus_block_height
+  def consensus_block_height, do: :consensus_block_height
 
   @doc """
   Hash of the proposed block in this consensus round.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0xabc123def456`, `0x7f8e9d0c1b2a`
   """
-  @spec consensus_block_hash() :: :"consensus.block_hash"
-  def consensus_block_hash, do: :"consensus.block_hash"
+  @spec consensus_block_hash() :: :consensus_block_hash
+  def consensus_block_hash, do: :consensus_block_hash
 
   @doc """
   Number of byzantine faults detected in the current epoch.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec consensus_byzantine_detected_faults() :: :"consensus.byzantine.detected_faults"
-  def consensus_byzantine_detected_faults, do: :"consensus.byzantine.detected_faults"
+  @spec consensus_byzantine_detected_faults() :: :consensus_byzantine_detected_faults
+  def consensus_byzantine_detected_faults, do: :consensus_byzantine_detected_faults
 
   @doc """
   Number of quorum size adjustments made during byzantine recovery.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `2`
   """
-  @spec consensus_byzantine_quorum_adjustments() :: :"consensus.byzantine.quorum_adjustments"
-  def consensus_byzantine_quorum_adjustments, do: :"consensus.byzantine.quorum_adjustments"
+  @spec consensus_byzantine_quorum_adjustments() :: :consensus_byzantine_quorum_adjustments
+  def consensus_byzantine_quorum_adjustments, do: :consensus_byzantine_quorum_adjustments
 
   @doc """
   Round number at which byzantine fault recovery was initiated.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `12`
   """
-  @spec consensus_byzantine_recovery_round() :: :"consensus.byzantine.recovery_round"
-  def consensus_byzantine_recovery_round, do: :"consensus.byzantine.recovery_round"
+  @spec consensus_byzantine_recovery_round() :: :consensus_byzantine_recovery_round
+  def consensus_byzantine_recovery_round, do: :consensus_byzantine_recovery_round
 
   @doc """
   Number of Byzantine (malicious/faulty) nodes detected in the current consensus view.
@@ -79,8 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `2`
   """
-  @spec consensus_byzantine_faults() :: :"consensus.byzantine_faults"
-  def consensus_byzantine_faults, do: :"consensus.byzantine_faults"
+  @spec consensus_byzantine_faults() :: :consensus_byzantine_faults
+  def consensus_byzantine_faults, do: :consensus_byzantine_faults
 
   @doc """
   Hash or compact representation of the decided value (for audit/tracing purposes).
@@ -91,8 +91,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `sha256:abc123`, `block:1000:hash`
   """
-  @spec consensus_decision_value() :: :"consensus.decision.value"
-  def consensus_decision_value, do: :"consensus.decision.value"
+  @spec consensus_decision_value() :: :consensus_decision_value
+  def consensus_decision_value, do: :consensus_decision_value
 
   @doc """
   Duration of the consensus epoch in milliseconds.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`, `30000`
   """
-  @spec consensus_epoch_duration_ms() :: :"consensus.epoch.duration_ms"
-  def consensus_epoch_duration_ms, do: :"consensus.epoch.duration_ms"
+  @spec consensus_epoch_duration_ms() :: :consensus_epoch_duration_ms
+  def consensus_epoch_duration_ms, do: :consensus_epoch_duration_ms
 
   @doc """
   The consensus round number at which the epoch was finalized.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `250`, `500`
   """
-  @spec consensus_epoch_finalization_round() :: :"consensus.epoch.finalization.round"
-  def consensus_epoch_finalization_round, do: :"consensus.epoch.finalization.round"
+  @spec consensus_epoch_finalization_round() :: :consensus_epoch_finalization_round
+  def consensus_epoch_finalization_round, do: :consensus_epoch_finalization_round
 
   @doc """
   Number of validator signatures collected for epoch finalization proof.
@@ -127,8 +127,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `5`, `10`, `21`
   """
-  @spec consensus_epoch_finalization_signature_count() :: :"consensus.epoch.finalization.signature_count"
-  def consensus_epoch_finalization_signature_count, do: :"consensus.epoch.finalization.signature_count"
+  @spec consensus_epoch_finalization_signature_count() :: :consensus_epoch_finalization_signature_count
+  def consensus_epoch_finalization_signature_count, do: :consensus_epoch_finalization_signature_count
 
   @doc """
   Monotonically increasing epoch identifier for the consensus protocol.
@@ -139,8 +139,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `42`, `100`
   """
-  @spec consensus_epoch_id() :: :"consensus.epoch.id"
-  def consensus_epoch_id, do: :"consensus.epoch.id"
+  @spec consensus_epoch_id() :: :consensus_epoch_id
+  def consensus_epoch_id, do: :consensus_epoch_id
 
   @doc """
   Unique identifier for the key rotation event within a consensus epoch.
@@ -151,8 +151,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `kr-epoch-5-001`, `kr-2026-03-25T12:00:00Z`
   """
-  @spec consensus_epoch_key_rotation_id() :: :"consensus.epoch.key_rotation_id"
-  def consensus_epoch_key_rotation_id, do: :"consensus.epoch.key_rotation_id"
+  @spec consensus_epoch_key_rotation_id() :: :consensus_epoch_key_rotation_id
+  def consensus_epoch_key_rotation_id, do: :consensus_epoch_key_rotation_id
 
   @doc """
   Duration of the key rotation operation in milliseconds.
@@ -163,8 +163,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1000`
   """
-  @spec consensus_epoch_key_rotation_ms() :: :"consensus.epoch.key_rotation_ms"
-  def consensus_epoch_key_rotation_ms, do: :"consensus.epoch.key_rotation_ms"
+  @spec consensus_epoch_key_rotation_ms() :: :consensus_epoch_key_rotation_ms
+  def consensus_epoch_key_rotation_ms, do: :consensus_epoch_key_rotation_ms
 
   @doc """
   Reason that triggered the epoch key rotation.
@@ -175,8 +175,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `scheduled`, `compromise`, `membership_change`
   """
-  @spec consensus_epoch_key_rotation_reason() :: :"consensus.epoch.key_rotation_reason"
-  def consensus_epoch_key_rotation_reason, do: :"consensus.epoch.key_rotation_reason"
+  @spec consensus_epoch_key_rotation_reason() :: :consensus_epoch_key_rotation_reason
+  def consensus_epoch_key_rotation_reason, do: :consensus_epoch_key_rotation_reason
 
   @doc """
   Enumerated values for `consensus.epoch.key_rotation_reason`.
@@ -228,8 +228,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `5`
   """
-  @spec consensus_epoch_leader_changes() :: :"consensus.epoch.leader_changes"
-  def consensus_epoch_leader_changes, do: :"consensus.epoch.leader_changes"
+  @spec consensus_epoch_leader_changes() :: :consensus_epoch_leader_changes
+  def consensus_epoch_leader_changes, do: :consensus_epoch_leader_changes
 
   @doc """
   Hash of the quorum membership set for integrity verification.
@@ -240,8 +240,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `sha256:abc123`, `sha256:def456`
   """
-  @spec consensus_epoch_quorum_snapshot_hash() :: :"consensus.epoch.quorum_snapshot_hash"
-  def consensus_epoch_quorum_snapshot_hash, do: :"consensus.epoch.quorum_snapshot_hash"
+  @spec consensus_epoch_quorum_snapshot_hash() :: :consensus_epoch_quorum_snapshot_hash
+  def consensus_epoch_quorum_snapshot_hash, do: :consensus_epoch_quorum_snapshot_hash
 
   @doc """
   Round number at which the quorum snapshot was taken.
@@ -252,8 +252,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `1200`
   """
-  @spec consensus_epoch_quorum_snapshot_round() :: :"consensus.epoch.quorum_snapshot_round"
-  def consensus_epoch_quorum_snapshot_round, do: :"consensus.epoch.quorum_snapshot_round"
+  @spec consensus_epoch_quorum_snapshot_round() :: :consensus_epoch_quorum_snapshot_round
+  def consensus_epoch_quorum_snapshot_round, do: :consensus_epoch_quorum_snapshot_round
 
   @doc """
   Number of nodes in the quorum at snapshot time.
@@ -264,8 +264,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `4`, `7`, `10`
   """
-  @spec consensus_epoch_quorum_snapshot_size() :: :"consensus.epoch.quorum_snapshot_size"
-  def consensus_epoch_quorum_snapshot_size, do: :"consensus.epoch.quorum_snapshot_size"
+  @spec consensus_epoch_quorum_snapshot_size() :: :consensus_epoch_quorum_snapshot_size
+  def consensus_epoch_quorum_snapshot_size, do: :consensus_epoch_quorum_snapshot_size
 
   @doc """
   Round number at which this epoch began.
@@ -276,8 +276,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `100`, `500`
   """
-  @spec consensus_epoch_start_round() :: :"consensus.epoch.start_round"
-  def consensus_epoch_start_round, do: :"consensus.epoch.start_round"
+  @spec consensus_epoch_start_round() :: :consensus_epoch_start_round
+  def consensus_epoch_start_round, do: :consensus_epoch_start_round
 
   @doc """
   The epoch number transitioning from.
@@ -288,8 +288,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `42`
   """
-  @spec consensus_epoch_transition_from_epoch() :: :"consensus.epoch.transition.from_epoch"
-  def consensus_epoch_transition_from_epoch, do: :"consensus.epoch.transition.from_epoch"
+  @spec consensus_epoch_transition_from_epoch() :: :consensus_epoch_transition_from_epoch
+  def consensus_epoch_transition_from_epoch, do: :consensus_epoch_transition_from_epoch
 
   @doc """
   The epoch number transitioning to.
@@ -300,8 +300,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2`, `6`, `43`
   """
-  @spec consensus_epoch_transition_to_epoch() :: :"consensus.epoch.transition.to_epoch"
-  def consensus_epoch_transition_to_epoch, do: :"consensus.epoch.transition.to_epoch"
+  @spec consensus_epoch_transition_to_epoch() :: :consensus_epoch_transition_to_epoch
+  def consensus_epoch_transition_to_epoch, do: :consensus_epoch_transition_to_epoch
 
   @doc """
   Trigger that initiated the epoch transition.
@@ -312,8 +312,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `timeout`, `quorum_change`, `key_rotation`
   """
-  @spec consensus_epoch_transition_trigger() :: :"consensus.epoch.transition.trigger"
-  def consensus_epoch_transition_trigger, do: :"consensus.epoch.transition.trigger"
+  @spec consensus_epoch_transition_trigger() :: :consensus_epoch_transition_trigger
+  def consensus_epoch_transition_trigger, do: :consensus_epoch_transition_trigger
 
   @doc """
   Enumerated values for `consensus.epoch.transition.trigger`.
@@ -365,8 +365,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `2`
   """
-  @spec consensus_failure_count() :: :"consensus.failure.count"
-  def consensus_failure_count, do: :"consensus.failure.count"
+  @spec consensus_failure_count() :: :consensus_failure_count
+  def consensus_failure_count, do: :consensus_failure_count
 
   @doc """
   Depth of the detected fork — number of diverged blocks.
@@ -377,8 +377,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `10`
   """
-  @spec consensus_fork_depth() :: :"consensus.fork.depth"
-  def consensus_fork_depth, do: :"consensus.fork.depth"
+  @spec consensus_fork_depth() :: :consensus_fork_depth
+  def consensus_fork_depth, do: :consensus_fork_depth
 
   @doc """
   Whether a fork was detected in the consensus chain.
@@ -388,8 +388,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec consensus_fork_detected() :: :"consensus.fork.detected"
-  def consensus_fork_detected, do: :"consensus.fork.detected"
+  @spec consensus_fork_detected() :: :consensus_fork_detected
+  def consensus_fork_detected, do: :consensus_fork_detected
 
   @doc """
   Strategy used to resolve the detected fork.
@@ -400,8 +400,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `longest_chain`, `epoch_based`
   """
-  @spec consensus_fork_resolution_strategy() :: :"consensus.fork.resolution_strategy"
-  def consensus_fork_resolution_strategy, do: :"consensus.fork.resolution_strategy"
+  @spec consensus_fork_resolution_strategy() :: :consensus_fork_resolution_strategy
+  def consensus_fork_resolution_strategy, do: :consensus_fork_resolution_strategy
 
   @doc """
   Enumerated values for `consensus.fork.resolution_strategy`.
@@ -453,8 +453,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `12`, `234`, `1500`
   """
-  @spec consensus_latency_ms() :: :"consensus.latency_ms"
-  def consensus_latency_ms, do: :"consensus.latency_ms"
+  @spec consensus_latency_ms() :: :consensus_latency_ms
+  def consensus_latency_ms, do: :consensus_latency_ms
 
   @doc """
   The node ID of the current consensus leader.
@@ -465,8 +465,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `node-1`, `osa-primary`
   """
-  @spec consensus_leader_id() :: :"consensus.leader.id"
-  def consensus_leader_id, do: :"consensus.leader.id"
+  @spec consensus_leader_id() :: :consensus_leader_id
+  def consensus_leader_id, do: :consensus_leader_id
 
   @doc """
   Number of leader rotations since consensus started.
@@ -477,8 +477,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `12`
   """
-  @spec consensus_leader_rotation_count() :: :"consensus.leader.rotation_count"
-  def consensus_leader_rotation_count, do: :"consensus.leader.rotation_count"
+  @spec consensus_leader_rotation_count() :: :consensus_leader_rotation_count
+  def consensus_leader_rotation_count, do: :consensus_leader_rotation_count
 
   @doc """
   Leader selection score used in the rotation algorithm [0.0, 1.0].
@@ -489,8 +489,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.75`, `0.92`
   """
-  @spec consensus_leader_score() :: :"consensus.leader.score"
-  def consensus_leader_score, do: :"consensus.leader.score"
+  @spec consensus_leader_score() :: :consensus_leader_score
+  def consensus_leader_score, do: :consensus_leader_score
 
   @doc """
   Duration of the current leader's tenure in milliseconds.
@@ -501,8 +501,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`, `120000`
   """
-  @spec consensus_leader_tenure_ms() :: :"consensus.leader.tenure_ms"
-  def consensus_leader_tenure_ms, do: :"consensus.leader.tenure_ms"
+  @spec consensus_leader_tenure_ms() :: :consensus_leader_tenure_ms
+  def consensus_leader_tenure_ms, do: :consensus_leader_tenure_ms
 
   @doc """
   Number of consecutive rounds completed to prove liveness of the protocol.
@@ -513,8 +513,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`, `10`
   """
-  @spec consensus_liveness_proof_rounds() :: :"consensus.liveness.proof_rounds"
-  def consensus_liveness_proof_rounds, do: :"consensus.liveness.proof_rounds"
+  @spec consensus_liveness_proof_rounds() :: :consensus_liveness_proof_rounds
+  def consensus_liveness_proof_rounds, do: :consensus_liveness_proof_rounds
 
   @doc """
   Ratio of elapsed time to view timeout — approaching 1.0 means view change imminent.
@@ -525,8 +525,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.1`, `0.5`, `0.95`
   """
-  @spec consensus_liveness_timeout_ratio() :: :"consensus.liveness.timeout_ratio"
-  def consensus_liveness_timeout_ratio, do: :"consensus.liveness.timeout_ratio"
+  @spec consensus_liveness_timeout_ratio() :: :consensus_liveness_timeout_ratio
+  def consensus_liveness_timeout_ratio, do: :consensus_liveness_timeout_ratio
 
   @doc """
   Network diameter in hops — the longest shortest path between any two nodes.
@@ -537,8 +537,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`, `5`
   """
-  @spec consensus_network_diameter_hops() :: :"consensus.network.diameter_hops"
-  def consensus_network_diameter_hops, do: :"consensus.network.diameter_hops"
+  @spec consensus_network_diameter_hops() :: :consensus_network_diameter_hops
+  def consensus_network_diameter_hops, do: :consensus_network_diameter_hops
 
   @doc """
   Average node degree (connections per node) in the consensus network topology.
@@ -549,8 +549,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2.5`, `4.0`, `6.8`
   """
-  @spec consensus_network_node_degree() :: :"consensus.network.node_degree"
-  def consensus_network_node_degree, do: :"consensus.network.node_degree"
+  @spec consensus_network_node_degree() :: :consensus_network_node_degree
+  def consensus_network_node_degree, do: :consensus_network_node_degree
 
   @doc """
   Number of network partitions detected in the consensus cluster.
@@ -561,8 +561,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `2`
   """
-  @spec consensus_network_partition_count() :: :"consensus.network.partition_count"
-  def consensus_network_partition_count, do: :"consensus.network.partition_count"
+  @spec consensus_network_partition_count() :: :consensus_network_partition_count
+  def consensus_network_partition_count, do: :consensus_network_partition_count
 
   @doc """
   Whether a network partition has been detected affecting consensus.
@@ -573,8 +573,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec consensus_network_partition_detected() :: :"consensus.network.partition_detected"
-  def consensus_network_partition_detected, do: :"consensus.network.partition_detected"
+  @spec consensus_network_partition_detected() :: :consensus_network_partition_detected
+  def consensus_network_partition_detected, do: :consensus_network_partition_detected
 
   @doc """
   Time taken to recover network connectivity in milliseconds.
@@ -585,8 +585,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `5000`, `30000`
   """
-  @spec consensus_network_recovery_duration_ms() :: :"consensus.network.recovery.duration_ms"
-  def consensus_network_recovery_duration_ms, do: :"consensus.network.recovery.duration_ms"
+  @spec consensus_network_recovery_duration_ms() :: :consensus_network_recovery_duration_ms
+  def consensus_network_recovery_duration_ms, do: :consensus_network_recovery_duration_ms
 
   @doc """
   Number of nodes that rejoined the consensus cluster during recovery.
@@ -597,8 +597,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `5`
   """
-  @spec consensus_network_recovery_nodes_rejoined() :: :"consensus.network.recovery.nodes_rejoined"
-  def consensus_network_recovery_nodes_rejoined, do: :"consensus.network.recovery.nodes_rejoined"
+  @spec consensus_network_recovery_nodes_rejoined() :: :consensus_network_recovery_nodes_rejoined
+  def consensus_network_recovery_nodes_rejoined, do: :consensus_network_recovery_nodes_rejoined
 
   @doc """
   Number of consensus rounds missed during network outage.
@@ -609,8 +609,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `15`
   """
-  @spec consensus_network_recovery_rounds_missed() :: :"consensus.network.recovery.rounds_missed"
-  def consensus_network_recovery_rounds_missed, do: :"consensus.network.recovery.rounds_missed"
+  @spec consensus_network_recovery_rounds_missed() :: :consensus_network_recovery_rounds_missed
+  def consensus_network_recovery_rounds_missed, do: :consensus_network_recovery_rounds_missed
 
   @doc """
   Strategy used to recover consensus network connectivity.
@@ -621,8 +621,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `reconnect`, `rejoin`
   """
-  @spec consensus_network_recovery_strategy() :: :"consensus.network.recovery.strategy"
-  def consensus_network_recovery_strategy, do: :"consensus.network.recovery.strategy"
+  @spec consensus_network_recovery_strategy() :: :consensus_network_recovery_strategy
+  def consensus_network_recovery_strategy, do: :consensus_network_recovery_strategy
 
   @doc """
   Enumerated values for `consensus.network.recovery.strategy`.
@@ -674,8 +674,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `2000`
   """
-  @spec consensus_network_recovery_ms() :: :"consensus.network.recovery_ms"
-  def consensus_network_recovery_ms, do: :"consensus.network.recovery_ms"
+  @spec consensus_network_recovery_ms() :: :consensus_network_recovery_ms
+  def consensus_network_recovery_ms, do: :consensus_network_recovery_ms
 
   @doc """
   The topology type of the consensus network.
@@ -686,8 +686,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `mesh`, `ring`
   """
-  @spec consensus_network_topology_type() :: :"consensus.network.topology_type"
-  def consensus_network_topology_type, do: :"consensus.network.topology_type"
+  @spec consensus_network_topology_type() :: :consensus_network_topology_type
+  def consensus_network_topology_type, do: :consensus_network_topology_type
 
   @doc """
   Enumerated values for `consensus.network.topology_type`.
@@ -746,8 +746,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `node-1`, `worker-0`, `compute-42`
   """
-  @spec consensus_node() :: :"consensus.node"
-  def consensus_node, do: :"consensus.node"
+  @spec consensus_node() :: :consensus_node
+  def consensus_node, do: :consensus_node
 
   @doc """
   Identifier of the consensus node.
@@ -758,8 +758,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `node-1`, `node-primary`
   """
-  @spec consensus_node_id() :: :"consensus.node_id"
-  def consensus_node_id, do: :"consensus.node_id"
+  @spec consensus_node_id() :: :consensus_node_id
+  def consensus_node_id, do: :consensus_node_id
 
   @doc """
   Whether a network partition was detected in the consensus cluster.
@@ -770,8 +770,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec consensus_partition_detected() :: :"consensus.partition.detected"
-  def consensus_partition_detected, do: :"consensus.partition.detected"
+  @spec consensus_partition_detected() :: :consensus_partition_detected
+  def consensus_partition_detected, do: :consensus_partition_detected
 
   @doc """
   The strategy used to heal the consensus state after partition recovery.
@@ -782,8 +782,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `majority_wins`, `epoch_fence`, `leader_arbitration`
   """
-  @spec consensus_partition_heal_strategy() :: :"consensus.partition.heal_strategy"
-  def consensus_partition_heal_strategy, do: :"consensus.partition.heal_strategy"
+  @spec consensus_partition_heal_strategy() :: :consensus_partition_heal_strategy
+  def consensus_partition_heal_strategy, do: :consensus_partition_heal_strategy
 
   @doc """
   Enumerated values for `consensus.partition.heal_strategy`.
@@ -842,8 +842,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `500`, `5000`, `30000`
   """
-  @spec consensus_partition_isolation_ms() :: :"consensus.partition.isolation_ms"
-  def consensus_partition_isolation_ms, do: :"consensus.partition.isolation_ms"
+  @spec consensus_partition_isolation_ms() :: :consensus_partition_isolation_ms
+  def consensus_partition_isolation_ms, do: :consensus_partition_isolation_ms
 
   @doc """
   Time in milliseconds to recover from the network partition.
@@ -854,8 +854,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `500`, `2000`, `10000`
   """
-  @spec consensus_partition_recovery_ms() :: :"consensus.partition.recovery_ms"
-  def consensus_partition_recovery_ms, do: :"consensus.partition.recovery_ms"
+  @spec consensus_partition_recovery_ms() :: :consensus_partition_recovery_ms
+  def consensus_partition_recovery_ms, do: :consensus_partition_recovery_ms
 
   @doc """
   Number of nodes in the detected partition.
@@ -866,8 +866,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `5`
   """
-  @spec consensus_partition_size() :: :"consensus.partition.size"
-  def consensus_partition_size, do: :"consensus.partition.size"
+  @spec consensus_partition_size() :: :consensus_partition_size
+  def consensus_partition_size, do: :consensus_partition_size
 
   @doc """
   Strategy used to resolve the network partition.
@@ -878,8 +878,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `majority_wins`, `epoch_based`
   """
-  @spec consensus_partition_strategy() :: :"consensus.partition.strategy"
-  def consensus_partition_strategy, do: :"consensus.partition.strategy"
+  @spec consensus_partition_strategy() :: :consensus_partition_strategy
+  def consensus_partition_strategy, do: :consensus_partition_strategy
 
   @doc """
   Enumerated values for `consensus.partition.strategy`.
@@ -931,8 +931,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `prepare`, `commit`
   """
-  @spec consensus_phase() :: :"consensus.phase"
-  def consensus_phase, do: :"consensus.phase"
+  @spec consensus_phase() :: :consensus_phase
+  def consensus_phase, do: :consensus_phase
 
   @doc """
   Enumerated values for `consensus.phase`.
@@ -998,8 +998,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`
   """
-  @spec consensus_quorum_admitted_count() :: :"consensus.quorum.admitted_count"
-  def consensus_quorum_admitted_count, do: :"consensus.quorum.admitted_count"
+  @spec consensus_quorum_admitted_count() :: :consensus_quorum_admitted_count
+  def consensus_quorum_admitted_count, do: :consensus_quorum_admitted_count
 
   @doc """
   Current quorum size before the growth operation.
@@ -1010,8 +1010,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `5`, `10`
   """
-  @spec consensus_quorum_current_size() :: :"consensus.quorum.current_size"
-  def consensus_quorum_current_size, do: :"consensus.quorum.current_size"
+  @spec consensus_quorum_current_size() :: :consensus_quorum_current_size
+  def consensus_quorum_current_size, do: :consensus_quorum_current_size
 
   @doc """
   Rate of quorum size growth per epoch, as a fraction of current quorum size.
@@ -1022,8 +1022,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.1`, `0.25`
   """
-  @spec consensus_quorum_growth_rate() :: :"consensus.quorum.growth_rate"
-  def consensus_quorum_growth_rate, do: :"consensus.quorum.growth_rate"
+  @spec consensus_quorum_growth_rate() :: :consensus_quorum_growth_rate
+  def consensus_quorum_growth_rate, do: :consensus_quorum_growth_rate
 
   @doc """
   Health status of the quorum — based on how many replicas are reachable relative to quorum threshold.
@@ -1034,8 +1034,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `healthy`, `degraded`
   """
-  @spec consensus_quorum_health() :: :"consensus.quorum.health"
-  def consensus_quorum_health, do: :"consensus.quorum.health"
+  @spec consensus_quorum_health() :: :consensus_quorum_health
+  def consensus_quorum_health, do: :consensus_quorum_health
 
   @doc """
   Enumerated values for `consensus.quorum.health`.
@@ -1087,8 +1087,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`
   """
-  @spec consensus_quorum_shrink_new_size() :: :"consensus.quorum.shrink.new_size"
-  def consensus_quorum_shrink_new_size, do: :"consensus.quorum.shrink.new_size"
+  @spec consensus_quorum_shrink_new_size() :: :consensus_quorum_shrink_new_size
+  def consensus_quorum_shrink_new_size, do: :consensus_quorum_shrink_new_size
 
   @doc """
   The reason for shrinking the consensus quorum.
@@ -1099,8 +1099,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `node_failure`, `rebalance`
   """
-  @spec consensus_quorum_shrink_reason() :: :"consensus.quorum.shrink.reason"
-  def consensus_quorum_shrink_reason, do: :"consensus.quorum.shrink.reason"
+  @spec consensus_quorum_shrink_reason() :: :consensus_quorum_shrink_reason
+  def consensus_quorum_shrink_reason, do: :consensus_quorum_shrink_reason
 
   @doc """
   Enumerated values for `consensus.quorum.shrink.reason`.
@@ -1159,8 +1159,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`
   """
-  @spec consensus_quorum_shrink_removed_count() :: :"consensus.quorum.shrink.removed_count"
-  def consensus_quorum_shrink_removed_count, do: :"consensus.quorum.shrink.removed_count"
+  @spec consensus_quorum_shrink_removed_count() :: :consensus_quorum_shrink_removed_count
+  def consensus_quorum_shrink_removed_count, do: :consensus_quorum_shrink_removed_count
 
   @doc """
   Fault tolerance margin remaining after shrink, as fraction [0.0, 1.0].
@@ -1171,8 +1171,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.33`, `0.5`
   """
-  @spec consensus_quorum_shrink_safety_margin() :: :"consensus.quorum.shrink.safety_margin"
-  def consensus_quorum_shrink_safety_margin, do: :"consensus.quorum.shrink.safety_margin"
+  @spec consensus_quorum_shrink_safety_margin() :: :consensus_quorum_shrink_safety_margin
+  def consensus_quorum_shrink_safety_margin, do: :consensus_quorum_shrink_safety_margin
 
   @doc """
   Target quorum size after growth operation completes.
@@ -1183,8 +1183,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `7`, `13`
   """
-  @spec consensus_quorum_target_size() :: :"consensus.quorum.target_size"
-  def consensus_quorum_target_size, do: :"consensus.quorum.target_size"
+  @spec consensus_quorum_target_size() :: :consensus_quorum_target_size
+  def consensus_quorum_target_size, do: :consensus_quorum_target_size
 
   @doc """
   Number of votes required for quorum (typically 2f+1 for f Byzantine faults).
@@ -1195,8 +1195,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`, `7`
   """
-  @spec consensus_quorum_size() :: :"consensus.quorum_size"
-  def consensus_quorum_size, do: :"consensus.quorum_size"
+  @spec consensus_quorum_size() :: :consensus_quorum_size
+  def consensus_quorum_size, do: :consensus_quorum_size
 
   @doc """
   Total number of replicas participating in the consensus protocol.
@@ -1207,8 +1207,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `4`, `7`, `10`
   """
-  @spec consensus_replica_count() :: :"consensus.replica.count"
-  def consensus_replica_count, do: :"consensus.replica.count"
+  @spec consensus_replica_count() :: :consensus_replica_count
+  def consensus_replica_count, do: :consensus_replica_count
 
   @doc """
   Replication lag in milliseconds — how far behind the slowest replica is.
@@ -1219,8 +1219,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `5`, `50`, `500`
   """
-  @spec consensus_replica_lag_ms() :: :"consensus.replica.lag_ms"
-  def consensus_replica_lag_ms, do: :"consensus.replica.lag_ms"
+  @spec consensus_replica_lag_ms() :: :consensus_replica_lag_ms
+  def consensus_replica_lag_ms, do: :consensus_replica_lag_ms
 
   @doc """
   The round number within the BFT consensus protocol.
@@ -1231,8 +1231,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `42`
   """
-  @spec consensus_round_num() :: :"consensus.round_num"
-  def consensus_round_num, do: :"consensus.round_num"
+  @spec consensus_round_num() :: :consensus_round_num
+  def consensus_round_num, do: :consensus_round_num
 
   @doc """
   Phase of the BFT consensus round.
@@ -1243,8 +1243,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `prepare`, `accept`
   """
-  @spec consensus_round_type() :: :"consensus.round_type"
-  def consensus_round_type, do: :"consensus.round_type"
+  @spec consensus_round_type() :: :consensus_round_type
+  def consensus_round_type, do: :consensus_round_type
 
   @doc """
   Enumerated values for `consensus.round_type`.
@@ -1303,8 +1303,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `1000`
   """
-  @spec consensus_safety_check_interval_ms() :: :"consensus.safety.check_interval_ms"
-  def consensus_safety_check_interval_ms, do: :"consensus.safety.check_interval_ms"
+  @spec consensus_safety_check_interval_ms() :: :consensus_safety_check_interval_ms
+  def consensus_safety_check_interval_ms, do: :consensus_safety_check_interval_ms
 
   @doc """
   Achieved safety quorum ratio during the consensus round, range [0.0, 1.0].
@@ -1315,8 +1315,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.67`, `0.75`, `1.0`
   """
-  @spec consensus_safety_quorum_ratio() :: :"consensus.safety.quorum_ratio"
-  def consensus_safety_quorum_ratio, do: :"consensus.safety.quorum_ratio"
+  @spec consensus_safety_quorum_ratio() :: :consensus_safety_quorum_ratio
+  def consensus_safety_quorum_ratio, do: :consensus_safety_quorum_ratio
 
   @doc """
   Minimum fraction of replicas required for a safe consensus decision [0.0, 1.0]. Typical: 0.67 (2/3).
@@ -1327,8 +1327,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.67`, `0.75`, `0.51`
   """
-  @spec consensus_safety_threshold() :: :"consensus.safety.threshold"
-  def consensus_safety_threshold, do: :"consensus.safety.threshold"
+  @spec consensus_safety_threshold() :: :consensus_safety_threshold
+  def consensus_safety_threshold, do: :consensus_safety_threshold
 
   @doc """
   Unique identifier for the safety violation event.
@@ -1339,8 +1339,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `violation-001`, `violation-epoch-5-double-vote`
   """
-  @spec consensus_safety_violation_id() :: :"consensus.safety.violation.id"
-  def consensus_safety_violation_id, do: :"consensus.safety.violation.id"
+  @spec consensus_safety_violation_id() :: :consensus_safety_violation_id
+  def consensus_safety_violation_id, do: :consensus_safety_violation_id
 
   @doc """
   Severity level of the safety violation.
@@ -1351,8 +1351,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `warning`, `critical`, `fatal`
   """
-  @spec consensus_safety_violation_severity() :: :"consensus.safety.violation.severity"
-  def consensus_safety_violation_severity, do: :"consensus.safety.violation.severity"
+  @spec consensus_safety_violation_severity() :: :consensus_safety_violation_severity
+  def consensus_safety_violation_severity, do: :consensus_safety_violation_severity
 
   @doc """
   Enumerated values for `consensus.safety.violation.severity`.
@@ -1404,8 +1404,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `double_vote`, `equivocation`, `quorum_breach`
   """
-  @spec consensus_safety_violation_type() :: :"consensus.safety.violation.type"
-  def consensus_safety_violation_type, do: :"consensus.safety.violation.type"
+  @spec consensus_safety_violation_type() :: :consensus_safety_violation_type
+  def consensus_safety_violation_type, do: :consensus_safety_violation_type
 
   @doc """
   Enumerated values for `consensus.safety.violation.type`.
@@ -1457,8 +1457,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec consensus_safety_violation_count() :: :"consensus.safety.violation_count"
-  def consensus_safety_violation_count, do: :"consensus.safety.violation_count"
+  @spec consensus_safety_violation_count() :: :consensus_safety_violation_count
+  def consensus_safety_violation_count, do: :consensus_safety_violation_count
 
   @doc """
   Number of valid cryptographic signatures collected in this round.
@@ -1469,8 +1469,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `4`, `7`, `10`
   """
-  @spec consensus_signature_count() :: :"consensus.signature_count"
-  def consensus_signature_count, do: :"consensus.signature_count"
+  @spec consensus_signature_count() :: :consensus_signature_count
+  def consensus_signature_count, do: :consensus_signature_count
 
   @doc """
   Rate at which the consensus threshold is adapted per round, range [0.0, 1.0].
@@ -1481,8 +1481,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.05`, `0.1`
   """
-  @spec consensus_threshold_adaptation_rate() :: :"consensus.threshold.adaptation_rate"
-  def consensus_threshold_adaptation_rate, do: :"consensus.threshold.adaptation_rate"
+  @spec consensus_threshold_adaptation_rate() :: :consensus_threshold_adaptation_rate
+  def consensus_threshold_adaptation_rate, do: :consensus_threshold_adaptation_rate
 
   @doc """
   Current consensus threshold value (fraction of replicas required for quorum), range (0.5, 1.0].
@@ -1493,8 +1493,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.67`, `0.75`
   """
-  @spec consensus_threshold_current() :: :"consensus.threshold.current"
-  def consensus_threshold_current, do: :"consensus.threshold.current"
+  @spec consensus_threshold_current() :: :consensus_threshold_current
+  def consensus_threshold_current, do: :consensus_threshold_current
 
   @doc """
   Target fault tolerance ratio (max fraction of Byzantine faults tolerated), range [0.0, 0.5).
@@ -1505,8 +1505,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `0.33`, `0.25`
   """
-  @spec consensus_threshold_fault_tolerance_target() :: :"consensus.threshold.fault_tolerance_target"
-  def consensus_threshold_fault_tolerance_target, do: :"consensus.threshold.fault_tolerance_target"
+  @spec consensus_threshold_fault_tolerance_target() :: :consensus_threshold_fault_tolerance_target
+  def consensus_threshold_fault_tolerance_target, do: :consensus_threshold_fault_tolerance_target
 
   @doc """
   Number of negative votes cast.
@@ -1517,8 +1517,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `0`, `3`
   """
-  @spec consensus_threshold_nay_count() :: :"consensus.threshold.nay_count"
-  def consensus_threshold_nay_count, do: :"consensus.threshold.nay_count"
+  @spec consensus_threshold_nay_count() :: :consensus_threshold_nay_count
+  def consensus_threshold_nay_count, do: :consensus_threshold_nay_count
 
   @doc """
   The voting threshold type required for consensus.
@@ -1529,8 +1529,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `supermajority`, `simple`
   """
-  @spec consensus_threshold_vote_type() :: :"consensus.threshold.vote_type"
-  def consensus_threshold_vote_type, do: :"consensus.threshold.vote_type"
+  @spec consensus_threshold_vote_type() :: :consensus_threshold_vote_type
+  def consensus_threshold_vote_type, do: :consensus_threshold_vote_type
 
   @doc """
   Enumerated values for `consensus.threshold.vote_type`.
@@ -1582,8 +1582,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `7`, `4`, `10`
   """
-  @spec consensus_threshold_yea_count() :: :"consensus.threshold.yea_count"
-  def consensus_threshold_yea_count, do: :"consensus.threshold.yea_count"
+  @spec consensus_threshold_yea_count() :: :consensus_threshold_yea_count
+  def consensus_threshold_yea_count, do: :consensus_threshold_yea_count
 
   @doc """
   Timeout in milliseconds for the current consensus round.
@@ -1594,8 +1594,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`, `30000`
   """
-  @spec consensus_timeout_ms() :: :"consensus.timeout_ms"
-  def consensus_timeout_ms, do: :"consensus.timeout_ms"
+  @spec consensus_timeout_ms() :: :consensus_timeout_ms
+  def consensus_timeout_ms, do: :consensus_timeout_ms
 
   @doc """
   Timestamp when the consensus round occurred (ISO 8601 format).
@@ -1606,8 +1606,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2026-03-25T12:00:00Z`, `2026-03-25T12:00:00.123Z`
   """
-  @spec consensus_timestamp() :: :"consensus.timestamp"
-  def consensus_timestamp, do: :"consensus.timestamp"
+  @spec consensus_timestamp() :: :consensus_timestamp
+  def consensus_timestamp, do: :consensus_timestamp
 
   @doc """
   Version of the consensus protocol/implementation being executed.
@@ -1618,8 +1618,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `hotstuff-v2.3.1`, `2026-03-25`
   """
-  @spec consensus_version() :: :"consensus.version"
-  def consensus_version, do: :"consensus.version"
+  @spec consensus_version() :: :consensus_version
+  def consensus_version, do: :consensus_version
 
   @doc """
   Duration of the current consensus view in milliseconds.
@@ -1630,8 +1630,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1000`
   """
-  @spec consensus_view_duration_ms() :: :"consensus.view.duration_ms"
-  def consensus_view_duration_ms, do: :"consensus.view.duration_ms"
+  @spec consensus_view_duration_ms() :: :consensus_view_duration_ms
+  def consensus_view_duration_ms, do: :consensus_view_duration_ms
 
   @doc """
   Exponential backoff delay applied before attempting view change.
@@ -1642,8 +1642,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `100`, `400`, `1600`
   """
-  @spec consensus_view_change_backoff_ms() :: :"consensus.view_change.backoff_ms"
-  def consensus_view_change_backoff_ms, do: :"consensus.view_change.backoff_ms"
+  @spec consensus_view_change_backoff_ms() :: :consensus_view_change_backoff_ms
+  def consensus_view_change_backoff_ms, do: :consensus_view_change_backoff_ms
 
   @doc """
   Duration of the view change protocol in milliseconds.
@@ -1654,8 +1654,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1000`
   """
-  @spec consensus_view_change_duration_ms() :: :"consensus.view_change.duration_ms"
-  def consensus_view_change_duration_ms, do: :"consensus.view_change.duration_ms"
+  @spec consensus_view_change_duration_ms() :: :consensus_view_change_duration_ms
+  def consensus_view_change_duration_ms, do: :consensus_view_change_duration_ms
 
   @doc """
   Reason that triggered the view change.
@@ -1665,8 +1665,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec consensus_view_change_reason() :: :"consensus.view_change.reason"
-  def consensus_view_change_reason, do: :"consensus.view_change.reason"
+  @spec consensus_view_change_reason() :: :consensus_view_change_reason
+  def consensus_view_change_reason, do: :consensus_view_change_reason
 
   @doc """
   Enumerated values for `consensus.view_change.reason`.
@@ -1732,8 +1732,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1`, `42`, `1000`
   """
-  @spec consensus_view_number() :: :"consensus.view_number"
-  def consensus_view_number, do: :"consensus.view_number"
+  @spec consensus_view_number() :: :consensus_view_number
+  def consensus_view_number, do: :consensus_view_number
 
   @doc """
   Timeout in milliseconds for the current view (Armstrong fault tolerance budget).
@@ -1744,8 +1744,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`
   """
-  @spec consensus_view_timeout_ms() :: :"consensus.view_timeout_ms"
-  def consensus_view_timeout_ms, do: :"consensus.view_timeout_ms"
+  @spec consensus_view_timeout_ms() :: :consensus_view_timeout_ms
+  def consensus_view_timeout_ms, do: :consensus_view_timeout_ms
 
   @doc """
   Current number of votes collected for this round.
@@ -1756,7 +1756,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ConsensusAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`, `5`
   """
-  @spec consensus_vote_count() :: :"consensus.vote_count"
-  def consensus_vote_count, do: :"consensus.vote_count"
+  @spec consensus_vote_count() :: :consensus_vote_count
+  def consensus_vote_count, do: :consensus_vote_count
 
 end

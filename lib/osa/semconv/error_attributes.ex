@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ErrorAttributes do
   Requirement: `recommended`
   Examples: `timeout`, `java.net.UnknownHostException`, `server_certificate_invalid`, `500`
   """
-  @spec error_type() :: :"error.type"
-  def error_type, do: :"error.type"
+  @spec error_type() :: :error_type
+  def error_type, do: :error_type
 
   @doc """
   Enumerated values for `error.type`.

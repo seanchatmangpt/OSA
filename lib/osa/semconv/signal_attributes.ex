@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.85`, `0.6`
   """
-  @spec signal_bandwidth() :: :"signal.bandwidth"
-  def signal_bandwidth, do: :"signal.bandwidth"
+  @spec signal_bandwidth() :: :signal_bandwidth
+  def signal_bandwidth, do: :signal_bandwidth
 
   @doc """
   Number of signals dropped during batch aggregation due to capacity limits.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `12`
   """
-  @spec signal_batch_drop_count() :: :"signal.batch.drop_count"
-  def signal_batch_drop_count, do: :"signal.batch.drop_count"
+  @spec signal_batch_drop_count() :: :signal_batch_drop_count
+  def signal_batch_drop_count, do: :signal_batch_drop_count
 
   @doc """
   Number of signals in the batch aggregate.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `10`, `50`, `200`
   """
-  @spec signal_batch_size() :: :"signal.batch.size"
-  def signal_batch_size, do: :"signal.batch.size"
+  @spec signal_batch_size() :: :signal_batch_size
+  def signal_batch_size, do: :signal_batch_size
 
   @doc """
   Time window in milliseconds over which signals are batched.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `1000`
   """
-  @spec signal_batch_window_ms() :: :"signal.batch.window_ms"
-  def signal_batch_window_ms, do: :"signal.batch.window_ms"
+  @spec signal_batch_window_ms() :: :signal_batch_window_ms
+  def signal_batch_window_ms, do: :signal_batch_window_ms
 
   @doc """
   The identifier of the channel this signal is transmitted through.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `chan-001`, `priority-queue-high`, `broadcast-main`
   """
-  @spec signal_channel_id() :: :"signal.channel.id"
-  def signal_channel_id, do: :"signal.channel.id"
+  @spec signal_channel_id() :: :signal_channel_id
+  def signal_channel_id, do: :signal_channel_id
 
   @doc """
   The classifier module or model that analyzed and scored the signal.
@@ -79,8 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `osa.signal.classifier`, `canopy.signal_router`, `bos.signal_gate`
   """
-  @spec signal_classifier() :: :"signal.classifier"
-  def signal_classifier, do: :"signal.classifier"
+  @spec signal_classifier() :: :signal_classifier
+  def signal_classifier, do: :signal_classifier
 
   @doc """
   Compression ratio applied to the signal [0.0, 1.0]. 1.0 = no compression.
@@ -91,8 +91,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `0.7`, `0.3`
   """
-  @spec signal_compression_ratio() :: :"signal.compression.ratio"
-  def signal_compression_ratio, do: :"signal.compression.ratio"
+  @spec signal_compression_ratio() :: :signal_compression_ratio
+  def signal_compression_ratio, do: :signal_compression_ratio
 
   @doc """
   Wire encoding format used to serialize the signal payload.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `json`, `protobuf`
   """
-  @spec signal_encoding() :: :"signal.encoding"
-  def signal_encoding, do: :"signal.encoding"
+  @spec signal_encoding() :: :signal_encoding
+  def signal_encoding, do: :signal_encoding
 
   @doc """
   Enumerated values for `signal.encoding`.
@@ -163,8 +163,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `markdown`, `json`, `yaml`
   """
-  @spec signal_format() :: :"signal.format"
-  def signal_format, do: :"signal.format"
+  @spec signal_format() :: :signal_format
+  def signal_format, do: :signal_format
 
   @doc """
   Enumerated values for `signal.format`.
@@ -251,8 +251,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `spec`, `adr`, `report`
   """
-  @spec signal_genre() :: :"signal.genre"
-  def signal_genre, do: :"signal.genre"
+  @spec signal_genre() :: :signal_genre
+  def signal_genre, do: :signal_genre
 
   @doc """
   Enumerated values for `signal.genre`.
@@ -353,8 +353,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec signal_hop_count() :: :"signal.hop_count"
-  def signal_hop_count, do: :"signal.hop_count"
+  @spec signal_hop_count() :: :signal_hop_count
+  def signal_hop_count, do: :signal_hop_count
 
   @doc """
   Signal propagation latency in milliseconds from generation to delivery.
@@ -365,8 +365,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `12`, `250`, `1500`
   """
-  @spec signal_latency_ms() :: :"signal.latency_ms"
-  def signal_latency_ms, do: :"signal.latency_ms"
+  @spec signal_latency_ms() :: :signal_latency_ms
+  def signal_latency_ms, do: :signal_latency_ms
 
   @doc """
   The mode component (M) of the signal — how information is encoded.
@@ -377,8 +377,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `linguistic`, `code`, `data`
   """
-  @spec signal_mode() :: :"signal.mode"
-  def signal_mode, do: :"signal.mode"
+  @spec signal_mode() :: :signal_mode
+  def signal_mode, do: :signal_mode
 
   @doc """
   Enumerated values for `signal.mode`.
@@ -465,8 +465,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.05`, `0.25`, `0.58`
   """
-  @spec signal_noise_level() :: :"signal.noise_level"
-  def signal_noise_level, do: :"signal.noise_level"
+  @spec signal_noise_level() :: :signal_noise_level
+  def signal_noise_level, do: :signal_noise_level
 
   @doc """
   Priority level of the signal for queue ordering and routing decisions.
@@ -477,8 +477,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `critical`, `high`
   """
-  @spec signal_priority() :: :"signal.priority"
-  def signal_priority, do: :"signal.priority"
+  @spec signal_priority() :: :signal_priority
+  def signal_priority, do: :signal_priority
 
   @doc """
   Enumerated values for `signal.priority`.
@@ -537,8 +537,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec signal_quality_degraded() :: :"signal.quality.degraded"
-  def signal_quality_degraded, do: :"signal.quality.degraded"
+  @spec signal_quality_degraded() :: :signal_quality_degraded
+  def signal_quality_degraded, do: :signal_quality_degraded
 
   @doc """
   Composite quality score for the signal, range [0.0, 1.0]. Combines S/N ratio, bandwidth, and latency metrics.
@@ -549,8 +549,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.72`, `0.5`
   """
-  @spec signal_quality_score() :: :"signal.quality.score"
-  def signal_quality_score, do: :"signal.quality.score"
+  @spec signal_quality_score() :: :signal_quality_score
+  def signal_quality_score, do: :signal_quality_score
 
   @doc """
   The configured S/N quality threshold below which signals are rejected. Default is 0.7.
@@ -561,8 +561,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.7`, `0.8`, `0.9`
   """
-  @spec signal_quality_threshold() :: :"signal.quality.threshold"
-  def signal_quality_threshold, do: :"signal.quality.threshold"
+  @spec signal_quality_threshold() :: :signal_quality_threshold
+  def signal_quality_threshold, do: :signal_quality_threshold
 
   @doc """
   Number of retransmission retries attempted for this signal.
@@ -573,8 +573,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec signal_retry_count() :: :"signal.retry.count"
-  def signal_retry_count, do: :"signal.retry.count"
+  @spec signal_retry_count() :: :signal_retry_count
+  def signal_retry_count, do: :signal_retry_count
 
   @doc """
   Shannon signal-to-noise ratio score in range [0.0, 1.0]. Values >= 0.7 pass the S/N gate for transmission.
@@ -585,8 +585,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.92`, `0.71`, `0.35`
   """
-  @spec signal_sn_ratio() :: :"signal.sn_ratio"
-  def signal_sn_ratio, do: :"signal.sn_ratio"
+  @spec signal_sn_ratio() :: :signal_sn_ratio
+  def signal_sn_ratio, do: :signal_sn_ratio
 
   @doc """
   The source channel through which the signal was received.
@@ -597,8 +597,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `http`, `websocket`, `telegram`, `discord`, `slack`, `cli`
   """
-  @spec signal_source() :: :"signal.source"
-  def signal_source, do: :"signal.source"
+  @spec signal_source() :: :signal_source
+  def signal_source, do: :signal_source
 
   @doc """
   Time-to-live for the signal in milliseconds — signal expires if not consumed.
@@ -609,8 +609,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `1000`, `30000`, `300000`
   """
-  @spec signal_ttl_ms() :: :"signal.ttl_ms"
-  def signal_ttl_ms, do: :"signal.ttl_ms"
+  @spec signal_ttl_ms() :: :signal_ttl_ms
+  def signal_ttl_ms, do: :signal_ttl_ms
 
   @doc """
   The type component (T) of the signal — the speech act or communicative intent.
@@ -621,8 +621,8 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `direct`, `inform`, `decide`
   """
-  @spec signal_type() :: :"signal.type"
-  def signal_type, do: :"signal.type"
+  @spec signal_type() :: :signal_type
+  def signal_type, do: :signal_type
 
   @doc """
   Enumerated values for `signal.type`.
@@ -688,7 +688,7 @@ defmodule OpenTelemetry.SemConv.Incubating.SignalAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.75`, `0.42`
   """
-  @spec signal_weight() :: :"signal.weight"
-  def signal_weight, do: :"signal.weight"
+  @spec signal_weight() :: :signal_weight
+  def signal_weight, do: :signal_weight
 
 end

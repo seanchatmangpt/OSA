@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `businessos-agent`, `osa-healing-agent`, `canopy-adapter`
   """
-  @spec a2a_agent_id() :: :"a2a.agent.id"
-  def a2a_agent_id, do: :"a2a.agent.id"
+  @spec a2a_agent_id() :: :a2a_agent_id
+  def a2a_agent_id, do: :a2a_agent_id
 
   @doc """
   Number of bids received in the A2A auction.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `2`, `5`, `20`
   """
-  @spec a2a_auction_bid_count() :: :"a2a.auction.bid_count"
-  def a2a_auction_bid_count, do: :"a2a.auction.bid_count"
+  @spec a2a_auction_bid_count() :: :a2a_auction_bid_count
+  def a2a_auction_bid_count, do: :a2a_auction_bid_count
 
   @doc """
   Clearing price of the A2A auction in normalized units.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.5`, `1.0`, `2.5`
   """
-  @spec a2a_auction_clearing_price() :: :"a2a.auction.clearing_price"
-  def a2a_auction_clearing_price, do: :"a2a.auction.clearing_price"
+  @spec a2a_auction_clearing_price() :: :a2a_auction_clearing_price
+  def a2a_auction_clearing_price, do: :a2a_auction_clearing_price
 
   @doc """
   Unique identifier of the A2A auction used for capability allocation.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `auction-001`, `a2a-bid-x7f`
   """
-  @spec a2a_auction_id() :: :"a2a.auction.id"
-  def a2a_auction_id, do: :"a2a.auction.id"
+  @spec a2a_auction_id() :: :a2a_auction_id
+  def a2a_auction_id, do: :a2a_auction_id
 
   @doc """
   Agent identifier of the auction winner.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `agent-3`, `osa-worker-1`
   """
-  @spec a2a_auction_winner_id() :: :"a2a.auction.winner_id"
-  def a2a_auction_winner_id, do: :"a2a.auction.winner_id"
+  @spec a2a_auction_winner_id() :: :a2a_auction_winner_id
+  def a2a_auction_winner_id, do: :a2a_auction_winner_id
 
   @doc """
   Compression ratio achieved for the batch, range [0.0, 1.0]. 1.0 = no compression.
@@ -79,8 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.35`, `0.6`, `1.0`
   """
-  @spec a2a_batch_compression_ratio() :: :"a2a.batch.compression_ratio"
-  def a2a_batch_compression_ratio, do: :"a2a.batch.compression_ratio"
+  @spec a2a_batch_compression_ratio() :: :a2a_batch_compression_ratio
+  def a2a_batch_compression_ratio, do: :a2a_batch_compression_ratio
 
   @doc """
   Delivery guarantee policy for the message batch.
@@ -91,8 +91,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `at_most_once`, `at_least_once`, `exactly_once`
   """
-  @spec a2a_batch_delivery_policy() :: :"a2a.batch.delivery_policy"
-  def a2a_batch_delivery_policy, do: :"a2a.batch.delivery_policy"
+  @spec a2a_batch_delivery_policy() :: :a2a_batch_delivery_policy
+  def a2a_batch_delivery_policy, do: :a2a_batch_delivery_policy
 
   @doc """
   Enumerated values for `a2a.batch.delivery_policy`.
@@ -144,8 +144,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `batch-001`, `msg-batch-7f3a`
   """
-  @spec a2a_batch_id() :: :"a2a.batch.id"
-  def a2a_batch_id, do: :"a2a.batch.id"
+  @spec a2a_batch_id() :: :a2a_batch_id
+  def a2a_batch_id, do: :a2a_batch_id
 
   @doc """
   Number of messages in the batch.
@@ -156,8 +156,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1`, `10`, `100`
   """
-  @spec a2a_batch_size() :: :"a2a.batch.size"
-  def a2a_batch_size, do: :"a2a.batch.size"
+  @spec a2a_batch_size() :: :a2a_batch_size
+  def a2a_batch_size, do: :a2a_batch_size
 
   @doc """
   Composite bid score computed by the auction evaluation strategy, range [0.0, 1.0].
@@ -168,8 +168,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.85`, `0.72`, `0.91`
   """
-  @spec a2a_bid_score() :: :"a2a.bid.score"
-  def a2a_bid_score, do: :"a2a.bid.score"
+  @spec a2a_bid_score() :: :a2a_bid_score
+  def a2a_bid_score, do: :a2a_bid_score
 
   @doc """
   Strategy used to evaluate and rank agent bids for task allocation.
@@ -180,8 +180,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `lowest_cost`, `highest_trust`, `balanced`
   """
-  @spec a2a_bid_strategy() :: :"a2a.bid.strategy"
-  def a2a_bid_strategy, do: :"a2a.bid.strategy"
+  @spec a2a_bid_strategy() :: :a2a_bid_strategy
+  def a2a_bid_strategy, do: :a2a_bid_strategy
 
   @doc """
   Enumerated values for `a2a.bid.strategy`.
@@ -240,8 +240,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `agent-007`, `billing-agent-1`
   """
-  @spec a2a_bid_winner_id() :: :"a2a.bid.winner_id"
-  def a2a_bid_winner_id, do: :"a2a.bid.winner_id"
+  @spec a2a_bid_winner_id() :: :a2a_bid_winner_id
+  def a2a_bid_winner_id, do: :a2a_bid_winner_id
 
   @doc """
   Confidence score for capability matching between requesting and providing agents [0.0, 1.0].
@@ -252,8 +252,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.72`, `0.4`
   """
-  @spec a2a_capability_match_score() :: :"a2a.capability.match_score"
-  def a2a_capability_match_score, do: :"a2a.capability.match_score"
+  @spec a2a_capability_match_score() :: :a2a_capability_match_score
+  def a2a_capability_match_score, do: :a2a_capability_match_score
 
   @doc """
   Name of the capability being advertised or requested in A2A negotiation.
@@ -264,8 +264,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `healing.diagnosis`, `process.mining`, `compliance.check`
   """
-  @spec a2a_capability_name() :: :"a2a.capability.name"
-  def a2a_capability_name, do: :"a2a.capability.name"
+  @spec a2a_capability_name() :: :a2a_capability_name
+  def a2a_capability_name, do: :a2a_capability_name
 
   @doc """
   Unique identifier for the capability negotiation session.
@@ -276,8 +276,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `neg-001`, `cap-neg-abc123`
   """
-  @spec a2a_capability_negotiation_id() :: :"a2a.capability.negotiation.id"
-  def a2a_capability_negotiation_id, do: :"a2a.capability.negotiation.id"
+  @spec a2a_capability_negotiation_id() :: :a2a_capability_negotiation_id
+  def a2a_capability_negotiation_id, do: :a2a_capability_negotiation_id
 
   @doc """
   Outcome of the capability negotiation.
@@ -287,8 +287,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec a2a_capability_negotiation_outcome() :: :"a2a.capability.negotiation.outcome"
-  def a2a_capability_negotiation_outcome, do: :"a2a.capability.negotiation.outcome"
+  @spec a2a_capability_negotiation_outcome() :: :a2a_capability_negotiation_outcome
+  def a2a_capability_negotiation_outcome, do: :a2a_capability_negotiation_outcome
 
   @doc """
   Enumerated values for `a2a.capability.negotiation.outcome`.
@@ -347,8 +347,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `5`
   """
-  @spec a2a_capability_negotiation_rounds() :: :"a2a.capability.negotiation.rounds"
-  def a2a_capability_negotiation_rounds, do: :"a2a.capability.negotiation.rounds"
+  @spec a2a_capability_negotiation_rounds() :: :a2a_capability_negotiation_rounds
+  def a2a_capability_negotiation_rounds, do: :a2a_capability_negotiation_rounds
 
   @doc """
   The capability name offered by the target agent.
@@ -359,8 +359,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `text.summarize`, `data.transform`
   """
-  @spec a2a_capability_offered() :: :"a2a.capability.offered"
-  def a2a_capability_offered, do: :"a2a.capability.offered"
+  @spec a2a_capability_offered() :: :a2a_capability_offered
+  def a2a_capability_offered, do: :a2a_capability_offered
 
   @doc """
   The capability name being requested by the source agent.
@@ -371,8 +371,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `text.summarize`, `data.transform`, `image.classify`
   """
-  @spec a2a_capability_required() :: :"a2a.capability.required"
-  def a2a_capability_required, do: :"a2a.capability.required"
+  @spec a2a_capability_required() :: :a2a_capability_required
+  def a2a_capability_required, do: :a2a_capability_required
 
   @doc """
   Version of the agent capability being delegated.
@@ -383,8 +383,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `2.3.1`
   """
-  @spec a2a_capability_version() :: :"a2a.capability.version"
-  def a2a_capability_version, do: :"a2a.capability.version"
+  @spec a2a_capability_version() :: :a2a_capability_version
+  def a2a_capability_version, do: :a2a_capability_version
 
   @doc """
   Unique identifier for the contract amendment.
@@ -395,8 +395,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `amend-001`, `contract-rev-5`
   """
-  @spec a2a_contract_amendment_id() :: :"a2a.contract.amendment.id"
-  def a2a_contract_amendment_id, do: :"a2a.contract.amendment.id"
+  @spec a2a_contract_amendment_id() :: :a2a_contract_amendment_id
+  def a2a_contract_amendment_id, do: :a2a_contract_amendment_id
 
   @doc """
   Reason for the contract amendment.
@@ -407,8 +407,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `scope_change`, `price_adjustment`
   """
-  @spec a2a_contract_amendment_reason() :: :"a2a.contract.amendment.reason"
-  def a2a_contract_amendment_reason, do: :"a2a.contract.amendment.reason"
+  @spec a2a_contract_amendment_reason() :: :a2a_contract_amendment_reason
+  def a2a_contract_amendment_reason, do: :a2a_contract_amendment_reason
 
   @doc """
   Enumerated values for `a2a.contract.amendment.reason`.
@@ -467,8 +467,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `2`, `3`, `10`
   """
-  @spec a2a_contract_amendment_version() :: :"a2a.contract.amendment.version"
-  def a2a_contract_amendment_version, do: :"a2a.contract.amendment.version"
+  @spec a2a_contract_amendment_version() :: :a2a_contract_amendment_version
+  def a2a_contract_amendment_version, do: :a2a_contract_amendment_version
 
   @doc """
   Unique identifier for the A2A contract dispute.
@@ -479,8 +479,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `contract-dispute-001`, `disp-contract-abc123`
   """
-  @spec a2a_contract_dispute_id() :: :"a2a.contract.dispute.id"
-  def a2a_contract_dispute_id, do: :"a2a.contract.dispute.id"
+  @spec a2a_contract_dispute_id() :: :a2a_contract_dispute_id
+  def a2a_contract_dispute_id, do: :a2a_contract_dispute_id
 
   @doc """
   Reason for the contract dispute.
@@ -491,8 +491,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `breach`, `ambiguity`, `force_majeure`
   """
-  @spec a2a_contract_dispute_reason() :: :"a2a.contract.dispute.reason"
-  def a2a_contract_dispute_reason, do: :"a2a.contract.dispute.reason"
+  @spec a2a_contract_dispute_reason() :: :a2a_contract_dispute_reason
+  def a2a_contract_dispute_reason, do: :a2a_contract_dispute_reason
 
   @doc """
   Enumerated values for `a2a.contract.dispute.reason`.
@@ -544,8 +544,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `open`, `arbitrating`, `resolved`
   """
-  @spec a2a_contract_dispute_status() :: :"a2a.contract.dispute.status"
-  def a2a_contract_dispute_status, do: :"a2a.contract.dispute.status"
+  @spec a2a_contract_dispute_status() :: :a2a_contract_dispute_status
+  def a2a_contract_dispute_status, do: :a2a_contract_dispute_status
 
   @doc """
   Enumerated values for `a2a.contract.dispute.status`.
@@ -597,8 +597,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.0`, `50.0`, `100.0`
   """
-  @spec a2a_contract_execution_progress_pct() :: :"a2a.contract.execution.progress_pct"
-  def a2a_contract_execution_progress_pct, do: :"a2a.contract.execution.progress_pct"
+  @spec a2a_contract_execution_progress_pct() :: :a2a_contract_execution_progress_pct
+  def a2a_contract_execution_progress_pct, do: :a2a_contract_execution_progress_pct
 
   @doc """
   The current execution status of the A2A contract.
@@ -609,8 +609,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `running`, `completed`, `failed`, `disputed`
   """
-  @spec a2a_contract_execution_status() :: :"a2a.contract.execution.status"
-  def a2a_contract_execution_status, do: :"a2a.contract.execution.status"
+  @spec a2a_contract_execution_status() :: :a2a_contract_execution_status
+  def a2a_contract_execution_status, do: :a2a_contract_execution_status
 
   @doc """
   Enumerated values for `a2a.contract.execution.status`.
@@ -669,8 +669,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1700000000000`, `1800000000000`
   """
-  @spec a2a_contract_expiry_ms() :: :"a2a.contract.expiry_ms"
-  def a2a_contract_expiry_ms, do: :"a2a.contract.expiry_ms"
+  @spec a2a_contract_expiry_ms() :: :a2a_contract_expiry_ms
+  def a2a_contract_expiry_ms, do: :a2a_contract_expiry_ms
 
   @doc """
   Unique identifier for an A2A service contract.
@@ -681,8 +681,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `contract-xyz789`, `svc-contract-001`
   """
-  @spec a2a_contract_id() :: :"a2a.contract.id"
-  def a2a_contract_id, do: :"a2a.contract.id"
+  @spec a2a_contract_id() :: :a2a_contract_id
+  def a2a_contract_id, do: :a2a_contract_id
 
   @doc """
   SHA-256 hash of the contract terms for integrity verification.
@@ -693,8 +693,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `sha256:abc123...`, `sha256:def456...`
   """
-  @spec a2a_contract_terms_hash() :: :"a2a.contract.terms_hash"
-  def a2a_contract_terms_hash, do: :"a2a.contract.terms_hash"
+  @spec a2a_contract_terms_hash() :: :a2a_contract_terms_hash
+  def a2a_contract_terms_hash, do: :a2a_contract_terms_hash
 
   @doc """
   Number of times the contract terms were violated during the contract lifetime.
@@ -705,8 +705,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`
   """
-  @spec a2a_contract_violation_count() :: :"a2a.contract.violation_count"
-  def a2a_contract_violation_count, do: :"a2a.contract.violation_count"
+  @spec a2a_contract_violation_count() :: :a2a_contract_violation_count
+  def a2a_contract_violation_count, do: :a2a_contract_violation_count
 
   @doc """
   Currency unit for the deal value (ISO 4217 or token unit).
@@ -717,8 +717,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `USD`, `TOKEN`, `CREDIT`
   """
-  @spec a2a_deal_currency() :: :"a2a.deal.currency"
-  def a2a_deal_currency, do: :"a2a.deal.currency"
+  @spec a2a_deal_currency() :: :a2a_deal_currency
+  def a2a_deal_currency, do: :a2a_deal_currency
 
   @doc """
   Deal expiration time as Unix epoch milliseconds (Armstrong WvdA bounded lifetime).
@@ -729,8 +729,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1745000000000`, `1750000000000`
   """
-  @spec a2a_deal_expiry_ms() :: :"a2a.deal.expiry_ms"
-  def a2a_deal_expiry_ms, do: :"a2a.deal.expiry_ms"
+  @spec a2a_deal_expiry_ms() :: :a2a_deal_expiry_ms
+  def a2a_deal_expiry_ms, do: :a2a_deal_expiry_ms
 
   @doc """
   Identifier of the deal being created or operated on via A2A.
@@ -741,8 +741,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `deal-abc123`, `deal-2026-001`
   """
-  @spec a2a_deal_id() :: :"a2a.deal.id"
-  def a2a_deal_id, do: :"a2a.deal.id"
+  @spec a2a_deal_id() :: :a2a_deal_id
+  def a2a_deal_id, do: :a2a_deal_id
 
   @doc """
   Current status of the A2A deal in its lifecycle.
@@ -753,8 +753,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `pending`, `active`, `completed`
   """
-  @spec a2a_deal_status() :: :"a2a.deal.status"
-  def a2a_deal_status, do: :"a2a.deal.status"
+  @spec a2a_deal_status() :: :a2a_deal_status
+  def a2a_deal_status, do: :a2a_deal_status
 
   @doc """
   Enumerated values for `a2a.deal.status`.
@@ -820,8 +820,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `data_access`, `compute_task`, `agent_collaboration`
   """
-  @spec a2a_deal_type() :: :"a2a.deal.type"
-  def a2a_deal_type, do: :"a2a.deal.type"
+  @spec a2a_deal_type() :: :a2a_deal_type
+  def a2a_deal_type, do: :a2a_deal_type
 
   @doc """
   Numeric value associated with the deal (e.g., computational cost, token budget).
@@ -832,8 +832,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100.0`, `250.5`
   """
-  @spec a2a_deal_value() :: :"a2a.deal.value"
-  def a2a_deal_value, do: :"a2a.deal.value"
+  @spec a2a_deal_value() :: :a2a_deal_value
+  def a2a_deal_value, do: :a2a_deal_value
 
   @doc """
   Unique identifier for the A2A dispute case.
@@ -844,8 +844,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `dispute-001`, `disp-abc123`
   """
-  @spec a2a_dispute_id() :: :"a2a.dispute.id"
-  def a2a_dispute_id, do: :"a2a.dispute.id"
+  @spec a2a_dispute_id() :: :a2a_dispute_id
+  def a2a_dispute_id, do: :a2a_dispute_id
 
   @doc """
   The reason for the A2A dispute.
@@ -856,8 +856,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `quality`, `sla_breach`
   """
-  @spec a2a_dispute_reason() :: :"a2a.dispute.reason"
-  def a2a_dispute_reason, do: :"a2a.dispute.reason"
+  @spec a2a_dispute_reason() :: :a2a_dispute_reason
+  def a2a_dispute_reason, do: :a2a_dispute_reason
 
   @doc """
   Enumerated values for `a2a.dispute.reason`.
@@ -923,8 +923,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1000`, `30000`, `86400000`
   """
-  @spec a2a_dispute_resolution_ms() :: :"a2a.dispute.resolution_ms"
-  def a2a_dispute_resolution_ms, do: :"a2a.dispute.resolution_ms"
+  @spec a2a_dispute_resolution_ms() :: :a2a_dispute_resolution_ms
+  def a2a_dispute_resolution_ms, do: :a2a_dispute_resolution_ms
 
   @doc """
   Current resolution status of the A2A dispute.
@@ -935,8 +935,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `resolved`, `escalated`
   """
-  @spec a2a_dispute_resolution_status() :: :"a2a.dispute.resolution_status"
-  def a2a_dispute_resolution_status, do: :"a2a.dispute.resolution_status"
+  @spec a2a_dispute_resolution_status() :: :a2a_dispute_resolution_status
+  def a2a_dispute_resolution_status, do: :a2a_dispute_resolution_status
 
   @doc """
   Enumerated values for `a2a.dispute.resolution_status`.
@@ -988,8 +988,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100.0`, `2500.5`, `0.001`
   """
-  @spec a2a_escrow_amount() :: :"a2a.escrow.amount"
-  def a2a_escrow_amount, do: :"a2a.escrow.amount"
+  @spec a2a_escrow_amount() :: :a2a_escrow_amount
+  def a2a_escrow_amount, do: :a2a_escrow_amount
 
   @doc """
   Unique identifier for the A2A escrow holding deal payment.
@@ -1000,8 +1000,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `escrow-abc123`, `esc-2026-03-25-001`
   """
-  @spec a2a_escrow_id() :: :"a2a.escrow.id"
-  def a2a_escrow_id, do: :"a2a.escrow.id"
+  @spec a2a_escrow_id() :: :a2a_escrow_id
+  def a2a_escrow_id, do: :a2a_escrow_id
 
   @doc """
   Condition under which the escrow funds are released.
@@ -1012,8 +1012,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `completion`, `timeout`
   """
-  @spec a2a_escrow_release_condition() :: :"a2a.escrow.release_condition"
-  def a2a_escrow_release_condition, do: :"a2a.escrow.release_condition"
+  @spec a2a_escrow_release_condition() :: :a2a_escrow_release_condition
+  def a2a_escrow_release_condition, do: :a2a_escrow_release_condition
 
   @doc """
   Enumerated values for `a2a.escrow.release_condition`.
@@ -1072,8 +1072,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100`, `5000`, `30000`
   """
-  @spec a2a_escrow_release_ms() :: :"a2a.escrow.release_ms"
-  def a2a_escrow_release_ms, do: :"a2a.escrow.release_ms"
+  @spec a2a_escrow_release_ms() :: :a2a_escrow_release_ms
+  def a2a_escrow_release_ms, do: :a2a_escrow_release_ms
 
   @doc """
   The reason the A2A escrow was released.
@@ -1084,8 +1084,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `completion`, `dispute`
   """
-  @spec a2a_escrow_release_reason() :: :"a2a.escrow.release_reason"
-  def a2a_escrow_release_reason, do: :"a2a.escrow.release_reason"
+  @spec a2a_escrow_release_reason() :: :a2a_escrow_release_reason
+  def a2a_escrow_release_reason, do: :a2a_escrow_release_reason
 
   @doc """
   Enumerated values for `a2a.escrow.release_reason`.
@@ -1144,8 +1144,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100.0`, `95.5`, `0.0`
   """
-  @spec a2a_escrow_released_amount() :: :"a2a.escrow.released_amount"
-  def a2a_escrow_released_amount, do: :"a2a.escrow.released_amount"
+  @spec a2a_escrow_released_amount() :: :a2a_escrow_released_amount
+  def a2a_escrow_released_amount, do: :a2a_escrow_released_amount
 
   @doc """
   Current status of the A2A escrow.
@@ -1156,8 +1156,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `held`, `released`
   """
-  @spec a2a_escrow_status() :: :"a2a.escrow.status"
-  def a2a_escrow_status, do: :"a2a.escrow.status"
+  @spec a2a_escrow_status() :: :a2a_escrow_status
+  def a2a_escrow_status, do: :a2a_escrow_status
 
   @doc """
   Enumerated values for `a2a.escrow.status`.
@@ -1216,8 +1216,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `kt-abc123`, `transfer-2026-03-25-001`
   """
-  @spec a2a_knowledge_transfer_id() :: :"a2a.knowledge.transfer.id"
-  def a2a_knowledge_transfer_id, do: :"a2a.knowledge.transfer.id"
+  @spec a2a_knowledge_transfer_id() :: :a2a_knowledge_transfer_id
+  def a2a_knowledge_transfer_id, do: :a2a_knowledge_transfer_id
 
   @doc """
   Size of knowledge payload in bytes.
@@ -1228,8 +1228,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1024`, `65536`, `1048576`
   """
-  @spec a2a_knowledge_transfer_size_bytes() :: :"a2a.knowledge.transfer.size_bytes"
-  def a2a_knowledge_transfer_size_bytes, do: :"a2a.knowledge.transfer.size_bytes"
+  @spec a2a_knowledge_transfer_size_bytes() :: :a2a_knowledge_transfer_size_bytes
+  def a2a_knowledge_transfer_size_bytes, do: :a2a_knowledge_transfer_size_bytes
 
   @doc """
   Topic or domain of knowledge being transferred.
@@ -1240,8 +1240,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `process_mining`, `agent_capability`, `compliance_rules`
   """
-  @spec a2a_knowledge_transfer_topic() :: :"a2a.knowledge.transfer.topic"
-  def a2a_knowledge_transfer_topic, do: :"a2a.knowledge.transfer.topic"
+  @spec a2a_knowledge_transfer_topic() :: :a2a_knowledge_transfer_topic
+  def a2a_knowledge_transfer_topic, do: :a2a_knowledge_transfer_topic
 
   @doc """
   Encoding format of the A2A message.
@@ -1252,8 +1252,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `json`, `protobuf`
   """
-  @spec a2a_message_encoding() :: :"a2a.message.encoding"
-  def a2a_message_encoding, do: :"a2a.message.encoding"
+  @spec a2a_message_encoding() :: :a2a_message_encoding
+  def a2a_message_encoding, do: :a2a_message_encoding
 
   @doc """
   Enumerated values for `a2a.message.encoding`.
@@ -1305,8 +1305,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `msg-123e4567-e89b`, `a2a-req-001`
   """
-  @spec a2a_message_id() :: :"a2a.message.id"
-  def a2a_message_id, do: :"a2a.message.id"
+  @spec a2a_message_id() :: :a2a_message_id
+  def a2a_message_id, do: :a2a_message_id
 
   @doc """
   Priority level of the A2A message.
@@ -1317,8 +1317,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `critical`, `high`
   """
-  @spec a2a_message_priority() :: :"a2a.message.priority"
-  def a2a_message_priority, do: :"a2a.message.priority"
+  @spec a2a_message_priority() :: :a2a_message_priority
+  def a2a_message_priority, do: :a2a_message_priority
 
   @doc """
   Enumerated values for `a2a.message.priority`.
@@ -1377,8 +1377,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `256`, `1024`, `65536`
   """
-  @spec a2a_message_size_bytes() :: :"a2a.message.size_bytes"
-  def a2a_message_size_bytes, do: :"a2a.message.size_bytes"
+  @spec a2a_message_size_bytes() :: :a2a_message_size_bytes
+  def a2a_message_size_bytes, do: :a2a_message_size_bytes
 
   @doc """
   Time-to-live for the A2A message in milliseconds.
@@ -1389,8 +1389,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec a2a_message_ttl_ms() :: :"a2a.message.ttl_ms"
-  def a2a_message_ttl_ms, do: :"a2a.message.ttl_ms"
+  @spec a2a_message_ttl_ms() :: :a2a_message_ttl_ms
+  def a2a_message_ttl_ms, do: :a2a_message_ttl_ms
 
   @doc """
   The negotiation round number in a multi-round deal negotiation.
@@ -1401,8 +1401,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec a2a_negotiation_round() :: :"a2a.negotiation.round"
-  def a2a_negotiation_round, do: :"a2a.negotiation.round"
+  @spec a2a_negotiation_round() :: :a2a_negotiation_round
+  def a2a_negotiation_round, do: :a2a_negotiation_round
 
   @doc """
   Current state in the A2A negotiation state machine.
@@ -1413,8 +1413,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `proposed`, `accepted`
   """
-  @spec a2a_negotiation_state() :: :"a2a.negotiation.state"
-  def a2a_negotiation_state, do: :"a2a.negotiation.state"
+  @spec a2a_negotiation_state() :: :a2a_negotiation_state
+  def a2a_negotiation_state, do: :a2a_negotiation_state
 
   @doc """
   Enumerated values for `a2a.negotiation.state`.
@@ -1480,8 +1480,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `pending`, `accepted`
   """
-  @spec a2a_negotiation_status() :: :"a2a.negotiation.status"
-  def a2a_negotiation_status, do: :"a2a.negotiation.status"
+  @spec a2a_negotiation_status() :: :a2a_negotiation_status
+  def a2a_negotiation_status, do: :a2a_negotiation_status
 
   @doc """
   Enumerated values for `a2a.negotiation.status`.
@@ -1561,8 +1561,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec a2a_negotiation_timeout_ms() :: :"a2a.negotiation.timeout_ms"
-  def a2a_negotiation_timeout_ms, do: :"a2a.negotiation.timeout_ms"
+  @spec a2a_negotiation_timeout_ms() :: :a2a_negotiation_timeout_ms
+  def a2a_negotiation_timeout_ms, do: :a2a_negotiation_timeout_ms
 
   @doc """
   The A2A operation name being invoked.
@@ -1573,8 +1573,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `create_deal`, `query_status`, `dispatch_task`, `get_capabilities`
   """
-  @spec a2a_operation() :: :"a2a.operation"
-  def a2a_operation, do: :"a2a.operation"
+  @spec a2a_operation() :: :a2a_operation
+  def a2a_operation, do: :a2a_operation
 
   @doc """
   Monetary or credit penalty amount applied to an agent for contract violation.
@@ -1585,8 +1585,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `5.0`, `25.5`
   """
-  @spec a2a_penalty_amount() :: :"a2a.penalty.amount"
-  def a2a_penalty_amount, do: :"a2a.penalty.amount"
+  @spec a2a_penalty_amount() :: :a2a_penalty_amount
+  def a2a_penalty_amount, do: :a2a_penalty_amount
 
   @doc """
   Currency code for the penalty/reward amount (ISO 4217).
@@ -1597,8 +1597,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `USD`, `CREDITS`
   """
-  @spec a2a_penalty_currency() :: :"a2a.penalty.currency"
-  def a2a_penalty_currency, do: :"a2a.penalty.currency"
+  @spec a2a_penalty_currency() :: :a2a_penalty_currency
+  def a2a_penalty_currency, do: :a2a_penalty_currency
 
   @doc """
   Reason for applying a penalty to an agent in the A2A marketplace.
@@ -1609,8 +1609,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `sla_violation`, `timeout`
   """
-  @spec a2a_penalty_reason() :: :"a2a.penalty.reason"
-  def a2a_penalty_reason, do: :"a2a.penalty.reason"
+  @spec a2a_penalty_reason() :: :a2a_penalty_reason
+  def a2a_penalty_reason, do: :a2a_penalty_reason
 
   @doc """
   Enumerated values for `a2a.penalty.reason`.
@@ -1668,8 +1668,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec a2a_protocol_deprecated() :: :"a2a.protocol.deprecated"
-  def a2a_protocol_deprecated, do: :"a2a.protocol.deprecated"
+  @spec a2a_protocol_deprecated() :: :a2a_protocol_deprecated
+  def a2a_protocol_deprecated, do: :a2a_protocol_deprecated
 
   @doc """
   Minimum A2A protocol version supported by the endpoint.
@@ -1680,8 +1680,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `1.1`
   """
-  @spec a2a_protocol_min_version() :: :"a2a.protocol.min_version"
-  def a2a_protocol_min_version, do: :"a2a.protocol.min_version"
+  @spec a2a_protocol_min_version() :: :a2a_protocol_min_version
+  def a2a_protocol_min_version, do: :a2a_protocol_min_version
 
   @doc """
   Time taken to negotiate the A2A protocol version in milliseconds.
@@ -1692,8 +1692,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `5`, `20`, `100`
   """
-  @spec a2a_protocol_negotiation_ms() :: :"a2a.protocol.negotiation_ms"
-  def a2a_protocol_negotiation_ms, do: :"a2a.protocol.negotiation_ms"
+  @spec a2a_protocol_negotiation_ms() :: :a2a_protocol_negotiation_ms
+  def a2a_protocol_negotiation_ms, do: :a2a_protocol_negotiation_ms
 
   @doc """
   The A2A protocol version in use for this interaction.
@@ -1704,8 +1704,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1.0`, `1.1`, `2.0`
   """
-  @spec a2a_protocol_version() :: :"a2a.protocol.version"
-  def a2a_protocol_version, do: :"a2a.protocol.version"
+  @spec a2a_protocol_version() :: :a2a_protocol_version
+  def a2a_protocol_version, do: :a2a_protocol_version
 
   @doc """
   Current depth of the A2A request queue for the target agent.
@@ -1716,8 +1716,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `50`
   """
-  @spec a2a_queue_depth() :: :"a2a.queue.depth"
-  def a2a_queue_depth, do: :"a2a.queue.depth"
+  @spec a2a_queue_depth() :: :a2a_queue_depth
+  def a2a_queue_depth, do: :a2a_queue_depth
 
   @doc """
   Categorical trust level derived from the reputation score.
@@ -1728,8 +1728,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `trusted`, `neutral`
   """
-  @spec a2a_reputation_category() :: :"a2a.reputation.category"
-  def a2a_reputation_category, do: :"a2a.reputation.category"
+  @spec a2a_reputation_category() :: :a2a_reputation_category
+  def a2a_reputation_category, do: :a2a_reputation_category
 
   @doc """
   Enumerated values for `a2a.reputation.category`.
@@ -1788,8 +1788,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `-0.05`, `-0.1`, `-0.3`
   """
-  @spec a2a_reputation_decay_delta() :: :"a2a.reputation.decay.delta"
-  def a2a_reputation_decay_delta, do: :"a2a.reputation.decay.delta"
+  @spec a2a_reputation_decay_delta() :: :a2a_reputation_decay_delta
+  def a2a_reputation_decay_delta, do: :a2a_reputation_decay_delta
 
   @doc """
   The rate at which reputation decays per decay trigger event, range [0.0, 1.0].
@@ -1800,8 +1800,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.01`, `0.05`, `0.1`
   """
-  @spec a2a_reputation_decay_rate() :: :"a2a.reputation.decay.rate"
-  def a2a_reputation_decay_rate, do: :"a2a.reputation.decay.rate"
+  @spec a2a_reputation_decay_rate() :: :a2a_reputation_decay_rate
+  def a2a_reputation_decay_rate, do: :a2a_reputation_decay_rate
 
   @doc """
   The trigger that caused this reputation decay event.
@@ -1812,8 +1812,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `time`, `interaction`, `violation`
   """
-  @spec a2a_reputation_decay_trigger() :: :"a2a.reputation.decay.trigger"
-  def a2a_reputation_decay_trigger, do: :"a2a.reputation.decay.trigger"
+  @spec a2a_reputation_decay_trigger() :: :a2a_reputation_decay_trigger
+  def a2a_reputation_decay_trigger, do: :a2a_reputation_decay_trigger
 
   @doc """
   Enumerated values for `a2a.reputation.decay.trigger`.
@@ -1865,8 +1865,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.99`
   """
-  @spec a2a_reputation_decay_factor() :: :"a2a.reputation.decay_factor"
-  def a2a_reputation_decay_factor, do: :"a2a.reputation.decay_factor"
+  @spec a2a_reputation_decay_factor() :: :a2a_reputation_decay_factor
+  def a2a_reputation_decay_factor, do: :a2a_reputation_decay_factor
 
   @doc """
   Number of past interactions used to compute the reputation score.
@@ -1877,8 +1877,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `10`, `50`, `200`
   """
-  @spec a2a_reputation_history_length() :: :"a2a.reputation.history_length"
-  def a2a_reputation_history_length, do: :"a2a.reputation.history_length"
+  @spec a2a_reputation_history_length() :: :a2a_reputation_history_length
+  def a2a_reputation_history_length, do: :a2a_reputation_history_length
 
   @doc """
   Total number of interactions used to compute the reputation score.
@@ -1889,8 +1889,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`
   """
-  @spec a2a_reputation_interaction_count() :: :"a2a.reputation.interaction_count"
-  def a2a_reputation_interaction_count, do: :"a2a.reputation.interaction_count"
+  @spec a2a_reputation_interaction_count() :: :a2a_reputation_interaction_count
+  def a2a_reputation_interaction_count, do: :a2a_reputation_interaction_count
 
   @doc """
   Agent reputation score in range [0.0, 1.0] based on historical interactions.
@@ -1901,8 +1901,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.85`, `0.92`
   """
-  @spec a2a_reputation_score() :: :"a2a.reputation.score"
-  def a2a_reputation_score, do: :"a2a.reputation.score"
+  @spec a2a_reputation_score() :: :a2a_reputation_score
+  def a2a_reputation_score, do: :a2a_reputation_score
 
   @doc """
   Number of retry attempts made for this A2A call before success or final failure.
@@ -1913,8 +1913,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec a2a_retry_count() :: :"a2a.retry.count"
-  def a2a_retry_count, do: :"a2a.retry.count"
+  @spec a2a_retry_count() :: :a2a_retry_count
+  def a2a_retry_count, do: :a2a_retry_count
 
   @doc """
   Monetary or credit reward amount granted to an agent for exceeding contract terms.
@@ -1925,8 +1925,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `2.0`, `10.0`
   """
-  @spec a2a_reward_amount() :: :"a2a.reward.amount"
-  def a2a_reward_amount, do: :"a2a.reward.amount"
+  @spec a2a_reward_amount() :: :a2a_reward_amount
+  def a2a_reward_amount, do: :a2a_reward_amount
 
   @doc """
   The strategy used to route A2A requests to available agents.
@@ -1937,8 +1937,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `best_match`, `load_balanced`
   """
-  @spec a2a_routing_strategy() :: :"a2a.routing.strategy"
-  def a2a_routing_strategy, do: :"a2a.routing.strategy"
+  @spec a2a_routing_strategy() :: :a2a_routing_strategy
+  def a2a_routing_strategy, do: :a2a_routing_strategy
 
   @doc """
   Enumerated values for `a2a.routing.strategy`.
@@ -1997,8 +1997,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec a2a_sla_breach() :: :"a2a.sla.breach"
-  def a2a_sla_breach, do: :"a2a.sla.breach"
+  @spec a2a_sla_breach() :: :a2a_sla_breach
+  def a2a_sla_breach, do: :a2a_sla_breach
 
   @doc """
   SLA deadline in milliseconds from request initiation. Exceeding this is an SLA breach.
@@ -2009,8 +2009,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`, `30000`
   """
-  @spec a2a_sla_deadline_ms() :: :"a2a.sla.deadline_ms"
-  def a2a_sla_deadline_ms, do: :"a2a.sla.deadline_ms"
+  @spec a2a_sla_deadline_ms() :: :a2a_sla_deadline_ms
+  def a2a_sla_deadline_ms, do: :a2a_sla_deadline_ms
 
   @doc """
   Actual observed latency for this A2A operation in milliseconds.
@@ -2021,8 +2021,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `42`, `1500`, `8000`
   """
-  @spec a2a_sla_latency_ms() :: :"a2a.sla.latency_ms"
-  def a2a_sla_latency_ms, do: :"a2a.sla.latency_ms"
+  @spec a2a_sla_latency_ms() :: :a2a_sla_latency_ms
+  def a2a_sla_latency_ms, do: :a2a_sla_latency_ms
 
   @doc """
   Number of SLO breaches in evaluation window.
@@ -2033,8 +2033,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `10`
   """
-  @spec a2a_slo_breach_count() :: :"a2a.slo.breach_count"
-  def a2a_slo_breach_count, do: :"a2a.slo.breach_count"
+  @spec a2a_slo_breach_count() :: :a2a_slo_breach_count
+  def a2a_slo_breach_count, do: :a2a_slo_breach_count
 
   @doc """
   SLO compliance rate [0.0, 1.0] over evaluation window.
@@ -2045,8 +2045,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.999`, `0.95`
   """
-  @spec a2a_slo_compliance_rate() :: :"a2a.slo.compliance_rate"
-  def a2a_slo_compliance_rate, do: :"a2a.slo.compliance_rate"
+  @spec a2a_slo_compliance_rate() :: :a2a_slo_compliance_rate
+  def a2a_slo_compliance_rate, do: :a2a_slo_compliance_rate
 
   @doc """
   Identifier for the service level objective being evaluated.
@@ -2057,8 +2057,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `slo-latency-p99`, `slo-availability-99.9`
   """
-  @spec a2a_slo_id() :: :"a2a.slo.id"
-  def a2a_slo_id, do: :"a2a.slo.id"
+  @spec a2a_slo_id() :: :a2a_slo_id
+  def a2a_slo_id, do: :a2a_slo_id
 
   @doc """
   Target latency in milliseconds for SLO compliance.
@@ -2069,8 +2069,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `1000`
   """
-  @spec a2a_slo_target_latency_ms() :: :"a2a.slo.target_latency_ms"
-  def a2a_slo_target_latency_ms, do: :"a2a.slo.target_latency_ms"
+  @spec a2a_slo_target_latency_ms() :: :a2a_slo_target_latency_ms
+  def a2a_slo_target_latency_ms, do: :a2a_slo_target_latency_ms
 
   @doc """
   Service initiating the A2A call (sender).
@@ -2081,8 +2081,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `osa`, `businessos`, `canopy`
   """
-  @spec a2a_source_service() :: :"a2a.source.service"
-  def a2a_source_service, do: :"a2a.source.service"
+  @spec a2a_source_service() :: :a2a_source_service
+  def a2a_source_service, do: :a2a_source_service
 
   @doc """
   Service receiving the A2A call (receiver).
@@ -2093,8 +2093,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `osa`, `businessos`, `canopy`
   """
-  @spec a2a_target_service() :: :"a2a.target.service"
-  def a2a_target_service, do: :"a2a.target.service"
+  @spec a2a_target_service() :: :a2a_target_service
+  def a2a_target_service, do: :a2a_target_service
 
   @doc """
   Unique identifier for a delegated task in A2A task delegation.
@@ -2105,8 +2105,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `task-abc-123`, `task-mining-456`
   """
-  @spec a2a_task_id() :: :"a2a.task.id"
-  def a2a_task_id, do: :"a2a.task.id"
+  @spec a2a_task_id() :: :a2a_task_id
+  def a2a_task_id, do: :a2a_task_id
 
   @doc """
   Priority level of a delegated A2A task.
@@ -2117,8 +2117,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `high`, `normal`
   """
-  @spec a2a_task_priority() :: :"a2a.task.priority"
-  def a2a_task_priority, do: :"a2a.task.priority"
+  @spec a2a_task_priority() :: :a2a_task_priority
+  def a2a_task_priority, do: :a2a_task_priority
 
   @doc """
   Enumerated values for `a2a.task.priority`.
@@ -2177,8 +2177,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.67`, `0.75`, `1.0`
   """
-  @spec a2a_trust_consensus_threshold() :: :"a2a.trust.consensus_threshold"
-  def a2a_trust_consensus_threshold, do: :"a2a.trust.consensus_threshold"
+  @spec a2a_trust_consensus_threshold() :: :a2a_trust_consensus_threshold
+  def a2a_trust_consensus_threshold, do: :a2a_trust_consensus_threshold
 
   @doc """
   Exponential decay factor applied to historical trust scores, range (0.0, 1.0].
@@ -2189,8 +2189,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.8`
   """
-  @spec a2a_trust_decay_factor() :: :"a2a.trust.decay_factor"
-  def a2a_trust_decay_factor, do: :"a2a.trust.decay_factor"
+  @spec a2a_trust_decay_factor() :: :a2a_trust_decay_factor
+  def a2a_trust_decay_factor, do: :a2a_trust_decay_factor
 
   @doc """
   Current trust epoch — increments on membership change or key rotation.
@@ -2201,8 +2201,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1`, `42`, `100`
   """
-  @spec a2a_trust_epoch() :: :"a2a.trust.epoch"
-  def a2a_trust_epoch, do: :"a2a.trust.epoch"
+  @spec a2a_trust_epoch() :: :a2a_trust_epoch
+  def a2a_trust_epoch, do: :a2a_trust_epoch
 
   @doc """
   Identifier of the federated trust ring this agent belongs to.
@@ -2213,8 +2213,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `fed-ring-alpha`, `enterprise-trust-01`
   """
-  @spec a2a_trust_federation_id() :: :"a2a.trust.federation_id"
-  def a2a_trust_federation_id, do: :"a2a.trust.federation_id"
+  @spec a2a_trust_federation_id() :: :a2a_trust_federation_id
+  def a2a_trust_federation_id, do: :a2a_trust_federation_id
 
   @doc """
   Number of peer agents in the trust federation.
@@ -2225,8 +2225,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `3`, `7`, `12`
   """
-  @spec a2a_trust_peer_count() :: :"a2a.trust.peer_count"
-  def a2a_trust_peer_count, do: :"a2a.trust.peer_count"
+  @spec a2a_trust_peer_count() :: :a2a_trust_peer_count
+  def a2a_trust_peer_count, do: :a2a_trust_peer_count
 
   @doc """
   Trust score assigned to an agent interaction, range [0.0, 1.0]. Higher is more trusted.
@@ -2237,8 +2237,8 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.42`, `1.0`
   """
-  @spec a2a_trust_score() :: :"a2a.trust.score"
-  def a2a_trust_score, do: :"a2a.trust.score"
+  @spec a2a_trust_score() :: :a2a_trust_score
+  def a2a_trust_score, do: :a2a_trust_score
 
   @doc """
   Unix timestamp (milliseconds) when the trust score was last updated.
@@ -2249,7 +2249,7 @@ defmodule OpenTelemetry.SemConv.Incubating.A2aAttributes do
   Requirement: `recommended`
   Examples: `1711320000000`, `1711323600000`
   """
-  @spec a2a_trust_updated_at_ms() :: :"a2a.trust.updated_at_ms"
-  def a2a_trust_updated_at_ms, do: :"a2a.trust.updated_at_ms"
+  @spec a2a_trust_updated_at_ms() :: :a2a_trust_updated_at_ms
+  def a2a_trust_updated_at_ms, do: :a2a_trust_updated_at_ms
 
 end

@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `deterministic`, `probabilistic`, `adaptive`
   """
-  @spec diagnosis_mode() :: :"diagnosis_mode"
-  def diagnosis_mode, do: :"diagnosis_mode"
+  @spec diagnosis_mode() :: :diagnosis_mode
+  def diagnosis_mode, do: :diagnosis_mode
 
   @doc """
   Execution time in milliseconds for healing operation.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `2000`
   """
-  @spec execution_time_ms() :: :"execution_time_ms"
-  def execution_time_ms, do: :"execution_time_ms"
+  @spec execution_time_ms() :: :execution_time_ms
+  def execution_time_ms, do: :execution_time_ms
 
   @doc """
   Number of tests that failed.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec failed_tests() :: :"failed_tests"
-  def failed_tests, do: :"failed_tests"
+  @spec failed_tests() :: :failed_tests
+  def failed_tests, do: :failed_tests
 
   @doc """
   Outcome of the healing fix operation.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `success`, `partial`, `failed`
   """
-  @spec fix_result() :: :"fix_result"
-  def fix_result, do: :"fix_result"
+  @spec fix_result() :: :fix_result
+  def fix_result, do: :fix_result
 
   @doc """
   Enumerated values for `fix_result`.
@@ -108,8 +108,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `node-1`, `primary`, `replica`
   """
-  @spec node() :: :"node"
-  def node, do: :"node"
+  @spec node() :: :node
+  def node, do: :node
 
   @doc """
   Number of tests that passed.
@@ -120,8 +120,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `10`
   """
-  @spec passed_tests() :: :"passed_tests"
-  def passed_tests, do: :"passed_tests"
+  @spec passed_tests() :: :passed_tests
+  def passed_tests, do: :passed_tests
 
   @doc """
   Consensus round number.
@@ -132,8 +132,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `100`
   """
-  @spec round_num() :: :"round_num"
-  def round_num, do: :"round_num"
+  @spec round_num() :: :round_num
+  def round_num, do: :round_num
 
   @doc """
   Timestamp in milliseconds since Unix epoch.
@@ -144,8 +144,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `1645123456789`, `1645123457000`
   """
-  @spec timestamp() :: :"timestamp"
-  def timestamp, do: :"timestamp"
+  @spec timestamp() :: :timestamp
+  def timestamp, do: :timestamp
 
   @doc """
   Tool identifier or name.
@@ -156,8 +156,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `calculator`, `search`, `api`
   """
-  @spec tool() :: :"tool"
-  def tool, do: :"tool"
+  @spec tool() :: :tool
+  def tool, do: :tool
 
   @doc """
   Verification status.
@@ -168,8 +168,8 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `pass`, `fail`
   """
-  @spec verification_status() :: :"verification_status"
-  def verification_status, do: :"verification_status"
+  @spec verification_status() :: :verification_status
+  def verification_status, do: :verification_status
 
   @doc """
   Enumerated values for `verification_status`.
@@ -214,7 +214,7 @@ defmodule OpenTelemetry.SemConv.Incubating.OtherAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `v1`, `latest`
   """
-  @spec version() :: :"version"
-  def version, do: :"version"
+  @spec version() :: :version
+  def version, do: :version
 
 end

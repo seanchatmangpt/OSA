@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ConformanceAttributes do
   Requirement: `recommended`
   Examples: `0.98`, `0.85`, `0.42`
   """
-  @spec conformance_fitness() :: :"conformance.fitness"
-  def conformance_fitness, do: :"conformance.fitness"
+  @spec conformance_fitness() :: :conformance_fitness
+  def conformance_fitness, do: :conformance_fitness
 
   @doc """
   Conformance precision score [0.0, 1.0] measuring model over-fitting.
@@ -31,7 +31,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ConformanceAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.8`
   """
-  @spec conformance_precision() :: :"conformance.precision"
-  def conformance_precision, do: :"conformance.precision"
+  @spec conformance_precision() :: :conformance_precision
+  def conformance_precision, do: :conformance_precision
 
 end

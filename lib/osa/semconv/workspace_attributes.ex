@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `5`, `25`, `100`
   """
-  @spec workspace_activity_count() :: :"workspace.activity.count"
-  def workspace_activity_count, do: :"workspace.activity.count"
+  @spec workspace_activity_count() :: :workspace_activity_count
+  def workspace_activity_count, do: :workspace_activity_count
 
   @doc """
   Duration of the workspace activity in milliseconds.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `10`, `500`, `5000`
   """
-  @spec workspace_activity_duration_ms() :: :"workspace.activity.duration_ms"
-  def workspace_activity_duration_ms, do: :"workspace.activity.duration_ms"
+  @spec workspace_activity_duration_ms() :: :workspace_activity_duration_ms
+  def workspace_activity_duration_ms, do: :workspace_activity_duration_ms
 
   @doc """
   Type of activity performed in the workspace.
@@ -42,8 +42,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec workspace_activity_type() :: :"workspace.activity.type"
-  def workspace_activity_type, do: :"workspace.activity.type"
+  @spec workspace_activity_type() :: :workspace_activity_type
+  def workspace_activity_type, do: :workspace_activity_type
 
   @doc """
   Enumerated values for `workspace.activity.type`.
@@ -123,8 +123,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `10`
   """
-  @spec workspace_agent_count() :: :"workspace.agent.count"
-  def workspace_agent_count, do: :"workspace.agent.count"
+  @spec workspace_agent_count() :: :workspace_agent_count
+  def workspace_agent_count, do: :workspace_agent_count
 
   @doc """
   The role of the agent in this workspace session.
@@ -135,8 +135,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `planner`, `executor`
   """
-  @spec workspace_agent_role() :: :"workspace.agent.role"
-  def workspace_agent_role, do: :"workspace.agent.role"
+  @spec workspace_agent_role() :: :workspace_agent_role
+  def workspace_agent_role, do: :workspace_agent_role
 
   @doc """
   Enumerated values for `workspace.agent.role`.
@@ -202,8 +202,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `ckpt-001`, `ckpt-2026-03-25-abc`
   """
-  @spec workspace_checkpoint_id() :: :"workspace.checkpoint.id"
-  def workspace_checkpoint_id, do: :"workspace.checkpoint.id"
+  @spec workspace_checkpoint_id() :: :workspace_checkpoint_id
+  def workspace_checkpoint_id, do: :workspace_checkpoint_id
 
   @doc """
   Compression ratio achieved when compressing context [0.0, 1.0].
@@ -214,8 +214,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `0.3`, `0.65`, `0.8`
   """
-  @spec workspace_context_compression_ratio() :: :"workspace.context.compression_ratio"
-  def workspace_context_compression_ratio, do: :"workspace.context.compression_ratio"
+  @spec workspace_context_compression_ratio() :: :workspace_context_compression_ratio
+  def workspace_context_compression_ratio, do: :workspace_context_compression_ratio
 
   @doc """
   Current context window usage in tokens.
@@ -226,8 +226,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1024`, `8192`, `32768`
   """
-  @spec workspace_context_size() :: :"workspace.context.size"
-  def workspace_context_size, do: :"workspace.context.size"
+  @spec workspace_context_size() :: :workspace_context_size
+  def workspace_context_size, do: :workspace_context_size
 
   @doc """
   Size of the workspace context in tokens before compression.
@@ -238,8 +238,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `2048`, `8192`, `32000`
   """
-  @spec workspace_context_size_tokens() :: :"workspace.context.size_tokens"
-  def workspace_context_size_tokens, do: :"workspace.context.size_tokens"
+  @spec workspace_context_size_tokens() :: :workspace_context_size_tokens
+  def workspace_context_size_tokens, do: :workspace_context_size_tokens
 
   @doc """
   Identifier of the workspace context snapshot.
@@ -250,8 +250,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `snap-001`, `ctx-snapshot-abc`
   """
-  @spec workspace_context_snapshot_id() :: :"workspace.context.snapshot_id"
-  def workspace_context_snapshot_id, do: :"workspace.context.snapshot_id"
+  @spec workspace_context_snapshot_id() :: :workspace_context_snapshot_id
+  def workspace_context_snapshot_id, do: :workspace_context_snapshot_id
 
   @doc """
   Maximum context window size in tokens for this workspace session.
@@ -262,8 +262,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `8192`, `32768`, `200000`
   """
-  @spec workspace_context_window_size() :: :"workspace.context.window_size"
-  def workspace_context_window_size, do: :"workspace.context.window_size"
+  @spec workspace_context_window_size() :: :workspace_context_window_size
+  def workspace_context_window_size, do: :workspace_context_window_size
 
   @doc """
   Number of orchestration iterations completed in this workspace session.
@@ -274,8 +274,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1`, `10`, `100`
   """
-  @spec workspace_iteration_count() :: :"workspace.iteration.count"
-  def workspace_iteration_count, do: :"workspace.iteration.count"
+  @spec workspace_iteration_count() :: :workspace_iteration_count
+  def workspace_iteration_count, do: :workspace_iteration_count
 
   @doc """
   Duration of the memory compaction operation in milliseconds.
@@ -286,8 +286,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `150`, `800`, `2000`
   """
-  @spec workspace_memory_compaction_ms() :: :"workspace.memory.compaction_ms"
-  def workspace_memory_compaction_ms, do: :"workspace.memory.compaction_ms"
+  @spec workspace_memory_compaction_ms() :: :workspace_memory_compaction_ms
+  def workspace_memory_compaction_ms, do: :workspace_memory_compaction_ms
 
   @doc """
   Ratio of memory reduced by compaction, range (0.0, 1.0). Value of 0.4 means 40% reduction.
@@ -298,8 +298,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `0.4`, `0.65`, `0.2`
   """
-  @spec workspace_memory_compaction_ratio() :: :"workspace.memory.compaction_ratio"
-  def workspace_memory_compaction_ratio, do: :"workspace.memory.compaction_ratio"
+  @spec workspace_memory_compaction_ratio() :: :workspace_memory_compaction_ratio
+  def workspace_memory_compaction_ratio, do: :workspace_memory_compaction_ratio
 
   @doc """
   Number of memory items after compaction.
@@ -310,8 +310,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `300`, `1200`, `6000`
   """
-  @spec workspace_memory_items_after() :: :"workspace.memory.items_after"
-  def workspace_memory_items_after, do: :"workspace.memory.items_after"
+  @spec workspace_memory_items_after() :: :workspace_memory_items_after
+  def workspace_memory_items_after, do: :workspace_memory_items_after
 
   @doc """
   Number of memory items before compaction.
@@ -322,8 +322,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `500`, `2000`, `10000`
   """
-  @spec workspace_memory_items_before() :: :"workspace.memory.items_before"
-  def workspace_memory_items_before, do: :"workspace.memory.items_before"
+  @spec workspace_memory_items_before() :: :workspace_memory_items_before
+  def workspace_memory_items_before, do: :workspace_memory_items_before
 
   @doc """
   Current memory usage of the workspace context in bytes.
@@ -334,8 +334,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1024`, `65536`, `1048576`
   """
-  @spec workspace_memory_usage_bytes() :: :"workspace.memory.usage_bytes"
-  def workspace_memory_usage_bytes, do: :"workspace.memory.usage_bytes"
+  @spec workspace_memory_usage_bytes() :: :workspace_memory_usage_bytes
+  def workspace_memory_usage_bytes, do: :workspace_memory_usage_bytes
 
   @doc """
   The orchestration pattern governing how agents coordinate work in this workspace.
@@ -346,8 +346,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `sequential`, `parallel`, `reactive`
   """
-  @spec workspace_orchestration_pattern() :: :"workspace.orchestration.pattern"
-  def workspace_orchestration_pattern, do: :"workspace.orchestration.pattern"
+  @spec workspace_orchestration_pattern() :: :workspace_orchestration_pattern
+  def workspace_orchestration_pattern, do: :workspace_orchestration_pattern
 
   @doc """
   Enumerated values for `workspace.orchestration.pattern`.
@@ -413,8 +413,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `active`, `idle`
   """
-  @spec workspace_phase() :: :"workspace.phase"
-  def workspace_phase, do: :"workspace.phase"
+  @spec workspace_phase() :: :workspace_phase
+  def workspace_phase, do: :workspace_phase
 
   @doc """
   Enumerated values for `workspace.phase`.
@@ -473,8 +473,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `5000`, `60000`, `3600000`
   """
-  @spec workspace_session_duration_ms() :: :"workspace.session.duration_ms"
-  def workspace_session_duration_ms, do: :"workspace.session.duration_ms"
+  @spec workspace_session_duration_ms() :: :workspace_session_duration_ms
+  def workspace_session_duration_ms, do: :workspace_session_duration_ms
 
   @doc """
   Unique identifier for the workspace session.
@@ -485,8 +485,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `session-abc123`, `ws-20260325-001`
   """
-  @spec workspace_session_id() :: :"workspace.session.id"
-  def workspace_session_id, do: :"workspace.session.id"
+  @spec workspace_session_id() :: :workspace_session_id
+  def workspace_session_id, do: :workspace_session_id
 
   @doc """
   Total tokens consumed across all LLM calls in the workspace session.
@@ -497,8 +497,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1024`, `8192`, `65536`
   """
-  @spec workspace_session_token_budget_used() :: :"workspace.session.token_budget_used"
-  def workspace_session_token_budget_used, do: :"workspace.session.token_budget_used"
+  @spec workspace_session_token_budget_used() :: :workspace_session_token_budget_used
+  def workspace_session_token_budget_used, do: :workspace_session_token_budget_used
 
   @doc """
   Total number of tool calls made during the workspace session.
@@ -509,8 +509,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `5`, `42`, `200`
   """
-  @spec workspace_session_tool_call_count() :: :"workspace.session.tool_call_count"
-  def workspace_session_tool_call_count, do: :"workspace.session.tool_call_count"
+  @spec workspace_session_tool_call_count() :: :workspace_session_tool_call_count
+  def workspace_session_tool_call_count, do: :workspace_session_tool_call_count
 
   @doc """
   Number of agents that have access to the shared workspace.
@@ -521,8 +521,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1`, `5`, `20`
   """
-  @spec workspace_sharing_agent_count() :: :"workspace.sharing.agent_count"
-  def workspace_sharing_agent_count, do: :"workspace.sharing.agent_count"
+  @spec workspace_sharing_agent_count() :: :workspace_sharing_agent_count
+  def workspace_sharing_agent_count, do: :workspace_sharing_agent_count
 
   @doc """
   Comma-separated list of permissions granted in the shared workspace (read,write,execute).
@@ -533,8 +533,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `read`, `read,write`, `read,write,execute`
   """
-  @spec workspace_sharing_permissions() :: :"workspace.sharing.permissions"
-  def workspace_sharing_permissions, do: :"workspace.sharing.permissions"
+  @spec workspace_sharing_permissions() :: :workspace_sharing_permissions
+  def workspace_sharing_permissions, do: :workspace_sharing_permissions
 
   @doc """
   Scope of workspace sharing — who can access the shared workspace.
@@ -545,8 +545,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `private`, `team`
   """
-  @spec workspace_sharing_scope() :: :"workspace.sharing.scope"
-  def workspace_sharing_scope, do: :"workspace.sharing.scope"
+  @spec workspace_sharing_scope() :: :workspace_sharing_scope
+  def workspace_sharing_scope, do: :workspace_sharing_scope
 
   @doc """
   Enumerated values for `workspace.sharing.scope`.
@@ -605,8 +605,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `100`
   """
-  @spec workspace_task_queue_depth() :: :"workspace.task.queue.depth"
-  def workspace_task_queue_depth, do: :"workspace.task.queue.depth"
+  @spec workspace_task_queue_depth() :: :workspace_task_queue_depth
+  def workspace_task_queue_depth, do: :workspace_task_queue_depth
 
   @doc """
   Functional category of the workspace tool being invoked.
@@ -617,8 +617,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `read`, `write`, `search`
   """
-  @spec workspace_tool_category() :: :"workspace.tool.category"
-  def workspace_tool_category, do: :"workspace.tool.category"
+  @spec workspace_tool_category() :: :workspace_tool_category
+  def workspace_tool_category, do: :workspace_tool_category
 
   @doc """
   Enumerated values for `workspace.tool.category`.
@@ -691,8 +691,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `1`, `15`, `100`
   """
-  @spec workspace_tool_count() :: :"workspace.tool.count"
-  def workspace_tool_count, do: :"workspace.tool.count"
+  @spec workspace_tool_count() :: :workspace_tool_count
+  def workspace_tool_count, do: :workspace_tool_count
 
   @doc """
   Name of the tool being invoked in the workspace.
@@ -703,8 +703,8 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `Bash`, `Read`, `Edit`, `Agent`
   """
-  @spec workspace_tool_name() :: :"workspace.tool.name"
-  def workspace_tool_name, do: :"workspace.tool.name"
+  @spec workspace_tool_name() :: :workspace_tool_name
+  def workspace_tool_name, do: :workspace_tool_name
 
   @doc """
   Provider or source of the workspace tool (e.g., "built-in", "mcp", "plugin").
@@ -715,7 +715,7 @@ defmodule OpenTelemetry.SemConv.Incubating.WorkspaceAttributes do
   Requirement: `recommended`
   Examples: `built-in`, `mcp`, `plugin`
   """
-  @spec workspace_tool_provider() :: :"workspace.tool.provider"
-  def workspace_tool_provider, do: :"workspace.tool.provider"
+  @spec workspace_tool_provider() :: :workspace_tool_provider
+  def workspace_tool_provider, do: :workspace_tool_provider
 
 end
