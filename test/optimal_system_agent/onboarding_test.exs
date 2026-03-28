@@ -456,7 +456,7 @@ defmodule OptimalSystemAgent.OnboardingTest do
   describe "Selector.select/1" do
     # Selector.select/1 calls IO.gets which blocks waiting for stdin in non-interactive mode.
     # This test is documented as a behavioral contract only (see assert true stubs below).
-    @tag :skip
+    @tag :integration
     test "accepts list of option or input tuples" do
       lines = [{:option, "Test", :value}]
       result = Onboarding.Selector.select(lines)

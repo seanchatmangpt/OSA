@@ -157,7 +157,7 @@ defmodule OptimalSystemAgent.FileLocking.IntentBroadcaster do
   def current_intents_for(file_path) do
     :ets.match_object(@intents_table, {{file_path, :_}, :_})
     |> Enum.map(fn {_, event} -> event end)
-    |> Enum.sort_by(& &1.at)
+    |> Enum.sort_by(& &1.at, DateTime)
   rescue
     _ -> []
   end

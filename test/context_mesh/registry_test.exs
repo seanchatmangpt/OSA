@@ -13,12 +13,19 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
   @moduletag :capture_log
 
   setup do
-    # Initialize ETS table for tests
+    # Initialize ETS table for tests (creates if not exists)
     Registry.init_table()
 
-    # Clean up ETS table after each test
+    # Clear the ETS table before each test so application-level keepers
+    # registered by other test modules or the running app do not bleed in.
+    :ets.delete_all_objects(:osa_context_mesh_keepers)
+
+    # Clean up ETS table after each test as well
     on_exit(fn ->
-      :ets.delete_all_objects(:osa_context_mesh_keepers)
+      case :ets.whereis(:osa_context_mesh_keepers) do
+        :undefined -> :ok
+        _ -> :ets.delete_all_objects(:osa_context_mesh_keepers)
+      end
     end)
 
     :ok

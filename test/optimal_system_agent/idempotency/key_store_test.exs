@@ -3,10 +3,15 @@ defmodule OptimalSystemAgent.Idempotency.KeyStoreTest do
 
 
   setup do
-    case OptimalSystemAgent.Idempotency.KeyStore.start_link() do
-      {:ok, _pid} -> :ok
-      {:error, {:already_started, _pid}} -> :ok
+    # Stop any existing KeyStore and start a fresh one for each test.
+    # This ensures the ETS table always exists and is owned by a live process
+    # for the duration of each test — preventing state leakage across tests.
+    case Process.whereis(OptimalSystemAgent.Idempotency.KeyStore) do
+      nil -> :ok
+      pid -> GenServer.stop(pid, :normal, 5_000)
     end
+
+    {:ok, _pid} = OptimalSystemAgent.Idempotency.KeyStore.start_link()
     :ok
   end
 
