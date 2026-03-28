@@ -37,6 +37,8 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   # ---------------------------------------------------------------------------
   # Constants
   # ---------------------------------------------------------------------------
@@ -241,7 +243,7 @@ defmodule OptimalSystemAgent.Process.Fingerprint do
   @doc "Return count of stored fingerprints."
   @spec count() :: non_neg_integer()
   def count do
-    GenServer.call(__MODULE__, :count)
+    GenServer.call(__MODULE__, :count, @call_timeout)
   end
 
   @doc "List all stored fingerprints (reads directly from ETS)."

@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.Events.DLQ do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @table :osa_dlq
   @max_retries 3
   @base_backoff_ms 1_000
@@ -67,7 +68,7 @@ defmodule OptimalSystemAgent.Events.DLQ do
   @doc "Manually drain and retry all entries now."
   @spec drain() :: {non_neg_integer(), non_neg_integer()}
   def drain do
-    GenServer.call(__MODULE__, :drain)
+    GenServer.call(__MODULE__, :drain, @call_timeout)
   end
 
   # -- GenServer callbacks --

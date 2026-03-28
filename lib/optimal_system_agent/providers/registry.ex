@@ -347,7 +347,9 @@ defmodule OptimalSystemAgent.Providers.Registry do
         :error
     end
   rescue
-    _ -> :error
+    e ->
+      Logger.warning("Failed to fetch Ollama context for model: #{Exception.message(e)}")
+      :error
   end
 
   # --- Private ---
@@ -553,7 +555,9 @@ defmodule OptimalSystemAgent.Providers.Registry do
     # race where two concurrent requests both miss cache and both fetch from upstream
     GenServer.call(__MODULE__, {:get_or_fetch_context, model}, 10_000)
   catch
-    :exit, _ -> :error
+    :exit, reason ->
+      Logger.warning("Ollama context retrieval failed for model #{model}: #{inspect(reason)}")
+      :error
   end
 
   @doc """

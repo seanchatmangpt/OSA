@@ -50,6 +50,8 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcer do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Events.Bus
 
   # ============================================================================
@@ -122,7 +124,7 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcer do
   """
   @spec get_all_status() :: {:ok, map()}
   def get_all_status do
-    GenServer.call(__MODULE__, :get_all_status)
+    GenServer.call(__MODULE__, :get_all_status, @call_timeout)
   end
 
   # ============================================================================

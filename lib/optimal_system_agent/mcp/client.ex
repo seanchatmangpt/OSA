@@ -369,10 +369,19 @@ defmodule OptimalSystemAgent.MCP.Client do
   end
 
   def handle_call(:register_tools, _from, state) do
-    tools = collect_all_tools(state)
-    :persistent_term.put({OptimalSystemAgent.Tools.Registry, :mcp_tools}, tools)
-    Logger.info("[MCP.Client] Registered #{map_size(tools)} MCP tools in persistent_term")
-    {:reply, :ok, state}
+    case collect_all_tools(state) do
+      {:ok, tools} ->
+        :persistent_term.put({OptimalSystemAgent.Tools.Registry, :mcp_tools}, tools)
+        Logger.info("[MCP.Client] Registered #{map_size(tools)} MCP tools in persistent_term")
+        {:reply, :ok, state}
+
+      {:error, reason} ->
+        Logger.error(
+          "[MCP.Client] Failed to collect tools during registration: #{inspect(reason)}"
+        )
+
+        {:reply, {:error, {:tool_collection_failed, reason}}, state}
+    end
   end
 
   # ── Private: Tool Call with Retry ────────────────────────────────────
@@ -512,10 +521,19 @@ defmodule OptimalSystemAgent.MCP.Client do
     case results do
       {:ok, final_state} ->
         # Register tools into persistent_term
-        tools = collect_all_tools(final_state)
-        :persistent_term.put({OptimalSystemAgent.Tools.Registry, :mcp_tools}, tools)
+        case collect_all_tools(final_state) do
+          {:ok, tools} ->
+            :persistent_term.put({OptimalSystemAgent.Tools.Registry, :mcp_tools}, tools)
+            {:ok, final_state}
 
-        {:ok, final_state}
+          {:error, reason} ->
+            Logger.warning(
+              "[MCP.Client] Failed to collect tools after starting servers: #{inspect(reason)}"
+            )
+
+            # Still return ok with state, but tools collection failed (caller may not have all tools)
+            {:error, {:tool_collection_failed, reason}, final_state}
+        end
     end
   end
 
@@ -583,32 +601,59 @@ defmodule OptimalSystemAgent.MCP.Client do
   # ── Private: Tool Collection ──────────────────────────────────────────
 
   defp collect_all_tools(state) do
-    state.servers
-    |> Enum.flat_map(fn {server_name, _pid} ->
-      try do
-        OptimalSystemAgent.MCP.Server.list_tools(server_name)
-      rescue
-        e ->
-          Logger.warning("MCP list_tools failed for server #{server_name}: #{Exception.message(e)}")
-          []
-      catch
-        :exit, reason ->
-          Logger.warning("MCP list_tools exited for server #{server_name}: #{inspect(reason)}")
-          []
-      end
-      |> Enum.map(fn tool ->
-        prefixed_name = "mcp_#{server_name}_#{tool.name}"
+    try do
+      tools =
+        state.servers
+        |> Enum.flat_map(fn {server_name, _pid} ->
+          try do
+            OptimalSystemAgent.MCP.Server.list_tools(server_name)
+          rescue
+            e ->
+              Logger.warning(
+                "MCP list_tools failed for server #{server_name}: #{Exception.message(e)}"
+              )
 
-        {String.to_atom(prefixed_name),
-         %{
-           original_name: tool.name,
-           description: Map.get(tool, :description, ""),
-           input_schema: Map.get(tool, :input_schema, %{}),
-           server_name: server_name
-         }}
-      end)
-    end)
-    |> Map.new()
+              # Re-raise to propagate error to outer try/rescue
+              raise e
+          catch
+            :exit, reason ->
+              Logger.warning("MCP list_tools exited for server #{server_name}: #{inspect(reason)}")
+
+              # Re-raise to propagate error to outer try/catch
+              exit(reason)
+          end
+          |> Enum.map(fn tool ->
+            prefixed_name = "mcp_#{server_name}_#{tool.name}"
+
+            {String.to_atom(prefixed_name),
+             %{
+               original_name: tool.name,
+               description: Map.get(tool, :description, ""),
+               input_schema: Map.get(tool, :input_schema, %{}),
+               server_name: server_name
+             }}
+          end)
+        end)
+        |> Map.new()
+
+      {:ok, tools}
+    rescue
+      e ->
+        {:error,
+         {:tool_collection_rescue,
+          %{
+            message: Exception.message(e),
+            kind: :rescue
+          }}}
+    catch
+      :exit, reason ->
+        {:error,
+         {:tool_collection_exit,
+          %{
+            reason: inspect(reason),
+            kind: :exit
+          }}}
+    end
   end
 
   # ── Private: Tool Cache ───────────────────────────────────────────────

@@ -9,6 +9,7 @@ defmodule OptimalSystemAgent.Caching.QueryCache do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @l1_ttl_ms 60_000  # 1 minute
   @l2_ttl_ms 300_000  # 5 minutes
   @stats_key :__cache_stats__
@@ -62,14 +63,14 @@ defmodule OptimalSystemAgent.Caching.QueryCache do
   Get cache statistics (hits, misses, entries count).
   """
   def stats(cache_ref) do
-    GenServer.call(cache_ref, :get_stats)
+    GenServer.call(cache_ref, :get_stats, @call_timeout)
   end
 
   @doc """
   Clear all cache entries.
   """
   def clear(cache_ref) do
-    GenServer.call(cache_ref, :clear_cache)
+    GenServer.call(cache_ref, :clear_cache, @call_timeout)
   end
 
   # GenServer Callbacks

@@ -13,6 +13,8 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Events.Bus
 
   # ── Task struct ────────────────────────────────────────────────────
@@ -126,7 +128,7 @@ defmodule OptimalSystemAgent.Agent.TaskTracker do
   Clears all sessions from memory. This is useful for test isolation.
   """
   def reset_state(server \\ __MODULE__) do
-    GenServer.call(server, :reset_state)
+    GenServer.call(server, :reset_state, @call_timeout)
   end
 
   @doc "Record token usage against a specific task."

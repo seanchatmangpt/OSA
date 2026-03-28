@@ -20,6 +20,8 @@ defmodule OptimalSystemAgent.Governance.BoardProcess do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   # Public API
 
   def start_link(opts) do
@@ -58,7 +60,7 @@ defmodule OptimalSystemAgent.Governance.BoardProcess do
 
   @doc "Get board governance metrics"
   def metrics do
-    GenServer.call(__MODULE__, :metrics)
+    GenServer.call(__MODULE__, :metrics, @call_timeout)
   end
 
   # GenServer Implementation

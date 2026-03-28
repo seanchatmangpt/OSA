@@ -33,6 +33,8 @@ defmodule OptimalSystemAgent.OS.Registry do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.OS.{Manifest, Scanner}
 
   @type state :: %__MODULE__{
@@ -50,7 +52,7 @@ defmodule OptimalSystemAgent.OS.Registry do
 
   @doc "List all connected OS templates."
   def list do
-    GenServer.call(__MODULE__, :list)
+    GenServer.call(__MODULE__, :list, @call_timeout)
   end
 
   @doc "Get a connected OS template by name. Returns `{:ok, manifest}` or `:error`."
@@ -75,12 +77,12 @@ defmodule OptimalSystemAgent.OS.Registry do
 
   @doc "Get prompt addendums for all connected OS templates."
   def prompt_addendums do
-    GenServer.call(__MODULE__, :prompt_addendums)
+    GenServer.call(__MODULE__, :prompt_addendums, @call_timeout)
   end
 
   @doc "List discovered (but not yet connected) templates."
   def discovered do
-    GenServer.call(__MODULE__, :discovered)
+    GenServer.call(__MODULE__, :discovered, @call_timeout)
   end
 
   # --- Server Callbacks ---

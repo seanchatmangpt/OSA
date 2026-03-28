@@ -34,6 +34,7 @@ defmodule OptimalSystemAgent.Budget do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @daily_default_usd 50.0
   @monthly_default_usd 200.0
 
@@ -58,13 +59,13 @@ defmodule OptimalSystemAgent.Budget do
   @doc "Check whether spend is within limits. Returns `{:ok, remaining}` or `{:over_limit, period}`."
   @spec check_budget() :: {:ok, map()} | {:over_limit, :daily | :monthly}
   def check_budget do
-    GenServer.call(__MODULE__, :check_budget)
+    GenServer.call(__MODULE__, :check_budget, @call_timeout)
   end
 
   @doc "Return full budget status including limits, spent, and reset times."
   @spec get_status() :: {:ok, map()}
   def get_status do
-    GenServer.call(__MODULE__, :get_status)
+    GenServer.call(__MODULE__, :get_status, @call_timeout)
   end
 
   @doc "Return map of provider rates (USD per 1M tokens)."

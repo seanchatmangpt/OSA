@@ -28,6 +28,7 @@ defmodule OptimalSystemAgent.Events.Stream do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @default_max_events 1000
 
   # ── Public API ──────────────────────────────────────────────────────
@@ -101,7 +102,7 @@ defmodule OptimalSystemAgent.Events.Stream do
   @doc "Return the count of events currently in the stream."
   @spec count(String.t()) :: {:ok, non_neg_integer()} | {:error, :not_found}
   def count(session_id) do
-    GenServer.call(via(session_id), :count)
+    GenServer.call(via(session_id), :count, @call_timeout)
   catch
     :exit, {:noproc, _} -> {:error, :not_found}
   end

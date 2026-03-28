@@ -77,6 +77,8 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Events.Bus
 
   # -- Configuration --
@@ -127,7 +129,7 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
   @doc "Start continuous health monitoring (non-blocking)."
   @spec start_health_monitor() :: :ok | {:error, term()}
   def start_health_monitor do
-    case GenServer.call(__MODULE__, :start_monitoring) do
+    case GenServer.call(__MODULE__, :start_monitoring, @call_timeout) do
       :ok -> :ok
       error -> error
     end
@@ -198,7 +200,7 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
   @doc "Get current health status of all subsystems."
   @spec health_status() :: map()
   def health_status do
-    case GenServer.call(__MODULE__, :health_status) do
+    case GenServer.call(__MODULE__, :health_status, @call_timeout) do
       status when is_map(status) -> status
       _ -> %{"error" => "unable to get status"}
     end
@@ -209,7 +211,7 @@ defmodule OptimalSystemAgent.Autonomy.SelfHealer do
   @doc "Get list of currently isolated agents (Byzantine failures)."
   @spec isolated_agents() :: [String.t()]
   def isolated_agents do
-    case GenServer.call(__MODULE__, :isolated_agents) do
+    case GenServer.call(__MODULE__, :isolated_agents, @call_timeout) do
       agents when is_list(agents) -> agents
       _ -> []
     end

@@ -41,6 +41,7 @@ defmodule OptimalSystemAgent.Teams.CostTracker do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @alert_threshold_default 0.80
   @agent_share_default 0.30
   @rate_limit_default 50_000
@@ -71,7 +72,7 @@ defmodule OptimalSystemAgent.Teams.CostTracker do
   @doc "Get aggregate spend for the whole team."
   @spec get_team_spend(String.t()) :: %{tokens: non_neg_integer(), cost_usd: float()}
   def get_team_spend(team_id) do
-    GenServer.call(via(team_id), :get_team_spend)
+    GenServer.call(via(team_id), :get_team_spend, @call_timeout)
   end
 
   @doc "Get spend totals for a single agent."
@@ -115,7 +116,7 @@ defmodule OptimalSystemAgent.Teams.CostTracker do
   @doc "Get the full budget summary: team totals, per-agent breakdown, rate limits."
   @spec budget_summary(String.t()) :: map()
   def budget_summary(team_id) do
-    GenServer.call(via(team_id), :budget_summary)
+    GenServer.call(via(team_id), :budget_summary, @call_timeout)
   end
 
   # ---------------------------------------------------------------------------

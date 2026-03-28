@@ -27,6 +27,7 @@ defmodule OptimalSystemAgent.Events.AMQPQueue do
   @default_queue "osa_events"
   @durable true
   @auto_delete false
+  @amqp_timeout 10_000
 
   defstruct [:conn, :channel, :queue_name, :dlq_name, :connected]
 
@@ -72,11 +73,15 @@ defmodule OptimalSystemAgent.Events.AMQPQueue do
   @spec status() :: :connected | :disconnected
   def status do
     try do
-      GenServer.call(__MODULE__, :status)
+      GenServer.call(__MODULE__, :status, @amqp_timeout)
     rescue
-      _ -> :disconnected
+      e ->
+        Logger.warning("AMQP status check failed: #{Exception.message(e)}")
+        :disconnected
     catch
-      :exit, _ -> :disconnected
+      :exit, reason ->
+        Logger.warning("AMQP status check exit: #{inspect(reason)}")
+        :disconnected
     end
   end
 
@@ -84,11 +89,15 @@ defmodule OptimalSystemAgent.Events.AMQPQueue do
   @spec queue_depth() :: non_neg_integer()
   def queue_depth do
     try do
-      GenServer.call(__MODULE__, :queue_depth)
+      GenServer.call(__MODULE__, :queue_depth, @amqp_timeout)
     rescue
-      _ -> 0
+      e ->
+        Logger.warning("AMQP queue depth check failed: #{Exception.message(e)}")
+        0
     catch
-      :exit, _ -> 0
+      :exit, reason ->
+        Logger.warning("AMQP queue depth check exit: #{inspect(reason)}")
+        0
     end
   end
 
