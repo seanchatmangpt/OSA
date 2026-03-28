@@ -182,6 +182,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── Board Chair Intelligence System — briefing + decisions + deviation ────
   # Order matters: more-specific paths first so they match before /board catch-all.
+  forward "/board/intelligence", to: API.BoardDecisionRoutes
   forward "/board/briefing", to: API.BoardDecisionRoutes
   forward "/board/decision", to: API.BoardDecisionRoutes
   forward "/board/decisions", to: API.BoardDecisionRoutes
