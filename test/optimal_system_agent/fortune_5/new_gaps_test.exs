@@ -15,6 +15,8 @@ defmodule OptimalSystemAgent.Fortune5.NewGapsTest do
   Focus: Finding hidden gaps in Fortune 5 Layer 1 (SPR Sensors)
   """
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Sensors.SensorRegistry
 
   describe "NEW GAP: Concurrent scan race conditions" do

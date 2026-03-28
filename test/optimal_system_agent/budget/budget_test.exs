@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.BudgetTest do
   alias OptimalSystemAgent.Budget
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # Start Budget GenServer with test limits

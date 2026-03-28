@@ -1,6 +1,8 @@
 defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerTest do
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Armstrong.BudgetEnforcer
 
   setup do

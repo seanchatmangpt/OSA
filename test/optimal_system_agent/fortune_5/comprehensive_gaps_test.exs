@@ -3,6 +3,7 @@ defmodule OptimalSystemAgent.Fortune5.ComprehensiveGapsTest do
 
   @moduletag :fortune_5_comprehensive
   @moduletag :capture_log
+  @moduletag :requires_application
 
   # All tests require GenServer (SensorRegistry) or application boot. Skip under --no-start.
 

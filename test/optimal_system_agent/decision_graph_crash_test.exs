@@ -13,6 +13,7 @@ defmodule OptimalSystemAgent.DecisionGraphCrashTest do
   NO MOCKS - only test against actual OSA subsystems.
   """
 
+  @moduletag :requires_application
 
   describe "Decision Graph crash scenarios" do
     test "CRASH: Decision graph with nil node doesn't crash" do

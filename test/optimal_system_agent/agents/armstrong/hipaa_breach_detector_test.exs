@@ -14,6 +14,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetectorTest do
 
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agents.Armstrong.HipaaBreachDetector
 
   # ── PHI DETECTION TESTS (Pure Functions) ────────────────────────────────

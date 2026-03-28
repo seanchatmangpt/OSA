@@ -11,6 +11,7 @@ defmodule OptimalSystemAgent.Events.BusTest do
   alias OptimalSystemAgent.Events.Bus
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # Ensure Bus is started for tests

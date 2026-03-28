@@ -17,6 +17,8 @@ defmodule OptimalSystemAgent.Vision2030CrashTest do
   SKIPPED: Requires full supervision tree and coordination with external services.
   """
 
+  @moduletag :requires_application
+
   alias :telemetry, as: Telemetry
 
   describe "Open Telemetry Integration" do

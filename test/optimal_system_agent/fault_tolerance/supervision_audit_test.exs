@@ -16,6 +16,7 @@ defmodule OptimalSystemAgent.FaultTolerance.SupervisionAuditTest do
   alias OptimalSystemAgent.FaultTolerance.SupervisionAudit
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   # ============================================================================
   # Test: One-For-One Strategy Isolates Failures

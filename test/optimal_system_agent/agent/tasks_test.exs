@@ -11,6 +11,7 @@ defmodule OptimalSystemAgent.Agent.TasksTest do
   alias OptimalSystemAgent.Agent.Tasks
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     unless Process.whereis(Tasks) do

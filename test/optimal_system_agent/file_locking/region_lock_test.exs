@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.FileLocking.RegionLockTest do
   alias OptimalSystemAgent.FileLocking.RegionLock
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # RegionLock is already started by the application supervisor.

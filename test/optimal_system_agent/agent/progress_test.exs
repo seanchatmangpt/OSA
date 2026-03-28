@@ -13,6 +13,7 @@ defmodule OptimalSystemAgent.Agent.ProgressTest do
   alias OptimalSystemAgent.Agent.Progress.AgentProgress
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     unless Process.whereis(Progress) do
