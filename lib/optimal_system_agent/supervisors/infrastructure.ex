@@ -69,6 +69,10 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       # Emits telemetry events on status change (ok/degraded/down)
       {OptimalSystemAgent.Health.PM4PyMonitor, []},
 
+      # Autonomous process monitoring scheduler — hourly drift detection
+      # Compares live event log stats against ETS baseline; emits :process_drift_detected
+      {OptimalSystemAgent.Monitoring.ProcessMonitoringScheduler, []},
+
       # Metrics collection GenServer — collects tool, provider, noise filter, and signal weight metrics
       OptimalSystemAgent.Telemetry.Metrics,
 

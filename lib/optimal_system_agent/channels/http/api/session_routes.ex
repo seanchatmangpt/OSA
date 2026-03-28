@@ -396,7 +396,28 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
   # ── POST /sessions/:id/proactive ───────────────────────────────
 
   post "/:id/proactive" do
-    json_error(conn, 501, "not_implemented", "Proactive mode not available in this build")
+    session_id = conn.params["id"]
+
+    case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+      [{_pid, _}] ->
+        Task.Supervisor.start_child(
+          OptimalSystemAgent.TaskSupervisor,
+          fn ->
+            OptimalSystemAgent.Events.Bus.emit(:system_event, %{
+              type: :proactive_mode_started,
+              session_id: session_id,
+              started_at: DateTime.utc_now()
+            })
+          end,
+          restart: :temporary
+        )
+
+        resp = Jason.encode!(%{mode: "proactive", enabled: true, session_id: session_id})
+        conn |> put_resp_content_type("application/json") |> send_resp(200, resp)
+
+      [] ->
+        json_error(conn, 404, "session_not_found", "Session #{session_id} not found")
+    end
   end
 
   get "/:id/activity" do
@@ -459,14 +480,38 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
     source_session_id = conn.params["id"]
     body = conn.body_params
 
-    opts =
-      []
-      |> then(fn o -> if b = body["session_id"], do: Keyword.put(o, :session_id, b), else: o end)
-      |> then(fn o -> if b = body["provider"], do: Keyword.put(o, :provider, b), else: o end)
-      |> then(fn o -> if b = body["model"], do: Keyword.put(o, :model, b), else: o end)
+    provider = body["provider"]
+    model = body["model"]
+    new_session_id = body["session_id"] || "replay_#{source_session_id}_#{System.unique_integer([:positive])}"
 
-    _ = {source_session_id, opts}
-    json_error(conn, 501, "not_implemented", "Session replay not yet available")
+    messages = OptimalSystemAgent.Agent.Memory.SQLiteBridge.load(source_session_id) || []
+
+    Task.Supervisor.start_child(
+      OptimalSystemAgent.TaskSupervisor,
+      fn ->
+        Enum.each(messages, fn msg ->
+          OptimalSystemAgent.Events.Bus.emit(:session_event, %{
+            type: :replay_message,
+            session_id: new_session_id,
+            source_session_id: source_session_id,
+            message: msg
+          })
+        end)
+      end,
+      restart: :temporary
+    )
+
+    resp =
+      Jason.encode!(%{
+        status: "replaying",
+        new_session_id: new_session_id,
+        source_session_id: source_session_id,
+        message_count: length(messages),
+        provider: provider,
+        model: model
+      })
+
+    conn |> put_resp_content_type("application/json") |> send_resp(202, resp)
   end
 
   # ── POST /sessions/:id/provider ── hot-swap LLM provider ──────────

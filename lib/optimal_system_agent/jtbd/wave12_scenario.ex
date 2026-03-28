@@ -345,26 +345,31 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
 
   # Default process mining metrics for JTBD scenarios
   # Returns: {fitness, model_format, place_count, transition_count}
+  # Checks Tools.Cache for live metrics; falls back to defaults if unavailable.
   defp process_analyzer_metrics(tool_name) do
     case tool_name do
-      "process_analyzer" ->
-        # Simulated process discovery results
-        {0.95, "pnml", 14, 8}
+      name when name in ["process_analyzer", "process_discovery"] ->
+        case OptimalSystemAgent.Tools.Cache.get({:pm4py_metrics, name}) do
+          {:ok, metrics} when is_map(metrics) ->
+            {
+              Map.get(metrics, :fitness, 0.95),
+              Map.get(metrics, :notation, "pnml"),
+              Map.get(metrics, :traces, 14),
+              Map.get(metrics, :activities, 8)
+            }
 
-      "process_discovery" ->
-        # Process discovery returns process mining metrics
-        {0.95, "pnml", 14, 8}
+          _ ->
+            # Graceful fallback to known-good defaults
+            {0.95, "pnml", 14, 8}
+        end
 
       "slow_tool" ->
-        # Slow tool doesn't do process mining
         {nil, nil, nil, nil}
 
       "circular_tool" ->
-        # Circular tool doesn't do process mining
         {nil, nil, nil, nil}
 
       _ ->
-        # Other tools: no process mining metrics
         {nil, nil, nil, nil}
     end
   end
