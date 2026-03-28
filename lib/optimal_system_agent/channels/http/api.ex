@@ -214,9 +214,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
         layer2_signal_synchronization: check_pre_commit_health(),
         layer3_data_recording: rdf_status,
         layer4_correlation: sparql_status,
-        layer5_reconstruction: :not_implemented,
-        layer6_verification: :not_implemented,
-        layer7_event_horizon: :not_implemented
+        layer5_reconstruction: check_layer5_telemetry(),
+        layer6_verification: check_layer6_signal(),
+        layer7_event_horizon: check_layer7_governance()
       }
     })
 
@@ -454,5 +454,76 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     end
   rescue
     _ -> :unhealthy
+  end
+
+  # ── Layer 5: Data Reconstruction — telemetry latency metrics ─────────
+  def check_layer5_telemetry do
+    case GenServer.whereis(OptimalSystemAgent.Telemetry.Metrics) do
+      nil ->
+        %{layer: 5, status: :no_data}
+
+      _pid ->
+        summary = OptimalSystemAgent.Telemetry.Metrics.get_summary()
+        latency_map = Map.get(summary, :provider_latency, %{})
+
+        p99_values =
+          latency_map
+          |> Map.values()
+          |> Enum.flat_map(fn
+            %{p99_ms: p99} when is_number(p99) -> [p99]
+            _ -> []
+          end)
+
+        p99 = if Enum.empty?(p99_values), do: 0, else: Enum.max(p99_values)
+
+        noise_rate = Map.get(summary, :noise_filter_rate, 0.0)
+        error_rate = Float.round(noise_rate / 100.0, 4)
+
+        %{layer: 5, latency_p99: p99, error_rate: error_rate}
+    end
+  rescue
+    _ -> %{layer: 5, status: :no_data}
+  end
+
+  # ── Layer 6: Feedback — signal quality (S/N ratio) ───────────────────
+  def check_layer6_signal do
+    case GenServer.whereis(OptimalSystemAgent.Telemetry.Metrics) do
+      nil ->
+        %{layer: 6, status: :no_data}
+
+      _pid ->
+        summary = OptimalSystemAgent.Telemetry.Metrics.get_summary()
+        weight_dist = Map.get(summary, :signal_weight_distribution, %{})
+
+        high_quality =
+          (Map.get(weight_dist, :"0.5-0.8", 0) + Map.get(weight_dist, :"0.8-1.0", 0))
+          |> Float.round(2)
+
+        %{layer: 6, snr: high_quality, signal_weight_distribution: weight_dist}
+    end
+  rescue
+    _ -> %{layer: 6, status: :no_data}
+  end
+
+  # ── Layer 7: Governance — count loaded governance structures ─────────
+  def check_layer7_governance do
+    board_rules =
+      case GenServer.whereis(OptimalSystemAgent.Governance.BoardProcess) do
+        nil -> 0
+        _pid -> 1
+      end
+
+    # Count active agent sessions as a proxy for governance scope
+    session_count =
+      try do
+        Registry.select(OptimalSystemAgent.SessionRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])
+        |> length()
+      rescue
+        _ -> 0
+      end
+
+    %{layer: 7, rules_loaded: board_rules, supervised_sessions: session_count}
+  rescue
+    _ -> %{layer: 7, status: :no_data}
   end
 end

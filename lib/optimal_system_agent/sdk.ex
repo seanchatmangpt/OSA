@@ -266,7 +266,15 @@ defmodule OptimalSystemAgent.SDK do
     end
 
     @doc "Get messages for a session."
-    def get_messages(_session_id), do: []
+    def get_messages(session_id) do
+      case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+        [{pid, _}] ->
+          GenServer.call(pid, :get_messages, 5_000)
+
+        [] ->
+          []
+      end
+    end
 
     @doc "Check if a session is alive."
     def alive?(session_id) do

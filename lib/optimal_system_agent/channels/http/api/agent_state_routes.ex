@@ -100,6 +100,40 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.AgentStateRoutes do
   end
 
   # Returns up to `n` recent message previews from all active sessions.
-  # Introspection module not yet available — returns empty for now.
-  defp recent_message_previews(_n), do: []
+  defp recent_message_previews(n) do
+    session_ids =
+      Registry.select(OptimalSystemAgent.SessionRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])
+
+    session_ids
+    |> Enum.flat_map(fn session_id ->
+      case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+        [{pid, _}] ->
+          messages =
+            try do
+              GenServer.call(pid, :get_messages, 2_000)
+            catch
+              :exit, _ -> []
+            end
+
+          messages
+          |> Enum.take(-n)
+          |> Enum.map(fn msg ->
+            role = Map.get(msg, :role) || Map.get(msg, "role") || "unknown"
+
+            content =
+              (Map.get(msg, :content) || Map.get(msg, "content") || "")
+              |> to_string()
+              |> String.slice(0, 100)
+
+            %{role: to_string(role), preview: content}
+          end)
+
+        _ ->
+          []
+      end
+    end)
+    |> Enum.take(n)
+  rescue
+    _ -> []
+  end
 end

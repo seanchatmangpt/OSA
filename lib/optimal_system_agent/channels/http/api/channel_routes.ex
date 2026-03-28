@@ -84,7 +84,63 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.ChannelRoutes do
   # ── Discord ────────────────────────────────────────────────────────
 
   post "/discord/webhook" do
-    json_error(conn, 501, "not_implemented", "Discord channel not yet available")
+    raw_body =
+      case conn.assigns[:raw_body] do
+        nil ->
+          case conn.body_params do
+            %Plug.Conn.Unfetched{} -> ""
+            params -> Jason.encode!(params)
+          end
+
+        body ->
+          body
+      end
+
+    signature_hex = get_req_header(conn, "x-signature-ed25519") |> List.first("")
+    timestamp = get_req_header(conn, "x-signature-timestamp") |> List.first("")
+
+    public_key_hex = System.get_env("DISCORD_PUBLIC_KEY", "")
+
+    cond do
+      public_key_hex == "" ->
+        json_error(conn, 401, "unauthorized", "Discord public key not configured")
+
+      true ->
+        case Base.decode16(public_key_hex, case: :lower) do
+          {:ok, public_key} ->
+            message = timestamp <> raw_body
+
+            signature =
+              case Base.decode16(signature_hex, case: :lower) do
+                {:ok, sig} -> sig
+                _ -> <<>>
+              end
+
+            valid =
+              try do
+                :crypto.verify(:eddsa, :none, message, signature, [public_key, :ed25519])
+              rescue
+                _ -> false
+              catch
+                _, _ -> false
+              end
+
+            if valid do
+              case OptimalSystemAgent.Channels.Discord.handle_update(conn.body_params) do
+                :ok ->
+                  send_resp(conn, 200, "")
+
+                {:error, :not_started} ->
+                  json_error(conn, 503, "channel_unavailable", "Discord adapter not started")
+              end
+            else
+              json_error(conn, 401, "unauthorized", "Invalid Discord signature")
+            end
+
+          :error ->
+            json_error(conn, 401, "unauthorized", "Invalid Discord public key format")
+        end
+    end
   end
 
   # ── Slack ──────────────────────────────────────────────────────────

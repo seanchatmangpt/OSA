@@ -564,11 +564,19 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
     |> Base.encode16(case: :lower)
   end
 
-  # Select leader for view (simple round-robin)
+  # Select leader for view (round-robin over registered fleet agents)
   defp select_leader(fleet_id, view_number) do
-    # In production, this would use actual fleet state
-    # For now, deterministic selection based on view number
-    "#{fleet_id}_leader_#{rem(view_number, 10)}"
+    case get_fleet_agents(fleet_id) do
+      nil ->
+        # No proposal registered yet — fall back to deterministic placeholder
+        "#{fleet_id}_leader_#{rem(view_number, 10)}"
+
+      [_ | _] = agents ->
+        Enum.at(agents, rem(view_number, length(agents)))
+
+      _ ->
+        "#{fleet_id}_leader_#{rem(view_number, 10)}"
+    end
   end
 
   # Check if BFT threshold is reached
@@ -651,28 +659,60 @@ defmodule OptimalSystemAgent.Consensus.HotStuff do
     computed_hash == entry.entry_hash
   end
 
-  # Broadcast proposal to fleet
+  # Broadcast proposal to fleet via Events.Bus
   defp broadcast_proposal(fleet_id, proposal) do
-    # In production, use PubSub or message bus
-    # For now, just log
-    require Logger
-    Logger.debug("[HotStuff] Broadcasting proposal #{proposal.proposal_id} to fleet #{fleet_id}")
+    OptimalSystemAgent.Events.Bus.emit(:system_event, %{
+      type: :consensus_proposal,
+      fleet_id: fleet_id,
+      proposal_id: proposal.proposal_id,
+      proposal: proposal
+    })
     :ok
   end
 
-  # Broadcast commit to fleet
+  # Broadcast commit to fleet via Events.Bus
   defp broadcast_commit(fleet_id, proposal_id, entry_hash) do
-    # In production, use PubSub or message bus
-    require Logger
-    Logger.debug("[HotStuff] Broadcast commit for #{proposal_id} to fleet #{fleet_id} (hash: #{entry_hash})")
+    OptimalSystemAgent.Events.Bus.emit(:system_event, %{
+      type: :consensus_commit,
+      fleet_id: fleet_id,
+      proposal_id: proposal_id,
+      block_hash: entry_hash
+    })
     :ok
   end
 
-  # Broadcast view change to fleet
+  # Broadcast view change to fleet via Events.Bus
   defp broadcast_view_change(fleet_id, view_info) do
-    # In production, use PubSub or message bus
-    require Logger
-    Logger.debug("[HotStuff] View change for fleet #{fleet_id}: view #{view_info.view_number}, leader #{view_info.leader}")
+    OptimalSystemAgent.Events.Bus.emit(:system_event, %{
+      type: :consensus_view_change,
+      fleet_id: fleet_id,
+      new_view: view_info
+    })
     :ok
+  end
+
+  # Look up the agents registered for a fleet from the most recent proposal.
+  # Returns nil if no proposals have been registered for this fleet.
+  defp get_fleet_agents(fleet_id) do
+    all =
+      :ets.foldl(
+        fn {{fid, _pid}, proposal}, acc ->
+          if fid == fleet_id do
+            agents = Map.get(proposal, :agents)
+            if is_list(agents) and agents != [], do: [agents | acc], else: acc
+          else
+            acc
+          end
+        end,
+        [],
+        @proposals_table
+      )
+
+    case all do
+      [] -> nil
+      [agents | _] -> agents
+    end
+  rescue
+    _ -> nil
   end
 end
