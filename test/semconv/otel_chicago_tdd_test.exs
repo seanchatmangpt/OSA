@@ -37,32 +37,32 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "HealingAttributes — attribute keys" do
     @tag :unit
     test "healing_failure_mode key is correct OTel attribute name" do
-      assert HealingAttributes.healing_failure_mode() == :"healing.failure_mode"
+      assert HealingAttributes.healing_failure_mode() == :healing_failure_mode
     end
 
     @tag :unit
     test "healing_confidence key is correct OTel attribute name" do
-      assert HealingAttributes.healing_confidence() == :"healing.confidence"
+      assert HealingAttributes.healing_confidence() == :healing_confidence
     end
 
     @tag :unit
     test "healing_agent_id key is correct OTel attribute name" do
-      assert HealingAttributes.healing_agent_id() == :"healing.agent_id"
+      assert HealingAttributes.healing_agent_id() == :healing_agent_id
     end
 
     @tag :unit
     test "healing_reflex_arc key is correct OTel attribute name" do
-      assert HealingAttributes.healing_reflex_arc() == :"healing.reflex_arc"
+      assert HealingAttributes.healing_reflex_arc() == :healing_reflex_arc
     end
 
     @tag :unit
     test "healing_recovery_action key is correct OTel attribute name" do
-      assert HealingAttributes.healing_recovery_action() == :"healing.recovery_action"
+      assert HealingAttributes.healing_recovery_action() == :healing_recovery_action
     end
 
     @tag :unit
     test "healing_mttr_ms key is correct OTel attribute name" do
-      assert HealingAttributes.healing_mttr_ms() == :"healing.mttr_ms"
+      assert HealingAttributes.healing_mttr_ms() == :healing_mttr_ms
     end
   end
 
@@ -116,17 +116,17 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "AgentAttributes — attribute keys and enum values" do
     @tag :unit
     test "agent_id key is correct OTel attribute name" do
-      assert AgentAttributes.agent_id() == :"agent.id"
+      assert AgentAttributes.agent_id() == :agent_id
     end
 
     @tag :unit
     test "agent_outcome key is correct OTel attribute name" do
-      assert AgentAttributes.agent_outcome() == :"agent.outcome"
+      assert AgentAttributes.agent_outcome() == :agent_outcome
     end
 
     @tag :unit
     test "agent_decision_type key is correct OTel attribute name" do
-      assert AgentAttributes.agent_decision_type() == :"agent.decision.type"
+      assert AgentAttributes.agent_decision_type() == :agent_decision_type
     end
 
     @tag :unit
@@ -152,17 +152,17 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "ConsensusAttributes — attribute keys and enum values" do
     @tag :unit
     test "consensus_round_num key is correct OTel attribute name" do
-      assert ConsensusAttributes.consensus_round_num() == :"consensus.round_num"
+      assert ConsensusAttributes.consensus_round_num() == :consensus_round_num
     end
 
     @tag :unit
     test "consensus_round_type key is correct OTel attribute name" do
-      assert ConsensusAttributes.consensus_round_type() == :"consensus.round_type"
+      assert ConsensusAttributes.consensus_round_type() == :consensus_round_type
     end
 
     @tag :unit
     test "consensus_node_id key is correct OTel attribute name" do
-      assert ConsensusAttributes.consensus_node_id() == :"consensus.node_id"
+      assert ConsensusAttributes.consensus_node_id() == :consensus_node_id
     end
 
     @tag :unit
@@ -188,12 +188,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "McpAttributes — attribute keys and enum values" do
     @tag :unit
     test "mcp_tool_name key is correct OTel attribute name" do
-      assert McpAttributes.mcp_tool_name() == :"mcp.tool.name"
+      assert McpAttributes.mcp_tool_name() == :mcp_tool_name
     end
 
     @tag :unit
     test "mcp_server_name key is correct OTel attribute name" do
-      assert McpAttributes.mcp_server_name() == :"mcp.server.name"
+      assert McpAttributes.mcp_server_name() == :mcp_server_name
     end
 
     @tag :unit
@@ -219,32 +219,32 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "A2aAttributes — attribute keys" do
     @tag :unit
     test "a2a_agent_id key is correct OTel attribute name" do
-      assert A2aAttributes.a2a_agent_id() == :"a2a.agent.id"
+      assert A2aAttributes.a2a_agent_id() == :a2a_agent_id
     end
 
     @tag :unit
     test "a2a_operation key is correct OTel attribute name" do
-      assert A2aAttributes.a2a_operation() == :"a2a.operation"
+      assert A2aAttributes.a2a_operation() == :a2a_operation
     end
 
     @tag :unit
     test "a2a_deal_id key is correct OTel attribute name" do
-      assert A2aAttributes.a2a_deal_id() == :"a2a.deal.id"
+      assert A2aAttributes.a2a_deal_id() == :a2a_deal_id
     end
 
     @tag :unit
     test "a2a_source_service key is correct OTel attribute name" do
-      assert A2aAttributes.a2a_source_service() == :"a2a.source.service"
+      assert A2aAttributes.a2a_source_service() == :a2a_source_service
     end
 
     @tag :unit
     test "a2a_target_service key is correct OTel attribute name" do
-      assert A2aAttributes.a2a_target_service() == :"a2a.target.service"
+      assert A2aAttributes.a2a_target_service() == :a2a_target_service
     end
 
     @tag :unit
     test "a2a negotiation status key is correct otel name" do
-      assert A2aAttributes.a2a_negotiation_status() == :"a2a.negotiation.status"
+      assert A2aAttributes.a2a_negotiation_status() == :a2a_negotiation_status
     end
 
     @tag :unit
@@ -254,7 +254,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
     @tag :unit
     test "a2a task priority key is correct otel name" do
-      assert A2aAttributes.a2a_task_priority() == :"a2a.task.priority"
+      assert A2aAttributes.a2a_task_priority() == :a2a_task_priority
     end
   end
 
@@ -265,12 +265,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "CanopyAttributes — attribute keys and enum values" do
     @tag :unit
     test "canopy_heartbeat_tier key is correct OTel attribute name" do
-      assert CanopyAttributes.canopy_heartbeat_tier() == :"canopy.heartbeat.tier"
+      assert CanopyAttributes.canopy_heartbeat_tier() == :canopy_heartbeat_tier
     end
 
     @tag :unit
     test "canopy_adapter_name key is correct OTel attribute name" do
-      assert CanopyAttributes.canopy_adapter_name() == :"canopy.adapter.name"
+      assert CanopyAttributes.canopy_adapter_name() == :canopy_adapter_name
     end
 
     @tag :unit
@@ -290,7 +290,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
     @tag :unit
     test "canopy workspace id key is correct otel name" do
-      assert CanopyAttributes.canopy_workspace_id() == :"canopy.workspace.id"
+      assert CanopyAttributes.canopy_workspace_id() == :canopy_workspace_id
     end
 
     @tag :unit
@@ -306,22 +306,22 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "WorkflowAttributes — attribute keys and enum values" do
     @tag :unit
     test "workflow_id key is correct OTel attribute name" do
-      assert WorkflowAttributes.workflow_id() == :"workflow.id"
+      assert WorkflowAttributes.workflow_id() == :workflow_id
     end
 
     @tag :unit
     test "workflow_name key is correct OTel attribute name" do
-      assert WorkflowAttributes.workflow_name() == :"workflow.name"
+      assert WorkflowAttributes.workflow_name() == :workflow_name
     end
 
     @tag :unit
     test "workflow_pattern key is correct OTel attribute name" do
-      assert WorkflowAttributes.workflow_pattern() == :"workflow.pattern"
+      assert WorkflowAttributes.workflow_pattern() == :workflow_pattern
     end
 
     @tag :unit
     test "workflow_state key is correct OTel attribute name" do
-      assert WorkflowAttributes.workflow_state() == :"workflow.state"
+      assert WorkflowAttributes.workflow_state() == :workflow_state
     end
 
     @tag :unit
@@ -372,27 +372,27 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "BosAttributes — compliance and decision keys" do
     @tag :unit
     test "bos_compliance_framework key is correct OTel attribute name" do
-      assert BosAttributes.bos_compliance_framework() == :"bos.compliance.framework"
+      assert BosAttributes.bos_compliance_framework() == :bos_compliance_framework
     end
 
     @tag :unit
     test "bos_compliance_rule_id key is correct OTel attribute name" do
-      assert BosAttributes.bos_compliance_rule_id() == :"bos.compliance.rule_id"
+      assert BosAttributes.bos_compliance_rule_id() == :bos_compliance_rule_id
     end
 
     @tag :unit
     test "bos_compliance_passed key is correct OTel attribute name" do
-      assert BosAttributes.bos_compliance_passed() == :"bos.compliance.passed"
+      assert BosAttributes.bos_compliance_passed() == :bos_compliance_passed
     end
 
     @tag :unit
     test "bos_compliance_severity key is correct OTel attribute name" do
-      assert BosAttributes.bos_compliance_severity() == :"bos.compliance.severity"
+      assert BosAttributes.bos_compliance_severity() == :bos_compliance_severity
     end
 
     @tag :unit
     test "bos_decision_type key is correct OTel attribute name" do
-      assert BosAttributes.bos_decision_type() == :"bos.decision.type"
+      assert BosAttributes.bos_decision_type() == :bos_decision_type
     end
 
     @tag :unit
@@ -420,12 +420,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "ProcessAttributes — mining and conformance keys" do
     @tag :unit
     test "process_mining_trace_id key is correct OTel attribute name" do
-      assert ProcessAttributes.process_mining_trace_id() == :"process.mining.trace_id"
+      assert ProcessAttributes.process_mining_trace_id() == :process_mining_trace_id
     end
 
     @tag :unit
     test "process_mining_algorithm key is correct OTel attribute name" do
-      assert ProcessAttributes.process_mining_algorithm() == :"process.mining.algorithm"
+      assert ProcessAttributes.process_mining_algorithm() == :process_mining_algorithm
     end
 
     @tag :unit
@@ -447,13 +447,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
     @tag :unit
     test "signal_mode key is correct OTel attribute name" do
       alias OpenTelemetry.SemConv.Incubating.SignalAttributes
-      assert SignalAttributes.signal_mode() == :"signal.mode"
+      assert SignalAttributes.signal_mode() == :signal_mode
     end
 
     @tag :unit
     test "signal_weight key is correct OTel attribute name" do
       alias OpenTelemetry.SemConv.Incubating.SignalAttributes
-      assert SignalAttributes.signal_weight() == :"signal.weight"
+      assert SignalAttributes.signal_weight() == :signal_weight
     end
 
     @tag :unit
@@ -476,12 +476,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   describe "ChatmangptAttributes — shared budget keys" do
     @tag :unit
     test "chatmangpt_budget_time_ms key is correct OTel attribute name" do
-      assert ChatmangptAttributes.chatmangpt_budget_time_ms() == :"chatmangpt.budget.time_ms"
+      assert ChatmangptAttributes.chatmangpt_budget_time_ms() == :chatmangpt_budget_time_ms
     end
 
     @tag :unit
     test "chatmangpt_service_tier key is correct OTel attribute name" do
-      assert ChatmangptAttributes.chatmangpt_service_tier() == :"chatmangpt.service.tier"
+      assert ChatmangptAttributes.chatmangpt_service_tier() == :chatmangpt_service_tier
     end
   end
 
@@ -544,17 +544,17 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "consensus.quorum_size attribute key matches schema" do
-    assert ConsensusAttributes.consensus_quorum_size() == :"consensus.quorum_size"
+    assert ConsensusAttributes.consensus_quorum_size() == :consensus_quorum_size
   end
 
   @tag :unit
   test "consensus.leader_id attribute key matches schema" do
-    assert ConsensusAttributes.consensus_leader_id() == :"consensus.leader.id"
+    assert ConsensusAttributes.consensus_leader_id() == :consensus_leader_id
   end
 
   @tag :unit
   test "consensus.view_timeout_ms attribute key matches schema" do
-    assert ConsensusAttributes.consensus_view_timeout_ms() == :"consensus.view_timeout_ms"
+    assert ConsensusAttributes.consensus_view_timeout_ms() == :consensus_view_timeout_ms
   end
 
   # ============================================================
@@ -563,12 +563,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "mcp.tool.retry_count attribute key matches schema" do
-    assert McpAttributes.mcp_tool_retry_count() == :"mcp.tool.retry_count"
+    assert McpAttributes.mcp_tool_retry_count() == :mcp_tool_retry_count
   end
 
   @tag :unit
   test "mcp.tool.timeout_ms attribute key matches schema" do
-    assert McpAttributes.mcp_tool_timeout_ms() == :"mcp.tool.timeout_ms"
+    assert McpAttributes.mcp_tool_timeout_ms() == :mcp_tool_timeout_ms
   end
 
   # ============================================================
@@ -577,22 +577,22 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "llm.model attribute key matches schema" do
-    assert LlmAttributes.llm_model() == :"llm.model"
+    assert LlmAttributes.llm_model() == :llm_model
   end
 
   @tag :unit
   test "llm.provider attribute key matches schema" do
-    assert LlmAttributes.llm_provider() == :"llm.provider"
+    assert LlmAttributes.llm_provider() == :llm_provider
   end
 
   @tag :unit
   test "llm.token.input attribute key matches schema" do
-    assert LlmAttributes.llm_token_input() == :"llm.token.input"
+    assert LlmAttributes.llm_token_input() == :llm_token_input
   end
 
   @tag :unit
   test "llm.token.output attribute key matches schema" do
-    assert LlmAttributes.llm_token_output() == :"llm.token.output"
+    assert LlmAttributes.llm_token_output() == :llm_token_output
   end
 
   @tag :unit
@@ -611,12 +611,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "workspace.session.id attribute key matches schema" do
-    assert WorkspaceAttributes.workspace_session_id() == :"workspace.session.id"
+    assert WorkspaceAttributes.workspace_session_id() == :workspace_session_id
   end
 
   @tag :unit
   test "workspace.context.size attribute key matches schema" do
-    assert WorkspaceAttributes.workspace_context_size() == :"workspace.context.size"
+    assert WorkspaceAttributes.workspace_context_size() == :workspace_context_size
   end
 
   @tag :unit
@@ -635,12 +635,12 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "workflow.split.count attribute key matches schema" do
-    assert WorkflowAttributes.workflow_split_count() == :"workflow.split.count"
+    assert WorkflowAttributes.workflow_split_count() == :workflow_split_count
   end
 
   @tag :unit
   test "workflow.merge.policy attribute key matches schema" do
-    assert WorkflowAttributes.workflow_merge_policy() == :"workflow.merge.policy"
+    assert WorkflowAttributes.workflow_merge_policy() == :workflow_merge_policy
   end
 
   @tag :unit
@@ -650,7 +650,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
 
   @tag :unit
   test "workflow.choice.condition attribute key matches schema" do
-    assert WorkflowAttributes.workflow_choice_condition() == :"workflow.choice.condition"
+    assert WorkflowAttributes.workflow_choice_condition() == :workflow_choice_condition
   end
 
   # === Wave 9 Iteration 9: A2A Deal Tracking ===
@@ -658,7 +658,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "a2a.deal.status attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.A2aAttributes
-    assert A2aAttributes.a2a_deal_status() == :"a2a.deal.status"
+    assert A2aAttributes.a2a_deal_status() == :a2a_deal_status
   end
 
   @tag :unit
@@ -670,7 +670,7 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "a2a.deal.currency attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.A2aAttributes
-    assert A2aAttributes.a2a_deal_currency() == :"a2a.deal.currency"
+    assert A2aAttributes.a2a_deal_currency() == :a2a_deal_currency
   end
 
   # === Wave 9 Iteration 9: Event Correlation ===
@@ -678,19 +678,19 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "event.correlation_id attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.EventAttributes
-    assert EventAttributes.event_correlation_id() == :"event.correlation_id"
+    assert EventAttributes.event_correlation_id() == :event_correlation_id
   end
 
   @tag :unit
   test "event.causation_id attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.EventAttributes
-    assert EventAttributes.event_causation_id() == :"event.causation_id"
+    assert EventAttributes.event_causation_id() == :event_causation_id
   end
 
   @tag :unit
   test "event.source.service attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.EventAttributes
-    assert EventAttributes.event_source_service() == :"event.source.service"
+    assert EventAttributes.event_source_service() == :event_source_service
   end
 
   # === Wave 9 Iteration 9: Process Mining Advanced ===
@@ -698,19 +698,19 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "process.mining.variant_count attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
-    assert ProcessAttributes.process_mining_variant_count() == :"process.mining.variant_count"
+    assert ProcessAttributes.process_mining_variant_count() == :process_mining_variant_count
   end
 
   @tag :unit
   test "process.mining.bottleneck.activity attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
-    assert ProcessAttributes.process_mining_bottleneck_activity() == :"process.mining.bottleneck.activity"
+    assert ProcessAttributes.process_mining_bottleneck_activity() == :process_mining_bottleneck_activity
   end
 
   @tag :unit
   test "process.mining.replay_fitness attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ProcessAttributes
-    assert ProcessAttributes.process_mining_replay_fitness() == :"process.mining.replay.fitness"
+    assert ProcessAttributes.process_mining_replay_fitness() == :process_mining_replay_fitness
   end
 
   # === Wave 9 Iteration 10: Signal Theory ===
@@ -718,13 +718,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "signal.latency_ms attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.SignalAttributes
-    assert SignalAttributes.signal_latency_ms() == :"signal.latency_ms"
+    assert SignalAttributes.signal_latency_ms() == :signal_latency_ms
   end
 
   @tag :unit
   test "signal.priority attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.SignalAttributes
-    assert SignalAttributes.signal_priority() == :"signal.priority"
+    assert SignalAttributes.signal_priority() == :signal_priority
   end
 
   @tag :unit
@@ -738,13 +738,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "canopy.heartbeat.latency_ms attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.CanopyAttributes
-    assert CanopyAttributes.canopy_heartbeat_latency_ms() == :"canopy.heartbeat.latency_ms"
+    assert CanopyAttributes.canopy_heartbeat_latency_ms() == :canopy_heartbeat_latency_ms
   end
 
   @tag :unit
   test "canopy.session.id attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.CanopyAttributes
-    assert CanopyAttributes.canopy_session_id() == :"canopy.session.id"
+    assert CanopyAttributes.canopy_session_id() == :canopy_session_id
   end
 
   # === Wave 9 Iteration 10: Conversation ===
@@ -752,13 +752,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "conversation.id attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ConversationAttributes
-    assert ConversationAttributes.conversation_id() == :"conversation.id"
+    assert ConversationAttributes.conversation_id() == :conversation_id
   end
 
   @tag :unit
   test "conversation.model attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ConversationAttributes
-    assert ConversationAttributes.conversation_model() == :"conversation.model"
+    assert ConversationAttributes.conversation_model() == :conversation_model
   end
 
   @tag :unit
@@ -772,13 +772,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "workflow.active_branches attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.WorkflowAttributes
-    assert WorkflowAttributes.workflow_active_branches() == :"workflow.active_branches"
+    assert WorkflowAttributes.workflow_active_branches() == :workflow_active_branches
   end
 
   @tag :unit
   test "workflow.fired_branches attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.WorkflowAttributes
-    assert WorkflowAttributes.workflow_fired_branches() == :"workflow.fired_branches"
+    assert WorkflowAttributes.workflow_fired_branches() == :workflow_fired_branches
   end
 
   # === Wave 9 Iteration 11: LLM cost tracking ===
@@ -786,25 +786,25 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "llm cost total attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.LlmAttributes
-    assert LlmAttributes.llm_cost_total() == :"llm.cost.total"
+    assert LlmAttributes.llm_cost_total() == :llm_cost_total
   end
 
   @tag :unit
   test "llm cost input attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.LlmAttributes
-    assert LlmAttributes.llm_cost_input() == :"llm.cost.input"
+    assert LlmAttributes.llm_cost_input() == :llm_cost_input
   end
 
   @tag :unit
   test "llm cost output attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.LlmAttributes
-    assert LlmAttributes.llm_cost_output() == :"llm.cost.output"
+    assert LlmAttributes.llm_cost_output() == :llm_cost_output
   end
 
   @tag :unit
   test "llm model family attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.LlmAttributes
-    assert LlmAttributes.llm_model_family() == :"llm.model_family"
+    assert LlmAttributes.llm_model_family() == :llm_model_family
   end
 
   # === Wave 9 Iteration 11: Consensus quorum health ===
@@ -812,19 +812,19 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "consensus quorum health attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
-    assert ConsensusAttributes.consensus_quorum_health() == :"consensus.quorum.health"
+    assert ConsensusAttributes.consensus_quorum_health() == :consensus_quorum_health
   end
 
   @tag :unit
   test "consensus block height attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
-    assert ConsensusAttributes.consensus_block_height() == :"consensus.block.height"
+    assert ConsensusAttributes.consensus_block_height() == :consensus_block_height
   end
 
   @tag :unit
   test "consensus replica count attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.ConsensusAttributes
-    assert ConsensusAttributes.consensus_replica_count() == :"consensus.replica.count"
+    assert ConsensusAttributes.consensus_replica_count() == :consensus_replica_count
   end
 
   # === Wave 9 Iteration 11: A2A SLA tracking ===
@@ -832,19 +832,19 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "a2a sla deadline ms attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.A2aAttributes
-    assert A2aAttributes.a2a_sla_deadline_ms() == :"a2a.sla.deadline_ms"
+    assert A2aAttributes.a2a_sla_deadline_ms() == :a2a_sla_deadline_ms
   end
 
   @tag :unit
   test "a2a sla breach attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.A2aAttributes
-    assert A2aAttributes.a2a_sla_breach() == :"a2a.sla.breach"
+    assert A2aAttributes.a2a_sla_breach() == :a2a_sla_breach
   end
 
   @tag :unit
   test "a2a retry count attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.A2aAttributes
-    assert A2aAttributes.a2a_retry_count() == :"a2a.retry.count"
+    assert A2aAttributes.a2a_retry_count() == :a2a_retry_count
   end
 
   # === Wave 9 Iteration 11: Workspace tool category ===
@@ -852,13 +852,13 @@ defmodule OSA.Semconv.OtelChicagoTddTest do
   @tag :unit
   test "workspace tool category attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.WorkspaceAttributes
-    assert WorkspaceAttributes.workspace_tool_category() == :"workspace.tool.category"
+    assert WorkspaceAttributes.workspace_tool_category() == :workspace_tool_category
   end
 
   @tag :unit
   test "workspace context window size attribute key matches schema" do
     alias OpenTelemetry.SemConv.Incubating.WorkspaceAttributes
-    assert WorkspaceAttributes.workspace_context_window_size() == :"workspace.context.window_size"
+    assert WorkspaceAttributes.workspace_context_window_size() == :workspace_context_window_size
   end
 
   # === Wave 9 Iteration 11: BusinessOS compliance and audit ===
