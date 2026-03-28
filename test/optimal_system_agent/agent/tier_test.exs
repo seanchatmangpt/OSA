@@ -50,12 +50,12 @@ defmodule OptimalSystemAgent.Agent.TierTest do
 
     test "reads default_provider from config" do
       # From module: Application.get_env(:optimal_system_agent, :default_provider, :ollama)
-      assert true
+      assert is_binary(Tier.model_for_agent("any_agent"))
     end
 
     test "uses auto_model when roster module removed" do
-      # From module: # Roster module removed — use auto model
-      assert true
+      # All agents return the same auto model (roster module removed)
+      assert Tier.model_for_agent("a") == Tier.model_for_agent("b")
     end
   end
 
@@ -121,8 +121,7 @@ defmodule OptimalSystemAgent.Agent.TierTest do
 
     test "defaults to specialist budget for unknown tier" do
       # From module: Map.get(@tier_budgets, tier, @tier_budgets.specialist)
-      result = Tier.budget_for(:unknown)
-      assert is_map(result)
+      assert Tier.budget_for(:unknown) == Tier.budget_for(:specialist)
     end
   end
 
@@ -222,8 +221,7 @@ defmodule OptimalSystemAgent.Agent.TierTest do
     end
 
     test "includes tier key" do
-      result = Tier.tier_info(:specialist)
-      assert Map.has_key?(result, :tier)
+      assert Tier.tier_info(:specialist).tier == :specialist
     end
 
     test "includes budget key" do
@@ -232,23 +230,19 @@ defmodule OptimalSystemAgent.Agent.TierTest do
     end
 
     test "includes max_agents key" do
-      result = Tier.tier_info(:elite)
-      assert Map.has_key?(result, :max_agents)
+      assert Tier.tier_info(:elite).max_agents == 50
     end
 
     test "includes max_iterations key" do
-      result = Tier.tier_info(:specialist)
-      assert Map.has_key?(result, :max_iterations)
+      assert Tier.tier_info(:specialist).max_iterations == 15
     end
 
     test "includes temperature key" do
-      result = Tier.tier_info(:utility)
-      assert Map.has_key?(result, :temperature)
+      assert Tier.tier_info(:utility).temperature == 0.2
     end
 
     test "includes max_response_tokens key" do
-      result = Tier.tier_info(:elite)
-      assert Map.has_key?(result, :max_response_tokens)
+      assert Tier.tier_info(:elite).max_response_tokens == 8_000
     end
   end
 
@@ -259,18 +253,15 @@ defmodule OptimalSystemAgent.Agent.TierTest do
     end
 
     test "includes elite key" do
-      result = Tier.all_tiers()
-      assert Map.has_key?(result, :elite)
+      assert Tier.all_tiers().elite.tier == :elite
     end
 
     test "includes specialist key" do
-      result = Tier.all_tiers()
-      assert Map.has_key?(result, :specialist)
+      assert Tier.all_tiers().specialist.temperature == 0.4
     end
 
     test "includes utility key" do
-      result = Tier.all_tiers()
-      assert Map.has_key?(result, :utility)
+      assert Tier.all_tiers().utility.max_iterations == 8
     end
   end
 
@@ -353,12 +344,14 @@ defmodule OptimalSystemAgent.Agent.TierTest do
     test "set_tier_override/2 stores manual override" do
       # From module: :persistent_term.put(:osa_tier_overrides, ...)
       assert :ok = Tier.set_tier_override(:elite, "custom_model")
+      assert Tier.get_tier_overrides()[:elite] == "custom_model"
     end
 
     test "clear_tier_override/1 removes override" do
       # From module: Map.delete(overrides, tier)
       Tier.set_tier_override(:elite, "model")
       assert :ok = Tier.clear_tier_override(:elite)
+      refute Map.has_key?(Tier.get_tier_overrides(), :elite)
     end
 
     test "get_tier_overrides/0 returns overrides map" do

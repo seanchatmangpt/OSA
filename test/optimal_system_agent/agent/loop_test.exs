@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
 
   use ExUnit.Case, async: false
 
+  alias OptimalSystemAgent.Agent.Loop
+
   @moduletag :capture_log
 
   setup do
@@ -19,23 +21,22 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
 
   describe "child_spec/1" do
     test "returns child spec with :transient restart" do
-      # From module: restart: :transient
-      assert true
+      spec = Loop.child_spec(session_id: "test_restart")
+      assert spec.restart == :transient
     end
 
     test "returns child spec with :worker type" do
-      # From module: type: :worker
-      assert true
+      spec = Loop.child_spec(session_id: "test_type")
+      assert spec.type == :worker
     end
 
     test "requires session_id in opts" do
-      # From module: session_id = Keyword.fetch!(opts, :session_id)
-      assert true
+      assert_raise KeyError, fn -> Loop.child_spec([]) end
     end
 
     test "uses {__MODULE__, session_id} for id" do
-      # From module: id: {__MODULE__, session_id}
-      assert true
+      spec = Loop.child_spec(session_id: "test_id")
+      assert spec.id == {Loop, "test_id"}
     end
   end
 
@@ -63,82 +64,75 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
 
   describe "struct" do
     test "has session_id field" do
-      # From module: :session_id
-      assert true
+      assert Map.has_key?(%Loop{}, :session_id)
     end
 
     test "has user_id field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :user_id)
     end
 
     test "has channel field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :channel)
     end
 
     test "has provider field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :provider)
     end
 
     test "has model field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :model)
     end
 
     test "has working_dir field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :working_dir)
     end
 
     test "has messages field default []" do
-      # From module: messages: []
-      assert true
+      assert %Loop{}.messages == []
     end
 
     test "has iteration field default 0" do
-      # From module: iteration: 0
-      assert true
+      assert %Loop{}.iteration == 0
     end
 
     test "has overflow_retries field default 0" do
-      assert true
+      assert Map.has_key?(%Loop{}, :overflow_retries)
     end
 
     test "has recent_failure_signatures field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :recent_failure_signatures)
     end
 
     test "has auto_continues field default 0" do
-      assert true
+      assert %Loop{}.auto_continues == 0
     end
 
     test "has status field default :idle" do
-      # From module: status: :idle
-      assert true
+      assert %Loop{}.status == :idle
     end
 
     test "has tools field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :tools)
     end
 
     test "has plan_mode field default false" do
-      # From module: plan_mode: false
-      assert true
+      assert %Loop{}.plan_mode == false
     end
 
     test "has permission_tier field default :full" do
-      # From module: permission_tier: :full
-      assert true
+      assert %Loop{}.permission_tier == :full
     end
 
     test "has signal_weight field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :signal_weight)
     end
 
     test "has started_at field" do
-      assert true
+      assert Map.has_key?(%Loop{}, :started_at)
     end
 
     test "has healing_attempted field default false" do
-      # From module: healing_attempted: false
-      assert true
+      assert %Loop{}.healing_attempted == false
     end
   end
 
@@ -179,8 +173,7 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
     end
 
     test "catches :exit and returns {:error, :not_found}" do
-      # From module: catch: :exit, _ -> {:error, :not_found}
-      assert true
+      assert Loop.get_state("nonexistent_session_#{System.unique_integer()}") == {:error, :not_found}
     end
 
     test "includes iteration count" do
@@ -234,8 +227,7 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
     end
 
     test "returns :ok on success" do
-      # From module: returns :ok
-      assert true
+      assert Loop.cancel("nonexistent_session_#{System.unique_integer()}") == :ok
     end
 
     test "returns {:error, :not_running} if table not found" do
@@ -267,7 +259,7 @@ defmodule OptimalSystemAgent.Agent.LoopTest do
 
     test "returns nil when session not found" do
       # From module: _ -> nil
-      assert OptimalSystemAgent.Agent.Loop.get_owner("nonexistent_session_xyz") == nil
+      assert Loop.get_owner("nonexistent_session_xyz") == nil
     end
   end
 

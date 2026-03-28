@@ -1,6 +1,6 @@
 FROM elixir:1.17-alpine AS builder
 
-RUN apk add --no-cache build-base git go
+RUN apk add --no-cache build-base git
 
 WORKDIR /app
 
@@ -15,15 +15,12 @@ COPY priv priv
 COPY rel rel
 COPY VERSION ./
 
-# Build Go tokenizer
-RUN cd priv/go/tokenizer && CGO_ENABLED=0 go build -o osa-tokenizer .
-
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix release osagent
 
 FROM alpine:3.19 AS runner
 
-RUN apk add --no-cache libstdc++ openssl ncurses-libs
+RUN apk add --no-cache libstdc++ openssl ncurses-libs wget
 RUN addgroup -S osa && adduser -S osa -G osa
 
 WORKDIR /app

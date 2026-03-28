@@ -12,6 +12,9 @@ defmodule OptimalSystemAgent.Tools.Registry.PM4PyRegisterTest do
   alias OptimalSystemAgent.Tools.Registry
 
   setup_all do
+    # Goldrush must be running for the tool dispatcher (compiled BEAM bytecode routing)
+    Application.ensure_all_started(:goldrush)
+
     # Ensure Registry GenServer has started and seeded :persistent_term
     case Process.whereis(Registry) do
       nil ->

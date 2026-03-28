@@ -30,89 +30,81 @@ defmodule OptimalSystemAgent.Agent.WorkflowTest do
 
   describe "struct" do
     test "has id field" do
-      # From module: defstruct id: nil
-      assert true
+      assert Map.has_key?(%Workflow{}, :id)
     end
 
     test "has name field" do
-      assert true
+      assert Map.has_key?(%Workflow{}, :name)
     end
 
     test "has description field" do
-      assert true
+      assert Map.has_key?(%Workflow{}, :description)
     end
 
     test "has status field default :active" do
-      # From module: status: :active
-      assert true
+      assert %Workflow{}.status == :active
     end
 
     test "has steps field" do
-      # From module: steps: []
-      assert true
+      assert %Workflow{}.steps == []
     end
 
     test "has current_step field default 0" do
-      # From module: current_step: 0
-      assert true
+      assert %Workflow{}.current_step == 0
     end
 
     test "has context field" do
-      # From module: context: %{}
-      assert true
+      assert %Workflow{}.context == %{}
     end
 
     test "has created_at field" do
-      assert true
+      assert Map.has_key?(%Workflow{}, :created_at)
     end
 
     test "has updated_at field" do
-      assert true
+      assert Map.has_key?(%Workflow{}, :updated_at)
     end
 
     test "has session_id field" do
-      assert true
+      assert Map.has_key?(%Workflow{}, :session_id)
     end
   end
 
   describe "Step struct" do
     test "has id field" do
-      # From module: defstruct id: nil
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :id)
     end
 
     test "has name field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :name)
     end
 
     test "has description field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :description)
     end
 
     test "has status field default :pending" do
-      # From module: status: :pending
-      assert true
+      assert %Workflow.Step{}.status == :pending
     end
 
     test "has tools_needed field" do
-      # From module: tools_needed: []
-      assert true
+      assert %Workflow.Step{}.tools_needed == []
     end
 
     test "has acceptance_criteria field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :acceptance_criteria)
     end
 
     test "has result field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :result)
     end
 
     test "has started_at field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :started_at)
     end
 
     test "has completed_at field" do
-      assert true
+      assert Map.has_key?(%Workflow.Step{}, :completed_at)
     end
   end
 
@@ -420,6 +412,16 @@ defmodule OptimalSystemAgent.Agent.WorkflowTest do
     test "returns false when duration cannot be determined" do
       assert Workflow.should_use_temporal?("unknown task") == false
     end
+
+    test "returns false for short estimated duration (< 300s)" do
+      # "simple" maps to 60s which is < 300s threshold
+      assert Workflow.should_use_temporal?("simple task") == false
+    end
+
+    test "returns true for long estimated duration (>= 300s)" do
+      # "comprehensive" maps to 1800s which is > 300s threshold
+      assert Workflow.should_use_temporal?("comprehensive task") == true
+    end
   end
 
   describe "route_workflow/2" do
@@ -436,6 +438,14 @@ defmodule OptimalSystemAgent.Agent.WorkflowTest do
     test "respects force_in_memory opt" do
       result = Workflow.route_workflow("task", force_in_memory: true)
       assert result == {:ok, :in_memory}
+    end
+
+    test "routes short tasks to in_memory" do
+      assert Workflow.route_workflow("hello world") == {:ok, :in_memory}
+    end
+
+    test "routes complex tasks to temporal" do
+      assert Workflow.route_workflow("complex task") == {:ok, :temporal}
     end
   end
 

@@ -139,6 +139,10 @@ defmodule OptimalSystemAgent.Application do
         # Board chair is the only human who can ever decrypt a briefing.
         OptimalSystemAgent.Board.Supervisor,
 
+        # Process Mining Bridge — polls pm4py-rust, feeds anomalies to healing.
+        # PERMANENT: restarts on crash. Started after Board so healing pipeline is ready.
+        OptimalSystemAgent.Bridges.ProcessMiningBridgeSupervisor,
+
         # Deferred channel startup — starts configured channels in handle_continue
         OptimalSystemAgent.Channels.Starter,
 
