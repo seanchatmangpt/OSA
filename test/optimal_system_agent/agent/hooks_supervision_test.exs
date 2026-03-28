@@ -10,6 +10,8 @@ defmodule OptimalSystemAgent.Agent.HooksSupervisionTest do
   """
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   import ExUnit.CaptureLog
 
   setup_all do

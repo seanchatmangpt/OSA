@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.Speculative.ExecutorTest do
   alias OptimalSystemAgent.Speculative.Executor
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # Executor is already started by the application — clear any previous state

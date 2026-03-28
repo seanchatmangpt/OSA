@@ -10,6 +10,9 @@ defmodule OptimalSystemAgent.Tools.Builtins.YawlWorkflowTraceLinkingTest do
   """
 
   use ExUnit.Case, async: false
+
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Tools.Builtins.YawlWorkflow
   alias OptimalSystemAgent.Yawl.EventStream
 
