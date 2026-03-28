@@ -552,6 +552,42 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   end
 
   @doc """
+  Compliance framework being evaluated or enforced (business_os namespace alias).
+
+  Attribute: `business_os.compliance.framework`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `SOC2`, `GDPR`
+  """
+  @spec business_os_compliance_framework() :: :"business_os.compliance.framework"
+  def business_os_compliance_framework, do: :"business_os.compliance.framework"
+
+  @doc """
+  Type of audit event recorded (business_os namespace alias).
+
+  Attribute: `business_os.audit.event_type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `data_access`, `config_change`
+  """
+  @spec business_os_audit_event_type() :: :"business_os.audit.event_type"
+  def business_os_audit_event_type, do: :"business_os.audit.event_type"
+
+  @doc """
+  Type of external integration connected to BusinessOS (business_os namespace alias).
+
+  Attribute: `business_os.integration.type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `crm`, `erp`, `payment`
+  """
+  @spec business_os_integration_type() :: :"business_os.integration.type"
+  def business_os_integration_type, do: :"business_os.integration.type"
+
+  @doc """
   Process discovery algorithm requested by BOS CLI.
 
   Attribute: `bos.gateway.algorithm`
