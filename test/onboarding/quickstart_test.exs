@@ -141,7 +141,7 @@ defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
 
       # Assert overall result
       assert result.status == :success
-      assert result.total_ms > 0
+      assert result.total_ms >= 0
       assert result.error_message == nil
 
       # Assert all 5 steps present
@@ -157,8 +157,9 @@ defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
       assert Enum.all?(result.step_results, &(&1.latency_ms >= 0))
 
       # Verify total latency sum is reasonable
+      # Note: latency_ms may be 0 on fast hardware (sub-millisecond resolution)
       total_step_latency = Enum.reduce(result.step_results, 0, &(&1.latency_ms + &2))
-      assert total_step_latency > 0
+      assert total_step_latency >= 0
       assert total_step_latency < 30_000  # Less than overall timeout
     end
 
@@ -729,7 +730,7 @@ defmodule OptimalSystemAgent.Onboarding.QuickstartTest do
       finish = System.monotonic_time(:millisecond)
 
       # Completed in reasonable time (proves liveness)
-      assert finish - start > 0
+      assert finish - start >= 0
       assert finish - start < 30_000
       assert result.status == :success
     end

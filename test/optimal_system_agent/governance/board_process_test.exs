@@ -5,9 +5,8 @@ defmodule OptimalSystemAgent.Governance.BoardProcessTest do
   @moduletag :board_process
 
   setup do
-    # Start the BoardProcess GenServer
-    {:ok, _pid} = OptimalSystemAgent.Governance.BoardProcess.start_link([])
-
+    # Start fresh BoardProcess for each test — start_supervised! handles cleanup automatically
+    start_supervised!(OptimalSystemAgent.Governance.BoardProcess)
     %{}
   end
 

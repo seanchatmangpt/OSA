@@ -11,8 +11,10 @@ defmodule OptimalSystemAgent.ProcessMining.ClientTest do
   require Logger
 
   setup do
-    # Start the client GenServer for testing
-    {:ok, _pid} = OptimalSystemAgent.ProcessMining.Client.start_link([])
+    # OptimalSystemAgent.ProcessMining.Client is NOT in the application supervision tree —
+    # the supervised client is OptimalSystemAgent.Process.Mining.Client (different module).
+    # Start an isolated instance for these unit tests.
+    start_supervised!(OptimalSystemAgent.ProcessMining.Client)
     :ok
   end
 

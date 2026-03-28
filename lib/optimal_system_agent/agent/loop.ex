@@ -361,6 +361,10 @@ defmodule OptimalSystemAgent.Agent.Loop do
     {:reply, state.last_meta, state}
   end
 
+  def handle_call(:get_messages, _from, state) do
+    {:reply, state.messages, state}
+  end
+
   def handle_call(:get_state, _from, state) do
     uptime = if state.started_at, do: DateTime.diff(DateTime.utc_now(), state.started_at), else: 0
 

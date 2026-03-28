@@ -9,11 +9,28 @@ defmodule OptimalSystemAgent.Tools.RegistryTest do
   alias OptimalSystemAgent.Tools.Registry.Search
 
   setup_all do
-    # Ensure :persistent_term keys exist so direct API calls do not crash.
+    # Snapshot the current registry state so we can restore it after this test module.
+    # RegistryTest clears :persistent_term keys; restoring them ensures other test modules
+    # (e.g. PM4PyRegisterTest) see the real seeded registry after we finish.
+    saved_builtin = :persistent_term.get({Registry, :builtin_tools}, %{})
+    saved_skills = :persistent_term.get({Registry, :skills}, %{})
+    saved_mcp_tools = :persistent_term.get({Registry, :mcp_tools}, %{})
+    saved_tools = :persistent_term.get({Registry, :tools}, [])
+
+    # Clear for our unit tests
     :persistent_term.put({Registry, :builtin_tools}, %{})
     :persistent_term.put({Registry, :skills}, %{})
     :persistent_term.put({Registry, :mcp_tools}, %{})
     :persistent_term.put({Registry, :tools}, [])
+
+    on_exit(fn ->
+      # Restore the real registry state so other test modules work correctly
+      :persistent_term.put({Registry, :builtin_tools}, saved_builtin)
+      :persistent_term.put({Registry, :skills}, saved_skills)
+      :persistent_term.put({Registry, :mcp_tools}, saved_mcp_tools)
+      :persistent_term.put({Registry, :tools}, saved_tools)
+    end)
+
     :ok
   end
 
@@ -77,6 +94,12 @@ defmodule OptimalSystemAgent.Tools.RegistryTest do
   end
 
   describe "suggest_fallback_tool/1" do
+    setup do
+      original = :persistent_term.get({Registry, :builtin_tools}, %{})
+      on_exit(fn -> :persistent_term.put({Registry, :builtin_tools}, original) end)
+      :ok
+    end
+
     @tag :unit
     test "returns :no_alternative for unknown tool" do
       :persistent_term.put({Registry, :builtin_tools}, %{})
