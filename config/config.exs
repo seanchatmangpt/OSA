@@ -68,7 +68,7 @@ config :optimal_system_agent,
   sessions_dir: Path.expand("~/.osa/sessions"),
 
   # HTTP channel (SDK API surface)
-  http_port: 9089,
+  http_port: 8089,
   require_auth: false,
 
   # ---------------------------------------------------------------------------

@@ -247,7 +247,21 @@ defmodule OptimalSystemAgent.SDK do
     @doc "Create a new agent session."
     def create(opts \\ []) do
       session_id = Keyword.get(opts, :session_id, "sdk-#{System.unique_integer([:positive])}")
-      {:ok, %{session_id: session_id, created_at: DateTime.utc_now()}}
+      base = %{session_id: session_id, created_at: DateTime.utc_now()}
+
+      base =
+        case Keyword.fetch(opts, :provider) do
+          {:ok, provider} -> Map.put(base, :provider, provider)
+          :error -> base
+        end
+
+      base =
+        case Keyword.fetch(opts, :model) do
+          {:ok, model} -> Map.put(base, :model, model)
+          :error -> base
+        end
+
+      {:ok, base}
     end
 
     @doc "Resume an existing session."

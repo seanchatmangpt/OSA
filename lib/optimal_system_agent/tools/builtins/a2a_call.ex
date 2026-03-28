@@ -34,7 +34,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     Known agents:
     - BusinessOS: http://localhost:8001/api/integrations/a2a/agents
     - Canopy: http://localhost:9089/api/v1/a2a/agents
-    - OSA (self): http://localhost:9089/api/v1/a2a/agent-card
+    - OSA (self): http://localhost:8089/api/v1/a2a/agent-card
     """
   end
 

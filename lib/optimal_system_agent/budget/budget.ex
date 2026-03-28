@@ -39,13 +39,7 @@ defmodule OptimalSystemAgent.Budget do
   @monthly_default_usd 200.0
 
   # USD per 1M tokens — {input_rate, output_rate}
-  @provider_rates %{
-    anthropic: {3.0, 15.0},
-    openai: {2.5, 10.0},
-    groq: {0.5, 0.8},
-    ollama: {0.0, 0.0},
-    default: {1.0, 3.0}
-  }
+  @provider_rates OptimalSystemAgent.Budget.ProviderRates.as_tuples()
 
   # ---------------------------------------------------------------------------
   # Public API

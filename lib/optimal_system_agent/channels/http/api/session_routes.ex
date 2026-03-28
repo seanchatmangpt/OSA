@@ -102,15 +102,26 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
 
   post "/" do
     user_id = conn.assigns[:user_id] || "anonymous"
+    provider = conn.body_params["provider"]
+    model = conn.body_params["model"]
 
-    case OptimalSystemAgent.SDK.Session.create(user_id: user_id, channel: :http) do
-      {:ok, %{session_id: session_id}} ->
+    opts =
+      [user_id: user_id, channel: :http]
+      |> then(fn o -> if is_binary(provider) and provider != "", do: Keyword.put(o, :provider, provider), else: o end)
+      |> then(fn o -> if is_binary(model) and model != "", do: Keyword.put(o, :model, model), else: o end)
+
+    case OptimalSystemAgent.SDK.Session.create(opts) do
+      {:ok, %{session_id: session_id} = meta} ->
         track_session(session_id)
-        body = Jason.encode!(%{id: session_id, status: "created"})
+
+        resp =
+          %{id: session_id, status: "created"}
+          |> then(fn m -> if Map.has_key?(meta, :provider), do: Map.put(m, :provider, meta.provider), else: m end)
+          |> then(fn m -> if Map.has_key?(meta, :model), do: Map.put(m, :model, meta.model), else: m end)
 
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(201, body)
+        |> send_resp(201, Jason.encode!(resp))
 
       other ->
         Logger.error("[SessionRoutes] Unexpected Session.create result: #{inspect(other)}")

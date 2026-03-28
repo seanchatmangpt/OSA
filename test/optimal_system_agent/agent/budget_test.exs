@@ -7,6 +7,8 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
 
   use ExUnit.Case, async: false
 
+  alias OptimalSystemAgent.Agent.Budget
+
   @moduletag :capture_log
   @moduletag :requires_application
 
@@ -224,16 +226,16 @@ defmodule OptimalSystemAgent.Agent.BudgetTest do
     end
 
     test "calculates openai cost correctly" do
-      # $5/M input, $15/M output
+      # $2.5/M input, $10/M output (from ProviderRates)
       cost = Budget.calculate_cost(:openai, 1_000_000, 500_000)
-      expected = 5.0 * 1.0 + 15.0 * 0.5
+      expected = 2.5 * 1.0 + 10.0 * 0.5
       assert cost == expected
     end
 
     test "calculates groq cost correctly" do
-      # $0.27/M for both
+      # $0.59/M input, $0.79/M output (from ProviderRates)
       cost = Budget.calculate_cost(:groq, 1_000_000, 1_000_000)
-      expected = 0.27 * 2.0
+      expected = Float.round(0.59 + 0.79, 6)
       assert cost == expected
     end
 
