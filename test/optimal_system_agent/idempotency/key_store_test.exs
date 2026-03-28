@@ -8,7 +8,12 @@ defmodule OptimalSystemAgent.Idempotency.KeyStoreTest do
     # for the duration of each test — preventing state leakage across tests.
     case Process.whereis(OptimalSystemAgent.Idempotency.KeyStore) do
       nil -> :ok
-      pid -> GenServer.stop(pid, :normal, 5_000)
+      pid when is_pid(pid) ->
+        if Process.alive?(pid) do
+          GenServer.stop(pid, :normal, 5_000)
+        else
+          :ok
+        end
     end
 
     {:ok, _pid} = OptimalSystemAgent.Idempotency.KeyStore.start_link()

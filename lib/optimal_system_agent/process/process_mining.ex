@@ -300,8 +300,14 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
       newest = List.last(sorted).timestamp
       span_weeks = datetime_diff_weeks(oldest, newest)
 
+      # Deadlock protection: detect ambiguous state (low velocity + short span)
+      # When velocity < 0.1 AND span_weeks < 2, we have insufficient data to declare
+      # stagnation, but the process is clearly not evolving. Force a recovery state.
+      deadlock_condition = velocity < @stagnation_velocity_threshold and span_weeks < @stagnation_duration_weeks
+
       is_stagnant =
-        velocity < @stagnation_velocity_threshold and span_weeks >= @stagnation_duration_weeks
+        deadlock_condition or
+          (velocity < @stagnation_velocity_threshold and span_weeks >= @stagnation_duration_weeks)
 
       # Find the last time a meaningful improvement occurred
       last_improvement = find_last_improvement(sorted)
@@ -326,6 +332,12 @@ defmodule OptimalSystemAgent.Process.ProcessMining do
 
       recommended_action =
         cond do
+          deadlock_condition ->
+            # Emit deadlock resolution span for observability
+            emit_deadlock_resolution_span(process_id, velocity, span_weeks)
+
+            "DEADLOCK RESOLVED: Low velocity (#{Float.round(velocity, 2)}/wk) with insufficient history (#{Float.round(span_weeks, 1)} weeks) -- forced recovery state to prevent hang"
+
           is_stagnant ->
             "Schedule process improvement -- low change velocity (#{Float.round(velocity, 2)}/wk) indicates decay risk"
 

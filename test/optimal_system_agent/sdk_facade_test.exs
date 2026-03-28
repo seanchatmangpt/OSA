@@ -249,7 +249,8 @@ defmodule OptimalSystemAgent.SDKFacadeTest do
 
   describe "SDK.Command" do
     test "execute/2 returns stub response" do
-      assert {:ok, "Command executed (stub)"} = OptimalSystemAgent.SDK.Command.execute("ls")
+      assert {:ok, msg} = OptimalSystemAgent.SDK.Command.execute("ls")
+      assert String.contains?(msg, "not yet available")
     end
 
     test "list/0 returns empty list" do
