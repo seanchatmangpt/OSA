@@ -34,4 +34,28 @@ defmodule OpenTelemetry.SemConv.Incubating.GroqAttributes do
   @spec groq_prompt_tokens() :: :"groq.prompt_tokens"
   def groq_prompt_tokens, do: :"groq.prompt_tokens"
 
+  @doc """
+  The WCP (Workflow Control Pattern) number selected by the Groq decision call.
+
+  Attribute: `decision.wcp_pattern`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `WCP01`, `WCP02`, `WCP04`
+  """
+  @spec decision_wcp_pattern() :: :"decision.wcp_pattern"
+  def decision_wcp_pattern, do: :"decision.wcp_pattern"
+
+  @doc """
+  The JSON-encoded decision result returned by the Groq LLM call.
+
+  Attribute: `decision.result`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `{"action":"launch_case"}`, `{"action":"skip"}`
+  """
+  @spec decision_result() :: :"decision.result"
+  def decision_result, do: :"decision.result"
+
 end
