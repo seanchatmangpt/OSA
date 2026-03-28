@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.TelemetryAttributes do
   Requirement: `recommended`
   Examples: `erlang`, `rust`, `go`, `python`
   """
-  @spec telemetry_sdk_language() :: :telemetry_sdk_language
-  def telemetry_sdk_language, do: :telemetry_sdk_language
+  @spec telemetry_sdk_language() :: :"telemetry.sdk.language"
+  def telemetry_sdk_language, do: :"telemetry.sdk.language"
 
   @doc """
   OpenTelemetry SDK name.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.TelemetryAttributes do
   Requirement: `recommended`
   Examples: `opentelemetry`
   """
-  @spec telemetry_sdk_name() :: :telemetry_sdk_name
-  def telemetry_sdk_name, do: :telemetry_sdk_name
+  @spec telemetry_sdk_name() :: :"telemetry.sdk.name"
+  def telemetry_sdk_name, do: :"telemetry.sdk.name"
 
   @doc """
   Version of OpenTelemetry SDK.
@@ -43,7 +43,7 @@ defmodule OpenTelemetry.SemConv.Incubating.TelemetryAttributes do
   Requirement: `recommended`
   Examples: `1.7.0`, `0.20.0`
   """
-  @spec telemetry_sdk_version() :: :telemetry_sdk_version
-  def telemetry_sdk_version, do: :telemetry_sdk_version
+  @spec telemetry_sdk_version() :: :"telemetry.sdk.version"
+  def telemetry_sdk_version, do: :"telemetry.sdk.version"
 
 end

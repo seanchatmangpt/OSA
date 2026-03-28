@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.Yawlv6Attributes do
   Requirement: `required`
   Examples: `1`, `2`, `3`
   """
-  @spec yawlv6_modules_complete() :: :yawlv6_modules_complete
-  def yawlv6_modules_complete, do: :yawlv6_modules_complete
+  @spec yawlv6_modules_complete() :: :"yawlv6.modules_complete"
+  def yawlv6_modules_complete, do: :"yawlv6.modules_complete"
 
   @doc """
   Number of YAWLv6 tests that failed during checkpoint execution.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.Yawlv6Attributes do
   Requirement: `required`
   Examples: `0`, `2`, `5`
   """
-  @spec yawlv6_tests_failed() :: :yawlv6_tests_failed
-  def yawlv6_tests_failed, do: :yawlv6_tests_failed
+  @spec yawlv6_tests_failed() :: :"yawlv6.tests_failed"
+  def yawlv6_tests_failed, do: :"yawlv6.tests_failed"
 
   @doc """
   Number of YAWLv6 tests that passed during checkpoint execution.
@@ -43,7 +43,7 @@ defmodule OpenTelemetry.SemConv.Incubating.Yawlv6Attributes do
   Requirement: `required`
   Examples: `100`, `150`, `191`
   """
-  @spec yawlv6_tests_passed() :: :yawlv6_tests_passed
-  def yawlv6_tests_passed, do: :yawlv6_tests_passed
+  @spec yawlv6_tests_passed() :: :"yawlv6.tests_passed"
+  def yawlv6_tests_passed, do: :"yawlv6.tests_passed"
 
 end

@@ -146,4 +146,18 @@ defmodule OSA.Semconv.SpanEmissionTest do
       end
     end
   end
+
+  # -- LLM Inference Domain --
+
+  describe "llm.inference span emission for Groq" do
+    alias OpenTelemetry.SemConv.Incubating.LlmAttributes
+
+    test "llm_provider attribute key resolves to correct semconv atom" do
+      assert LlmAttributes.llm_provider() == :"llm.provider"
+    end
+
+    test "llm_model attribute key resolves to correct semconv atom" do
+      assert LlmAttributes.llm_model() == :"llm.model"
+    end
+  end
 end

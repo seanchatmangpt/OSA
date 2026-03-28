@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `required`
   Examples: `1`, `2`, `3`, `5`
   """
-  @spec healing_retry_adaptive_attempt() :: :healing_retry_adaptive_attempt
-  def healing_retry_adaptive_attempt, do: :healing_retry_adaptive_attempt
+  @spec healing_retry_adaptive_attempt() :: :"healing.retry.adaptive.attempt"
+  def healing_retry_adaptive_attempt, do: :"healing.retry.adaptive.attempt"
 
   @doc """
   Backoff duration in milliseconds before the next retry attempt.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `required`
   Examples: `100`, `500`, `2000`, `5000`
   """
-  @spec healing_retry_adaptive_backoff_ms() :: :healing_retry_adaptive_backoff_ms
-  def healing_retry_adaptive_backoff_ms, do: :healing_retry_adaptive_backoff_ms
+  @spec healing_retry_adaptive_backoff_ms() :: :"healing.retry.adaptive.backoff_ms"
+  def healing_retry_adaptive_backoff_ms, do: :"healing.retry.adaptive.backoff_ms"
 
   @doc """
   Backoff strategy for adaptive retries during healing.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `required`
   Examples: `exponential`, `linear`, `fibonacci`, `constant`
   """
-  @spec healing_retry_adaptive_strategy() :: :healing_retry_adaptive_strategy
-  def healing_retry_adaptive_strategy, do: :healing_retry_adaptive_strategy
+  @spec healing_retry_adaptive_strategy() :: :"healing.retry.adaptive.strategy"
+  def healing_retry_adaptive_strategy, do: :"healing.retry.adaptive.strategy"
 
   @doc """
   Enumerated values for `healing.retry.adaptive.strategy`.
@@ -103,8 +103,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.01`, `0.05`, `0.1`
   """
-  @spec healing_adaptive_learning_rate() :: :healing_adaptive_learning_rate
-  def healing_adaptive_learning_rate, do: :healing_adaptive_learning_rate
+  @spec healing_adaptive_learning_rate() :: :"healing.adaptive.learning_rate"
+  def healing_adaptive_learning_rate, do: :"healing.adaptive.learning_rate"
 
   @doc """
   Current adaptive healing threshold — dynamically adjusted based on system behavior.
@@ -115,8 +115,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.75`, `0.9`, `0.95`
   """
-  @spec healing_adaptive_threshold_current() :: :healing_adaptive_threshold_current
-  def healing_adaptive_threshold_current, do: :healing_adaptive_threshold_current
+  @spec healing_adaptive_threshold_current() :: :"healing.adaptive.threshold_current"
+  def healing_adaptive_threshold_current, do: :"healing.adaptive.threshold_current"
 
   @doc """
   Maximum allowed value for the adaptive healing threshold.
@@ -127,8 +127,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.99`, `1.0`
   """
-  @spec healing_adaptive_threshold_max() :: :healing_adaptive_threshold_max
-  def healing_adaptive_threshold_max, do: :healing_adaptive_threshold_max
+  @spec healing_adaptive_threshold_max() :: :"healing.adaptive.threshold_max"
+  def healing_adaptive_threshold_max, do: :"healing.adaptive.threshold_max"
 
   @doc """
   Minimum allowed value for the adaptive healing threshold.
@@ -139,8 +139,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.5`, `0.7`
   """
-  @spec healing_adaptive_threshold_min() :: :healing_adaptive_threshold_min
-  def healing_adaptive_threshold_min, do: :healing_adaptive_threshold_min
+  @spec healing_adaptive_threshold_min() :: :"healing.adaptive.threshold_min"
+  def healing_adaptive_threshold_min, do: :"healing.adaptive.threshold_min"
 
   @doc """
   Identifier of the OSA agent that owns the healing operation.
@@ -151,8 +151,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `healing-agent-1`, `osa-primary`
   """
-  @spec healing_agent_id() :: :healing_agent_id
-  def healing_agent_id, do: :healing_agent_id
+  @spec healing_agent_id() :: :"healing.agent_id"
+  def healing_agent_id, do: :"healing.agent_id"
 
   @doc """
   Baseline observation window in milliseconds used for anomaly detection.
@@ -163,8 +163,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`, `60000`
   """
-  @spec healing_anomaly_baseline_ms() :: :healing_anomaly_baseline_ms
-  def healing_anomaly_baseline_ms, do: :healing_anomaly_baseline_ms
+  @spec healing_anomaly_baseline_ms() :: :"healing.anomaly.baseline_ms"
+  def healing_anomaly_baseline_ms, do: :"healing.anomaly.baseline_ms"
 
   @doc """
   Method used to detect the system anomaly.
@@ -175,8 +175,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `statistical`, `ml`, `rule_based`, `hybrid`
   """
-  @spec healing_anomaly_detection_method() :: :healing_anomaly_detection_method
-  def healing_anomaly_detection_method, do: :healing_anomaly_detection_method
+  @spec healing_anomaly_detection_method() :: :"healing.anomaly.detection_method"
+  def healing_anomaly_detection_method, do: :"healing.anomaly.detection_method"
 
   @doc """
   Enumerated values for `healing.anomaly.detection_method`.
@@ -235,8 +235,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.0`, `0.45`, `0.92`
   """
-  @spec healing_anomaly_score() :: :healing_anomaly_score
-  def healing_anomaly_score, do: :healing_anomaly_score
+  @spec healing_anomaly_score() :: :"healing.anomaly.score"
+  def healing_anomaly_score, do: :"healing.anomaly.score"
 
   @doc """
   Score threshold above which behavior is classified as anomalous, range [0.0, 1.0].
@@ -247,8 +247,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.5`, `0.7`, `0.9`
   """
-  @spec healing_anomaly_threshold() :: :healing_anomaly_threshold
-  def healing_anomaly_threshold, do: :healing_anomaly_threshold
+  @spec healing_anomaly_threshold() :: :"healing.anomaly.threshold"
+  def healing_anomaly_threshold, do: :"healing.anomaly.threshold"
 
   @doc """
   Current healing attempt number (1-indexed) for this failure event.
@@ -259,8 +259,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec healing_attempt() :: :healing_attempt
-  def healing_attempt, do: :healing_attempt
+  @spec healing_attempt() :: :"healing.attempt"
+  def healing_attempt, do: :"healing.attempt"
 
   @doc """
   The number of healing attempts made for this failure (1-indexed).
@@ -271,8 +271,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec healing_attempt_number() :: :healing_attempt_number
-  def healing_attempt_number, do: :healing_attempt_number
+  @spec healing_attempt_number() :: :"healing.attempt_number"
+  def healing_attempt_number, do: :"healing.attempt_number"
 
   @doc """
   Fraction of healing requests dropped due to backpressure [0.0, 1.0].
@@ -283,8 +283,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.0`, `0.15`, `0.5`
   """
-  @spec healing_backpressure_drop_rate() :: :healing_backpressure_drop_rate
-  def healing_backpressure_drop_rate, do: :healing_backpressure_drop_rate
+  @spec healing_backpressure_drop_rate() :: :"healing.backpressure.drop_rate"
+  def healing_backpressure_drop_rate, do: :"healing.backpressure.drop_rate"
 
   @doc """
   Current backpressure level in the healing pipeline.
@@ -295,8 +295,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `none`, `medium`, `critical`
   """
-  @spec healing_backpressure_level() :: :healing_backpressure_level
-  def healing_backpressure_level, do: :healing_backpressure_level
+  @spec healing_backpressure_level() :: :"healing.backpressure.level"
+  def healing_backpressure_level, do: :"healing.backpressure.level"
 
   @doc """
   Enumerated values for `healing.backpressure.level`.
@@ -362,8 +362,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `50`, `500`
   """
-  @spec healing_backpressure_queue_depth() :: :healing_backpressure_queue_depth
-  def healing_backpressure_queue_depth, do: :healing_backpressure_queue_depth
+  @spec healing_backpressure_queue_depth() :: :"healing.backpressure.queue_depth"
+  def healing_backpressure_queue_depth, do: :"healing.backpressure.queue_depth"
 
   @doc """
   Depth of the cascade failure chain — number of chained failures detected.
@@ -374,8 +374,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `5`
   """
-  @spec healing_cascade_depth() :: :healing_cascade_depth
-  def healing_cascade_depth, do: :healing_cascade_depth
+  @spec healing_cascade_depth() :: :"healing.cascade.depth"
+  def healing_cascade_depth, do: :"healing.cascade.depth"
 
   @doc """
   Whether a cascade failure was detected during healing (multiple correlated failures).
@@ -386,8 +386,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec healing_cascade_detected() :: :healing_cascade_detected
-  def healing_cascade_detected, do: :healing_cascade_detected
+  @spec healing_cascade_detected() :: :"healing.cascade.detected"
+  def healing_cascade_detected, do: :"healing.cascade.detected"
 
   @doc """
   Compression ratio of the healing checkpoint data, range [0.0, 1.0].
@@ -398,8 +398,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.3`, `0.6`, `0.8`
   """
-  @spec healing_checkpoint_compression_ratio() :: :healing_checkpoint_compression_ratio
-  def healing_checkpoint_compression_ratio, do: :healing_checkpoint_compression_ratio
+  @spec healing_checkpoint_compression_ratio() :: :"healing.checkpoint.compression_ratio"
+  def healing_checkpoint_compression_ratio, do: :"healing.checkpoint.compression_ratio"
 
   @doc """
   Unique identifier for the healing checkpoint.
@@ -410,8 +410,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `chk-001`, `healing-checkpoint-2026-001`
   """
-  @spec healing_checkpoint_id() :: :healing_checkpoint_id
-  def healing_checkpoint_id, do: :healing_checkpoint_id
+  @spec healing_checkpoint_id() :: :"healing.checkpoint.id"
+  def healing_checkpoint_id, do: :"healing.checkpoint.id"
 
   @doc """
   Time taken to restore from the checkpoint in milliseconds.
@@ -422,8 +422,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1000`
   """
-  @spec healing_checkpoint_restore_ms() :: :healing_checkpoint_restore_ms
-  def healing_checkpoint_restore_ms, do: :healing_checkpoint_restore_ms
+  @spec healing_checkpoint_restore_ms() :: :"healing.checkpoint.restore_ms"
+  def healing_checkpoint_restore_ms, do: :"healing.checkpoint.restore_ms"
 
   @doc """
   Size of the healing checkpoint in bytes.
@@ -434,8 +434,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1024`, `65536`, `1048576`
   """
-  @spec healing_checkpoint_size_bytes() :: :healing_checkpoint_size_bytes
-  def healing_checkpoint_size_bytes, do: :healing_checkpoint_size_bytes
+  @spec healing_checkpoint_size_bytes() :: :"healing.checkpoint.size_bytes"
+  def healing_checkpoint_size_bytes, do: :"healing.checkpoint.size_bytes"
 
   @doc """
   Total number of calls passed through the circuit breaker in current window.
@@ -446,8 +446,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `10`, `100`
   """
-  @spec healing_circuit_breaker_call_count() :: :healing_circuit_breaker_call_count
-  def healing_circuit_breaker_call_count, do: :healing_circuit_breaker_call_count
+  @spec healing_circuit_breaker_call_count() :: :"healing.circuit_breaker.call_count"
+  def healing_circuit_breaker_call_count, do: :"healing.circuit_breaker.call_count"
 
   @doc """
   Number of consecutive failures that triggered the circuit breaker.
@@ -458,8 +458,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `5`
   """
-  @spec healing_circuit_breaker_failure_count() :: :healing_circuit_breaker_failure_count
-  def healing_circuit_breaker_failure_count, do: :healing_circuit_breaker_failure_count
+  @spec healing_circuit_breaker_failure_count() :: :"healing.circuit_breaker.failure_count"
+  def healing_circuit_breaker_failure_count, do: :"healing.circuit_breaker.failure_count"
 
   @doc """
   Time in milliseconds before the circuit breaker attempts half-open reset.
@@ -470,8 +470,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`, `60000`
   """
-  @spec healing_circuit_breaker_reset_ms() :: :healing_circuit_breaker_reset_ms
-  def healing_circuit_breaker_reset_ms, do: :healing_circuit_breaker_reset_ms
+  @spec healing_circuit_breaker_reset_ms() :: :"healing.circuit_breaker.reset_ms"
+  def healing_circuit_breaker_reset_ms, do: :"healing.circuit_breaker.reset_ms"
 
   @doc """
   Current state of the healing circuit breaker.
@@ -482,8 +482,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `closed`, `open`, `half_open`
   """
-  @spec healing_circuit_breaker_state() :: :healing_circuit_breaker_state
-  def healing_circuit_breaker_state, do: :healing_circuit_breaker_state
+  @spec healing_circuit_breaker_state() :: :"healing.circuit_breaker.state"
+  def healing_circuit_breaker_state, do: :"healing.circuit_breaker.state"
 
   @doc """
   Enumerated values for `healing.circuit_breaker.state`.
@@ -535,8 +535,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `100`, `5000`
   """
-  @spec healing_cold_standby_data_lag_ms() :: :healing_cold_standby_data_lag_ms
-  def healing_cold_standby_data_lag_ms, do: :healing_cold_standby_data_lag_ms
+  @spec healing_cold_standby_data_lag_ms() :: :"healing.cold_standby.data_lag_ms"
+  def healing_cold_standby_data_lag_ms, do: :"healing.cold_standby.data_lag_ms"
 
   @doc """
   Unique identifier of the cold standby instance being promoted.
@@ -547,8 +547,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `standby-001`, `cold-replica-primary`
   """
-  @spec healing_cold_standby_id() :: :healing_cold_standby_id
-  def healing_cold_standby_id, do: :healing_cold_standby_id
+  @spec healing_cold_standby_id() :: :"healing.cold_standby.id"
+  def healing_cold_standby_id, do: :"healing.cold_standby.id"
 
   @doc """
   Readiness state of the cold standby instance.
@@ -559,8 +559,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `cold`, `warming`, `ready`
   """
-  @spec healing_cold_standby_readiness() :: :healing_cold_standby_readiness
-  def healing_cold_standby_readiness, do: :healing_cold_standby_readiness
+  @spec healing_cold_standby_readiness() :: :"healing.cold_standby.readiness"
+  def healing_cold_standby_readiness, do: :"healing.cold_standby.readiness"
 
   @doc """
   Enumerated values for `healing.cold_standby.readiness`.
@@ -619,8 +619,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec healing_cold_standby_warmup_ms() :: :healing_cold_standby_warmup_ms
-  def healing_cold_standby_warmup_ms, do: :healing_cold_standby_warmup_ms
+  @spec healing_cold_standby_warmup_ms() :: :"healing.cold_standby.warmup_ms"
+  def healing_cold_standby_warmup_ms, do: :"healing.cold_standby.warmup_ms"
 
   @doc """
   Confidence score for the failure mode classification, in range [0.0, 1.0].
@@ -631,8 +631,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.8`, `0.7`
   """
-  @spec healing_confidence() :: :healing_confidence
-  def healing_confidence, do: :healing_confidence
+  @spec healing_confidence() :: :"healing.confidence"
+  def healing_confidence, do: :"healing.confidence"
 
   @doc """
   The diagnosis mode or strategy used in the healing classify operation.
@@ -643,8 +643,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `deterministic`, `probabilistic`, `adaptive`
   """
-  @spec healing_diagnosis_mode() :: :healing_diagnosis_mode
-  def healing_diagnosis_mode, do: :healing_diagnosis_mode
+  @spec healing_diagnosis_mode() :: :"healing.diagnosis.mode"
+  def healing_diagnosis_mode, do: :"healing.diagnosis.mode"
 
   @doc """
   The current stage of the healing diagnosis pipeline.
@@ -655,8 +655,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `detection`, `classification`
   """
-  @spec healing_diagnosis_stage() :: :healing_diagnosis_stage
-  def healing_diagnosis_stage, do: :healing_diagnosis_stage
+  @spec healing_diagnosis_stage() :: :"healing.diagnosis_stage"
+  def healing_diagnosis_stage, do: :"healing.diagnosis_stage"
 
   @doc """
   Enumerated values for `healing.diagnosis_stage`.
@@ -715,8 +715,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `none`, `warn`, `critical`
   """
-  @spec healing_escalation_level() :: :healing_escalation_level
-  def healing_escalation_level, do: :healing_escalation_level
+  @spec healing_escalation_level() :: :"healing.escalation.level"
+  def healing_escalation_level, do: :"healing.escalation.level"
 
   @doc """
   Enumerated values for `healing.escalation.level`.
@@ -775,8 +775,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `max_attempts_exceeded`, `unknown_failure_mode`, `supervisor_timeout`
   """
-  @spec healing_escalation_reason() :: :healing_escalation_reason
-  def healing_escalation_reason, do: :healing_escalation_reason
+  @spec healing_escalation_reason() :: :"healing.escalation_reason"
+  def healing_escalation_reason, do: :"healing.escalation_reason"
 
   @doc """
   Duration (ms) of the failover operation from start to completion.
@@ -787,8 +787,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `250`, `1500`, `5000`
   """
-  @spec healing_failover_duration_ms() :: :healing_failover_duration_ms
-  def healing_failover_duration_ms, do: :healing_failover_duration_ms
+  @spec healing_failover_duration_ms() :: :"healing.failover.duration_ms"
+  def healing_failover_duration_ms, do: :"healing.failover.duration_ms"
 
   @doc """
   The identifier of the source (failing) system component.
@@ -799,8 +799,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `primary-node-1`, `osa-replica-a`
   """
-  @spec healing_failover_source_id() :: :healing_failover_source_id
-  def healing_failover_source_id, do: :healing_failover_source_id
+  @spec healing_failover_source_id() :: :"healing.failover.source_id"
+  def healing_failover_source_id, do: :"healing.failover.source_id"
 
   @doc """
   The identifier of the target (replacement) system component.
@@ -811,8 +811,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `warm-standby-2`, `osa-replica-b`
   """
-  @spec healing_failover_target_id() :: :healing_failover_target_id
-  def healing_failover_target_id, do: :healing_failover_target_id
+  @spec healing_failover_target_id() :: :"healing.failover.target_id"
+  def healing_failover_target_id, do: :"healing.failover.target_id"
 
   @doc """
   The type of failover transition being performed.
@@ -823,8 +823,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `primary_to_warm`, `warm_to_cold`, `geographic`
   """
-  @spec healing_failover_type() :: :healing_failover_type
-  def healing_failover_type, do: :healing_failover_type
+  @spec healing_failover_type() :: :"healing.failover.type"
+  def healing_failover_type, do: :"healing.failover.type"
 
   @doc """
   Enumerated values for `healing.failover.type`.
@@ -883,8 +883,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `deadlock`, `timeout`, `cascading_failure`
   """
-  @spec healing_failure_mode() :: :healing_failure_mode
-  def healing_failure_mode, do: :healing_failure_mode
+  @spec healing_failure_mode() :: :"healing.failure_mode"
+  def healing_failure_mode, do: :"healing.failure_mode"
 
   @doc """
   Enumerated values for `healing.failure_mode`.
@@ -964,8 +964,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `fp-a3b2c1`, `fp-deadlock-7f8e`
   """
-  @spec healing_fingerprint() :: :healing_fingerprint
-  def healing_fingerprint, do: :healing_fingerprint
+  @spec healing_fingerprint() :: :"healing.fingerprint"
+  def healing_fingerprint, do: :"healing.fingerprint"
 
   @doc """
   The outcome result of the healing fix operation.
@@ -976,8 +976,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `success`, `partial`, `failed`
   """
-  @spec healing_fix_result() :: :healing_fix_result
-  def healing_fix_result, do: :healing_fix_result
+  @spec healing_fix_result() :: :"healing.fix.result"
+  def healing_fix_result, do: :"healing.fix.result"
 
   @doc """
   Enumerated values for `healing.fix.result`.
@@ -1029,8 +1029,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `5000`
   """
-  @spec healing_intervention_duration_ms() :: :healing_intervention_duration_ms
-  def healing_intervention_duration_ms, do: :healing_intervention_duration_ms
+  @spec healing_intervention_duration_ms() :: :"healing.intervention.duration_ms"
+  def healing_intervention_duration_ms, do: :"healing.intervention.duration_ms"
 
   @doc """
   Outcome of the healing intervention.
@@ -1041,8 +1041,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `success`, `partial`
   """
-  @spec healing_intervention_outcome() :: :healing_intervention_outcome
-  def healing_intervention_outcome, do: :healing_intervention_outcome
+  @spec healing_intervention_outcome() :: :"healing.intervention.outcome"
+  def healing_intervention_outcome, do: :"healing.intervention.outcome"
 
   @doc """
   Enumerated values for `healing.intervention.outcome`.
@@ -1101,8 +1101,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.6`, `0.85`, `0.99`
   """
-  @spec healing_intervention_score() :: :healing_intervention_score
-  def healing_intervention_score, do: :healing_intervention_score
+  @spec healing_intervention_score() :: :"healing.intervention.score"
+  def healing_intervention_score, do: :"healing.intervention.score"
 
   @doc """
   Type of healing intervention applied.
@@ -1113,8 +1113,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `automatic`, `manual`
   """
-  @spec healing_intervention_type() :: :healing_intervention_type
-  def healing_intervention_type, do: :healing_intervention_type
+  @spec healing_intervention_type() :: :"healing.intervention.type"
+  def healing_intervention_type, do: :"healing.intervention.type"
 
   @doc """
   Enumerated values for `healing.intervention.type`.
@@ -1173,8 +1173,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec healing_iteration() :: :healing_iteration
-  def healing_iteration, do: :healing_iteration
+  @spec healing_iteration() :: :"healing.iteration"
+  def healing_iteration, do: :"healing.iteration"
 
   @doc """
   Percentage of requests shed (dropped) during this load shedding event, range [0.0, 100.0].
@@ -1185,8 +1185,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `10.0`, `25.0`, `50.0`
   """
-  @spec healing_load_shedding_shed_pct() :: :healing_load_shedding_shed_pct
-  def healing_load_shedding_shed_pct, do: :healing_load_shedding_shed_pct
+  @spec healing_load_shedding_shed_pct() :: :"healing.load_shedding.shed_pct"
+  def healing_load_shedding_shed_pct, do: :"healing.load_shedding.shed_pct"
 
   @doc """
   The strategy used to select which requests to shed.
@@ -1197,8 +1197,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `random`, `priority`, `oldest`
   """
-  @spec healing_load_shedding_strategy() :: :healing_load_shedding_strategy
-  def healing_load_shedding_strategy, do: :healing_load_shedding_strategy
+  @spec healing_load_shedding_strategy() :: :"healing.load_shedding.strategy"
+  def healing_load_shedding_strategy, do: :"healing.load_shedding.strategy"
 
   @doc """
   Enumerated values for `healing.load_shedding.strategy`.
@@ -1250,8 +1250,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.8`, `0.9`, `0.95`
   """
-  @spec healing_load_shedding_threshold() :: :healing_load_shedding_threshold
-  def healing_load_shedding_threshold, do: :healing_load_shedding_threshold
+  @spec healing_load_shedding_threshold() :: :"healing.load_shedding.threshold"
+  def healing_load_shedding_threshold, do: :"healing.load_shedding.threshold"
 
   @doc """
   Maximum number of healing attempts before escalation.
@@ -1262,8 +1262,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`
   """
-  @spec healing_max_attempts() :: :healing_max_attempts
-  def healing_max_attempts, do: :healing_max_attempts
+  @spec healing_max_attempts() :: :"healing.max_attempts"
+  def healing_max_attempts, do: :"healing.max_attempts"
 
   @doc """
   Maximum number of recovery iterations before escalation (WvdA liveness bound).
@@ -1274,8 +1274,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`, `10`
   """
-  @spec healing_max_iterations() :: :healing_max_iterations
-  def healing_max_iterations, do: :healing_max_iterations
+  @spec healing_max_iterations() :: :"healing.max_iterations"
+  def healing_max_iterations, do: :"healing.max_iterations"
 
   @doc """
   Compression ratio of the memory snapshot, range [0.0, 1.0] (1.0 = no compression).
@@ -1286,8 +1286,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.45`, `0.72`
   """
-  @spec healing_memory_compression_ratio() :: :healing_memory_compression_ratio
-  def healing_memory_compression_ratio, do: :healing_memory_compression_ratio
+  @spec healing_memory_compression_ratio() :: :"healing.memory.compression_ratio"
+  def healing_memory_compression_ratio, do: :"healing.memory.compression_ratio"
 
   @doc """
   Duration in milliseconds to restore the system state from a memory snapshot.
@@ -1298,8 +1298,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `50`, `500`
   """
-  @spec healing_memory_restore_ms() :: :healing_memory_restore_ms
-  def healing_memory_restore_ms, do: :healing_memory_restore_ms
+  @spec healing_memory_restore_ms() :: :"healing.memory.restore_ms"
+  def healing_memory_restore_ms, do: :"healing.memory.restore_ms"
 
   @doc """
   Unique identifier for a healing memory snapshot used for state preservation.
@@ -1310,8 +1310,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `snap-abc123`, `memory-checkpoint-007`
   """
-  @spec healing_memory_snapshot_id() :: :healing_memory_snapshot_id
-  def healing_memory_snapshot_id, do: :healing_memory_snapshot_id
+  @spec healing_memory_snapshot_id() :: :"healing.memory.snapshot_id"
+  def healing_memory_snapshot_id, do: :"healing.memory.snapshot_id"
 
   @doc """
   Size in bytes of the healing memory snapshot.
@@ -1322,8 +1322,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `4096`, `65536`
   """
-  @spec healing_memory_snapshot_size_bytes() :: :healing_memory_snapshot_size_bytes
-  def healing_memory_snapshot_size_bytes, do: :healing_memory_snapshot_size_bytes
+  @spec healing_memory_snapshot_size_bytes() :: :"healing.memory.snapshot_size_bytes"
+  def healing_memory_snapshot_size_bytes, do: :"healing.memory.snapshot_size_bytes"
 
   @doc """
   Mean time to recovery in milliseconds for the healing operation.
@@ -1334,8 +1334,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `45000`, `1200`, `30000`
   """
-  @spec healing_mttr_ms() :: :healing_mttr_ms
-  def healing_mttr_ms, do: :healing_mttr_ms
+  @spec healing_mttr_ms() :: :"healing.mttr_ms"
+  def healing_mttr_ms, do: :"healing.mttr_ms"
 
   @doc """
   Identifier of the healing pattern matched from the pattern library.
@@ -1346,8 +1346,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `deadlock-restart-1`, `timeout-backoff-2`, `cascade-isolate-3`
   """
-  @spec healing_pattern_id() :: :healing_pattern_id
-  def healing_pattern_id, do: :healing_pattern_id
+  @spec healing_pattern_id() :: :"healing.pattern.id"
+  def healing_pattern_id, do: :"healing.pattern.id"
 
   @doc """
   Number of patterns currently loaded in the healing pattern library.
@@ -1358,8 +1358,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `12`, `24`, `48`
   """
-  @spec healing_pattern_library_size() :: :healing_pattern_library_size
-  def healing_pattern_library_size, do: :healing_pattern_library_size
+  @spec healing_pattern_library_size() :: :"healing.pattern.library_size"
+  def healing_pattern_library_size, do: :"healing.pattern.library_size"
 
   @doc """
   Confidence score for the matched healing pattern, range [0.0, 1.0].
@@ -1370,8 +1370,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.85`, `0.92`, `1.0`
   """
-  @spec healing_pattern_match_confidence() :: :healing_pattern_match_confidence
-  def healing_pattern_match_confidence, do: :healing_pattern_match_confidence
+  @spec healing_pattern_match_confidence() :: :"healing.pattern.match_confidence"
+  def healing_pattern_match_confidence, do: :"healing.pattern.match_confidence"
 
   @doc """
   Total execution time of the playbook in milliseconds.
@@ -1382,8 +1382,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `500`, `2000`, `15000`
   """
-  @spec healing_playbook_execution_ms() :: :healing_playbook_execution_ms
-  def healing_playbook_execution_ms, do: :healing_playbook_execution_ms
+  @spec healing_playbook_execution_ms() :: :"healing.playbook.execution_ms"
+  def healing_playbook_execution_ms, do: :"healing.playbook.execution_ms"
 
   @doc """
   Identifier of the recovery playbook being executed.
@@ -1394,8 +1394,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `pb-deadlock-v1`, `pb-memory-oom-v2`
   """
-  @spec healing_playbook_id() :: :healing_playbook_id
-  def healing_playbook_id, do: :healing_playbook_id
+  @spec healing_playbook_id() :: :"healing.playbook.id"
+  def healing_playbook_id, do: :"healing.playbook.id"
 
   @doc """
   Total number of steps in the recovery playbook.
@@ -1406,8 +1406,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `3`, `7`, `12`
   """
-  @spec healing_playbook_step_count() :: :healing_playbook_step_count
-  def healing_playbook_step_count, do: :healing_playbook_step_count
+  @spec healing_playbook_step_count() :: :"healing.playbook.step_count"
+  def healing_playbook_step_count, do: :"healing.playbook.step_count"
 
   @doc """
   Current step number being executed in the playbook.
@@ -1418,8 +1418,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `7`
   """
-  @spec healing_playbook_step_current() :: :healing_playbook_step_current
-  def healing_playbook_step_current, do: :healing_playbook_step_current
+  @spec healing_playbook_step_current() :: :"healing.playbook.step_current"
+  def healing_playbook_step_current, do: :"healing.playbook.step_current"
 
   @doc """
   Confidence score for the failure prediction [0.0, 1.0].
@@ -1430,8 +1430,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.82`, `0.95`
   """
-  @spec healing_prediction_confidence() :: :healing_prediction_confidence
-  def healing_prediction_confidence, do: :healing_prediction_confidence
+  @spec healing_prediction_confidence() :: :"healing.prediction.confidence"
+  def healing_prediction_confidence, do: :"healing.prediction.confidence"
 
   @doc """
   Time horizon in milliseconds for which the failure prediction is made.
@@ -1442,8 +1442,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`, `300000`
   """
-  @spec healing_prediction_horizon_ms() :: :healing_prediction_horizon_ms
-  def healing_prediction_horizon_ms, do: :healing_prediction_horizon_ms
+  @spec healing_prediction_horizon_ms() :: :"healing.prediction.horizon_ms"
+  def healing_prediction_horizon_ms, do: :"healing.prediction.horizon_ms"
 
   @doc """
   Name or version of the predictive model used for failure prediction.
@@ -1454,8 +1454,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `lstm-v2`, `random_forest_v1`
   """
-  @spec healing_prediction_model() :: :healing_prediction_model
-  def healing_prediction_model, do: :healing_prediction_model
+  @spec healing_prediction_model() :: :"healing.prediction.model"
+  def healing_prediction_model, do: :"healing.prediction.model"
 
   @doc """
   Whether the quarantine is currently active.
@@ -1466,8 +1466,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec healing_quarantine_active() :: :healing_quarantine_active
-  def healing_quarantine_active, do: :healing_quarantine_active
+  @spec healing_quarantine_active() :: :"healing.quarantine.active"
+  def healing_quarantine_active, do: :"healing.quarantine.active"
 
   @doc """
   Duration in milliseconds the component remained in quarantine.
@@ -1478,8 +1478,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5000`, `60000`, `300000`
   """
-  @spec healing_quarantine_duration_ms() :: :healing_quarantine_duration_ms
-  def healing_quarantine_duration_ms, do: :healing_quarantine_duration_ms
+  @spec healing_quarantine_duration_ms() :: :"healing.quarantine.duration_ms"
+  def healing_quarantine_duration_ms, do: :"healing.quarantine.duration_ms"
 
   @doc """
   Unique identifier for the quarantine zone applied to an isolated component.
@@ -1490,8 +1490,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `qz-node-42`, `qz-svc-billing-2026-03-25`
   """
-  @spec healing_quarantine_id() :: :healing_quarantine_id
-  def healing_quarantine_id, do: :healing_quarantine_id
+  @spec healing_quarantine_id() :: :"healing.quarantine.id"
+  def healing_quarantine_id, do: :"healing.quarantine.id"
 
   @doc """
   Reason the component was placed into quarantine.
@@ -1502,8 +1502,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `anomaly`, `cascade_risk`
   """
-  @spec healing_quarantine_reason() :: :healing_quarantine_reason
-  def healing_quarantine_reason, do: :healing_quarantine_reason
+  @spec healing_quarantine_reason() :: :"healing.quarantine.reason"
+  def healing_quarantine_reason, do: :"healing.quarantine.reason"
 
   @doc """
   Enumerated values for `healing.quarantine.reason`.
@@ -1562,8 +1562,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5`, `20`, `50`
   """
-  @spec healing_rate_limit_burst_size() :: :healing_rate_limit_burst_size
-  def healing_rate_limit_burst_size, do: :healing_rate_limit_burst_size
+  @spec healing_rate_limit_burst_size() :: :"healing.rate_limit.burst_size"
+  def healing_rate_limit_burst_size, do: :"healing.rate_limit.burst_size"
 
   @doc """
   Current observed request rate per second.
@@ -1574,8 +1574,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `7.2`, `45.5`, `98.1`
   """
-  @spec healing_rate_limit_current_rate() :: :healing_rate_limit_current_rate
-  def healing_rate_limit_current_rate, do: :healing_rate_limit_current_rate
+  @spec healing_rate_limit_current_rate() :: :"healing.rate_limit.current_rate"
+  def healing_rate_limit_current_rate, do: :"healing.rate_limit.current_rate"
 
   @doc """
   Maximum allowed recovery requests per second.
@@ -1586,8 +1586,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `10.0`, `50.0`, `100.0`
   """
-  @spec healing_rate_limit_requests_per_sec() :: :healing_rate_limit_requests_per_sec
-  def healing_rate_limit_requests_per_sec, do: :healing_rate_limit_requests_per_sec
+  @spec healing_rate_limit_requests_per_sec() :: :"healing.rate_limit.requests_per_sec"
+  def healing_rate_limit_requests_per_sec, do: :"healing.rate_limit.requests_per_sec"
 
   @doc """
   The recovery action taken by the reflex arc.
@@ -1598,8 +1598,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `restart_worker`, `drain_queue`, `escalate_to_supervisor`, `kill_process`
   """
-  @spec healing_recovery_action() :: :healing_recovery_action
-  def healing_recovery_action, do: :healing_recovery_action
+  @spec healing_recovery_action() :: :"healing.recovery_action"
+  def healing_recovery_action, do: :"healing.recovery_action"
 
   @doc """
   Whether the healing operation reached a terminal state (success or escalated).
@@ -1610,8 +1610,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec healing_recovery_complete() :: :healing_recovery_complete
-  def healing_recovery_complete, do: :healing_recovery_complete
+  @spec healing_recovery_complete() :: :"healing.recovery_complete"
+  def healing_recovery_complete, do: :"healing.recovery_complete"
 
   @doc """
   The recovery strategy selected by the healing engine.
@@ -1622,8 +1622,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `restart`, `circuit_break`
   """
-  @spec healing_recovery_strategy() :: :healing_recovery_strategy
-  def healing_recovery_strategy, do: :healing_recovery_strategy
+  @spec healing_recovery_strategy() :: :"healing.recovery_strategy"
+  def healing_recovery_strategy, do: :"healing.recovery_strategy"
 
   @doc """
   Enumerated values for `healing.recovery_strategy`.
@@ -1689,8 +1689,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `deadlock_detection`, `memory_pressure_relief`, `stagnation_detection`
   """
-  @spec healing_reflex_arc() :: :healing_reflex_arc
-  def healing_reflex_arc, do: :healing_reflex_arc
+  @spec healing_reflex_arc() :: :"healing.reflex_arc"
+  def healing_reflex_arc, do: :"healing.reflex_arc"
 
   @doc """
   The repair strategy applied during healing recovery.
@@ -1701,8 +1701,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `restart`, `rollback`
   """
-  @spec healing_repair_strategy() :: :healing_repair_strategy
-  def healing_repair_strategy, do: :healing_repair_strategy
+  @spec healing_repair_strategy() :: :"healing.repair.strategy"
+  def healing_repair_strategy, do: :"healing.repair.strategy"
 
   @doc """
   Enumerated values for `healing.repair.strategy`.
@@ -1761,8 +1761,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `ckpt-2026-03-25T12:00:00Z`, `snap-v3.2.1`
   """
-  @spec healing_rollback_checkpoint_id() :: :healing_rollback_checkpoint_id
-  def healing_rollback_checkpoint_id, do: :healing_rollback_checkpoint_id
+  @spec healing_rollback_checkpoint_id() :: :"healing.rollback.checkpoint_id"
+  def healing_rollback_checkpoint_id, do: :"healing.rollback.checkpoint_id"
 
   @doc """
   Time in milliseconds to complete the rollback operation.
@@ -1773,8 +1773,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `250`, `1200`, `8000`
   """
-  @spec healing_rollback_recovery_ms() :: :healing_rollback_recovery_ms
-  def healing_rollback_recovery_ms, do: :healing_rollback_recovery_ms
+  @spec healing_rollback_recovery_ms() :: :"healing.rollback.recovery_ms"
+  def healing_rollback_recovery_ms, do: :"healing.rollback.recovery_ms"
 
   @doc """
   Strategy used to roll back the system to a known-good state.
@@ -1785,8 +1785,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `checkpoint`, `snapshot`, `incremental`
   """
-  @spec healing_rollback_strategy() :: :healing_rollback_strategy
-  def healing_rollback_strategy, do: :healing_rollback_strategy
+  @spec healing_rollback_strategy() :: :"healing.rollback.strategy"
+  def healing_rollback_strategy, do: :"healing.rollback.strategy"
 
   @doc """
   Enumerated values for `healing.rollback.strategy`.
@@ -1838,8 +1838,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec healing_rollback_success() :: :healing_rollback_success
-  def healing_rollback_success, do: :healing_rollback_success
+  @spec healing_rollback_success() :: :"healing.rollback.success"
+  def healing_rollback_success, do: :"healing.rollback.success"
 
   @doc """
   Identifier of the root cause failure that triggered this cascade.
@@ -1850,8 +1850,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `failure-001`, `osa-agent-3-timeout`
   """
-  @spec healing_root_cause_id() :: :healing_root_cause_id
-  def healing_root_cause_id, do: :healing_root_cause_id
+  @spec healing_root_cause_id() :: :"healing.root_cause.id"
+  def healing_root_cause_id, do: :"healing.root_cause.id"
 
   @doc """
   Whether autonomous self-healing is enabled for this component.
@@ -1862,8 +1862,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec healing_self_healing_enabled() :: :healing_self_healing_enabled
-  def healing_self_healing_enabled, do: :healing_self_healing_enabled
+  @spec healing_self_healing_enabled() :: :"healing.self_healing.enabled"
+  def healing_self_healing_enabled, do: :"healing.self_healing.enabled"
 
   @doc """
   Fraction of self-healing attempts that succeeded, range [0.0, 1.0].
@@ -1874,8 +1874,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.95`, `0.8`, `1.0`
   """
-  @spec healing_self_healing_success_rate() :: :healing_self_healing_success_rate
-  def healing_self_healing_success_rate, do: :healing_self_healing_success_rate
+  @spec healing_self_healing_success_rate() :: :"healing.self_healing.success_rate"
+  def healing_self_healing_success_rate, do: :"healing.self_healing.success_rate"
 
   @doc """
   Number of times self-healing has been triggered in the current session.
@@ -1886,8 +1886,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `3`, `12`
   """
-  @spec healing_self_healing_trigger_count() :: :healing_self_healing_trigger_count
-  def healing_self_healing_trigger_count, do: :healing_self_healing_trigger_count
+  @spec healing_self_healing_trigger_count() :: :"healing.self_healing.trigger_count"
+  def healing_self_healing_trigger_count, do: :"healing.self_healing.trigger_count"
 
   @doc """
   Total duration in milliseconds of the recovery simulation run.
@@ -1898,8 +1898,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1200`, `5000`
   """
-  @spec healing_simulation_duration_ms() :: :healing_simulation_duration_ms
-  def healing_simulation_duration_ms, do: :healing_simulation_duration_ms
+  @spec healing_simulation_duration_ms() :: :"healing.simulation.duration_ms"
+  def healing_simulation_duration_ms, do: :"healing.simulation.duration_ms"
 
   @doc """
   Number of distinct failure modes simulated in this recovery simulation.
@@ -1910,8 +1910,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `3`, `11`
   """
-  @spec healing_simulation_failure_mode_count() :: :healing_simulation_failure_mode_count
-  def healing_simulation_failure_mode_count, do: :healing_simulation_failure_mode_count
+  @spec healing_simulation_failure_mode_count() :: :"healing.simulation.failure_mode_count"
+  def healing_simulation_failure_mode_count, do: :"healing.simulation.failure_mode_count"
 
   @doc """
   Unique identifier for a healing recovery simulation run.
@@ -1922,8 +1922,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `sim-abc123`, `chaos-run-007`
   """
-  @spec healing_simulation_id() :: :healing_simulation_id
-  def healing_simulation_id, do: :healing_simulation_id
+  @spec healing_simulation_id() :: :"healing.simulation.id"
+  def healing_simulation_id, do: :"healing.simulation.id"
 
   @doc """
   Fraction of simulated recovery scenarios that succeeded, range [0.0, 1.0].
@@ -1934,8 +1934,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0.91`, `0.75`
   """
-  @spec healing_simulation_success_rate() :: :healing_simulation_success_rate
-  def healing_simulation_success_rate, do: :healing_simulation_success_rate
+  @spec healing_simulation_success_rate() :: :"healing.simulation.success_rate"
+  def healing_simulation_success_rate, do: :"healing.simulation.success_rate"
 
   @doc """
   Time window in milliseconds over which surge is detected.
@@ -1946,8 +1946,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1000`, `5000`, `30000`
   """
-  @spec healing_surge_detection_window_ms() :: :healing_surge_detection_window_ms
-  def healing_surge_detection_window_ms, do: :healing_surge_detection_window_ms
+  @spec healing_surge_detection_window_ms() :: :"healing.surge.detection_window_ms"
+  def healing_surge_detection_window_ms, do: :"healing.surge.detection_window_ms"
 
   @doc """
   Strategy applied to mitigate healing request surge.
@@ -1958,8 +1958,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `shed`, `queue`, `throttle`
   """
-  @spec healing_surge_mitigation_strategy() :: :healing_surge_mitigation_strategy
-  def healing_surge_mitigation_strategy, do: :healing_surge_mitigation_strategy
+  @spec healing_surge_mitigation_strategy() :: :"healing.surge.mitigation_strategy"
+  def healing_surge_mitigation_strategy, do: :"healing.surge.mitigation_strategy"
 
   @doc """
   Enumerated values for `healing.surge.mitigation_strategy`.
@@ -2011,8 +2011,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1.5`, `2.0`, `3.0`
   """
-  @spec healing_surge_threshold_multiplier() :: :healing_surge_threshold_multiplier
-  def healing_surge_threshold_multiplier, do: :healing_surge_threshold_multiplier
+  @spec healing_surge_threshold_multiplier() :: :"healing.surge.threshold_multiplier"
+  def healing_surge_threshold_multiplier, do: :"healing.surge.threshold_multiplier"
 
   @doc """
   Maximum time budget for the healing operation in milliseconds (WvdA deadlock freedom).
@@ -2023,8 +2023,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`, `60000`
   """
-  @spec healing_timeout_ms() :: :healing_timeout_ms
-  def healing_timeout_ms, do: :healing_timeout_ms
+  @spec healing_timeout_ms() :: :"healing.timeout_ms"
+  def healing_timeout_ms, do: :"healing.timeout_ms"
 
   @doc """
   Execution time in milliseconds for the healing verification operation.
@@ -2035,8 +2035,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `2000`
   """
-  @spec healing_verification_execution_time_ms() :: :healing_verification_execution_time_ms
-  def healing_verification_execution_time_ms, do: :healing_verification_execution_time_ms
+  @spec healing_verification_execution_time_ms() :: :"healing.verification.execution_time_ms"
+  def healing_verification_execution_time_ms, do: :"healing.verification.execution_time_ms"
 
   @doc """
   Number of tests that failed during healing verification.
@@ -2047,8 +2047,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec healing_verification_failed_tests() :: :healing_verification_failed_tests
-  def healing_verification_failed_tests, do: :healing_verification_failed_tests
+  @spec healing_verification_failed_tests() :: :"healing.verification.failed_tests"
+  def healing_verification_failed_tests, do: :"healing.verification.failed_tests"
 
   @doc """
   Number of tests that passed during healing verification.
@@ -2059,8 +2059,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `0`, `5`, `10`
   """
-  @spec healing_verification_passed_tests() :: :healing_verification_passed_tests
-  def healing_verification_passed_tests, do: :healing_verification_passed_tests
+  @spec healing_verification_passed_tests() :: :"healing.verification.passed_tests"
+  def healing_verification_passed_tests, do: :"healing.verification.passed_tests"
 
   @doc """
   Overall verification status for the healing operation.
@@ -2071,8 +2071,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `pass`, `fail`
   """
-  @spec healing_verification_status() :: :healing_verification_status
-  def healing_verification_status, do: :healing_verification_status
+  @spec healing_verification_status() :: :"healing.verification.status"
+  def healing_verification_status, do: :"healing.verification.status"
 
   @doc """
   Enumerated values for `healing.verification.status`.
@@ -2124,8 +2124,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `ws-001`, `warm-standby-primary`
   """
-  @spec healing_warm_standby_id() :: :healing_warm_standby_id
-  def healing_warm_standby_id, do: :healing_warm_standby_id
+  @spec healing_warm_standby_id() :: :"healing.warm_standby.id"
+  def healing_warm_standby_id, do: :"healing.warm_standby.id"
 
   @doc """
   Activation latency of the warm standby in milliseconds — time from trigger to live.
@@ -2136,8 +2136,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `50`, `200`, `1000`
   """
-  @spec healing_warm_standby_latency_ms() :: :healing_warm_standby_latency_ms
-  def healing_warm_standby_latency_ms, do: :healing_warm_standby_latency_ms
+  @spec healing_warm_standby_latency_ms() :: :"healing.warm_standby.latency_ms"
+  def healing_warm_standby_latency_ms, do: :"healing.warm_standby.latency_ms"
 
   @doc """
   Readiness state of the warm standby replica.
@@ -2148,8 +2148,8 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `ready`, `warming`
   """
-  @spec healing_warm_standby_readiness() :: :healing_warm_standby_readiness
-  def healing_warm_standby_readiness, do: :healing_warm_standby_readiness
+  @spec healing_warm_standby_readiness() :: :"healing.warm_standby.readiness"
+  def healing_warm_standby_readiness, do: :"healing.warm_standby.readiness"
 
   @doc """
   Enumerated values for `healing.warm_standby.readiness`.
@@ -2201,7 +2201,7 @@ defmodule OpenTelemetry.SemConv.Incubating.HealingAttributes do
   Requirement: `recommended`
   Examples: `1`, `2`, `3`
   """
-  @spec healing_warm_standby_replica_count() :: :healing_warm_standby_replica_count
-  def healing_warm_standby_replica_count, do: :healing_warm_standby_replica_count
+  @spec healing_warm_standby_replica_count() :: :"healing.warm_standby.replica_count"
+  def healing_warm_standby_replica_count, do: :"healing.warm_standby.replica_count"
 
 end

@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ServiceAttributes do
   Requirement: `recommended`
   Examples: `pm4py-rust`, `businessos`, `osa`, `canopy`
   """
-  @spec service_name() :: :service_name
-  def service_name, do: :service_name
+  @spec service_name() :: :"service.name"
+  def service_name, do: :"service.name"
 
   @doc """
   Namespace of the service.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ServiceAttributes do
   Requirement: `recommended`
   Examples: `chatmangpt`, `miosa`
   """
-  @spec service_namespace() :: :service_namespace
-  def service_namespace, do: :service_namespace
+  @spec service_namespace() :: :"service.namespace"
+  def service_namespace, do: :"service.namespace"
 
   @doc """
   Version of the service.
@@ -43,7 +43,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ServiceAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `v2026.3.27`
   """
-  @spec service_version() :: :service_version
-  def service_version, do: :service_version
+  @spec service_version() :: :"service.version"
+  def service_version, do: :"service.version"
 
 end

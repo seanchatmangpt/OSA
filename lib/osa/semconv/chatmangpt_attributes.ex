@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `agent-healing-1`, `agent-consensus-2`, `osa-primary`
   """
-  @spec chatmangpt_agent_id() :: :chatmangpt_agent_id
-  def chatmangpt_agent_id, do: :chatmangpt_agent_id
+  @spec chatmangpt_agent_id() :: :"chatmangpt.agent.id"
+  def chatmangpt_agent_id, do: :"chatmangpt.agent.id"
 
   @doc """
   Whether the operation exceeded its time budget.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `false`, `true`
   """
-  @spec chatmangpt_budget_exceeded() :: :chatmangpt_budget_exceeded
-  def chatmangpt_budget_exceeded, do: :chatmangpt_budget_exceeded
+  @spec chatmangpt_budget_exceeded() :: :"chatmangpt.budget.exceeded"
+  def chatmangpt_budget_exceeded, do: :"chatmangpt.budget.exceeded"
 
   @doc """
   Time budget allocated for the operation in milliseconds.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `100`, `500`, `5000`, `30000`
   """
-  @spec chatmangpt_budget_time_ms() :: :chatmangpt_budget_time_ms
-  def chatmangpt_budget_time_ms, do: :chatmangpt_budget_time_ms
+  @spec chatmangpt_budget_time_ms() :: :"chatmangpt.budget.time_ms"
+  def chatmangpt_budget_time_ms, do: :"chatmangpt.budget.time_ms"
 
   @doc """
   Deployment environment for this ChatmanGPT instance.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `development`, `production`
   """
-  @spec chatmangpt_deployment() :: :chatmangpt_deployment
-  def chatmangpt_deployment, do: :chatmangpt_deployment
+  @spec chatmangpt_deployment() :: :"chatmangpt.deployment"
+  def chatmangpt_deployment, do: :"chatmangpt.deployment"
 
   @doc """
   Enumerated values for `chatmangpt.deployment`.
@@ -109,8 +109,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `550e8400-e29b-41d4-a716-446655440000`, `20260326T120000Z-abc123`
   """
-  @spec chatmangpt_run_correlation_id() :: :chatmangpt_run_correlation_id
-  def chatmangpt_run_correlation_id, do: :chatmangpt_run_correlation_id
+  @spec chatmangpt_run_correlation_id() :: :"chatmangpt.run.correlation_id"
+  def chatmangpt_run_correlation_id, do: :"chatmangpt.run.correlation_id"
 
   @doc """
   Priority tier of the operation, used for budget enforcement.
@@ -121,8 +121,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `critical`, `normal`
   """
-  @spec chatmangpt_service_tier() :: :chatmangpt_service_tier
-  def chatmangpt_service_tier, do: :chatmangpt_service_tier
+  @spec chatmangpt_service_tier() :: :"chatmangpt.service.tier"
+  def chatmangpt_service_tier, do: :"chatmangpt.service.tier"
 
   @doc """
   Enumerated values for `chatmangpt.service.tier`.
@@ -181,8 +181,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `sess-abc123`, `sess-def456`
   """
-  @spec chatmangpt_session_id() :: :chatmangpt_session_id
-  def chatmangpt_session_id, do: :chatmangpt_session_id
+  @spec chatmangpt_session_id() :: :"chatmangpt.session.id"
+  def chatmangpt_session_id, do: :"chatmangpt.session.id"
 
   @doc """
   Number of times the model was switched during the session.
@@ -193,8 +193,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `0`, `2`, `5`
   """
-  @spec chatmangpt_session_model_switches() :: :chatmangpt_session_model_switches
-  def chatmangpt_session_model_switches, do: :chatmangpt_session_model_switches
+  @spec chatmangpt_session_model_switches() :: :"chatmangpt.session.model_switches"
+  def chatmangpt_session_model_switches, do: :"chatmangpt.session.model_switches"
 
   @doc """
   Total tokens consumed in the session so far.
@@ -205,8 +205,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `1024`, `4096`
   """
-  @spec chatmangpt_session_token_count() :: :chatmangpt_session_token_count
-  def chatmangpt_session_token_count, do: :chatmangpt_session_token_count
+  @spec chatmangpt_session_token_count() :: :"chatmangpt.session.token_count"
+  def chatmangpt_session_token_count, do: :"chatmangpt.session.token_count"
 
   @doc """
   Number of conversation turns in the session.
@@ -217,8 +217,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `1`, `10`, `50`
   """
-  @spec chatmangpt_session_turn_count() :: :chatmangpt_session_turn_count
-  def chatmangpt_session_turn_count, do: :chatmangpt_session_turn_count
+  @spec chatmangpt_session_turn_count() :: :"chatmangpt.session.turn_count"
+  def chatmangpt_session_turn_count, do: :"chatmangpt.session.turn_count"
 
   @doc """
   Version of the ChatmanGPT system emitting this telemetry.
@@ -229,8 +229,8 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `2.3.1-wave9`
   """
-  @spec chatmangpt_version() :: :chatmangpt_version
-  def chatmangpt_version, do: :chatmangpt_version
+  @spec chatmangpt_version() :: :"chatmangpt.version"
+  def chatmangpt_version, do: :"chatmangpt.version"
 
   @doc """
   Wave number of the ChatmanGPT development phase that produced this span.
@@ -241,7 +241,7 @@ defmodule OpenTelemetry.SemConv.Incubating.ChatmangptAttributes do
   Requirement: `recommended`
   Examples: `7`, `8`, `9`
   """
-  @spec chatmangpt_wave() :: :chatmangpt_wave
-  def chatmangpt_wave, do: :chatmangpt_wave
+  @spec chatmangpt_wave() :: :"chatmangpt.wave"
+  def chatmangpt_wave, do: :"chatmangpt.wave"
 
 end

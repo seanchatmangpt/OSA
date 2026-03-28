@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `required`
   Examples: `0`, `3`, `10`
   """
-  @spec mcp_connection_pool_active_count() :: :mcp_connection_pool_active_count
-  def mcp_connection_pool_active_count, do: :mcp_connection_pool_active_count
+  @spec mcp_connection_pool_active_count() :: :"mcp.connection.pool.active_count"
+  def mcp_connection_pool_active_count, do: :"mcp.connection.pool.active_count"
 
   @doc """
   Number of idle connections available in the pool.
@@ -31,8 +31,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `required`
   Examples: `0`, `2`, `5`
   """
-  @spec mcp_connection_pool_idle_count() :: :mcp_connection_pool_idle_count
-  def mcp_connection_pool_idle_count, do: :mcp_connection_pool_idle_count
+  @spec mcp_connection_pool_idle_count() :: :"mcp.connection.pool.idle_count"
+  def mcp_connection_pool_idle_count, do: :"mcp.connection.pool.idle_count"
 
   @doc """
   Total size (max connections) of the MCP connection pool.
@@ -43,8 +43,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `required`
   Examples: `5`, `10`, `50`
   """
-  @spec mcp_connection_pool_size() :: :mcp_connection_pool_size
-  def mcp_connection_pool_size, do: :mcp_connection_pool_size
+  @spec mcp_connection_pool_size() :: :"mcp.connection.pool.size"
+  def mcp_connection_pool_size, do: :"mcp.connection.pool.size"
 
   @doc """
   Time in milliseconds the request waited to acquire a connection.
@@ -55,8 +55,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `required`
   Examples: `0.0`, `50.5`, `500.0`
   """
-  @spec mcp_connection_pool_wait_ms() :: :mcp_connection_pool_wait_ms
-  def mcp_connection_pool_wait_ms, do: :mcp_connection_pool_wait_ms
+  @spec mcp_connection_pool_wait_ms() :: :"mcp.connection.pool.wait_ms"
+  def mcp_connection_pool_wait_ms, do: :"mcp.connection.pool.wait_ms"
 
   @doc """
   Unique identifier for this MCP client-server connection.
@@ -67,8 +67,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `conn-abc123`, `mcp-conn-001`
   """
-  @spec mcp_connection_id() :: :mcp_connection_id
-  def mcp_connection_id, do: :mcp_connection_id
+  @spec mcp_connection_id() :: :"mcp.connection.id"
+  def mcp_connection_id, do: :"mcp.connection.id"
 
   @doc """
   Transport protocol used for this MCP connection.
@@ -79,8 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `stdio`, `http`
   """
-  @spec mcp_connection_transport() :: :mcp_connection_transport
-  def mcp_connection_transport, do: :mcp_connection_transport
+  @spec mcp_connection_transport() :: :"mcp.connection.transport"
+  def mcp_connection_transport, do: :"mcp.connection.transport"
 
   @doc """
   Enumerated values for `mcp.connection.transport`.
@@ -132,8 +132,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `stdio`, `http`
   """
-  @spec mcp_protocol() :: :mcp_protocol
-  def mcp_protocol, do: :mcp_protocol
+  @spec mcp_protocol() :: :"mcp.protocol"
+  def mcp_protocol, do: :"mcp.protocol"
 
   @doc """
   Enumerated values for `mcp.protocol`.
@@ -185,8 +185,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `2024-11-05`, `2025-03-26`
   """
-  @spec mcp_protocol_version() :: :mcp_protocol_version
-  def mcp_protocol_version, do: :mcp_protocol_version
+  @spec mcp_protocol_version() :: :"mcp.protocol.version"
+  def mcp_protocol_version, do: :"mcp.protocol.version"
 
   @doc """
   Number of active MCP servers in the registry.
@@ -197,8 +197,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `1`, `3`, `10`
   """
-  @spec mcp_registry_server_count() :: :mcp_registry_server_count
-  def mcp_registry_server_count, do: :mcp_registry_server_count
+  @spec mcp_registry_server_count() :: :"mcp.registry.server_count"
+  def mcp_registry_server_count, do: :"mcp.registry.server_count"
 
   @doc """
   Number of tools registered with this MCP server.
@@ -209,8 +209,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `5`, `20`, `100`
   """
-  @spec mcp_registry_tool_count() :: :mcp_registry_tool_count
-  def mcp_registry_tool_count, do: :mcp_registry_tool_count
+  @spec mcp_registry_tool_count() :: :"mcp.registry.tool_count"
+  def mcp_registry_tool_count, do: :"mcp.registry.tool_count"
 
   @doc """
   MIME type of the MCP resource content.
@@ -221,8 +221,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `application/json`, `text/plain`, `text/yaml`
   """
-  @spec mcp_resource_mime_type() :: :mcp_resource_mime_type
-  def mcp_resource_mime_type, do: :mcp_resource_mime_type
+  @spec mcp_resource_mime_type() :: :"mcp.resource.mime_type"
+  def mcp_resource_mime_type, do: :"mcp.resource.mime_type"
 
   @doc """
   Size of the MCP resource content in bytes.
@@ -233,8 +233,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `256`, `4096`, `65536`
   """
-  @spec mcp_resource_size_bytes() :: :mcp_resource_size_bytes
-  def mcp_resource_size_bytes, do: :mcp_resource_size_bytes
+  @spec mcp_resource_size_bytes() :: :"mcp.resource.size_bytes"
+  def mcp_resource_size_bytes, do: :"mcp.resource.size_bytes"
 
   @doc """
   URI identifying the MCP resource being accessed.
@@ -245,8 +245,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `file:///etc/config.yaml`, `db://users/42`, `s3://bucket/key`
   """
-  @spec mcp_resource_uri() :: :mcp_resource_uri
-  def mcp_resource_uri, do: :mcp_resource_uri
+  @spec mcp_resource_uri() :: :"mcp.resource.uri"
+  def mcp_resource_uri, do: :"mcp.resource.uri"
 
   @doc """
   Duration of the health check in milliseconds.
@@ -257,8 +257,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `5`, `50`, `500`
   """
-  @spec mcp_server_health_check_duration_ms() :: :mcp_server_health_check_duration_ms
-  def mcp_server_health_check_duration_ms, do: :mcp_server_health_check_duration_ms
+  @spec mcp_server_health_check_duration_ms() :: :"mcp.server.health.check_duration_ms"
+  def mcp_server_health_check_duration_ms, do: :"mcp.server.health.check_duration_ms"
 
   @doc """
   Health status of the MCP server.
@@ -269,8 +269,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `healthy`, `degraded`
   """
-  @spec mcp_server_health_status() :: :mcp_server_health_status
-  def mcp_server_health_status, do: :mcp_server_health_status
+  @spec mcp_server_health_status() :: :"mcp.server.health.status"
+  def mcp_server_health_status, do: :"mcp.server.health.status"
 
   @doc """
   Enumerated values for `mcp.server.health.status`.
@@ -329,8 +329,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `5`, `12`, `30`
   """
-  @spec mcp_server_health_tool_count() :: :mcp_server_health_tool_count
-  def mcp_server_health_tool_count, do: :mcp_server_health_tool_count
+  @spec mcp_server_health_tool_count() :: :"mcp.server.health.tool_count"
+  def mcp_server_health_tool_count, do: :"mcp.server.health.tool_count"
 
   @doc """
   Uptime of the MCP server in milliseconds.
@@ -341,8 +341,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `60000`, `3600000`
   """
-  @spec mcp_server_health_uptime_ms() :: :mcp_server_health_uptime_ms
-  def mcp_server_health_uptime_ms, do: :mcp_server_health_uptime_ms
+  @spec mcp_server_health_uptime_ms() :: :"mcp.server.health.uptime_ms"
+  def mcp_server_health_uptime_ms, do: :"mcp.server.health.uptime_ms"
 
   @doc """
   Error rate of the MCP server as a fraction [0.0, 1.0].
@@ -353,8 +353,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0.0`, `0.05`, `0.25`
   """
-  @spec mcp_server_metrics_error_rate() :: :mcp_server_metrics_error_rate
-  def mcp_server_metrics_error_rate, do: :mcp_server_metrics_error_rate
+  @spec mcp_server_metrics_error_rate() :: :"mcp.server.metrics.error_rate"
+  def mcp_server_metrics_error_rate, do: :"mcp.server.metrics.error_rate"
 
   @doc """
   99th percentile latency in milliseconds for MCP server request handling.
@@ -365,8 +365,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `45.0`, `120.5`, `500.0`
   """
-  @spec mcp_server_metrics_p99_latency_ms() :: :mcp_server_metrics_p99_latency_ms
-  def mcp_server_metrics_p99_latency_ms, do: :mcp_server_metrics_p99_latency_ms
+  @spec mcp_server_metrics_p99_latency_ms() :: :"mcp.server.metrics.p99_latency_ms"
+  def mcp_server_metrics_p99_latency_ms, do: :"mcp.server.metrics.p99_latency_ms"
 
   @doc """
   Total number of requests received by the MCP server.
@@ -377,8 +377,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0`, `100`, `5000`
   """
-  @spec mcp_server_metrics_request_count() :: :mcp_server_metrics_request_count
-  def mcp_server_metrics_request_count, do: :mcp_server_metrics_request_count
+  @spec mcp_server_metrics_request_count() :: :"mcp.server.metrics.request_count"
+  def mcp_server_metrics_request_count, do: :"mcp.server.metrics.request_count"
 
   @doc """
   Name of the MCP server hosting the tool.
@@ -389,8 +389,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `osa-mcp-server`, `businessos-mcp`
   """
-  @spec mcp_server_name() :: :mcp_server_name
-  def mcp_server_name, do: :mcp_server_name
+  @spec mcp_server_name() :: :"mcp.server.name"
+  def mcp_server_name, do: :"mcp.server.name"
 
   @doc """
   Session identifier for the MCP client-server connection.
@@ -401,8 +401,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `sess-001`, `mcp-session-abc123`
   """
-  @spec mcp_session_id() :: :mcp_session_id
-  def mcp_session_id, do: :mcp_session_id
+  @spec mcp_session_id() :: :"mcp.session.id"
+  def mcp_session_id, do: :"mcp.session.id"
 
   @doc """
   Average latency (ms) for MCP tool invocations in the reporting window.
@@ -413,8 +413,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `10.5`, `250.0`, `1500.0`
   """
-  @spec mcp_tool_analytics_avg_latency_ms() :: :mcp_tool_analytics_avg_latency_ms
-  def mcp_tool_analytics_avg_latency_ms, do: :mcp_tool_analytics_avg_latency_ms
+  @spec mcp_tool_analytics_avg_latency_ms() :: :"mcp.tool.analytics.avg_latency_ms"
+  def mcp_tool_analytics_avg_latency_ms, do: :"mcp.tool.analytics.avg_latency_ms"
 
   @doc """
   Total number of calls made to this MCP tool in the current reporting window.
@@ -425,8 +425,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `1`, `10`, `100`
   """
-  @spec mcp_tool_analytics_call_count() :: :mcp_tool_analytics_call_count
-  def mcp_tool_analytics_call_count, do: :mcp_tool_analytics_call_count
+  @spec mcp_tool_analytics_call_count() :: :"mcp.tool.analytics.call_count"
+  def mcp_tool_analytics_call_count, do: :"mcp.tool.analytics.call_count"
 
   @doc """
   Error rate for MCP tool invocations in the reporting window, range [0.0, 1.0].
@@ -437,8 +437,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0.0`, `0.05`, `0.2`
   """
-  @spec mcp_tool_analytics_error_rate() :: :mcp_tool_analytics_error_rate
-  def mcp_tool_analytics_error_rate, do: :mcp_tool_analytics_error_rate
+  @spec mcp_tool_analytics_error_rate() :: :"mcp.tool.analytics.error_rate"
+  def mcp_tool_analytics_error_rate, do: :"mcp.tool.analytics.error_rate"
 
   @doc """
   Whether the tool response was served from cache.
@@ -449,8 +449,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `true`, `false`
   """
-  @spec mcp_tool_cache_hit() :: :mcp_tool_cache_hit
-  def mcp_tool_cache_hit, do: :mcp_tool_cache_hit
+  @spec mcp_tool_cache_hit() :: :"mcp.tool.cache.hit"
+  def mcp_tool_cache_hit, do: :"mcp.tool.cache.hit"
 
   @doc """
   Cache key used for tool response lookup.
@@ -461,8 +461,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `mcp:fs:read:/etc/hosts`, `mcp:weather:current:LA`
   """
-  @spec mcp_tool_cache_key() :: :mcp_tool_cache_key
-  def mcp_tool_cache_key, do: :mcp_tool_cache_key
+  @spec mcp_tool_cache_key() :: :"mcp.tool.cache.key"
+  def mcp_tool_cache_key, do: :"mcp.tool.cache.key"
 
   @doc """
   Cache time-to-live in milliseconds.
@@ -473,8 +473,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `60000`, `300000`
   """
-  @spec mcp_tool_cache_ttl_ms() :: :mcp_tool_cache_ttl_ms
-  def mcp_tool_cache_ttl_ms, do: :mcp_tool_cache_ttl_ms
+  @spec mcp_tool_cache_ttl_ms() :: :"mcp.tool.cache.ttl_ms"
+  def mcp_tool_cache_ttl_ms, do: :"mcp.tool.cache.ttl_ms"
 
   @doc """
   Number of steps completed successfully in the composition chain.
@@ -485,8 +485,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `2`, `5`
   """
-  @spec mcp_tool_composition_completed_steps() :: :mcp_tool_composition_completed_steps
-  def mcp_tool_composition_completed_steps, do: :mcp_tool_composition_completed_steps
+  @spec mcp_tool_composition_completed_steps() :: :"mcp.tool.composition.completed_steps"
+  def mcp_tool_composition_completed_steps, do: :"mcp.tool.composition.completed_steps"
 
   @doc """
   Number of tool steps in the composition chain.
@@ -497,8 +497,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `3`, `5`, `10`
   """
-  @spec mcp_tool_composition_step_count() :: :mcp_tool_composition_step_count
-  def mcp_tool_composition_step_count, do: :mcp_tool_composition_step_count
+  @spec mcp_tool_composition_step_count() :: :"mcp.tool.composition.step_count"
+  def mcp_tool_composition_step_count, do: :"mcp.tool.composition.step_count"
 
   @doc """
   The composition strategy for chaining multiple MCP tools together.
@@ -509,8 +509,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `sequential`, `parallel`
   """
-  @spec mcp_tool_composition_strategy() :: :mcp_tool_composition_strategy
-  def mcp_tool_composition_strategy, do: :mcp_tool_composition_strategy
+  @spec mcp_tool_composition_strategy() :: :"mcp.tool.composition.strategy"
+  def mcp_tool_composition_strategy, do: :"mcp.tool.composition.strategy"
 
   @doc """
   Enumerated values for `mcp.tool.composition.strategy`.
@@ -569,8 +569,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec mcp_tool_composition_timeout_ms() :: :mcp_tool_composition_timeout_ms
-  def mcp_tool_composition_timeout_ms, do: :mcp_tool_composition_timeout_ms
+  @spec mcp_tool_composition_timeout_ms() :: :"mcp.tool.composition.timeout_ms"
+  def mcp_tool_composition_timeout_ms, do: :"mcp.tool.composition.timeout_ms"
 
   @doc """
   Unique identifier for a composed tool pipeline.
@@ -581,8 +581,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `compose-abc123`, `pipeline-def456`
   """
-  @spec mcp_tool_composition_id() :: :mcp_tool_composition_id
-  def mcp_tool_composition_id, do: :mcp_tool_composition_id
+  @spec mcp_tool_composition_id() :: :"mcp.tool.composition_id"
+  def mcp_tool_composition_id, do: :"mcp.tool.composition_id"
 
   @doc """
   Total latency in milliseconds for the composed tool pipeline execution.
@@ -593,8 +593,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `120`, `450`
   """
-  @spec mcp_tool_composition_latency_ms() :: :mcp_tool_composition_latency_ms
-  def mcp_tool_composition_latency_ms, do: :mcp_tool_composition_latency_ms
+  @spec mcp_tool_composition_latency_ms() :: :"mcp.tool.composition_latency_ms"
+  def mcp_tool_composition_latency_ms, do: :"mcp.tool.composition_latency_ms"
 
   @doc """
   Whether the MCP tool is deprecated.
@@ -604,8 +604,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Stability: `development`
   Requirement: `recommended`
   """
-  @spec mcp_tool_deprecated() :: :mcp_tool_deprecated
-  def mcp_tool_deprecated, do: :mcp_tool_deprecated
+  @spec mcp_tool_deprecated() :: :"mcp.tool.deprecated"
+  def mcp_tool_deprecated, do: :"mcp.tool.deprecated"
 
   @doc """
   The deprecation policy applied to the tool.
@@ -616,8 +616,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `immediate`, `grace_period`, `warn_only`
   """
-  @spec mcp_tool_deprecation_policy() :: :mcp_tool_deprecation_policy
-  def mcp_tool_deprecation_policy, do: :mcp_tool_deprecation_policy
+  @spec mcp_tool_deprecation_policy() :: :"mcp.tool.deprecation.policy"
+  def mcp_tool_deprecation_policy, do: :"mcp.tool.deprecation.policy"
 
   @doc """
   Enumerated values for `mcp.tool.deprecation.policy`.
@@ -669,8 +669,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `replaced_by_v2`, `security_vulnerability`
   """
-  @spec mcp_tool_deprecation_reason() :: :mcp_tool_deprecation_reason
-  def mcp_tool_deprecation_reason, do: :mcp_tool_deprecation_reason
+  @spec mcp_tool_deprecation_reason() :: :"mcp.tool.deprecation.reason"
+  def mcp_tool_deprecation_reason, do: :"mcp.tool.deprecation.reason"
 
   @doc """
   The name of the replacement tool that supersedes the deprecated tool.
@@ -681,8 +681,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `mcp.tool.v2.process`, `mcp.tool.enhanced.search`
   """
-  @spec mcp_tool_deprecation_replacement_tool() :: :mcp_tool_deprecation_replacement_tool
-  def mcp_tool_deprecation_replacement_tool, do: :mcp_tool_deprecation_replacement_tool
+  @spec mcp_tool_deprecation_replacement_tool() :: :"mcp.tool.deprecation.replacement_tool"
+  def mcp_tool_deprecation_replacement_tool, do: :"mcp.tool.deprecation.replacement_tool"
 
   @doc """
   Unix timestamp (ms) when the deprecated tool will be removed.
@@ -693,8 +693,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `1735689600000`, `1751328000000`
   """
-  @spec mcp_tool_deprecation_sunset_date_ms() :: :mcp_tool_deprecation_sunset_date_ms
-  def mcp_tool_deprecation_sunset_date_ms, do: :mcp_tool_deprecation_sunset_date_ms
+  @spec mcp_tool_deprecation_sunset_date_ms() :: :"mcp.tool.deprecation.sunset_date_ms"
+  def mcp_tool_deprecation_sunset_date_ms, do: :"mcp.tool.deprecation.sunset_date_ms"
 
   @doc """
   Size in bytes of the tool input payload.
@@ -705,8 +705,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `128`, `4096`
   """
-  @spec mcp_tool_input_size() :: :mcp_tool_input_size
-  def mcp_tool_input_size, do: :mcp_tool_input_size
+  @spec mcp_tool_input_size() :: :"mcp.tool.input_size"
+  def mcp_tool_input_size, do: :"mcp.tool.input_size"
 
   @doc """
   Name of the MCP tool being invoked.
@@ -717,8 +717,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `search`, `code_execute`, `file_read`, `a2a_call`
   """
-  @spec mcp_tool_name() :: :mcp_tool_name
-  def mcp_tool_name, do: :mcp_tool_name
+  @spec mcp_tool_name() :: :"mcp.tool.name"
+  def mcp_tool_name, do: :"mcp.tool.name"
 
   @doc """
   Size in bytes of the tool output payload.
@@ -729,8 +729,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `256`, `8192`
   """
-  @spec mcp_tool_output_size() :: :mcp_tool_output_size
-  def mcp_tool_output_size, do: :mcp_tool_output_size
+  @spec mcp_tool_output_size() :: :"mcp.tool.output_size"
+  def mcp_tool_output_size, do: :"mcp.tool.output_size"
 
   @doc """
   Number of results returned by the MCP tool.
@@ -741,8 +741,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `5`
   """
-  @spec mcp_tool_result_count() :: :mcp_tool_result_count
-  def mcp_tool_result_count, do: :mcp_tool_result_count
+  @spec mcp_tool_result_count() :: :"mcp.tool.result_count"
+  def mcp_tool_result_count, do: :"mcp.tool.result_count"
 
   @doc """
   Number of retry attempts for a tool execution (0 = first attempt succeeded).
@@ -753,8 +753,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec mcp_tool_retry_count() :: :mcp_tool_retry_count
-  def mcp_tool_retry_count, do: :mcp_tool_retry_count
+  @spec mcp_tool_retry_count() :: :"mcp.tool.retry_count"
+  def mcp_tool_retry_count, do: :"mcp.tool.retry_count"
 
   @doc """
   Hash of the tool's input/output JSON schema (for schema drift detection).
@@ -765,8 +765,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `sha256:abc123`, `md5:def456`
   """
-  @spec mcp_tool_schema_hash() :: :mcp_tool_schema_hash
-  def mcp_tool_schema_hash, do: :mcp_tool_schema_hash
+  @spec mcp_tool_schema_hash() :: :"mcp.tool.schema_hash"
+  def mcp_tool_schema_hash, do: :"mcp.tool.schema_hash"
 
   @doc """
   Configured timeout in milliseconds for tool execution (Armstrong budget constraint).
@@ -777,8 +777,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `5000`, `30000`
   """
-  @spec mcp_tool_timeout_ms() :: :mcp_tool_timeout_ms
-  def mcp_tool_timeout_ms, do: :mcp_tool_timeout_ms
+  @spec mcp_tool_timeout_ms() :: :"mcp.tool.timeout_ms"
+  def mcp_tool_timeout_ms, do: :"mcp.tool.timeout_ms"
 
   @doc """
   Version of the MCP tool being invoked.
@@ -789,8 +789,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `1.0.0`, `2.3.1`, `latest`
   """
-  @spec mcp_tool_version() :: :mcp_tool_version
-  def mcp_tool_version, do: :mcp_tool_version
+  @spec mcp_tool_version() :: :"mcp.tool.version"
+  def mcp_tool_version, do: :"mcp.tool.version"
 
   @doc """
   Number of transport-level errors since last reset.
@@ -801,8 +801,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0`, `2`, `5`
   """
-  @spec mcp_transport_error_count() :: :mcp_transport_error_count
-  def mcp_transport_error_count, do: :mcp_transport_error_count
+  @spec mcp_transport_error_count() :: :"mcp.transport.error_count"
+  def mcp_transport_error_count, do: :"mcp.transport.error_count"
 
   @doc """
   Latency of the MCP transport connection in milliseconds.
@@ -813,8 +813,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `12.5`, `45.0`
   """
-  @spec mcp_transport_latency_ms() :: :mcp_transport_latency_ms
-  def mcp_transport_latency_ms, do: :mcp_transport_latency_ms
+  @spec mcp_transport_latency_ms() :: :"mcp.transport.latency_ms"
+  def mcp_transport_latency_ms, do: :"mcp.transport.latency_ms"
 
   @doc """
   Number of reconnection attempts for the MCP transport.
@@ -825,8 +825,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `0`, `1`, `3`
   """
-  @spec mcp_transport_reconnect_count() :: :mcp_transport_reconnect_count
-  def mcp_transport_reconnect_count, do: :mcp_transport_reconnect_count
+  @spec mcp_transport_reconnect_count() :: :"mcp.transport.reconnect_count"
+  def mcp_transport_reconnect_count, do: :"mcp.transport.reconnect_count"
 
   @doc """
   Transport protocol used by the MCP connection.
@@ -837,8 +837,8 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   Requirement: `recommended`
   Examples: `stdio`, `http`, `sse`, `websocket`
   """
-  @spec mcp_transport_type() :: :mcp_transport_type
-  def mcp_transport_type, do: :mcp_transport_type
+  @spec mcp_transport_type() :: :"mcp.transport.type"
+  def mcp_transport_type, do: :"mcp.transport.type"
 
   @doc """
   Enumerated values for `mcp.transport.type`.

@@ -19,8 +19,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BusinessOsAttributes do
   Requirement: `recommended`
   Examples: `create`, `access`
   """
-  @spec business_os_audit_event_type() :: :business_os_audit_event_type
-  def business_os_audit_event_type, do: :business_os_audit_event_type
+  @spec business_os_audit_event_type() :: :"business_os.audit.event_type"
+  def business_os_audit_event_type, do: :"business_os.audit.event_type"
 
   @doc """
   Enumerated values for `business_os.audit.event_type`.
@@ -86,8 +86,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BusinessOsAttributes do
   Requirement: `recommended`
   Examples: `SOC2`, `HIPAA`
   """
-  @spec business_os_compliance_framework() :: :business_os_compliance_framework
-  def business_os_compliance_framework, do: :business_os_compliance_framework
+  @spec business_os_compliance_framework() :: :"business_os.compliance.framework"
+  def business_os_compliance_framework, do: :"business_os.compliance.framework"
 
   @doc """
   Enumerated values for `business_os.compliance.framework`.
@@ -146,8 +146,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BusinessOsAttributes do
   Requirement: `recommended`
   Examples: `webhook`, `api_pull`
   """
-  @spec business_os_integration_type() :: :business_os_integration_type
-  def business_os_integration_type, do: :business_os_integration_type
+  @spec business_os_integration_type() :: :"business_os.integration.type"
+  def business_os_integration_type, do: :"business_os.integration.type"
 
   @doc """
   Enumerated values for `business_os.integration.type`.
