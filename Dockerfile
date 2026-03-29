@@ -18,7 +18,7 @@ COPY rel rel
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix release osagent
 
-FROM alpine:3.19 AS runner
+FROM alpine:3.20 AS runner
 
 RUN apk add --no-cache libstdc++ openssl ncurses-libs wget
 RUN addgroup -S osa && adduser -S osa -G osa
