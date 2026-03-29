@@ -40,7 +40,7 @@ USER osa
 ENV MIX_ENV=prod
 
 EXPOSE 8089
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8089/health || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
+  CMD wget -q -O /dev/null http://localhost:8089/health || exit 1
 
 CMD ["bin/osagent", "serve"]

@@ -316,6 +316,8 @@ defmodule OptimalSystemAgent.Ontology.MaterializationSchedulerTest do
     end
 
     test "force_refresh/1 is exported (test-only trigger)" do
+      # ensure_loaded required: module may not be BEAM-loaded when tests run before start_link/1 describe
+      Code.ensure_loaded!(MaterializationScheduler)
       assert function_exported?(MaterializationScheduler, :force_refresh, 1)
     end
   end
