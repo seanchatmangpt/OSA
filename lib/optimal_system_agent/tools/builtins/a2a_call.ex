@@ -45,7 +45,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
       "properties" => %{
         "action" => %{
           "type" => "string",
-          "enum" => ["discover", "call", "list_tools", "execute_tool"],
+          "enum" => ["discover", "call", "list_tools", "execute_tool", "tasks_send"],
           "description" => "A2A action to perform"
         },
         "agent_url" => %{
@@ -63,6 +63,22 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
         "arguments" => %{
           "type" => "object",
           "description" => "Tool arguments (for 'execute_tool' action)"
+        },
+        "tool" => %{
+          "type" => "string",
+          "description" => "pm4py skill name for tasks_send (e.g. pm4py_statistics)"
+        },
+        "args" => %{
+          "type" => "object",
+          "description" => "Tool arguments for tasks_send action"
+        },
+        "task_id" => %{
+          "type" => "string",
+          "description" => "Optional task ID (auto-generated if omitted)"
+        },
+        "timeout_ms" => %{
+          "type" => "integer",
+          "description" => "Request timeout in ms (default: 65000)"
         }
       },
       "required" => ["action", "agent_url"]
@@ -94,7 +110,19 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
         "call" -> call_agent(agent_url, params["message"] || "")
         "list_tools" -> list_tools(agent_url)
         "execute_tool" -> execute_tool(agent_url, params["tool_name"], params["arguments"] || %{})
-        _ -> {:error, "Unknown action: #{action}. Use: discover, call, list_tools, execute_tool"}
+        "tasks_send" ->
+          tool      = Map.get(params, "tool")
+          args      = Map.get(params, "args", %{})
+
+          cond do
+            is_nil(agent_url) or agent_url == "" ->
+              {:error, "tasks_send requires agent_url"}
+            is_nil(tool) or tool == "" ->
+              {:error, "tasks_send requires tool"}
+            true ->
+              do_tasks_send(agent_url, tool, args, params)
+          end
+        _ -> {:error, "Unknown action: #{action}. Use: discover, call, list_tools, execute_tool, tasks_send"}
       end
 
     case result do
@@ -308,6 +336,58 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
       "http://#{url}"
     else
       url
+    end
+  end
+
+  defp do_tasks_send(base_url, tool, args, opts) do
+    endpoint =
+      if String.ends_with?(base_url, "/a2a"),
+        do: base_url,
+        else: String.trim_trailing(base_url, "/") <> "/a2a"
+
+    task_id =
+      Map.get(opts, "task_id") ||
+        (:crypto.strong_rand_bytes(8) |> Base.encode16(case: :lower))
+
+    timeout_ms = Map.get(opts, "timeout_ms", 65_000)
+
+    payload = %{
+      "jsonrpc" => "2.0",
+      "id" => :erlang.unique_integer([:positive]),
+      "method" => "tasks/send",
+      "params" => %{
+        "id" => task_id,
+        "message" => %{
+          "role" => "user",
+          "parts" => [%{
+            "type" => "data",
+            "data" => %{"tool" => tool, "args" => args}
+          }]
+        }
+      }
+    }
+
+    Logger.debug("[A2ACall] tasks_send → #{endpoint} tool=#{tool}")
+
+    try do
+      case Req.post(endpoint, json: payload, receive_timeout: timeout_ms) do
+        {:ok, %Req.Response{status: 200, body: %{"result" => result}}} ->
+          {:ok, result}
+
+        {:ok, %Req.Response{status: 200, body: %{"error" => error}}} ->
+          {:error, {:a2a_error, error}}
+
+        {:ok, %Req.Response{status: status, body: body}} ->
+          {:error, {:http_error, status, body}}
+
+        {:error, %Req.TransportError{reason: reason}} ->
+          {:error, {:connection_failed, inspect(reason)}}
+
+        {:error, reason} ->
+          {:error, {:connection_failed, inspect(reason)}}
+      end
+    rescue
+      e -> {:error, {:connection_failed, Exception.message(e)}}
     end
   end
 end
