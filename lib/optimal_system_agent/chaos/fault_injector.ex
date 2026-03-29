@@ -61,17 +61,11 @@ defmodule OptimalSystemAgent.Chaos.FaultInjector do
   """
   @spec init() :: :ok
   def init do
-    case :ets.new(@table_name, [:named_table, :set, :public, {:write_concurrency, true}]) do
-      _table ->
-        :ok
-
-      :error ->
-        # Table already exists, which is fine
-        :ok
-    end
+    :ets.new(@table_name, [:named_table, :set, :public, {:write_concurrency, true}])
+    :ok
   rescue
-    _error ->
-      # Argument error if table already exists - silently ignore
+    ArgumentError ->
+      # Table already exists, which is fine
       :ok
   end
 

@@ -92,6 +92,7 @@ defmodule OptimalSystemAgent.Observability.Telemetry do
     attach_llm_predict_handler()
     attach_tool_execute_handler()
     attach_memory_cache_handler()
+    OptimalSystemAgent.Observability.TelemetryOtelBridge.attach()
 
     Logger.info("[Telemetry] Tracer initialized")
     :ok

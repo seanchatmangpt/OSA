@@ -58,9 +58,19 @@ defmodule OptimalSystemAgent.Channels.Discord do
 
   @doc """
   Handle a single parsed Discord message or interaction forwarded via webhook.
+
+  Returns `:ok` if the adapter is running, or `{:error, :not_started}` if the
+  Discord adapter GenServer is not alive.
   """
+  @spec handle_update(map()) :: :ok | {:error, :not_started}
   def handle_update(update) when is_map(update) do
-    GenServer.cast(__MODULE__, {:webhook_update, update})
+    case GenServer.whereis(__MODULE__) do
+      nil ->
+        {:error, :not_started}
+
+      pid ->
+        GenServer.cast(pid, {:webhook_update, update})
+    end
   end
 
   # ── GenServer callbacks ───────────────────────────────────────────────

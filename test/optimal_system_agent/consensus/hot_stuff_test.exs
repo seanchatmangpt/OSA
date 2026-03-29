@@ -3,6 +3,7 @@ defmodule OptimalSystemAgent.Consensus.HotStuffTest do
   alias OptimalSystemAgent.Consensus.{HotStuff, Proposal}
 
   @moduletag :bft_consensus
+  @moduletag :requires_application
 
   setup do
     HotStuff.init_tables()

@@ -22,6 +22,8 @@ defmodule OptimalSystemAgent.Fortune5.SignalTheoryQualityGates do
     - Structure (W): adr-template, module-pattern, conversation
   """
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Sensors.SensorRegistry
 
   # ---------------------------------------------------------------------------

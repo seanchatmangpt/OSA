@@ -44,6 +44,7 @@ defmodule OptimalSystemAgent.Conversations.Server do
   alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.Providers.Registry, as: Providers
 
+  @call_timeout 10_000
   @default_max_turns 20
   @llm_timeout_ms 120_000
 
@@ -102,13 +103,13 @@ defmodule OptimalSystemAgent.Conversations.Server do
   @doc "Return a snapshot of the current conversation state."
   @spec get_state(pid()) :: map()
   def get_state(pid) do
-    GenServer.call(pid, :get_state)
+    GenServer.call(pid, :get_state, @call_timeout)
   end
 
   @doc "Return the transcript list: [{agent_name, message, timestamp}]."
   @spec transcript(pid()) :: [{String.t(), String.t(), DateTime.t()}]
   def transcript(pid) do
-    GenServer.call(pid, :transcript)
+    GenServer.call(pid, :transcript, @call_timeout)
   end
 
   # ---------------------------------------------------------------------------

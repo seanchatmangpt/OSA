@@ -377,6 +377,43 @@ defmodule OptimalSystemAgent.Channels.HTTP do
     end
   end
 
+  # ── MCP native HTTP+SSE server (Claude Desktop connectivity) ────────────
+
+  forward("/mcp", to: OptimalSystemAgent.MCP.Native.Router)
+
+  # ── A2A well-known agent card (no auth) ─────────────────────────────────
+
+  get "/.well-known/agent.json" do
+    port = Application.get_env(:optimal_system_agent, :http_port, 8089)
+
+    version =
+      case Application.spec(:optimal_system_agent, :vsn) do
+        nil -> "0.2.5"
+        vsn -> to_string(vsn)
+      end
+
+    card = %{
+      name: "osa-agent",
+      display_name: "OSA Agent",
+      description:
+        "Optimal System Architecture agent with ReAct loop, tool execution, " <>
+          "multi-agent orchestration, and MCP tool integration.",
+      version: version,
+      url: "http://localhost:#{port}/api/v1/a2a",
+      capabilities: ["streaming", "tools", "stateless"],
+      skills: [
+        %{name: "tool_execution", description: "Execute tools via ReAct loop"},
+        %{name: "agent_orchestration", description: "Multi-agent coordination and swarm execution"},
+        %{name: "process_delegation", description: "Delegate process mining and workflow tasks"},
+        %{name: "mcp_bridge", description: "Bridge MCP tools to A2A protocol"}
+      ]
+    }
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(card))
+  end
+
   # ── Prometheus metrics (no auth required) ───────────────────────────────
 
   forward("/metrics", to: OptimalSystemAgent.Channels.HTTP.API.MetricsRoutes)

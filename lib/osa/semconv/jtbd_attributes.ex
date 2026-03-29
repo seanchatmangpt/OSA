@@ -155,6 +155,73 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   def jtbd_deal_stage_to, do: :"jtbd.deal.stage_to"
 
   @doc """
+  DMAIC phase name — identifies the current phase in a DMAIC (Define/Measure/Analyze/Improve/Control) cycle.
+
+  Attribute: `jtbd.dmaic.phase_name`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `define`, `measure`, `analyze`, `improve`, `control`
+  """
+  @spec jtbd_dmaic_phase_name() :: :"jtbd.dmaic.phase_name"
+  def jtbd_dmaic_phase_name, do: :"jtbd.dmaic.phase_name"
+
+  @doc """
+  Enumerated values for `jtbd.dmaic.phase_name`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `define` | `"define"` | define |
+  | `measure` | `"measure"` | measure |
+  | `analyze` | `"analyze"` | analyze |
+  | `improve` | `"improve"` | improve |
+  | `control` | `"control"` | control |
+  """
+  @spec jtbd_dmaic_phase_name_values() :: %{
+    define: :define,
+    measure: :measure,
+    analyze: :analyze,
+    improve: :improve,
+    control: :control
+  }
+  def jtbd_dmaic_phase_name_values do
+    %{
+      define: :define,
+      measure: :measure,
+      analyze: :analyze,
+      improve: :improve,
+      control: :control
+    }
+  end
+
+  defmodule JtbdDmaicPhaseNameValues do
+    @moduledoc """
+    Typed constants for the `jtbd.dmaic.phase_name` attribute.
+    """
+
+    @doc "define"
+    @spec define() :: :define
+    def define, do: :define
+
+    @doc "measure"
+    @spec measure() :: :measure
+    def measure, do: :measure
+
+    @doc "analyze"
+    @spec analyze() :: :analyze
+    def analyze, do: :analyze
+
+    @doc "improve"
+    @spec improve() :: :improve
+    def improve, do: :improve
+
+    @doc "control"
+    @spec control() :: :control
+    def control, do: :control
+
+  end
+
+  @doc """
   Number of contacts evaluated in ICP qualification.
 
   Attribute: `jtbd.icp.contacts_evaluated`
@@ -666,6 +733,71 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   def jtbd_scenario_error_reason, do: :"jtbd.scenario.error_reason"
 
   @doc """
+  Outcome of the DMAIC phase — completed successfully, failed, or skipped.
+
+  Attribute: `jtbd.dmaic.phase_outcome`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `completed`, `failed`, `skipped`
+  """
+  @spec jtbd_dmaic_phase_outcome() :: :"jtbd.dmaic.phase_outcome"
+  def jtbd_dmaic_phase_outcome, do: :"jtbd.dmaic.phase_outcome"
+
+  @doc """
+  Enumerated values for `jtbd.dmaic.phase_outcome`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `completed` | `"completed"` | completed |
+  | `failed` | `"failed"` | failed |
+  | `skipped` | `"skipped"` | skipped |
+  """
+  @spec jtbd_dmaic_phase_outcome_values() :: %{
+    completed: :completed,
+    failed: :failed,
+    skipped: :skipped
+  }
+  def jtbd_dmaic_phase_outcome_values do
+    %{
+      completed: :completed,
+      failed: :failed,
+      skipped: :skipped
+    }
+  end
+
+  defmodule JtbdDmaicPhaseOutcomeValues do
+    @moduledoc """
+    Typed constants for the `jtbd.dmaic.phase_outcome` attribute.
+    """
+
+    @doc "completed"
+    @spec completed() :: :completed
+    def completed, do: :completed
+
+    @doc "failed"
+    @spec failed() :: :failed
+    def failed, do: :failed
+
+    @doc "skipped"
+    @spec skipped() :: :skipped
+    def skipped, do: :skipped
+
+  end
+
+  @doc """
+  JTBD scenario identifier associated with this DMAIC phase transition.
+
+  Attribute: `jtbd.dmaic.scenario_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `wave12-001`, `dmaic-scenario-abc`, `process-improvement-q1`
+  """
+  @spec jtbd_dmaic_scenario_id() :: :"jtbd.dmaic.scenario_id"
+  def jtbd_dmaic_scenario_id, do: :"jtbd.dmaic.scenario_id"
+
+  @doc """
   Identifier of the agent executing or participating in this scenario step.
 
   Attribute: `jtbd.scenario.agent_id`
@@ -676,6 +808,18 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   """
   @spec jtbd_scenario_agent_id() :: :"jtbd.scenario.agent_id"
   def jtbd_scenario_agent_id, do: :"jtbd.scenario.agent_id"
+
+  @doc """
+  Fitness score of the discovered process model against the event log (0.0-1.0). Higher values indicate better replay fitness.
+
+  Attribute: `jtbd.scenario.fitness`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.75`, `0.95`, `1.0`
+  """
+  @spec jtbd_scenario_fitness() :: :"jtbd.scenario.fitness"
+  def jtbd_scenario_fitness, do: :"jtbd.scenario.fitness"
 
   @doc """
   Iteration or attempt number within a repeating loop (e.g., retry attempt, consensus round iteration).
@@ -702,6 +846,30 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   def jtbd_scenario_latency_ms, do: :"jtbd.scenario.latency_ms"
 
   @doc """
+  Format of the process model produced or consumed by this scenario step (e.g., "pnml", "bpmn", "dfg").
+
+  Attribute: `jtbd.scenario.model_format`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `pnml`, `bpmn`, `dfg`, `xes`
+  """
+  @spec jtbd_scenario_model_format() :: :"jtbd.scenario.model_format"
+  def jtbd_scenario_model_format, do: :"jtbd.scenario.model_format"
+
+  @doc """
+  Number of places in the Petri net model produced by this scenario step.
+
+  Attribute: `jtbd.scenario.place_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `5`, `14`, `32`
+  """
+  @spec jtbd_scenario_place_count() :: :"jtbd.scenario.place_count"
+  def jtbd_scenario_place_count, do: :"jtbd.scenario.place_count"
+
+  @doc """
   Identifier of the Claude Code task or work item associated with this scenario step.
 
   Attribute: `jtbd.scenario.task_id`
@@ -724,5 +892,17 @@ defmodule OpenTelemetry.SemConv.Incubating.JtbdAttributes do
   """
   @spec jtbd_scenario_trace_link() :: :"jtbd.scenario.trace_link"
   def jtbd_scenario_trace_link, do: :"jtbd.scenario.trace_link"
+
+  @doc """
+  Number of transitions in the Petri net model produced by this scenario step.
+
+  Attribute: `jtbd.scenario.transition_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `4`, `8`, `20`
+  """
+  @spec jtbd_scenario_transition_count() :: :"jtbd.scenario.transition_count"
+  def jtbd_scenario_transition_count, do: :"jtbd.scenario.transition_count"
 
 end

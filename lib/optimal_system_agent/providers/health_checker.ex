@@ -31,6 +31,7 @@ defmodule OptimalSystemAgent.Providers.HealthChecker do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
   @failure_threshold 3
   @open_timeout_ms 30_000
   @default_rate_limit_ms 60_000
@@ -80,7 +81,7 @@ defmodule OptimalSystemAgent.Providers.HealthChecker do
   @doc "Return the current circuit state map for all tracked providers (for debugging/monitoring)."
   @spec state() :: map()
   def state do
-    GenServer.call(__MODULE__, :state)
+    GenServer.call(__MODULE__, :state, @call_timeout)
   end
 
   # --- GenServer Callbacks ---

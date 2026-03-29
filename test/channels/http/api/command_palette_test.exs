@@ -254,6 +254,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.CommandPaletteTest do
   # ── Regression: existing tool/skill list endpoints unaffected ────────────────
 
   describe "GET /tools — unaffected by palette changes" do
+    @tag :requires_application
     test "returns tools list" do
       # Requires app boot — Tools.list_tools() calls GenServer.call(OptimalSystemAgent.Tools.Registry, :list_tools) which needs the app started
       conn =

@@ -10,6 +10,8 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerStandaloneTest do
   """
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Armstrong.BudgetEnforcer
 
   setup do
@@ -17,7 +19,6 @@ defmodule OptimalSystemAgent.Armstrong.BudgetEnforcerStandaloneTest do
     {:ok, enforcer: pid}
   end
 
-  # ============================================================================
   # TIER BUDGET DEFINITIONS
   # ============================================================================
 

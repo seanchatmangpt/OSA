@@ -15,6 +15,8 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
 
   alias OptimalSystemAgent.Providers.ToolCallParsers
   alias OptimalSystemAgent.Utils.Text
+  alias OptimalSystemAgent.Observability.Telemetry
+  alias OptimalSystemAgent.Observability.Traceparent
 
   @doc """
   Execute a chat completion against any OpenAI-compatible endpoint.
@@ -94,7 +96,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
         temperature: Keyword.get(opts, :temperature, 0.7)
       }
       |> maybe_add_tools(opts_with_model)
-      |> maybe_add_max_tokens(opts)
+      |> maybe_add_max_tokens(model, opts)
       |> maybe_add_reasoning(model, opts)
       |> maybe_add_response_format(opts)
 
@@ -110,8 +112,18 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     # Reasoning models (o3, deepseek-reasoner, etc.) need 300+ s for chain-of-thought
     timeout = Keyword.get(opts, :receive_timeout, 120_000)
 
+    # Start llm.inference OTel span before the HTTP call
+    provider_name = provider_from_url(base_url) |> to_string()
+    {:ok, llm_span} = Telemetry.start_span("llm.inference", %{
+      "llm.provider" => provider_name,
+      "llm.model" => model
+    })
+
+    # Inject W3C traceparent so the parent trace context flows through to the provider
+    req_opts = Traceparent.add_to_request([json: body, headers: headers, receive_timeout: timeout])
+
     try do
-      case Req.post(url, json: body, headers: headers, receive_timeout: timeout) do
+      case Req.post(url, req_opts) do
         {:ok, %{status: 200, body: %{"choices" => [%{"message" => msg} | _]} = resp}} ->
           duration_ms = System.monotonic_time(:millisecond) - start_time
 
@@ -119,7 +131,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
           :telemetry.execute(
             [:osa, :providers, :chat, :complete],
             %{duration: duration_ms},
-            %{provider: provider_from_url(base_url), model: model}
+            %{provider: provider_from_url(base_url), model: model, correlation_id: Process.get(:chatmangpt_correlation_id)}
           )
 
           raw_content = msg["content"] || ""
@@ -142,6 +154,17 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
             end
             |> Text.strip_thinking_tokens()
           usage = parse_usage(resp)
+
+          # End llm.inference span — attach token counts when available
+          token_attrs = case usage do
+            %{input_tokens: inp, output_tokens: out} ->
+              %{"llm.token.input" => inp, "llm.token.output" => out}
+            _ ->
+              %{}
+          end
+          span_with_tokens = Map.update(llm_span, "attributes", token_attrs, &Map.merge(&1, token_attrs))
+          Telemetry.end_span(span_with_tokens, :ok)
+
           {:ok, %{content: content, tool_calls: tool_calls, usage: usage}}
 
         {:ok, %{status: 429, body: resp_body, headers: resp_headers}} ->
@@ -156,6 +179,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
             %{provider: provider_from_url(base_url), model: model, reason: :rate_limited}
           )
 
+          Telemetry.end_span(llm_span, :error, "rate_limited")
           {:error, {:rate_limited, retry_after}}
 
         {:ok, %{status: status, body: %{"error" => %{"code" => "tool_use_failed"} = error} = resp_body}} ->
@@ -166,6 +190,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
             nil ->
               # No failed_generation field, fall through to generic error handling
               error_msg = extract_error_message(resp_body)
+              Telemetry.end_span(llm_span, :error, "HTTP #{status}: #{error_msg}")
               {:error, "HTTP #{status}: #{error_msg}"}
 
             failed_gen ->
@@ -176,10 +201,12 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
                 # Failed to parse, return generic error
                 Logger.warning("[OpenAICompat] Failed to parse tool_use_failed failed_generation")
                 error_msg = extract_error_message(resp_body)
+                Telemetry.end_span(llm_span, :error, "HTTP #{status}: #{error_msg}")
                 {:error, "HTTP #{status}: #{error_msg}"}
               else
                 # Return structured error with parsed tool calls for recovery
                 Logger.info("[OpenAICompat] Recovered #{length(parsed_calls)} tool calls from failed_generation")
+                Telemetry.end_span(llm_span, :ok)
                 {:error, {:tool_call_format_failed, %{
                   original_error: Map.get(error, "message"),
                   failed_generation: failed_gen,
@@ -198,6 +225,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
             %{provider: provider_from_url(base_url), model: model, reason: :http_error, status: status}
           )
 
+          Telemetry.end_span(llm_span, :error, "HTTP #{status}: #{error_msg}")
           {:error, "HTTP #{status}: #{error_msg}"}
 
         {:error, reason} ->
@@ -209,11 +237,13 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
             %{provider: provider_from_url(base_url), model: model, reason: :connection_failed}
           )
 
+          Telemetry.end_span(llm_span, :error, "connection_failed: #{inspect(reason)}")
           {:error, "Connection failed: #{inspect(reason)}"}
       end
     rescue
       e ->
         duration_ms = System.monotonic_time(:millisecond) - start_time
+        Telemetry.end_span(llm_span, :error, Exception.message(e))
 
         :telemetry.execute(
           [:osa, :providers, :chat, :error],
@@ -236,7 +266,7 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
         stream: true
       }
       |> maybe_add_tools(opts)
-      |> maybe_add_max_tokens(opts)
+      |> maybe_add_max_tokens(model, opts)
       |> maybe_add_reasoning(model, opts)
 
     extra_headers = Keyword.get(opts, :extra_headers, [])
@@ -816,10 +846,23 @@ defmodule OptimalSystemAgent.Providers.OpenAICompat do
     end
   end
 
-  defp maybe_add_max_tokens(body, opts) do
+  # Reasoning models (gpt-oss, o3, deepseek-reasoner, etc.) use internal
+  # reasoning tokens that count against max_tokens.  A low budget (e.g. 80
+  # or 150) is entirely consumed by reasoning, producing an EMPTY response.
+  # Floor: 500 tokens when the model is a reasoning model.
+  @reasoning_min_tokens 500
+
+  defp maybe_add_max_tokens(body, model, opts) do
     case Keyword.get(opts, :max_tokens) do
-      nil -> body
-      n -> Map.put(body, :max_tokens, n)
+      nil ->
+        body
+
+      n when is_integer(n) ->
+        effective = if reasoning_model?(model) and n < @reasoning_min_tokens, do: @reasoning_min_tokens, else: n
+        Map.put(body, :max_tokens, effective)
+
+      n ->
+        Map.put(body, :max_tokens, n)
     end
   end
 

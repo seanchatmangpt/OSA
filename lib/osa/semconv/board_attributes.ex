@@ -11,6 +11,90 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardAttributes do
   """
 
   @doc """
+  Number of detected bottleneck activities
+
+  Attribute: `board.kpi_bottleneck_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `0`, `3`, `7`
+  """
+  @spec board_kpi_bottleneck_count() :: :"board.kpi_bottleneck_count"
+  def board_kpi_bottleneck_count, do: :"board.kpi_bottleneck_count"
+
+  @doc """
+  Conformance score [0.0-1.0]: 0.0 (no conformance) to 1.0 (perfect)
+
+  Attribute: `board.kpi_conformance_score`
+  Type: `double`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `0.0`, `0.85`, `1.0`
+  """
+  @spec board_kpi_conformance_score() :: :"board.kpi_conformance_score"
+  def board_kpi_conformance_score, do: :"board.kpi_conformance_score"
+
+  @doc """
+  Average case cycle time in milliseconds
+
+  Attribute: `board.kpi_cycle_time_avg_ms`
+  Type: `double`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `5500.0`, `12000.5`, `0.0`
+  """
+  @spec board_kpi_cycle_time_avg_ms() :: :"board.kpi_cycle_time_avg_ms"
+  def board_kpi_cycle_time_avg_ms, do: :"board.kpi_cycle_time_avg_ms"
+
+  @doc """
+  Total number of events processed (capped at 10,000)
+
+  Attribute: `board.kpi_events_processed`
+  Type: `int`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `0`, `500`, `10000`
+  """
+  @spec board_kpi_events_processed() :: :"board.kpi_events_processed"
+  def board_kpi_events_processed, do: :"board.kpi_events_processed"
+
+  @doc """
+  Whether the event log was truncated to respect the 10,000 event batch limit
+
+  Attribute: `board.kpi_truncated`
+  Type: `boolean`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `true`, `false`
+  """
+  @spec board_kpi_truncated() :: :"board.kpi_truncated"
+  def board_kpi_truncated, do: :"board.kpi_truncated"
+
+  @doc """
+  Number of unique process variants
+
+  Attribute: `board.kpi_variant_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `required`
+  Examples: `0`, `1`, `5`
+  """
+  @spec board_kpi_variant_count() :: :"board.kpi_variant_count"
+  def board_kpi_variant_count, do: :"board.kpi_variant_count"
+
+  @doc """
+  Error type if KPI computation failed
+
+  Attribute: `board.kpi_error`
+  Type: `string`
+  Stability: `development`
+  Requirement: `{"conditionally_required": "when KPI computation fails"}`
+  Examples: `timeout`, `computation_panic`, `parse_error: invalid JSON`
+  """
+  @spec board_kpi_error() :: :"board.kpi_error"
+  def board_kpi_error, do: :"board.kpi_error"
+
+  @doc """
   Conway score [0.0-1.0]: boundary handoff time / total cycle time
 
   Attribute: `board.conway_score`
@@ -110,6 +194,30 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardAttributes do
   def board_healings_triggered, do: :"board.healings_triggered"
 
   @doc """
+  ISO 8601 timestamp when Canopy received the intelligence from BusinessOS.
+
+  Attribute: `board.intelligence_received_at`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `2026-03-28T12:00:00Z`
+  """
+  @spec board_intelligence_received_at() :: :"board.intelligence_received_at"
+  def board_intelligence_received_at, do: :"board.intelligence_received_at"
+
+  @doc """
+  Origin system that produced the board intelligence payload.
+
+  Attribute: `board.intelligence_source`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `business_os`, `canopy`, `osa`
+  """
+  @spec board_intelligence_source() :: :"board.intelligence_source"
+  def board_intelligence_source, do: :"board.intelligence_source"
+
+  @doc """
   Whether a Conway violation was detected (boundary time > 40% of cycle time)
 
   Attribute: `board.is_violation`
@@ -120,6 +228,30 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardAttributes do
   """
   @spec board_is_violation() :: :"board.is_violation"
   def board_is_violation, do: :"board.is_violation"
+
+  @doc """
+  Number of active cases synced to Oxigraph in this L0 sync run.
+
+  Attribute: `board.l0_sync.case_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `42`, `1500`
+  """
+  @spec board_l0_sync_case_count() :: :"board.l0_sync.case_count"
+  def board_l0_sync_case_count, do: :"board.l0_sync.case_count"
+
+  @doc """
+  Number of handoff events synced to Oxigraph in this L0 sync run.
+
+  Attribute: `board.l0_sync.handoff_count`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `10`, `300`
+  """
+  @spec board_l0_sync_handoff_count() :: :"board.l0_sync.handoff_count"
+  def board_l0_sync_handoff_count, do: :"board.l0_sync.handoff_count"
 
   @doc """
   Number of departments with Little's Law queue violations

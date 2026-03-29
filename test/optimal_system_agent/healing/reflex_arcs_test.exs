@@ -8,8 +8,23 @@ defmodule OptimalSystemAgent.Healing.ReflexArcsTest do
   """
   use ExUnit.Case, async: false
 
-
+  alias OptimalSystemAgent.Events.Bus
   alias OptimalSystemAgent.Healing.ReflexArcs
+
+  setup do
+    # Goldrush must be running for Bus (compiled BEAM bytecode event routing)
+    Application.ensure_all_started(:goldrush)
+
+    unless Process.whereis(Bus) do
+      start_supervised!(Bus)
+    end
+
+    unless Process.whereis(ReflexArcs) do
+      start_supervised!(ReflexArcs)
+    end
+
+    :ok
+  end
 
   describe "status/0" do
     test "returns status map with required keys" do

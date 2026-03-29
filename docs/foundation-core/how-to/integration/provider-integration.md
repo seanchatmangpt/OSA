@@ -135,16 +135,16 @@ export OPENAI_MODEL=gpt-4o   # optional
 
 ```bash
 export GROQ_API_KEY=gsk_...
-export GROQ_MODEL=llama-3.3-70b-versatile   # optional
+export GROQ_MODEL=openai/gpt-oss-20b   # optional
 ```
 
 **Available models:**
 
 | Model | Context | Notes |
 |-------|---------|-------|
-| `llama-3.3-70b-versatile` | 128K | Default, good tool use |
-| `llama-3.1-8b-instant` | 131K | Very fast, lower quality |
-| `mixtral-8x7b-32768` | 32K | MoE model |
+| `openai/gpt-oss-20b` | 128K | Default, good tool use |
+| `openai/gpt-oss-20b` | 131K | Very fast, lower quality |
+| `openai/gpt-oss-20b` | 32K | MoE model |
 
 **Notes:** Groq has aggressive rate limits on free tiers. Known issue: tool name mismatch
 on second iteration (Bug 5). Recommended for speed, not for multi-step tool chains.
@@ -348,5 +348,5 @@ OptimalSystemAgent.Providers.Registry.list_providers()
 end)
 
 # Override the provider for a specific session (hot-swap without restart):
-:ets.insert(:osa_session_provider_overrides, {session_id, :groq, "llama-3.3-70b-versatile"})
+:ets.insert(:osa_session_provider_overrides, {session_id, :groq, "openai/gpt-oss-20b"})
 ```

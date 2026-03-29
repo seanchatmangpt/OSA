@@ -15,6 +15,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
   alias OptimalSystemAgent.Observability.Telemetry
 
   @default_timeout 30_000
+  @agent_call_timeout 60_000  # call_agent needs longer timeout due to additional processing
 
   @impl true
   def safety, do: :sandboxed
@@ -33,7 +34,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     Known agents:
     - BusinessOS: http://localhost:8001/api/integrations/a2a/agents
     - Canopy: http://localhost:9089/api/v1/a2a/agents
-    - OSA (self): http://localhost:9089/api/v1/a2a/agent-card
+    - OSA (self): http://localhost:8089/api/v1/a2a/agent-card
     """
   end
 
@@ -44,7 +45,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
       "properties" => %{
         "action" => %{
           "type" => "string",
-          "enum" => ["discover", "call", "list_tools", "execute_tool"],
+          "enum" => ["discover", "call", "list_tools", "execute_tool", "tasks_send"],
           "description" => "A2A action to perform"
         },
         "agent_url" => %{
@@ -62,6 +63,22 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
         "arguments" => %{
           "type" => "object",
           "description" => "Tool arguments (for 'execute_tool' action)"
+        },
+        "tool" => %{
+          "type" => "string",
+          "description" => "pm4py skill name for tasks_send (e.g. pm4py_statistics)"
+        },
+        "args" => %{
+          "type" => "object",
+          "description" => "Tool arguments for tasks_send action"
+        },
+        "task_id" => %{
+          "type" => "string",
+          "description" => "Optional task ID (auto-generated if omitted)"
+        },
+        "timeout_ms" => %{
+          "type" => "integer",
+          "description" => "Request timeout in ms (default: 65000)"
         }
       },
       "required" => ["action", "agent_url"]
@@ -93,7 +110,19 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
         "call" -> call_agent(agent_url, params["message"] || "")
         "list_tools" -> list_tools(agent_url)
         "execute_tool" -> execute_tool(agent_url, params["tool_name"], params["arguments"] || %{})
-        _ -> {:error, "Unknown action: #{action}. Use: discover, call, list_tools, execute_tool"}
+        "tasks_send" ->
+          tool      = Map.get(params, "tool")
+          args      = Map.get(params, "args", %{})
+
+          cond do
+            is_nil(agent_url) or agent_url == "" ->
+              {:error, "tasks_send requires agent_url"}
+            is_nil(tool) or tool == "" ->
+              {:error, "tasks_send requires tool"}
+            true ->
+              do_tasks_send(agent_url, tool, args, params)
+          end
+        _ -> {:error, "Unknown action: #{action}. Use: discover, call, list_tools, execute_tool, tasks_send"}
       end
 
     case result do
@@ -110,48 +139,49 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
 
   defp discover_agent(agent_url) do
     start_time = System.monotonic_time(:microsecond)
-    url = normalize_url(agent_url)
+    base_url = normalize_url(agent_url)
 
-    # Step 3: Build request with W3C traceparent header
+    # Try /.well-known/agent.json (MCP/A2A standard) first,
+    # fall back to /api/v1/a2a/agent-card for legacy compatibility.
+    well_known_url = "#{base_url}/.well-known/agent.json"
+    legacy_url = "#{base_url}/api/v1/a2a/agent-card"
+
     opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
-      receive_timeout: @default_timeout
+      receive_timeout: @default_timeout,
+      retry: false
     ])
 
-    case Req.get(url, opts) do
-      {:ok, %{status: 200, body: body}} ->
-        duration = System.monotonic_time(:microsecond) - start_time
-        Logger.info("[A2A] Discovered agent at #{url}")
+    result =
+      case Req.get(well_known_url, opts) do
+        {:ok, %{status: 200, body: body}} when is_map(body) ->
+          Logger.info("[A2A] Discovered agent via /.well-known/agent.json at #{base_url}")
+          {:ok, body}
 
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :ok}
-        )
+        _ ->
+          # Fall back to legacy agent-card endpoint
+          case Req.get(legacy_url, opts) do
+            {:ok, %{status: 200, body: body}} ->
+              Logger.info("[A2A] Discovered agent via legacy agent-card at #{base_url}")
+              {:ok, body}
 
-        {:ok, body}
+            {:ok, %{status: status, body: body}} ->
+              {:error, "Agent discovery failed: HTTP #{status} — #{inspect(body)}"}
 
-      {:ok, %{status: status, body: body}} ->
-        duration = System.monotonic_time(:microsecond) - start_time
+            {:error, reason} ->
+              {:error, "Agent discovery failed: #{inspect(reason)}"}
+          end
+      end
 
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :error, http_status: status}
-        )
+    duration = System.monotonic_time(:microsecond) - start_time
+    status_atom = if match?({:ok, _}, result), do: :ok, else: :error
 
-        {:error, "Agent discovery failed: HTTP #{status} — #{inspect(body)}"}
+    :telemetry.execute(
+      [:osa, :a2a, :agent_call],
+      %{duration: duration},
+      %{action: :discover, agent_url: agent_url, status: status_atom}
+    )
 
-      {:error, reason} ->
-        duration = System.monotonic_time(:microsecond) - start_time
-
-        :telemetry.execute(
-          [:osa, :a2a, :agent_call],
-          %{duration: duration},
-          %{action: :discover, agent_url: agent_url, status: :error, reason: :connection_failed}
-        )
-
-        {:error, "Agent discovery failed: #{inspect(reason)}"}
-    end
+    result
   end
 
   defp call_agent(agent_url, message) when is_binary(message) and message != "" do
@@ -161,7 +191,7 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
     # Step 3: Build request with W3C traceparent header
     opts = OptimalSystemAgent.Observability.Traceparent.add_to_request([
       json: %{message: message},
-      receive_timeout: 60_000
+      receive_timeout: @agent_call_timeout
     ])
 
     case Req.post(url, opts) do
@@ -306,6 +336,58 @@ defmodule OptimalSystemAgent.Tools.Builtins.A2ACall do
       "http://#{url}"
     else
       url
+    end
+  end
+
+  defp do_tasks_send(base_url, tool, args, opts) do
+    endpoint =
+      if String.ends_with?(base_url, "/a2a"),
+        do: base_url,
+        else: String.trim_trailing(base_url, "/") <> "/a2a"
+
+    task_id =
+      Map.get(opts, "task_id") ||
+        (:crypto.strong_rand_bytes(8) |> Base.encode16(case: :lower))
+
+    timeout_ms = Map.get(opts, "timeout_ms", 65_000)
+
+    payload = %{
+      "jsonrpc" => "2.0",
+      "id" => :erlang.unique_integer([:positive]),
+      "method" => "tasks/send",
+      "params" => %{
+        "id" => task_id,
+        "message" => %{
+          "role" => "user",
+          "parts" => [%{
+            "type" => "data",
+            "data" => %{"tool" => tool, "args" => args}
+          }]
+        }
+      }
+    }
+
+    Logger.debug("[A2ACall] tasks_send → #{endpoint} tool=#{tool}")
+
+    try do
+      case Req.post(endpoint, json: payload, receive_timeout: timeout_ms) do
+        {:ok, %Req.Response{status: 200, body: %{"result" => result}}} ->
+          {:ok, result}
+
+        {:ok, %Req.Response{status: 200, body: %{"error" => error}}} ->
+          {:error, {:a2a_error, error}}
+
+        {:ok, %Req.Response{status: status, body: body}} ->
+          {:error, {:http_error, status, body}}
+
+        {:error, %Req.TransportError{reason: reason}} ->
+          {:error, {:connection_failed, inspect(reason)}}
+
+        {:error, reason} ->
+          {:error, {:connection_failed, inspect(reason)}}
+      end
+    rescue
+      e -> {:error, {:connection_failed, Exception.message(e)}}
     end
   end
 end

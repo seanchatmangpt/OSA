@@ -11,6 +11,7 @@ defmodule OptimalSystemAgent.Agent.ScratchpadTest do
   alias OptimalSystemAgent.Agent.Scratchpad
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   describe "inject?/1" do
     test "returns false for anthropic provider" do

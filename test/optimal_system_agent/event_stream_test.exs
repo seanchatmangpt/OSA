@@ -12,6 +12,7 @@ defmodule OptimalSystemAgent.EventStreamTest do
   alias OptimalSystemAgent.EventStream
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # EventStream is a named GenServer that should be running via application supervisor

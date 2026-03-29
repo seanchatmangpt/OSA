@@ -41,6 +41,26 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardSpanNames do
   def board_conway_check_summary, do: "board.conway_check_summary"
 
   @doc """
+  Board KPIs computed from process mining event log
+
+  Span: `span.board.kpi_compute`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec board_kpi_compute() :: String.t()
+  def board_kpi_compute, do: "board.kpi_compute"
+
+  @doc """
+  Periodic L0 sync — exports BusinessOS cases and handoffs to Oxigraph as RDF facts via bos CLI.
+
+  Span: `span.board.l0_sync`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec board_l0_sync() :: String.t()
+  def board_l0_sync, do: "board.l0_sync"
+
+  @doc """
   Board escalation emitted for a structural (Conway) violation
 
   Span: `span.board.structural_escalation`
@@ -59,6 +79,8 @@ defmodule OpenTelemetry.SemConv.Incubating.BoardSpanNames do
       board_briefing_render(),
       board_conway_check(),
       board_conway_check_summary(),
+      board_kpi_compute(),
+      board_l0_sync(),
       board_structural_escalation()
     ]
   end

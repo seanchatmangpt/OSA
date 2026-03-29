@@ -45,9 +45,9 @@ same tier is requested from the fallback provider:
 
 | Tier | Anthropic | OpenAI | Groq |
 |---|---|---|---|
-| Elite | claude-opus-4-6 | gpt-4o | llama-3.3-70b-versatile |
+| Elite | claude-opus-4-6 | gpt-4o | openai/gpt-oss-20b |
 | Specialist | claude-sonnet-4-6 | gpt-4o-mini | llama-3.1-70b-versatile |
-| Utility | claude-haiku-4-5 | gpt-3.5-turbo | llama-3.1-8b-instant |
+| Utility | claude-haiku-4-5 | gpt-3.5-turbo | openai/gpt-oss-20b |
 
 Ollama tier mapping is dynamic: at boot, `Agent.Tier.detect_ollama_tiers/0` queries
 `GET /api/tags`, sorts installed models by size, and maps largest → elite,

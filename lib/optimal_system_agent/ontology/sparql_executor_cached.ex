@@ -24,6 +24,7 @@ defmodule OptimalSystemAgent.Ontology.SPARQLExecutorCached do
 
   @default_cache_ttl_ms 60_000  # 1 minute
   @sla_threshold_ms 100  # Alert if query takes >100ms
+  @query_timeout 15_000  # Oxigraph can be slow under load
 
   # ── Client API ────────────────────────────────────────────────
 
@@ -108,7 +109,7 @@ defmodule OptimalSystemAgent.Ontology.SPARQLExecutorCached do
   Returns: `%{hits: N, misses: M, evictions: K, avg_query_time_ms: X, ...}`
   """
   def stats do
-    GenServer.call(__MODULE__, :stats)
+    GenServer.call(__MODULE__, :stats, @query_timeout)
   end
 
   @doc """
@@ -117,7 +118,7 @@ defmodule OptimalSystemAgent.Ontology.SPARQLExecutorCached do
   Returns: `:ok`
   """
   def clear_cache do
-    GenServer.call(__MODULE__, :clear_cache)
+    GenServer.call(__MODULE__, :clear_cache, @query_timeout)
   end
 
   # ── GenServer Callbacks ────────────────────────────────────────────────

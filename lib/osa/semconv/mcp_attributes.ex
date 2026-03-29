@@ -90,17 +90,20 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   | `stdio` | `"stdio"` | stdio |
   | `http` | `"http"` | http |
   | `sse` | `"sse"` | sse |
+  | `streamable_http` | `"streamable-http"` | streamable-http |
   """
   @spec mcp_connection_transport_values() :: %{
     stdio: :stdio,
     http: :http,
-    sse: :sse
+    sse: :sse,
+    streamable_http: :"streamable-http"
   }
   def mcp_connection_transport_values do
     %{
       stdio: :stdio,
       http: :http,
-      sse: :sse
+      sse: :sse,
+      streamable_http: :"streamable-http"
     }
   end
 
@@ -120,6 +123,10 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
     @doc "sse"
     @spec sse() :: :sse
     def sse, do: :sse
+
+    @doc "streamable-http"
+    @spec streamable_http() :: :"streamable-http"
+    def streamable_http, do: :"streamable-http"
 
   end
 
@@ -143,17 +150,20 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   | `stdio` | `"stdio"` | stdio |
   | `http` | `"http"` | http |
   | `sse` | `"sse"` | sse |
+  | `streamable_http` | `"streamable-http"` | streamable-http |
   """
   @spec mcp_protocol_values() :: %{
     stdio: :stdio,
     http: :http,
-    sse: :sse
+    sse: :sse,
+    streamable_http: :"streamable-http"
   }
   def mcp_protocol_values do
     %{
       stdio: :stdio,
       http: :http,
-      sse: :sse
+      sse: :sse,
+      streamable_http: :"streamable-http"
     }
   end
 
@@ -173,6 +183,10 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
     @doc "sse"
     @spec sse() :: :sse
     def sse, do: :sse
+
+    @doc "streamable-http"
+    @spec streamable_http() :: :"streamable-http"
+    def streamable_http, do: :"streamable-http"
 
   end
 
@@ -849,19 +863,22 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
   | `http` | `"http"` | http |
   | `sse` | `"sse"` | sse |
   | `websocket` | `"websocket"` | websocket |
+  | `streamable_http` | `"streamable-http"` | streamable-http |
   """
   @spec mcp_transport_type_values() :: %{
     stdio: :stdio,
     http: :http,
     sse: :sse,
-    websocket: :websocket
+    websocket: :websocket,
+    streamable_http: :"streamable-http"
   }
   def mcp_transport_type_values do
     %{
       stdio: :stdio,
       http: :http,
       sse: :sse,
-      websocket: :websocket
+      websocket: :websocket,
+      streamable_http: :"streamable-http"
     }
   end
 
@@ -885,6 +902,10 @@ defmodule OpenTelemetry.SemConv.Incubating.McpAttributes do
     @doc "websocket"
     @spec websocket() :: :websocket
     def websocket, do: :websocket
+
+    @doc "streamable-http"
+    @spec streamable_http() :: :"streamable-http"
+    def streamable_http, do: :"streamable-http"
 
   end
 

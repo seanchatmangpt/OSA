@@ -17,6 +17,8 @@ defmodule OptimalSystemAgent.Agent.Progress do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Events.Bus
 
   defstruct tasks: %{},
@@ -78,7 +80,7 @@ defmodule OptimalSystemAgent.Agent.Progress do
   """
   @spec list() :: list(map())
   def list do
-    GenServer.call(__MODULE__, :list)
+    GenServer.call(__MODULE__, :list, @call_timeout)
   end
 
   @doc """

@@ -552,6 +552,143 @@ defmodule OpenTelemetry.SemConv.Incubating.BosAttributes do
   end
 
   @doc """
+  Compliance framework being evaluated or enforced (business_os namespace alias).
+
+  Attribute: `business_os.compliance.framework`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `SOC2`, `GDPR`
+  """
+  @spec business_os_compliance_framework() :: :"business_os.compliance.framework"
+  def business_os_compliance_framework, do: :"business_os.compliance.framework"
+
+  @doc """
+  Type of audit event recorded (business_os namespace alias).
+
+  Attribute: `business_os.audit.event_type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `data_access`, `config_change`
+  """
+  @spec business_os_audit_event_type() :: :"business_os.audit.event_type"
+  def business_os_audit_event_type, do: :"business_os.audit.event_type"
+
+  @doc """
+  Type of external integration connected to BusinessOS (business_os namespace alias).
+
+  Attribute: `business_os.integration.type`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `crm`, `erp`, `payment`
+  """
+  @spec business_os_integration_type() :: :"business_os.integration.type"
+  def business_os_integration_type, do: :"business_os.integration.type"
+
+  @doc """
+  Process discovery algorithm requested by BOS CLI.
+
+  Attribute: `bos.gateway.algorithm`
+  Type: `enum`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `inductive_miner`, `alpha_miner`
+  """
+  @spec bos_gateway_algorithm() :: :"bos.gateway.algorithm"
+  def bos_gateway_algorithm, do: :"bos.gateway.algorithm"
+
+  @doc """
+  Enumerated values for `bos.gateway.algorithm`.
+
+  | Key | Value | Description |
+  |-----|-------|-------------|
+  | `inductive_miner` | `"inductive_miner"` | inductive_miner |
+  | `alpha_miner` | `"alpha_miner"` | alpha_miner |
+  | `heuristics_miner` | `"heuristics_miner"` | heuristics_miner |
+  """
+  @spec bos_gateway_algorithm_values() :: %{
+    inductive_miner: :inductive_miner,
+    alpha_miner: :alpha_miner,
+    heuristics_miner: :heuristics_miner
+  }
+  def bos_gateway_algorithm_values do
+    %{
+      inductive_miner: :inductive_miner,
+      alpha_miner: :alpha_miner,
+      heuristics_miner: :heuristics_miner
+    }
+  end
+
+  defmodule BosGatewayAlgorithmValues do
+    @moduledoc """
+    Typed constants for the `bos.gateway.algorithm` attribute.
+    """
+
+    @doc "inductive_miner"
+    @spec inductive_miner() :: :inductive_miner
+    def inductive_miner, do: :inductive_miner
+
+    @doc "alpha_miner"
+    @spec alpha_miner() :: :alpha_miner
+    def alpha_miner, do: :alpha_miner
+
+    @doc "heuristics_miner"
+    @spec heuristics_miner() :: :heuristics_miner
+    def heuristics_miner, do: :heuristics_miner
+
+  end
+
+  @doc """
+  Conformance fitness score [0.0, 1.0] from pm4py-rust.
+
+  Attribute: `bos.gateway.fitness`
+  Type: `double`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `0.96`, `0.85`, `1.0`
+  """
+  @spec bos_gateway_fitness() :: :"bos.gateway.fitness"
+  def bos_gateway_fitness, do: :"bos.gateway.fitness"
+
+  @doc """
+  Wall-clock latency in milliseconds for the gateway round-trip.
+
+  Attribute: `bos.gateway.latency_ms`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `45`, `120`, `800`
+  """
+  @spec bos_gateway_latency_ms() :: :"bos.gateway.latency_ms"
+  def bos_gateway_latency_ms, do: :"bos.gateway.latency_ms"
+
+  @doc """
+  Identifier of the process model returned by pm4py-rust.
+
+  Attribute: `bos.gateway.model_id`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `model_001`, `model-discovery-20260328`
+  """
+  @spec bos_gateway_model_id() :: :"bos.gateway.model_id"
+  def bos_gateway_model_id, do: :"bos.gateway.model_id"
+
+  @doc """
+  Number of process traces in the event log.
+
+  Attribute: `bos.gateway.num_traces`
+  Type: `int`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `100`, `1500`, `50000`
+  """
+  @spec bos_gateway_num_traces() :: :"bos.gateway.num_traces"
+  def bos_gateway_num_traces, do: :"bos.gateway.num_traces"
+
+  @doc """
   Version of the compliance policy rule set applied.
 
   Attribute: `bos.policy.version`

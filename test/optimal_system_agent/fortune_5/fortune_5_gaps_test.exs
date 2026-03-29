@@ -3,6 +3,7 @@ defmodule OptimalSystemAgent.Fortune5.GapsTest do
 
   @moduletag :fortune_5
   @moduletag :capture_log
+  @moduletag :requires_application
 
   describe "Fortune 5 Layer 1: Signal Collection - SPR Sensors" do
     test "modules.json exists with correct structure after scan" do

@@ -81,6 +81,66 @@ defmodule OpenTelemetry.SemConv.Incubating.BosSpanNames do
   def bos_gap_detect, do: "bos.gap.detect"
 
   @doc """
+  BOS gateway conformance — forwards conformance check to pm4py-rust.
+
+  Span: `span.bos.gateway.conformance`
+  Kind: `server`
+  Stability: `development`
+  """
+  @spec bos_gateway_conformance() :: String.t()
+  def bos_gateway_conformance, do: "bos.gateway.conformance"
+
+  @doc """
+  BOS gateway discovery — forwards event-log discovery request to pm4py-rust.
+
+  Span: `span.bos.gateway.discover`
+  Kind: `server`
+  Stability: `development`
+  """
+  @spec bos_gateway_discover() :: String.t()
+  def bos_gateway_discover, do: "bos.gateway.discover"
+
+  @doc """
+  BOS gateway statistics — forwards log-statistics extraction to pm4py-rust.
+
+  Span: `span.bos.gateway.statistics`
+  Kind: `server`
+  Stability: `development`
+  """
+  @spec bos_gateway_statistics() :: String.t()
+  def bos_gateway_statistics, do: "bos.gateway.statistics"
+
+  @doc """
+  bos CLI SPARQL CONSTRUCT pipeline — loads PostgreSQL rows as RDF triples and writes to Oxigraph.
+
+  Span: `span.bos.ontology.execute`
+  Kind: `internal`
+  Stability: `development`
+  """
+  @spec bos_ontology_execute() :: String.t()
+  def bos_ontology_execute, do: "bos.ontology.execute"
+
+  @doc """
+  bos CLI SPARQL query — proxies SELECT or CONSTRUCT to Oxigraph /query endpoint.
+
+  Span: `span.bos.rdf.query`
+  Kind: `client`
+  Stability: `development`
+  """
+  @spec bos_rdf_query() :: String.t()
+  def bos_rdf_query, do: "bos.rdf.query"
+
+  @doc """
+  bos CLI RDF write — forwards Turtle or N-Triples to Oxigraph /store via HTTP proxy.
+
+  Span: `span.bos.rdf.write`
+  Kind: `client`
+  Stability: `development`
+  """
+  @spec bos_rdf_write() :: String.t()
+  def bos_rdf_write, do: "bos.rdf.write"
+
+  @doc """
   An operation performed against a BusinessOS workspace (create, update, query).
 
   Span: `span.bos.workspace.operation`
@@ -103,6 +163,12 @@ defmodule OpenTelemetry.SemConv.Incubating.BosSpanNames do
       bos_compliance_evaluate(),
       bos_decision_record(),
       bos_gap_detect(),
+      bos_gateway_conformance(),
+      bos_gateway_discover(),
+      bos_gateway_statistics(),
+      bos_ontology_execute(),
+      bos_rdf_query(),
+      bos_rdf_write(),
       bos_workspace_operation()
     ]
   end

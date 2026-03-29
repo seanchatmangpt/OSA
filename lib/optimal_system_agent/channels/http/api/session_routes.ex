@@ -102,15 +102,26 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
 
   post "/" do
     user_id = conn.assigns[:user_id] || "anonymous"
+    provider = conn.body_params["provider"]
+    model = conn.body_params["model"]
 
-    case OptimalSystemAgent.SDK.Session.create(user_id: user_id, channel: :http) do
-      {:ok, %{session_id: session_id}} ->
+    opts =
+      [user_id: user_id, channel: :http]
+      |> then(fn o -> if is_binary(provider) and provider != "", do: Keyword.put(o, :provider, provider), else: o end)
+      |> then(fn o -> if is_binary(model) and model != "", do: Keyword.put(o, :model, model), else: o end)
+
+    case OptimalSystemAgent.SDK.Session.create(opts) do
+      {:ok, %{session_id: session_id} = meta} ->
         track_session(session_id)
-        body = Jason.encode!(%{id: session_id, status: "created"})
+
+        resp =
+          %{id: session_id, status: "created"}
+          |> then(fn m -> if Map.has_key?(meta, :provider), do: Map.put(m, :provider, meta.provider), else: m end)
+          |> then(fn m -> if Map.has_key?(meta, :model), do: Map.put(m, :model, meta.model), else: m end)
 
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(201, body)
+        |> send_resp(201, Jason.encode!(resp))
 
       other ->
         Logger.error("[SessionRoutes] Unexpected Session.create result: #{inspect(other)}")
@@ -385,7 +396,28 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
   # ── POST /sessions/:id/proactive ───────────────────────────────
 
   post "/:id/proactive" do
-    json_error(conn, 501, "not_implemented", "Proactive mode not available in this build")
+    session_id = conn.params["id"]
+
+    case Registry.lookup(OptimalSystemAgent.SessionRegistry, session_id) do
+      [{_pid, _}] ->
+        Task.Supervisor.start_child(
+          OptimalSystemAgent.TaskSupervisor,
+          fn ->
+            OptimalSystemAgent.Events.Bus.emit(:system_event, %{
+              type: :proactive_mode_started,
+              session_id: session_id,
+              started_at: DateTime.utc_now()
+            })
+          end,
+          restart: :temporary
+        )
+
+        resp = Jason.encode!(%{mode: "proactive", enabled: true, session_id: session_id})
+        conn |> put_resp_content_type("application/json") |> send_resp(200, resp)
+
+      [] ->
+        json_error(conn, 404, "session_not_found", "Session #{session_id} not found")
+    end
   end
 
   get "/:id/activity" do
@@ -448,14 +480,38 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.SessionRoutes do
     source_session_id = conn.params["id"]
     body = conn.body_params
 
-    opts =
-      []
-      |> then(fn o -> if b = body["session_id"], do: Keyword.put(o, :session_id, b), else: o end)
-      |> then(fn o -> if b = body["provider"], do: Keyword.put(o, :provider, b), else: o end)
-      |> then(fn o -> if b = body["model"], do: Keyword.put(o, :model, b), else: o end)
+    provider = body["provider"]
+    model = body["model"]
+    new_session_id = body["session_id"] || "replay_#{source_session_id}_#{System.unique_integer([:positive])}"
 
-    _ = {source_session_id, opts}
-    json_error(conn, 501, "not_implemented", "Session replay not yet available")
+    messages = OptimalSystemAgent.Agent.Memory.SQLiteBridge.load(source_session_id) || []
+
+    Task.Supervisor.start_child(
+      OptimalSystemAgent.TaskSupervisor,
+      fn ->
+        Enum.each(messages, fn msg ->
+          OptimalSystemAgent.Events.Bus.emit(:session_event, %{
+            type: :replay_message,
+            session_id: new_session_id,
+            source_session_id: source_session_id,
+            message: msg
+          })
+        end)
+      end,
+      restart: :temporary
+    )
+
+    resp =
+      Jason.encode!(%{
+        status: "replaying",
+        new_session_id: new_session_id,
+        source_session_id: source_session_id,
+        message_count: length(messages),
+        provider: provider,
+        model: model
+      })
+
+    conn |> put_resp_content_type("application/json") |> send_resp(202, resp)
   end
 
   # ── POST /sessions/:id/provider ── hot-swap LLM provider ──────────

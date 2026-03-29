@@ -73,6 +73,50 @@ defmodule OptimalSystemAgent.Memory.SkillGenerator do
 
   def generate_from_pattern(_), do: {:error, "pattern must be a map"}
 
+  # Write skill file without reloading the registry (used by generate_all_pending
+  # to batch-write and reload once at the end).
+  defp write_skill_file(pattern) when is_map(pattern) do
+    id = pattern[:id] || pattern["id"] || ""
+    description = pattern[:description] || pattern["description"] || "unnamed pattern"
+    trigger = pattern[:trigger] || pattern["trigger"] || ""
+    response = pattern[:response] || pattern["response"] || ""
+    category = pattern[:category] || pattern["category"] || "context"
+    tags_raw = pattern[:tags] || pattern["tags"] || ""
+
+    slug = slugify(description)
+    skills_dir = resolve_skills_dir()
+    dir = Path.join(skills_dir, slug)
+    path = Path.join(dir, "SKILL.md")
+
+    triggers =
+      trigger
+      |> String.split(~r/[|,]/, trim: true)
+      |> Enum.map(&String.trim/1)
+      |> Enum.reject(&(&1 == ""))
+
+    tags =
+      tags_raw
+      |> String.split(",", trim: true)
+      |> Enum.map(&String.trim/1)
+      |> Enum.reject(&(&1 == ""))
+
+    content = render_skill_md(slug, description, triggers, tags, category, id, response)
+
+    with :ok <- File.mkdir_p(dir),
+         :ok <- File.write(path, content) do
+      Logger.info("[SkillGenerator] wrote skill #{slug} -> #{path}")
+      {:ok, path}
+    else
+      {:error, reason} ->
+        Logger.warning("[SkillGenerator] failed to write #{path}: #{inspect(reason)}")
+        {:error, reason}
+    end
+  rescue
+    e ->
+      Logger.warning("[SkillGenerator] write_skill_file error: #{Exception.message(e)}")
+      {:error, Exception.message(e)}
+  end
+
   @doc """
   Generate skills for all mature patterns not yet on disk.
 
@@ -82,16 +126,23 @@ defmodule OptimalSystemAgent.Memory.SkillGenerator do
 
   Returns {:ok, count} where count is the number of new skills written.
   """
+  # WvdA boundedness: limit skill generation to MAX_SKILLS_PER_RUN per call.
+  @max_skills_per_run 50
+
   @spec generate_all_pending() :: {:ok, non_neg_integer()}
   def generate_all_pending do
     patterns = Consolidator.load_all()
 
     mature =
-      Enum.filter(patterns, fn p ->
+      patterns
+      |> Enum.filter(fn p ->
         occurrences = p[:occurrences] || p["occurrences"] || 0
         occurrences >= @maturity_threshold
       end)
+      |> Enum.take(@max_skills_per_run)
 
+    # Write skill files without reloading registry on each iteration.
+    # One reload at the end is sufficient and avoids repeated GenServer calls.
     count =
       Enum.reduce(mature, 0, fn pattern, acc ->
         id = pattern[:id] || pattern["id"] || ""
@@ -99,12 +150,14 @@ defmodule OptimalSystemAgent.Memory.SkillGenerator do
         if skill_exists?(id) do
           acc
         else
-          case generate_from_pattern(pattern) do
+          case write_skill_file(pattern) do
             {:ok, _path} -> acc + 1
             {:error, _} -> acc
           end
         end
       end)
+
+    if count > 0, do: reload_registry()
 
     {:ok, count}
   rescue

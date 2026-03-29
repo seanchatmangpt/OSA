@@ -54,6 +54,8 @@ defmodule OptimalSystemAgent.Agent.Compactor do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Providers.Registry, as: Providers
   alias OptimalSystemAgent.PromptLoader
 
@@ -96,7 +98,7 @@ defmodule OptimalSystemAgent.Agent.Compactor do
   """
   @spec stats() :: map()
   def stats do
-    GenServer.call(__MODULE__, :stats)
+    GenServer.call(__MODULE__, :stats, @call_timeout)
   end
 
   @doc """

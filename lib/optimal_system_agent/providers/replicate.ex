@@ -129,7 +129,7 @@ defmodule OptimalSystemAgent.Providers.Replicate do
         :telemetry.execute(
           [:osa, :providers, :chat, :complete],
           %{duration: duration_ms},
-          %{provider: :replicate, model: model, polls: polls + 1}
+          %{provider: :replicate, model: model, polls: polls + 1, correlation_id: Process.get(:chatmangpt_correlation_id)}
         )
 
         {:ok, %{content: content, tool_calls: []}}

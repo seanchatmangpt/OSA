@@ -9,6 +9,8 @@ defmodule OptimalSystemAgent.Yawl.EventStreamTest do
 
   use ExUnit.Case, async: true
 
+  @moduletag :requires_application
+
   alias OpenTelemetry.SemConv.Incubating.YawlAttributes, as: Attrs
   alias OptimalSystemAgent.Yawl.EventStream
 

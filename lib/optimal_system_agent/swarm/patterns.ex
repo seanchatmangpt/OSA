@@ -99,8 +99,12 @@ defmodule OptimalSystemAgent.Swarm.Patterns do
 
     case validate_yawl_topology(:pipeline, step_names) do
       :ok ->
+        parent_ctx = Context.capture()
+
         {results, _} =
           Enum.map_reduce(configs, nil, fn config, prev_output ->
+            Context.restore(parent_ctx)
+
             task =
               if prev_output do
                 "## Previous step output\n#{prev_output}\n\n## Your task\n#{config.task}"

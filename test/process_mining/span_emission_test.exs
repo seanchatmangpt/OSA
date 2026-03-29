@@ -102,14 +102,14 @@ defmodule OptimalSystemAgent.ProcessMining.SpanEmissionTest do
 
       soundness_spans =
         Enum.filter(all_spans, fn {_id, span} ->
-          span["span_name"] == "process.mining.soundness"
+          span["span_name"] == "process.mining.soundness" and
+            span["attributes"]["process.mining.process_id"] == process_id
         end)
 
       assert length(soundness_spans) >= 1,
-             "Expected at least one process.mining.soundness span"
+             "Expected at least one process.mining.soundness span for process_id=#{process_id}"
 
       {_id, span} = List.last(soundness_spans)
-      assert span["attributes"]["process.mining.process_id"] == process_id
       assert span["attributes"]["process.mining.check_type"] == "deadlock_free"
     end
 

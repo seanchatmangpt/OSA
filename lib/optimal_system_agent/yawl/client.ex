@@ -90,7 +90,9 @@ defmodule OptimalSystemAgent.Yawl.Client do
     url = base_url <> "/health.jsp"
 
     result =
-      case Req.get(url, receive_timeout: @timeout_ms) do
+      # decode_body: false — YAWL health.jsp response has a trailing comma in the
+      # JSON which causes Jason to fail. We only care about the HTTP status code.
+      case Req.get(url, receive_timeout: @timeout_ms, decode_body: false) do
         {:ok, %{status: status}} when status in 200..299 -> :ok
         {:ok, _} -> {:error, :unreachable}
         {:error, _} -> {:error, :unreachable}

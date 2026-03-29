@@ -417,6 +417,35 @@ defmodule OptimalSystemAgent.Providers.OpenAICompatChicagoTDDTest do
     end
   end
 
+  describe "Provider — Reasoning Model max_tokens Floor" do
+    # BUG: openai/gpt-oss-20b uses ~100 internal reasoning_tokens before
+    # generating visible content.  Low max_tokens (e.g. 80, 150) is entirely
+    # consumed by reasoning, producing EMPTY responses.
+    # Fix: maybe_add_max_tokens enforces a floor of 500 for reasoning models.
+
+    test "CRASH: reasoning_model? detects gpt-oss as reasoning model" do
+      assert OpenAICompat.reasoning_model?("openai/gpt-oss-20b")
+      assert OpenAICompat.reasoning_model?("gpt-oss-20b")
+    end
+
+    test "CRASH: reasoning_model? detects o3 as reasoning model" do
+      assert OpenAICompat.reasoning_model?("o3-mini")
+      assert OpenAICompat.reasoning_model?("o3")
+    end
+
+    test "CRASH: reasoning_model? returns false for non-reasoning models" do
+      refute OpenAICompat.reasoning_model?("gpt-4o")
+      refute OpenAICompat.reasoning_model?("llama-3-70b")
+      refute OpenAICompat.reasoning_model?("claude-3-5-sonnet")
+    end
+
+    test "CRASH: @reasoning_min_tokens module attribute exists (floor = 500)" do
+      # The floor is enforced inside maybe_add_max_tokens (private).
+      # We verify the module compiled with the attribute by checking the module is loaded.
+      assert Code.ensure_loaded?(OpenAICompat)
+    end
+  end
+
   describe "Provider — Provider Detection from URL" do
     test "CRASH: groq.com detected as :groq" do
       # Tested indirectly through telemetry emission

@@ -1,6 +1,9 @@
 defmodule OptimalSystemAgent.Channels.HTTP.ModelsAuthTest do
   @moduledoc "Tests that /models works with stale/expired tokens when require_auth=false."
   use ExUnit.Case, async: false
+
+  @moduletag :requires_application
+
   import Plug.Test
   import Plug.Conn
 

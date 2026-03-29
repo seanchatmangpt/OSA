@@ -1351,7 +1351,7 @@ defmodule OpenTelemetry.SemConv.Incubating.LlmAttributes do
   Type: `string`
   Stability: `development`
   Requirement: `recommended`
-  Examples: `anthropic`, `openai`, `google`
+  Examples: `anthropic`, `openai`, `google`, `groq`
   """
   @spec llm_provider() :: :"llm.provider"
   def llm_provider, do: :"llm.provider"

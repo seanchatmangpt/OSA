@@ -17,6 +17,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphClient do
   @default_url "http://localhost:7878"
   @default_pool_size 5
   @default_timeout_ms 10000
+  @query_timeout 15_000
 
   # Public API
 
@@ -112,7 +113,7 @@ defmodule OptimalSystemAgent.Ontology.OxigraphClient do
   """
   @spec stats() :: map()
   def stats do
-    GenServer.call(__MODULE__, :stats)
+    GenServer.call(__MODULE__, :stats, @query_timeout)
   end
 
   # GenServer callbacks

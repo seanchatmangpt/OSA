@@ -59,7 +59,7 @@ defmodule OptimalSystemAgent.Channels.Signal do
   def connected? do
     case Process.whereis(__MODULE__) do
       nil -> false
-      pid -> GenServer.call(pid, :connected?)
+      pid -> GenServer.call(pid, :connected?, @send_timeout)
     end
   end
 

@@ -25,7 +25,7 @@
 
 | Provider | Guide | Key Env Var | Default Model |
 |----------|-------|-------------|---------------|
-| Groq (LPU) | [groq.md](groq.md) | `GROQ_API_KEY` | llama-3.3-70b-versatile |
+| Groq (LPU) | [groq.md](groq.md) | `GROQ_API_KEY` | openai/gpt-oss-20b |
 | Fireworks | [fireworks.md](fireworks.md) | `FIREWORKS_API_KEY` | llama-v3p3-70b |
 | Together AI | [together.md](together.md) | `TOGETHER_API_KEY` | Llama-3.3-70B |
 | DeepSeek | [deepseek.md](deepseek.md) | `DEEPSEEK_API_KEY` | deepseek-chat |

@@ -3,10 +3,11 @@ defmodule OptimalSystemAgent.Yawl.Supervisor do
   Supervisor for the YAWL integration subsystem.
 
   Supervises:
-    * `OptimalSystemAgent.Yawl.Client` — GenServer HTTP client for the YAWL engine.
-    * `OptimalSystemAgent.Yawl.EventStream` — SSE consumer emitting OTEL telemetry.
+    * `OptimalSystemAgent.Yawl.Client`        — GenServer HTTP client for the YAWL engine.
+    * `OptimalSystemAgent.Yawl.EventStream`   — SSE consumer emitting OTEL telemetry.
+    * `OptimalSystemAgent.Yawl.CaseLifecycle` — Case lifecycle client for embedded server.
 
-  Uses `:one_for_one` strategy: a crash in either child is isolated and the
+  Uses `:one_for_one` strategy: a crash in any child is isolated and the
   supervisor restarts it without affecting other extensions.
   """
 
@@ -18,7 +19,8 @@ defmodule OptimalSystemAgent.Yawl.Supervisor do
   def init(_opts) do
     children = [
       {OptimalSystemAgent.Yawl.Client, []},
-      {OptimalSystemAgent.Yawl.EventStream, []}
+      {OptimalSystemAgent.Yawl.EventStream, []},
+      {OptimalSystemAgent.Yawl.CaseLifecycle, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

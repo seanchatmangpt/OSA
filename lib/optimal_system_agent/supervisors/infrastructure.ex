@@ -69,8 +69,18 @@ defmodule OptimalSystemAgent.Supervisors.Infrastructure do
       # Emits telemetry events on status change (ok/degraded/down)
       {OptimalSystemAgent.Health.PM4PyMonitor, []},
 
+      # Autonomous process monitoring scheduler — hourly drift detection
+      # Compares live event log stats against ETS baseline; emits :process_drift_detected
+      {OptimalSystemAgent.Monitoring.ProcessMonitoringScheduler, []},
+
       # Metrics collection GenServer — collects tool, provider, noise filter, and signal weight metrics
-      OptimalSystemAgent.Telemetry.Metrics
+      OptimalSystemAgent.Telemetry.Metrics,
+
+      # Native MCP server session manager (ETS-backed, max 500 sessions, 5-min TTL sweep)
+      OptimalSystemAgent.MCP.Native.SessionManager,
+
+      # A2A agent registry — probes /.well-known/agent.json for all 4 agents every 60s
+      OptimalSystemAgent.A2A.Registry
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

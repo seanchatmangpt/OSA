@@ -1,6 +1,8 @@
 defmodule OSA.Semconv.LLMCompressionTest do
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   alias OpenTelemetry.SemConv.Incubating.{
     LlmAttributes,
     LlmSpanNames

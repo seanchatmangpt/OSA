@@ -10,6 +10,9 @@ defmodule OptimalSystemAgent.Agent.TaskTrackerOtelTest do
   """
 
   use ExUnit.Case, async: true
+
+  @moduletag :requires_application
+
   alias OptimalSystemAgent.Agent.TaskTracker
   alias OptimalSystemAgent.Agent.TaskTracker.Task
 

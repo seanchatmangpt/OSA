@@ -111,7 +111,7 @@ GROQ_API_KEY="gsk_..."
 ```elixir
 config :optimal_system_agent, :groq,
   api_key: System.get_env("GROQ_API_KEY"),
-  model:   "llama-3.3-70b-versatile"
+  model:   "openai/gpt-oss-20b"
 ```
 
 ---

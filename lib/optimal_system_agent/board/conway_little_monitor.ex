@@ -78,6 +78,22 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
       %{error: :timeout}
   end
 
+  @doc """
+  Inject board intelligence received from BusinessOS via Canopy.
+
+  Emits Bus events based on the payload:
+  - `conway_violations > 0` → `:board_escalation` (structural, requires board decision)
+  - Returns `:ok` or `{:error, :monitor_unavailable}`
+
+  WvdA: 5s timeout on GenServer.call, :exit guard for boundedness.
+  """
+  @spec inject_board_intelligence(map()) :: :ok | {:error, :monitor_unavailable}
+  def inject_board_intelligence(intel) do
+    GenServer.call(__MODULE__, {:inject_intelligence, intel}, 5_000)
+  catch
+    :exit, _ -> {:error, :monitor_unavailable}
+  end
+
   # GenServer callbacks
 
   @impl true
@@ -133,6 +149,26 @@ defmodule OptimalSystemAgent.Board.ConwayLittleMonitor do
     }
 
     {:reply, status, state}
+  end
+
+  @impl true
+  def handle_call({:inject_intelligence, intel}, _from, state) do
+    conway_violations = Map.get(intel, :conway_violations, 0)
+
+    # Emit board_escalation if Conway violations detected (structural, board decides).
+    if conway_violations > 0 do
+      Bus.emit(:system_event, %{
+        event: :board_escalation,
+        source: :businessos_intelligence,
+        conway_violations: conway_violations,
+        health_summary: Map.get(intel, :health_summary, 1.0),
+        conformance_score: Map.get(intel, :conformance_score, 1.0),
+        received_at: Map.get(intel, :received_at, DateTime.utc_now() |> DateTime.to_iso8601())
+      })
+      Logger.info("[ConwayLittleMonitor] Board escalation emitted from BusinessOS intelligence: #{conway_violations} violations")
+    end
+
+    {:reply, :ok, state}
   end
 
   @impl true

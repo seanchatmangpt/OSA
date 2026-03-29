@@ -72,7 +72,7 @@ ollama pull llama3.2:latest    # Pull the model
 export OSA_MODEL=my-custom-model
 
 # Or set provider-specific
-export GROQ_MODEL=llama-3.3-70b-versatile
+export GROQ_MODEL=openai/gpt-oss-20b
 export ANTHROPIC_MODEL=claude-sonnet-4-6
 export OPENAI_MODEL=gpt-4o
 ```

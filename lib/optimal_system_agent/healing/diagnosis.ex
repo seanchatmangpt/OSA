@@ -36,6 +36,7 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
   """
 
   alias OptimalSystemAgent.Observability.Telemetry
+  alias OptimalSystemAgent.ProcessMining.OcelCollector
 
   @type failure_mode ::
           :shannon
@@ -109,6 +110,41 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
     }
 
     {:ok, result}
+  end
+
+  @doc """
+  Classify an error with OCPM context — adjusts confidence based on real OCEL process evidence.
+
+  Retrieves the OCEL event lifecycle for `session_id` from `OcelCollector`, computes a local
+  conformance score from those events, then adjusts the base confidence:
+
+      adjusted_confidence = base_confidence * (0.5 + conformance_score * 0.5)
+
+  This grounds Connection 4 (GenAI/RAG) by anchoring diagnosis confidence to observable
+  process data rather than static weights alone. When no lifecycle events exist the
+  conformance score defaults to 0.5 (neutral), preserving 75% of the base confidence.
+
+  Existing `classify/1` is unchanged (backward compatibility).
+
+  ## Parameters
+  - `error` — same as `classify/1`
+  - `session_id` — session or agent id to look up in the OCEL event history
+
+  ## Returns
+  `{:ok, %{failure_mode: atom, description: string, root_cause: string, confidence: float}}`
+  where confidence has been adjusted by the local OCEL conformance score.
+  """
+  @spec classify_with_ocpm_context(term(), String.t()) :: {:ok, map()}
+  def classify_with_ocpm_context(error, session_id) do
+    {:ok, result} = classify(error)
+
+    events = OcelCollector.get_object_lifecycle(session_id, "session")
+
+    conformance_score = compute_local_conformance(result.failure_mode, events)
+
+    adjusted_confidence = result.confidence * (0.5 + conformance_score * 0.5)
+
+    {:ok, %{result | confidence: adjusted_confidence}}
   end
 
   # Confidence scores by failure mode — higher for well-defined structural failures
@@ -406,6 +442,55 @@ defmodule OptimalSystemAgent.Healing.Diagnosis do
         {:unknown, "unknown error in message", message}
     end
   end
+
+  # ========== OCPM CONFORMANCE HELPERS ==========
+
+  # Compute a local conformance score [0.0, 1.0] from OCEL lifecycle events.
+  # Pure ETS read — no HTTP, no external calls. Neutral 0.5 when events absent.
+  #
+  # :deadlock — high unmatched tool_call:tool_result ratio signals circular wait evidence
+  # :timeout  — high unmatched llm_request:llm_response ratio signals deadline miss
+  # :cascade  — event count correlates with failure spread across components
+  # other     — neutral 0.5 (no domain-specific evidence pattern available)
+
+  defp compute_local_conformance(_mode, []), do: 0.5
+
+  defp compute_local_conformance(:deadlock, events) do
+    tool_calls = Enum.count(events, fn {_eid, act, _ts} -> act == "tool_call" end)
+    tool_results = Enum.count(events, fn {_eid, act, _ts} -> act == "tool_result" end)
+
+    if tool_calls == 0 do
+      0.5
+    else
+      unmatched_ratio = max(0.0, (tool_calls - tool_results) / tool_calls)
+      Float.round(unmatched_ratio * 1.0, 4)
+    end
+  end
+
+  defp compute_local_conformance(:timeout, events) do
+    llm_requests = Enum.count(events, fn {_eid, act, _ts} -> act == "llm_request" end)
+    llm_responses = Enum.count(events, fn {_eid, act, _ts} -> act == "llm_response" end)
+
+    if llm_requests == 0 do
+      0.5
+    else
+      unmatched_ratio = max(0.0, (llm_requests - llm_responses) / llm_requests)
+      Float.round(unmatched_ratio * 1.0, 4)
+    end
+  end
+
+  defp compute_local_conformance(:cascade, events) do
+    count = length(events)
+
+    cond do
+      count >= 10 -> 0.9
+      count >= 5 -> 0.7
+      count >= 1 -> 0.5
+      true -> 0.5
+    end
+  end
+
+  defp compute_local_conformance(_mode, _events), do: 0.5
 
   # ========== HELPERS ==========
 

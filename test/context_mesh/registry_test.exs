@@ -13,12 +13,19 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
   @moduletag :capture_log
 
   setup do
-    # Initialize ETS table for tests
+    # Initialize ETS table for tests (creates if not exists)
     Registry.init_table()
 
-    # Clean up ETS table after each test
+    # Clear the ETS table before each test so application-level keepers
+    # registered by other test modules or the running app do not bleed in.
+    :ets.delete_all_objects(:osa_context_mesh_keepers)
+
+    # Clean up ETS table after each test as well
     on_exit(fn ->
-      :ets.delete_all_objects(:osa_context_mesh_keepers)
+      case :ets.whereis(:osa_context_mesh_keepers) do
+        :undefined -> :ok
+        _ -> :ets.delete_all_objects(:osa_context_mesh_keepers)
+      end
     end)
 
     :ok
@@ -130,11 +137,13 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
     end
 
     test "sorts results by created_at" do
-      Registry.register("team1", "keeper1")
+      # Use unique team name to prevent ETS contamination from concurrent test modules
+      team = "sort_team_#{System.unique_integer([:positive])}"
+      Registry.register(team, "keeper1")
       Process.sleep(10)
-      Registry.register("team1", "keeper2")
+      Registry.register(team, "keeper2")
 
-      keepers = Registry.list_by_team("team1")
+      keepers = Registry.list_by_team(team)
       assert length(keepers) == 2
       assert Enum.at(keepers, 0).keeper_id == "keeper1"
       assert Enum.at(keepers, 1).keeper_id == "keeper2"

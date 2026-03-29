@@ -133,9 +133,9 @@ base URL and auth header format to use.
 
 | Tier | Anthropic | OpenAI | Groq | Ollama |
 |---|---|---|---|---|
-| `:elite` | claude-opus-4-6 | gpt-4o | llama-3.3-70b-versatile | largest installed |
+| `:elite` | claude-opus-4-6 | gpt-4o | openai/gpt-oss-20b | largest installed |
 | `:specialist` | claude-sonnet-4-6 | gpt-4o-mini | llama-3.1-70b-versatile | mid-size installed |
-| `:utility` | claude-haiku-4-5 | gpt-3.5-turbo | llama-3.1-8b-instant | smallest installed |
+| `:utility` | claude-haiku-4-5 | gpt-3.5-turbo | openai/gpt-oss-20b | smallest installed |
 
 Full mapping for all 18 providers is in `Agent.Tier.@tier_models`.
 
@@ -166,18 +166,18 @@ A per-session provider and model can be overridden at runtime without restarting
 
 **Via ETS (internal):**
 ```elixir
-:ets.insert(:osa_session_provider_overrides, {session_id, :groq, "llama-3.3-70b-versatile"})
+:ets.insert(:osa_session_provider_overrides, {session_id, :groq, "openai/gpt-oss-20b"})
 ```
 
 **Via HTTP API:**
 ```bash
 POST /sessions/{id}/provider
-{"provider": "groq", "model": "llama-3.3-70b-versatile"}
+{"provider": "groq", "model": "openai/gpt-oss-20b"}
 ```
 
 **Via CLI:**
 ```
-/model groq llama-3.3-70b-versatile
+/model groq openai/gpt-oss-20b
 ```
 
 The override is read in `Loop.LLMClient.llm_chat/3` before the tier resolution step

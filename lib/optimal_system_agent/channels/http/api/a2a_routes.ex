@@ -62,6 +62,17 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.A2ARoutes do
     |> send_resp(200, Jason.encode!(%{agents: agents}))
   end
 
+  # ── GET /registry ─────────────────────────────────────────────────
+  # Returns all agents discovered via /.well-known/agent.json probing.
+
+  get "/registry" do
+    agents = OptimalSystemAgent.A2A.Registry.all_agents()
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{agents: agents, count: length(agents)}))
+  end
+
   # ── GET /tools ───────────────────────────────────────────────────
 
   get "/tools" do
@@ -151,7 +162,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API.A2ARoutes do
   end
 
   defp a2a_base_url do
-    port = Application.get_env(:optimal_system_agent, :http_port, 9089)
+    port = Application.get_env(:optimal_system_agent, :http_port, 8089)
     "http://localhost:#{port}/api/v1/a2a"
   end
 

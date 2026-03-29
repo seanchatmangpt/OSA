@@ -9,6 +9,8 @@ defmodule OptimalSystemAgent.System.Updater do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   alias OptimalSystemAgent.Events.Bus
 
   @default_interval 86_400_000
@@ -33,7 +35,7 @@ defmodule OptimalSystemAgent.System.Updater do
   @doc "Get the currently available update, if any."
   @spec available_update() :: map() | nil
   def available_update do
-    GenServer.call(__MODULE__, :available_update)
+    GenServer.call(__MODULE__, :available_update, @call_timeout)
   end
 
   @doc "Apply a staged update (downloads, verifies hash, stages for restart)."

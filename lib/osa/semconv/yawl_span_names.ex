@@ -22,6 +22,17 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlSpanNames do
   def yawl_case, do: "yawl.case"
 
   @doc """
+  Client span for launching a new YAWL case via the embedded server HTTP endpoint (POST /api/cases/launch). Emitted by CaseLifecycle GenServer.
+
+
+  Span: `span.yawl.case.launch`
+  Kind: `client`
+  Stability: `development`
+  """
+  @spec yawl_case_launch() :: String.t()
+  def yawl_case_launch, do: "yawl.case.launch"
+
+  @doc """
   Span for a single YAWL task execution within a case. Child of span.yawl.case. Covers the full task lifecycle: TASK_ENABLED → TASK_STARTED (tokens consumed) → TASK_COMPLETED (tokens produced). The yawl.token.consumed and yawl.token.produced attributes record Petri net token flow.
 
 
@@ -33,13 +44,26 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlSpanNames do
   def yawl_task_execution, do: "yawl.task.execution"
 
   @doc """
+  Client span for completing (checking in) a YAWL work item via the embedded server (POST /api/cases/{id}/workitems/{wid}/complete). Emitted by CaseLifecycle GenServer.
+
+
+  Span: `span.yawl.workitem.complete`
+  Kind: `client`
+  Stability: `development`
+  """
+  @spec yawl_workitem_complete() :: String.t()
+  def yawl_workitem_complete, do: "yawl.workitem.complete"
+
+  @doc """
   All span names in this namespace.
   """
   @spec all() :: [String.t()]
   def all do
     [
       yawl_case(),
-      yawl_task_execution()
+      yawl_case_launch(),
+      yawl_task_execution(),
+      yawl_workitem_complete()
     ]
   end
 end

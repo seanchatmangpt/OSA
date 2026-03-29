@@ -1,10 +1,16 @@
 FROM elixir:1.17-alpine AS builder
 
-RUN apk add --no-cache build-base git go
+RUN apk add --no-cache build-base git
+
+# Set HOME to /home/osa so Path.expand("~/.osa/osa.db") bakes in
+# /home/osa/.osa/osa.db at compile time (not /root/.osa/osa.db).
+ENV HOME=/home/osa
+RUN mkdir -p /home/osa
 
 WORKDIR /app
 
 COPY mix.exs mix.lock ./
+COPY VERSION ./
 RUN mix local.hex --force && mix local.rebar --force
 RUN mix deps.get --only prod
 RUN MIX_ENV=prod mix deps.compile
@@ -13,18 +19,17 @@ COPY config config
 COPY lib lib
 COPY priv priv
 COPY rel rel
-COPY VERSION ./
-
-# Build Go tokenizer
-RUN cd priv/go/tokenizer && CGO_ENABLED=0 go build -o osa-tokenizer .
 
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix release osagent
 
-FROM alpine:3.19 AS runner
+FROM alpine:3.22 AS runner
 
-RUN apk add --no-cache libstdc++ openssl ncurses-libs
-RUN addgroup -S osa && adduser -S osa -G osa
+RUN apk add --no-cache libstdc++ openssl ncurses-libs wget
+RUN addgroup -S osa && adduser -S -h /home/osa -G osa osa && \
+    mkdir -p /home/osa/.osa && \
+    chown -R osa:osa /home/osa
+ENV HOME=/home/osa
 
 WORKDIR /app
 
@@ -35,7 +40,7 @@ USER osa
 ENV MIX_ENV=prod
 
 EXPOSE 8089
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8089/health || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
+  CMD wget -q -O /dev/null http://localhost:8089/health || exit 1
 
 CMD ["bin/osagent", "serve"]

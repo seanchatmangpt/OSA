@@ -38,6 +38,7 @@ defmodule OptimalSystemAgent.Integrations.Compliance.Verifier do
   @verify_timeout_ms 15_000
   @cache_ttl_ms 300_000  # 5 minutes
   @cache_stats_key :__cache_stats__
+  @call_timeout_ms 5_000  # GenServer.call timeout for non-verification operations
 
   # ── Client API ───────────────────────────────────────────────────────
 
@@ -94,21 +95,21 @@ defmodule OptimalSystemAgent.Integrations.Compliance.Verifier do
   Get current cache statistics (hits, misses, entries).
   """
   def cache_stats(verifier_ref) do
-    GenServer.call(verifier_ref, :cache_stats)
+    GenServer.call(verifier_ref, :cache_stats, @call_timeout_ms)
   end
 
   @doc """
   Invalidate cache entry for a framework.
   """
   def invalidate_cache(verifier_ref, framework) do
-    GenServer.call(verifier_ref, {:invalidate, framework})
+    GenServer.call(verifier_ref, {:invalidate, framework}, @call_timeout_ms)
   end
 
   @doc """
   Clear all cache entries.
   """
   def clear_cache(verifier_ref) do
-    GenServer.call(verifier_ref, :clear_all)
+    GenServer.call(verifier_ref, :clear_all, @call_timeout_ms)
   end
 
   # ── GenServer Callbacks ──────────────────────────────────────────────

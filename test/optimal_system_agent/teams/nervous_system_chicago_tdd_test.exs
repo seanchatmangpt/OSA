@@ -19,10 +19,23 @@ defmodule OptimalSystemAgent.Teams.NervousSystemChicagoTDDTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
 
   alias OptimalSystemAgent.Teams.NervousSystem
 
   setup_all do
+    # Ensure all NervousSystem modules are loaded into memory.
+    # function_exported?/3 returns false for unloaded modules even when
+    # the function exists; Code.ensure_loaded!/1 forces BEAM to load them.
+    Code.ensure_loaded!(NervousSystem)
+    Code.ensure_loaded!(NervousSystem.AutoLogger)
+    Code.ensure_loaded!(NervousSystem.Broadcaster)
+    Code.ensure_loaded!(NervousSystem.Rebalancer)
+    Code.ensure_loaded!(NervousSystem.ConflictDetector)
+    Code.ensure_loaded!(NervousSystem.MessageScheduler)
+    Code.ensure_loaded!(NervousSystem.Negotiation)
+    Code.ensure_loaded!(NervousSystem.Rendezvous)
+    Code.ensure_loaded!(NervousSystem.ComplexityMonitor)
     # The embedded modules are standalone - no parent start needed
     # They initialize their own ETS tables on first use
     :ok

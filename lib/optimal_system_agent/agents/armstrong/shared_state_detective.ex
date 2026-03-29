@@ -64,6 +64,8 @@ defmodule OptimalSystemAgent.Agents.Armstrong.SharedStateDetective do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   # ─────────────────────────────────────────────────────────────────
   # Public API
   # ─────────────────────────────────────────────────────────────────
@@ -95,13 +97,13 @@ defmodule OptimalSystemAgent.Agents.Armstrong.SharedStateDetective do
   @doc "Get all violations discovered so far (static + runtime)."
   @spec get_violations() :: [{atom(), String.t(), pos_integer(), String.t()}]
   def get_violations do
-    GenServer.call(__MODULE__, :get_violations)
+    GenServer.call(__MODULE__, :get_violations, @call_timeout)
   end
 
   @doc "Clear all violations (reset detector state)."
   @spec clear_violations() :: :ok
   def clear_violations do
-    GenServer.call(__MODULE__, :clear_violations)
+    GenServer.call(__MODULE__, :clear_violations, @call_timeout)
   end
 
   # ─────────────────────────────────────────────────────────────────

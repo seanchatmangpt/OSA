@@ -147,18 +147,21 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "returns true if OSA_COMPACT_MODE is 'true'" do
-      # From module: "true" -> true
-      assert true
+      System.put_env("OSA_COMPACT_MODE", "true")
+      on_exit(fn -> System.delete_env("OSA_COMPACT_MODE") end)
+      assert Soul.compact_mode() == true
     end
 
     test "returns true if OSA_COMPACT_MODE is '1'" do
-      # From module: "1" -> true
-      assert true
+      System.put_env("OSA_COMPACT_MODE", "1")
+      on_exit(fn -> System.delete_env("OSA_COMPACT_MODE") end)
+      assert Soul.compact_mode() == true
     end
 
     test "returns true if OSA_COMPACT_MODE is 'yes'" do
-      # From module: "yes" -> true
-      assert true
+      System.put_env("OSA_COMPACT_MODE", "yes")
+      on_exit(fn -> System.delete_env("OSA_COMPACT_MODE") end)
+      assert Soul.compact_mode() == true
     end
 
     test "auto-detects groq provider" do
@@ -187,8 +190,13 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "respects OSA_FULL_PROMPT override" do
-      # From module: System.get_env("OSA_FULL_PROMPT") != "true"
-      assert true
+      System.put_env("OSA_FULL_PROMPT", "true")
+      Application.put_env(:optimal_system_agent, :default_provider, :anthropic)
+      on_exit(fn ->
+        System.delete_env("OSA_FULL_PROMPT")
+        Application.delete_env(:optimal_system_agent, :default_provider)
+      end)
+      assert Soul.compact_mode() == false
     end
   end
 
@@ -199,13 +207,18 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "clears static_token_count cache" do
-      # From module: :persistent_term.put({__MODULE__, :static_token_count}, 0)
-      assert true
+      # Populate and then invalidate; static_token_count should still return a valid integer
+      Soul.invalidate_cache()
+      count = Soul.static_token_count()
+      assert is_integer(count)
+      assert count >= 0
     end
 
     test "clears static_base_compact cache" do
-      # From module: :persistent_term.put({__MODULE__, :static_base_compact}, nil)
-      assert true
+      # Populate and then invalidate; static_base_compact should return a binary
+      Soul.invalidate_cache()
+      result = Soul.static_base_compact()
+      assert is_binary(result)
     end
 
     test "clears static_base_compact_token_count cache" do
@@ -305,8 +318,8 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "falls back to default soul if agent-specific not found" do
-      # From module: %{identity: identity(), soul: soul()}
-      assert true
+      result = Soul.for_agent("__nonexistent_agent_xyz__")
+      assert result == %{identity: Soul.identity(), soul: Soul.soul()}
     end
 
     test "falls back to default for missing agent_identity" do
@@ -425,18 +438,18 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "includes OSA identity" do
-      # From module: "You are OSA (Optimal System Agent)."
-      assert true
+      result = apply(Soul, :compose_legacy_template, [])
+      assert String.contains?(result, "You are OSA")
     end
 
     test "includes TOOL_DEFINITIONS placeholder" do
-      # From module: "{{TOOL_DEFINITIONS}}"
-      assert true
+      result = apply(Soul, :compose_legacy_template, [])
+      assert String.contains?(result, "{{TOOL_DEFINITIONS}}")
     end
 
     test "includes USER_PROFILE placeholder" do
-      # From module: "{{USER_PROFILE}}"
-      assert true
+      result = apply(Soul, :compose_legacy_template, [])
+      assert String.contains?(result, "{{USER_PROFILE}}")
     end
   end
 
@@ -465,8 +478,9 @@ defmodule OptimalSystemAgent.SoulTest do
     end
 
     test "indicates tools are sent via API only" do
-      # From module: @doc "Returns nil for all providers - tools are sent via API only."
-      assert true
+      Enum.each([:ollama, :anthropic, :openai, :google], fn provider ->
+        assert Soul.tools(provider) == nil
+      end)
     end
   end
 

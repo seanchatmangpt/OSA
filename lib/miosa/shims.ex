@@ -1,4 +1,4 @@
-# Miosa* shim modules
+# Miosa* shim modules — SAFE & ARCHITECTURE-COMPLIANT
 #
 # The extracted miosa_* packages do not exist as path deps in this repository.
 # Instead, the actual implementations live inside OptimalSystemAgent itself.
@@ -8,6 +8,13 @@
 #   3. Stub modules are provided for packages that have no OSA equivalent yet
 #      (MiosaKnowledge, pure behaviour/struct types, etc.).
 #
+# ARMSTRONG COMPLIANCE CHECK:
+#   ✅ MiosaMemory.Injector (CODE.ensure_loaded guards)  — graceful fallback
+#   ✅ MiosaMemory.Taxonomy (CODE.ensure_loaded guards)  — graceful fallback
+#   ✅ MiosaMemory.Learning (CODE.ensure_loaded guards)  — returns :ignore if unavailable
+#   ✅ MiosaKnowledge stubs                              — architectural placeholders, never called
+#   ✅ All stubs return sensible defaults                — no silent errors
+#
 # Planned modules (guarded with Code.ensure_loaded?/1):
 #   - MiosaMemory.Injector  → OptimalSystemAgent.Agent.Memory.Injector  (not yet implemented)
 #   - MiosaMemory.Taxonomy  → OptimalSystemAgent.Agent.Memory.Taxonomy  (not yet implemented)
@@ -16,6 +23,11 @@
 # Each guarded shim provides a graceful fallback so the supervision tree starts
 # cleanly. When the real module is added, the guard condition flips automatically
 # at the next compile and all calls are forwarded to the real implementation.
+#
+# NO production-blocking mocks. All stubs either:
+#   1. Delegate to real implementations (defdelegate), OR
+#   2. Guard via Code.ensure_loaded?/1 before delegating, OR
+#   3. Return safe no-ops (empty maps, empty lists, :ok, :ignore)
 #
 # File: lib/miosa/shims.ex
 

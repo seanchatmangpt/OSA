@@ -11,6 +11,7 @@ defmodule OptimalSystemAgent.ContextMesh.SupervisorTest do
   alias OptimalSystemAgent.ContextMesh.Supervisor
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   setup do
     # Ensure Supervisor is started for tests

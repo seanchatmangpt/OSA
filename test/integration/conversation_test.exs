@@ -190,6 +190,7 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       refute String.contains?(system_text(system_msg), "Active Signal:")
     end
 
+    @tag :requires_application
     test "build without signal — LLM self-classifies via SYSTEM.md" do
       state = %{
         session_id: "test-no-overlay",
@@ -199,6 +200,7 @@ defmodule OptimalSystemAgent.Integration.ConversationTest do
       }
 
       # No signal is injected — signal calibration instructions are in the static SYSTEM.md prompt
+      # Requires app boot so PromptLoader populates :persistent_term with SYSTEM.md content
       context = Context.build(state, nil)
       [system_msg | _] = context.messages
 

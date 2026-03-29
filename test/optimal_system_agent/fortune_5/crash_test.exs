@@ -9,6 +9,8 @@ defmodule OptimalSystemAgent.Fortune5.CrashTest do
   Not testing missing features - testing EXISTING code's edge cases.
   """
 
+  @moduletag :requires_application
+
   describe "Crash SensorRegistry with Real-World Edge Cases" do
     setup do
       OptimalSystemAgent.Sensors.SensorRegistry.init_tables()

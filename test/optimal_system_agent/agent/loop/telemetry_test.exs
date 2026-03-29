@@ -11,6 +11,7 @@ defmodule OptimalSystemAgent.Agent.Loop.TelemetryTest do
   alias OptimalSystemAgent.Agent.Loop.Telemetry
 
   @moduletag :capture_log
+  @moduletag :requires_application
 
   describe "emit_context_pressure/1" do
     test "returns :ok on success" do

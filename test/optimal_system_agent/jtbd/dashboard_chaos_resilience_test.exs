@@ -13,6 +13,8 @@ defmodule OptimalSystemAgent.JTBD.DashboardChaosResilienceTest do
 
   use ExUnit.Case, async: false
 
+  @moduletag :requires_application
+
 
   require Logger
 

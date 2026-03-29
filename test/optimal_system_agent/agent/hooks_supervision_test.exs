@@ -10,17 +10,27 @@ defmodule OptimalSystemAgent.Agent.HooksSupervisionTest do
   """
   use ExUnit.Case
 
+  @moduletag :requires_application
+
   import ExUnit.CaptureLog
 
   setup_all do
-    # Start minimal supervision tree for hooks (one-time setup)
-    {:ok, supervisor} =
-      Supervisor.start_link([
-        {OptimalSystemAgent.Agent.Hooks, []},
-        {Task.Supervisor, name: OptimalSystemAgent.TaskSupervisor}
-      ], strategy: :one_for_one)
+    # The application already starts Agent.Hooks and TaskSupervisor.
+    # Start a separate supervisor only for processes that aren't already running.
+    children =
+      []
+      |> then(fn acc ->
+        case Process.whereis(OptimalSystemAgent.TaskSupervisor) do
+          nil -> acc ++ [{Task.Supervisor, name: OptimalSystemAgent.TaskSupervisor}]
+          _pid -> acc
+        end
+      end)
 
-    {:ok, supervisor: supervisor}
+    if children != [] do
+      {:ok, _supervisor} = Supervisor.start_link(children, strategy: :one_for_one)
+    end
+
+    :ok
   end
 
   setup do

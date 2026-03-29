@@ -34,6 +34,8 @@ defmodule OptimalSystemAgent.Telemetry.Metrics do
   use GenServer
   require Logger
 
+  @call_timeout 10_000
+
   # =====================================================================
   # Public API
   # =====================================================================
@@ -99,7 +101,7 @@ defmodule OptimalSystemAgent.Telemetry.Metrics do
   """
   @spec get_metrics() :: map()
   def get_metrics do
-    GenServer.call(__MODULE__, :get_metrics)
+    GenServer.call(__MODULE__, :get_metrics, @call_timeout)
   end
 
   @doc """
@@ -114,7 +116,7 @@ defmodule OptimalSystemAgent.Telemetry.Metrics do
   """
   @spec get_summary() :: map()
   def get_summary do
-    GenServer.call(__MODULE__, :get_summary)
+    GenServer.call(__MODULE__, :get_summary, @call_timeout)
   end
 
   # =====================================================================

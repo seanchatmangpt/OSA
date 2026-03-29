@@ -59,7 +59,7 @@ defmodule OptimalSystemAgent.Agent.Tier do
     groq: %{
       elite: "openai/gpt-oss-20b",
       specialist: "openai/gpt-oss-20b",
-      utility: "qwen-qwq-32b"
+      utility: "openai/gpt-oss-20b"
     },
     fireworks: %{
       elite: "accounts/fireworks/models/llama-v3p3-70b-instruct",

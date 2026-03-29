@@ -542,7 +542,8 @@ defmodule OptimalSystemAgent.Tools.Registry do
       "yawl_workflow" => OptimalSystemAgent.Tools.Builtins.YawlWorkflow,
       "yawl_work_item" => OptimalSystemAgent.Tools.Builtins.YawlWorkItem,
       "yawl_spec_library" => OptimalSystemAgent.Tools.Builtins.YawlSpecLibrary,
-      "yawl_process_mining" => OptimalSystemAgent.Tools.Builtins.YawlProcessMining
+      "yawl_process_mining" => OptimalSystemAgent.Tools.Builtins.YawlProcessMining,
+      "query_ocel" => OptimalSystemAgent.Tools.Builtins.QueryOcel
     }
   end
 

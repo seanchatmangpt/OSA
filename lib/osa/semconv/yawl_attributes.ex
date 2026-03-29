@@ -176,6 +176,18 @@ defmodule OpenTelemetry.SemConv.Incubating.YawlAttributes do
   def yawl_token_produced, do: :"yawl.token.produced"
 
   @doc """
+  YAWL Workflow Control-flow Pattern identifier being exercised.
+
+  Attribute: `yawl.wcp_pattern`
+  Type: `string`
+  Stability: `development`
+  Requirement: `recommended`
+  Examples: `WCP01`, `WCP02`, `WCP03`, `WCP04`
+  """
+  @spec yawl_wcp_pattern() :: :"yawl.wcp_pattern"
+  def yawl_wcp_pattern, do: :"yawl.wcp_pattern"
+
+  @doc """
   YAWL work item unique identifier in caseID:taskID:uniqueID format.
 
   Attribute: `yawl.work_item.id`

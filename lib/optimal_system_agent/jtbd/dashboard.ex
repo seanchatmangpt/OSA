@@ -566,6 +566,22 @@ defmodule OptimalSystemAgent.JTBD.Dashboard do
     {:error, :invalid_payload_format}
   end
 
+  @doc """
+  Validates a dashboard payload without side effects (ETS/state).
+  Returns {:ok, payload} if valid, {:error, reason} otherwise.
+  Used by DashboardChaosResilienceTest for black-box validation testing.
+  """
+  def validate_payload(payload) when is_map(payload) do
+    with {:ok, _} <- validate_field(payload, :iteration, &is_integer/1),
+         {:ok, _} <- validate_field(payload, :scenarios, &is_list/1),
+         {:ok, _} <- validate_field(payload, :pass_count, &is_integer/1),
+         {:ok, _} <- validate_field(payload, :fail_count, &is_integer/1) do
+      {:ok, payload}
+    end
+  end
+
+  def validate_payload(_), do: {:error, :invalid_payload_format}
+
   defp validate_field(payload, field, validator) when is_map(payload) do
     case Map.fetch(payload, field) do
       {:ok, value} ->
