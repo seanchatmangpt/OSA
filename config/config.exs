@@ -27,7 +27,7 @@ config :optimal_system_agent,
   yawl_url: System.get_env("YAWLV6_URL", "http://localhost:8080"),
 
   # YAWLv6 exampleSpecs path (set YAWLV6_SPECS_PATH env var to override)
-  yawl_specs_path: Path.expand("~/chatmangpt/yawlv6/exampleSpecs"),
+  yawl_specs_path: System.get_env("YAWLV6_SPECS_PATH", Path.expand("~/yawlv6/exampleSpecs")),
 
   # Agent configuration
   max_iterations: 200,
