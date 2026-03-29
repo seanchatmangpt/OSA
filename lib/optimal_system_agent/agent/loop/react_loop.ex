@@ -24,6 +24,7 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
   alias OptimalSystemAgent.Agent.Context
   alias OptimalSystemAgent.Agent.Scratchpad
   alias OptimalSystemAgent.Events.Bus
+  alias OptimalSystemAgent.Tracing.Context, as: TracingContext
 
   alias OptimalSystemAgent.Agent.Loop.Guardrails
   alias OptimalSystemAgent.Agent.Loop.LLMClient
@@ -258,11 +259,16 @@ defmodule OptimalSystemAgent.Agent.Loop.ReactLoop do
 
     state = %{state | messages: state.messages ++ [assistant_msg]}
 
+    parent_ctx = TracingContext.capture()
+
     results =
       OptimalSystemAgent.TaskSupervisor
       |> Task.Supervisor.async_stream_nolink(
         tool_calls,
-        fn tool_call -> ToolExecutor.execute_tool_call(tool_call, state) end,
+        fn tool_call ->
+          TracingContext.restore(parent_ctx)
+          ToolExecutor.execute_tool_call(tool_call, state)
+        end,
         max_concurrency: 10,
         timeout: 60_000,
         on_timeout: :kill_task

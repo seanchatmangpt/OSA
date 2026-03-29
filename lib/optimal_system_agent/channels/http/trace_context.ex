@@ -53,6 +53,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.TraceContext do
                 source: :http_header
               }
               Process.put(:otel_trace_context, trace_context)
+              Process.put(:telemetry_trace_id, trace_id)
+              Process.put(:otel_trace_id, trace_id)
               Logger.debug("[TraceContext] Extracted from header: trace_id=#{trace_id}, parent_span_id=#{parent_span_id}, flags=#{flags}")
               conn
 
@@ -79,6 +81,8 @@ defmodule OptimalSystemAgent.Channels.HTTP.TraceContext do
             source: :generated
           }
           Process.put(:otel_trace_context, trace_context)
+          Process.put(:telemetry_trace_id, trace_id)
+          Process.put(:otel_trace_id, trace_id)
           Logger.debug("[TraceContext] No traceparent header, generated new trace_id=#{trace_id}")
           conn
       end

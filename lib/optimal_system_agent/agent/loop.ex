@@ -269,6 +269,11 @@ defmodule OptimalSystemAgent.Agent.Loop do
     state = apply_overrides(state, opts)
     state = %{state | turn_count: state.turn_count + 1}
 
+    # Seed process-dict trace_id from YAWL root trace before any span is created.
+    # This ensures all child spans (LLM, tool, healing) share the same trace_id.
+    Process.put(:telemetry_trace_id, state.trace_id)
+    Process.put(:otel_trace_id, state.trace_id)
+
     # Start OTEL span for this message processing iteration
     {:ok, span_ctx} =
       OptimalSystemAgent.Observability.Telemetry.start_span(
