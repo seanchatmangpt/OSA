@@ -137,11 +137,13 @@ defmodule OptimalSystemAgent.ContextMesh.RegistryTest do
     end
 
     test "sorts results by created_at" do
-      Registry.register("team1", "keeper1")
+      # Use unique team name to prevent ETS contamination from concurrent test modules
+      team = "sort_team_#{System.unique_integer([:positive])}"
+      Registry.register(team, "keeper1")
       Process.sleep(10)
-      Registry.register("team1", "keeper2")
+      Registry.register(team, "keeper2")
 
-      keepers = Registry.list_by_team("team1")
+      keepers = Registry.list_by_team(team)
       assert length(keepers) == 2
       assert Enum.at(keepers, 0).keeper_id == "keeper1"
       assert Enum.at(keepers, 1).keeper_id == "keeper2"
