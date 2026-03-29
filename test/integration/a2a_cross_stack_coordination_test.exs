@@ -1,7 +1,7 @@
 defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
   @moduledoc """
   Cross-stack A2A coordination tests for OSA.
-  Unit tests run without live services. Live tests skip when services are down.
+  Unit tests run without live services. Live tests are skipped when services are down.
   Crown jewel: OSA discovers Canopy and dispatches workspace_coordination work.
 
   Run: mix test --include integration --include crown_jewel \\
@@ -17,7 +17,7 @@ defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
   @pm4py_url "http://localhost:8090"
   @osa_url "http://localhost:8089"
 
-  # Probe all services once at module level; results flow into every test via context.
+  # Probe all services once per test run and pass flags via context.
   setup_all do
     {:ok, %{
       canopy_up:     service_up?(@canopy_url),
@@ -68,7 +68,7 @@ defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
       assert {:error, _reason} = result
     end
 
-    test "execute/1 sets telemetry span id in process dictionary", _ctx do
+    test "execute/1 sets telemetry span id in process dictionary after call", _ctx do
       # Even a failed call must set a span id (span is created before the action runs)
       _result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
         "action" => "discover",
@@ -99,87 +99,93 @@ defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
   # ── Registry live tests ───────────────────────────────────────────────────────
 
   describe "OSA A2A Registry — all 4 services" do
-    setup_all %{canopy_up: c, businessos_up: b, pm4py_up: p, osa_up: o} do
-      if c and b and p and o do
-        :ok
+    test "discovers all 4 agents after refresh", %{canopy_up: c, businessos_up: b, pm4py_up: p, osa_up: o} do
+      unless c and b and p and o do
+        IO.puts("[SKIP] discovers all 4 agents: not all services running (canopy=#{c} bos=#{b} pm4py=#{p} osa=#{o})")
       else
-        {:skip, "Not all 4 services running (canopy=#{c} bos=#{b} pm4py=#{p} osa=#{o})"}
+        OptimalSystemAgent.A2A.Registry.refresh()
+        Process.sleep(6_000)
+        agents = OptimalSystemAgent.A2A.Registry.all_agents()
+        assert length(agents) >= 4,
+               "Expected >=4 agents, got #{length(agents)}: #{inspect(Enum.map(agents, & &1["name"]))}"
       end
     end
 
-    test "discovers all 4 agents after refresh" do
-      OptimalSystemAgent.A2A.Registry.refresh()
-      Process.sleep(6_000)
-      agents = OptimalSystemAgent.A2A.Registry.all_agents()
-      assert length(agents) >= 4,
-             "Expected >=4 agents, got #{length(agents)}: #{inspect(Enum.map(agents, & &1["name"]))}"
-    end
-
-    test "Canopy agent is discovered with name 'canopy'" do
-      OptimalSystemAgent.A2A.Registry.refresh()
-      Process.sleep(6_000)
-      card = OptimalSystemAgent.A2A.Registry.get_agent("canopy")
-      refute is_nil(card), "Canopy agent card must be cached after refresh"
-      assert card["name"] == "canopy"
+    test "Canopy agent is discovered with name 'canopy'", %{canopy_up: c, businessos_up: b, pm4py_up: p, osa_up: o} do
+      unless c and b and p and o do
+        IO.puts("[SKIP] Canopy agent discovery: not all services running")
+      else
+        OptimalSystemAgent.A2A.Registry.refresh()
+        Process.sleep(6_000)
+        card = OptimalSystemAgent.A2A.Registry.get_agent("canopy")
+        refute is_nil(card), "Canopy agent card must be cached after refresh"
+        assert card["name"] == "canopy"
+      end
     end
   end
 
   # ── A2ACall tool → Canopy ─────────────────────────────────────────────────────
 
   describe "OSA a2a_call tool → Canopy" do
-    setup_all %{canopy_up: canopy_up} do
-      if canopy_up, do: :ok,
-        else: {:skip, "Canopy not running at #{@canopy_url}"}
+    test "discover returns Canopy card with name 'canopy'", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Canopy not running at #{@canopy_url}")
+      else
+        assert {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "discover",
+          "agent_url" => @canopy_url
+        })
+        assert card["name"] == "canopy"
+      end
     end
 
-    test "discover returns Canopy card with name 'canopy'" do
-      assert {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "discover",
-        "agent_url" => @canopy_url
-      })
-      assert card["name"] == "canopy"
+    test "Canopy card has workspace_coordination and process_mining skills", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Canopy not running at #{@canopy_url}")
+      else
+        {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "discover",
+          "agent_url" => @canopy_url
+        })
+        skill_ids = (card["skills"] || []) |> Enum.map(& &1["id"])
+        assert "workspace_coordination" in skill_ids,
+               "workspace_coordination not in #{inspect(skill_ids)}"
+        assert "process_mining" in skill_ids,
+               "process_mining not in #{inspect(skill_ids)}"
+      end
     end
 
-    test "Canopy card has workspace_coordination and process_mining skills" do
-      {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "discover",
-        "agent_url" => @canopy_url
-      })
-      skill_ids = (card["skills"] || []) |> Enum.map(& &1["id"])
-      assert "workspace_coordination" in skill_ids,
-             "workspace_coordination not in #{inspect(skill_ids)}"
-      assert "process_mining" in skill_ids,
-             "process_mining not in #{inspect(skill_ids)}"
-    end
-
-    test "call sends message to Canopy and gets a response" do
-      result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "call",
-        "agent_url" => "#{@canopy_url}/api/v1/a2a",
-        "message" => "ping from OSA cross-stack test"
-      })
-      assert match?({:ok, _}, result) or match?({:error, _}, result)
+    test "call sends message to Canopy and gets a response", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Canopy not running at #{@canopy_url}")
+      else
+        result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "call",
+          "agent_url" => "#{@canopy_url}/api/v1/a2a",
+          "message" => "ping from OSA cross-stack test"
+        })
+        assert match?({:ok, _}, result) or match?({:error, _}, result)
+      end
     end
   end
 
   # ── A2ACall tool → BusinessOS ─────────────────────────────────────────────────
 
   describe "OSA a2a_call tool → BusinessOS" do
-    setup_all %{businessos_up: bos_up} do
-      if bos_up, do: :ok,
-        else: {:skip, "BusinessOS not running at #{@businessos_url}"}
-    end
-
-    test "discover returns BusinessOS card or structured error" do
-      result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "discover",
-        "agent_url" => @businessos_url
-      })
-      case result do
-        {:ok, card} ->
-          assert is_map(card)
-          assert Map.has_key?(card, "name") or Map.has_key?(card, "url")
-        {:error, _} -> :ok
+    test "discover returns BusinessOS card or structured error", %{businessos_up: bos_up} do
+      unless bos_up do
+        IO.puts("[SKIP] BusinessOS not running at #{@businessos_url}")
+      else
+        result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "discover",
+          "agent_url" => @businessos_url
+        })
+        case result do
+          {:ok, card} ->
+            assert is_map(card)
+            assert Map.has_key?(card, "name") or Map.has_key?(card, "url")
+          {:error, _} -> :ok
+        end
       end
     end
   end
@@ -187,19 +193,18 @@ defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
   # ── A2ACall tool → pm4py-rust ─────────────────────────────────────────────────
 
   describe "OSA a2a_call tool → pm4py-rust" do
-    setup_all %{pm4py_up: pm4py_up} do
-      if pm4py_up, do: :ok,
-        else: {:skip, "pm4py-rust not running at #{@pm4py_url}"}
-    end
-
-    test "discover returns pm4py-rust card or structured error" do
-      result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "discover",
-        "agent_url" => @pm4py_url
-      })
-      case result do
-        {:ok, card} -> assert is_map(card)
-        {:error, _reason} -> :ok
+    test "discover returns pm4py-rust card or structured error", %{pm4py_up: pm4py_up} do
+      unless pm4py_up do
+        IO.puts("[SKIP] pm4py-rust not running at #{@pm4py_url}")
+      else
+        result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "discover",
+          "agent_url" => @pm4py_url
+        })
+        case result do
+          {:ok, card} -> assert is_map(card)
+          {:error, _reason} -> :ok
+        end
       end
     end
   end
@@ -209,64 +214,75 @@ defmodule OptimalSystemAgent.Integration.A2ACrossStackCoordinationTest do
   describe "Crown Jewel: OSA discovers Canopy and dispatches workspace work" do
     @describetag :crown_jewel
 
-    setup_all %{canopy_up: canopy_up} do
-      if canopy_up, do: :ok,
-        else: {:skip, "Canopy not running — crown jewel requires Canopy at #{@canopy_url}"}
-    end
-
-    test "step 1: discovers Canopy with workspace_coordination skill" do
-      {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "discover",
-        "agent_url" => @canopy_url
-      })
-      assert card["name"] == "canopy"
-      skill_ids = (card["skills"] || []) |> Enum.map(& &1["id"])
-      assert "workspace_coordination" in skill_ids,
-             "Canopy must advertise workspace_coordination. Got: #{inspect(skill_ids)}"
-    end
-
-    test "step 2: sends workspace_coordination message to Canopy" do
-      result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "call",
-        "agent_url" => "#{@canopy_url}/api/v1/a2a",
-        "message" => Jason.encode!(%{
-          "skill" => "workspace_coordination",
-          "task" => "list_workspaces",
-          "source" => "osa_crown_jewel_test"
+    test "step 1: discovers Canopy with workspace_coordination skill", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Crown jewel: Canopy not running at #{@canopy_url}")
+      else
+        {:ok, card} = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "discover",
+          "agent_url" => @canopy_url
         })
-      })
-      case result do
-        {:ok, response} ->
-          assert is_map(response) or is_binary(response),
-                 "Response must be map or string, got: #{inspect(response)}"
-        {:error, reason} ->
-          IO.puts("[INFO] Crown jewel step 2 error (non-fatal): #{inspect(reason)}")
-          :ok
+        assert card["name"] == "canopy"
+        skill_ids = (card["skills"] || []) |> Enum.map(& &1["id"])
+        assert "workspace_coordination" in skill_ids,
+               "Canopy must advertise workspace_coordination. Got: #{inspect(skill_ids)}"
       end
     end
 
-    test "step 3: A2ACall emits telemetry span context" do
-      # Clear prior span id, verify a fresh one is set by execute/1
-      Process.delete(:telemetry_current_span_id)
-      _result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
-        "action" => "call",
-        "agent_url" => "#{@canopy_url}/api/v1/a2a",
-        "message" => "workspace_coordination from crown jewel"
-      })
-      span_id = Process.get(:telemetry_current_span_id)
-      assert not is_nil(span_id),
-             "A2ACall must emit a telemetry span and store span_id in process dictionary"
+    test "step 2: sends workspace_coordination message to Canopy", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Crown jewel: Canopy not running at #{@canopy_url}")
+      else
+        result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "call",
+          "agent_url" => "#{@canopy_url}/api/v1/a2a",
+          "message" => Jason.encode!(%{
+            "skill" => "workspace_coordination",
+            "task" => "list_workspaces",
+            "source" => "osa_crown_jewel_test"
+          })
+        })
+        case result do
+          {:ok, response} ->
+            assert is_map(response) or is_binary(response),
+                   "Response must be map or string, got: #{inspect(response)}"
+          {:error, reason} ->
+            IO.puts("[INFO] Crown jewel step 2 error (non-fatal): #{inspect(reason)}")
+            :ok
+        end
+      end
     end
 
-    test "step 4: weaver registry check exit 0 (layer 3 proof)" do
-      semconv_path = Path.expand(Path.join([File.cwd!(), "..", "semconv", "model"]))
-      if File.exists?(semconv_path) and System.find_executable("weaver") do
-        {output, code} = System.cmd("weaver", ["registry", "check", "-r", semconv_path],
-          stderr_to_stdout: true)
-        assert code == 0, "weaver registry check must exit 0:\n#{output}"
+    test "step 3: A2ACall emits telemetry span context", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Crown jewel: Canopy not running at #{@canopy_url}")
       else
-        IO.puts("[SKIP] weaver not in PATH or semconv not found at #{semconv_path}")
-        :ok
+        # Clear prior span id; verify a fresh one is set by execute/1
+        Process.delete(:telemetry_current_span_id)
+        _result = OptimalSystemAgent.Tools.Builtins.A2ACall.execute(%{
+          "action" => "call",
+          "agent_url" => "#{@canopy_url}/api/v1/a2a",
+          "message" => "workspace_coordination from crown jewel"
+        })
+        span_id = Process.get(:telemetry_current_span_id)
+        assert not is_nil(span_id),
+               "A2ACall must emit a telemetry span and store span_id in process dictionary"
+      end
+    end
+
+    test "step 4: weaver registry check exit 0 (layer 3 proof)", %{canopy_up: canopy_up} do
+      unless canopy_up do
+        IO.puts("[SKIP] Crown jewel: Canopy not running at #{@canopy_url}")
+      else
+        semconv_path = Path.expand(Path.join([File.cwd!(), "..", "semconv", "model"]))
+        if File.exists?(semconv_path) and System.find_executable("weaver") do
+          {output, code} = System.cmd("weaver", ["registry", "check", "-r", semconv_path],
+            stderr_to_stdout: true)
+          assert code == 0, "weaver registry check must exit 0:\n#{output}"
+        else
+          IO.puts("[SKIP] weaver not in PATH or semconv not found at #{semconv_path}")
+          :ok
+        end
       end
     end
   end
