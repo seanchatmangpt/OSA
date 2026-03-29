@@ -288,6 +288,8 @@ defmodule OptimalSystemAgent.SDK do
         [] ->
           []
       end
+    rescue
+      _ -> []
     end
 
     @doc "Check if a session is alive."
