@@ -2,6 +2,11 @@ FROM elixir:1.17-alpine AS builder
 
 RUN apk add --no-cache build-base git
 
+# Set HOME to /home/osa so Path.expand("~/.osa/osa.db") bakes in
+# /home/osa/.osa/osa.db at compile time (not /root/.osa/osa.db).
+ENV HOME=/home/osa
+RUN mkdir -p /home/osa
+
 WORKDIR /app
 
 COPY mix.exs mix.lock ./
@@ -18,10 +23,13 @@ COPY rel rel
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix release osagent
 
-FROM alpine:3.20 AS runner
+FROM alpine:3.22 AS runner
 
 RUN apk add --no-cache libstdc++ openssl ncurses-libs wget
-RUN addgroup -S osa && adduser -S osa -G osa
+RUN addgroup -S osa && adduser -S -h /home/osa -G osa osa && \
+    mkdir -p /home/osa/.osa && \
+    chown -R osa:osa /home/osa
+ENV HOME=/home/osa
 
 WORKDIR /app
 

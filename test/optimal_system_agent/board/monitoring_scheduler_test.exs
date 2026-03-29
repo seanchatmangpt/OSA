@@ -7,15 +7,23 @@ defmodule OptimalSystemAgent.Board.MonitoringSchedulerTest do
   during the test run.
   """
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias OptimalSystemAgent.Board.MonitoringScheduler
 
-  # ── Helper: start an isolated scheduler for each test ───────────────────────
+  # ── Helper: use existing scheduler or start an isolated one ─────────────────
+  # When the full app is running, MonitoringScheduler is already a named process.
+  # start_supervised! would fail with :already_started.  Reuse the existing pid.
 
   defp start_scheduler(opts \\ []) do
-    opts = Keyword.put_new(opts, :interval_ms, 999_999)
-    start_supervised!({MonitoringScheduler, opts})
+    case Process.whereis(MonitoringScheduler) do
+      nil ->
+        opts = Keyword.put_new(opts, :interval_ms, 999_999)
+        start_supervised!({MonitoringScheduler, opts})
+
+      pid ->
+        pid
+    end
   end
 
   # ── Tests ────────────────────────────────────────────────────────────────────
@@ -107,7 +115,11 @@ defmodule OptimalSystemAgent.Board.MonitoringSchedulerTest do
     test "monitoring scheduler disable prevents tick processing" do
       start_scheduler()
 
-      # Capture last_drift before disable — should be nil (no ticks yet).
+      # Reset state to a known baseline so the test is independent of prior ticks.
+      :sys.replace_state(MonitoringScheduler, fn state ->
+        %{state | drift_scores: [], last_drift: nil, enabled: true}
+      end)
+
       {:ok, %{last_drift: before_drift}} = MonitoringScheduler.get_status()
       assert is_nil(before_drift)
 
@@ -130,6 +142,9 @@ defmodule OptimalSystemAgent.Board.MonitoringSchedulerTest do
 
       assert count == 0,
              "Expected 0 drift scores after disabled tick, got #{count}"
+
+      # Restore enabled state so other tests/app are not affected.
+      :ok = MonitoringScheduler.enable()
     end
   end
 end
