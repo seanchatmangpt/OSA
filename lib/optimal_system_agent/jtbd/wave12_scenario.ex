@@ -312,12 +312,14 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
     end
 
     # Broadcast to OSA PubSub for BusinessOS frontend SSE stream (pm4py:metrics)
-    # OptimalSystemAgent.PubSub is always available inside OSA.
-    Phoenix.PubSub.broadcast(
-      OptimalSystemAgent.PubSub,
-      "pm4py:metrics",
-      {:metrics_update, metrics_payload}
-    )
+    # Guard with whereis so --no-start test mode doesn't crash.
+    if Process.whereis(OptimalSystemAgent.PubSub) != nil do
+      Phoenix.PubSub.broadcast(
+        OptimalSystemAgent.PubSub,
+        "pm4py:metrics",
+        {:metrics_update, metrics_payload}
+      )
+    end
 
     result
   end
@@ -356,7 +358,14 @@ defmodule OptimalSystemAgent.JTBD.Wave12Scenario do
   defp process_analyzer_metrics(tool_name) do
     case tool_name do
       name when name in ["process_analyzer", "process_discovery"] ->
-        case OptimalSystemAgent.Tools.Cache.get({:pm4py_metrics, name}) do
+        cache_result =
+          if Process.whereis(OptimalSystemAgent.Tools.Cache) != nil do
+            OptimalSystemAgent.Tools.Cache.get({:pm4py_metrics, name})
+          else
+            :miss
+          end
+
+        case cache_result do
           {:ok, metrics} when is_map(metrics) ->
             {
               Map.get(metrics, :fitness, 0.95),
