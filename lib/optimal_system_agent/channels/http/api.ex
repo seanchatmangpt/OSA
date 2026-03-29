@@ -45,6 +45,7 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
     /process     → ProcessRoutes     POST|GET /fingerprint/*, POST|GET /temporal/*, POST|GET /org/*
     /fibo        → FIBORoutes        POST /deals, GET /deals, GET /deals/:id, POST /deals/:id/verify
     /yawl        → YawlRoutes       GET /patterns, POST /check-conformance, GET /health
+    /ocel        → OcelRoutes       GET /export, GET /export/:session_id, GET /status
     /ontology    → OntologyRoutes   POST /inference-chain/invalidate
     /metrics/stream → MetricsStreamRoutes  GET /stream (SSE — Wave12 pm4py:metrics events)
   """
@@ -198,6 +199,9 @@ defmodule OptimalSystemAgent.Channels.HTTP.API do
 
   # ── YAWL engine integration (WCP patterns, conformance, health proxy) ─
   forward "/yawl", to: API.YawlRoutes
+
+  # ── OCEL 2.0 event log export (full log, filtered by session, status) ─
+  forward "/ocel", to: API.OcelRoutes
 
   # ── Health check (no auth required — forwarded before authenticate) ─────
   get "/health/fortune5" do
